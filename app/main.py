@@ -14,10 +14,14 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from .db import project_root
 from .routers import dex, lookup, pokemon
 
-ROOT = Path(__file__).resolve().parent.parent
-DIST = Path(__file__).resolve().parent / "static" / "dist"
+ROOT = project_root()
+if getattr(sys, "frozen", False):
+    DIST = Path(getattr(sys, "_MEIPASS", ROOT)) / "app" / "static" / "dist"
+else:
+    DIST = Path(__file__).resolve().parent / "static" / "dist"
 SPRITES = ROOT / "data" / "sprites"
 PORT = 8734
 

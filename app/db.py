@@ -2,9 +2,18 @@
 from __future__ import annotations
 
 import sqlite3
+import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+
+def project_root() -> Path:
+    """开发时=仓库根；打包后=exe 所在目录（数据文件夹随 exe 分发）。"""
+    if getattr(sys, "frozen", False):
+        return Path(sys.executable).resolve().parent
+    return Path(__file__).resolve().parent.parent
+
+
+ROOT = project_root()
 DATA = ROOT / "data"
 STATIC_DB = DATA / "poketools.db"
 STATE_DB = DATA / "userstate.db"

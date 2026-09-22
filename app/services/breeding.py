@@ -162,18 +162,19 @@ def breed_chains(con, species_id: int, move_id: int, game: str) -> dict:
 
     chains = []
     for p in paths:
+        # 统一把「末环 → 目标」作为最后一步，保证 steps 覆盖全部繁殖步骤
+        seq = p + [species_id]
         steps = []
-        for a, b in zip(p, p[1:]):
+        for a, b in zip(seq, seq[1:]):
             steps.append({
-                "from": node_payload(a), "to": node_payload(b),
+                "from": node_payload(a),
+                "to": node_payload(b) if b != species_id else {
+                    "species_id": species_id, "name": sp["name_zh"],
+                    "groups": sorted(target_groups), "learn": "目标宝可梦",
+                },
                 "shared_groups": shared(a, b),
             })
-        chains.append({
-            "steps": steps,
-            "final": node_payload(p[-1]),
-            "target_shared": shared(p[-1], species_id),
-            "length": len(p),
-        })
+        chains.append({"steps": steps, "length": len(p)})
 
     return {
         "ok": True,
