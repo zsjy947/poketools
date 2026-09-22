@@ -164,6 +164,19 @@ CREATE TABLE move_flavor (
 CREATE TABLE get_methods (
   species_id INTEGER, game TEXT, location TEXT, method TEXT, note TEXT
 );
+-- 二期伤害计算器数据
+CREATE TABLE learnsets_all (
+  form_id INTEGER, move_id INTEGER, method TEXT, vg INTEGER
+);
+CREATE INDEX idx_la_species ON learnsets_all (form_id, move_id);
+CREATE INDEX idx_la_move ON learnsets_all (move_id);
+CREATE TABLE natures (
+  id INTEGER PRIMARY KEY, identifier TEXT, name_zh TEXT,
+  up TEXT, down TEXT
+);
+CREATE TABLE vgs (
+  id INTEGER PRIMARY KEY, identifier TEXT, gen INTEGER
+);
 CREATE TABLE dex_flavor (
   species_id INTEGER, game TEXT, version_label TEXT, text TEXT
 );
@@ -331,12 +344,42 @@ def main() -> None:
             seen_dexes[ident] = {"game": game, "id": dex_id}
     dex_order = {ident: i for i, ident in enumerate(seen_dexes)}
 
+    # ---- learnsets_all（全世代，供伤害计算器招式并集） ----
+    METHOD_IDS_ALL = {1: "level-up", 2: "egg", 3: "tutor", 4: "machine"}
+    learn_all: list[tuple] = []
+    for r in read_csv("pokemon_moves"):
+        m = METHOD_IDS_ALL.get(to_int(r["pokemon_move_method_id"]))
+        if m:
+            learn_all.append((to_int(r["pokemon_id"]), to_int(r["move_id"]),
+                              m, to_int(r["version_group_id"])))
+
+    # ---- natures ----
+    stat_key = {1: "hp", 2: "atk", 3: "def", 4: "spa", 5: "spd", 6: "spe"}
+    nature_zh = {}
+    for r in read_csv("nature_names"):
+        if to_int(r["local_language_id"]) == ZH:
+            nature_zh[to_int(r["nature_id"])] = r["name"]
+    nature_rows = []
+    for r in read_csv("natures"):
+        nid = to_int(r["id"])
+        up = stat_key.get(to_int(r["increased_stat_id"]))
+        down = stat_key.get(to_int(r["decreased_stat_id"]))
+        nature_rows.append((nid, r["identifier"],
+                            nature_zh.get(nid, r["identifier"]),
+                            up if up != down else None,
+                            down if up != down else None))
+
     # ---- write db ----
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
     if DB_PATH.exists():
         DB_PATH.unlink()
     con = sqlite3.connect(DB_PATH)
     con.executescript(SCHEMA)
+    con.executemany("INSERT OR IGNORE INTO learnsets_all VALUES (?,?,?,?)", learn_all)
+    con.executemany("INSERT OR REPLACE INTO natures VALUES (?,?,?,?,?)", nature_rows)
+    con.executemany("INSERT OR REPLACE INTO vgs VALUES (?,?,?)",
+                    [(to_int(r["id"]), r["identifier"], to_int(r["generation_id"]))
+                     for r in vg_rows.values()])
 
     con.executemany("INSERT INTO games VALUES (?,?,?,?,?,?,?)",
                     [(gid, g["name_zh"], g["name_en"], g["gen"], g["has_breeding"],

@@ -15,7 +15,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from .db import project_root
-from .routers import dex, lookup, pokemon
+from .routers import calc, dex, lookup, pokemon
 
 ROOT = project_root()
 if getattr(sys, "frozen", False):
@@ -29,6 +29,7 @@ app = FastAPI(title="PokéTools", docs_url=None, redoc_url=None)
 app.include_router(dex.router)
 app.include_router(pokemon.router)
 app.include_router(lookup.router)
+app.include_router(calc.router)
 
 if SPRITES.exists():
     app.mount("/sprites", StaticFiles(directory=SPRITES), name="sprites")
