@@ -153,7 +153,8 @@ def compare_forms(body: dict = Body(...)):
                 r = damage.calc_damage(atk, dfd, dict(mv), opt)
                 if "error" in r:
                     continue
-                out.append({"form_id": f["id"], "label": f["form_label"] or f["identifier"],
+                label = f["form_label"] or ("默认形态" if f["is_default"] else f["identifier"])
+                out.append({"form_id": f["id"], "label": label,
                             "types": f["types"], "min": r["min"], "max": r["max"],
                             "pct_max": r["pct_max"], "ohko": r["ohko"]})
             except HTTPException:
