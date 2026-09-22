@@ -4,3 +4,4 @@ pywebview
 pyinstaller
 requests
 pytest
+httpx2
