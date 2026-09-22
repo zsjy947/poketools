@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+pywebview
+pyinstaller
+requests
+pytest
