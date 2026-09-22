@@ -160,6 +160,21 @@ CREATE TABLE encounters (
 CREATE TABLE move_flavor (
   move_id INTEGER PRIMARY KEY, text TEXT, lang TEXT
 );
+-- 以下为 52poke 抓取/人工整理数据（scrape_52poke.py 填充，build_db.py 建空表）
+CREATE TABLE get_methods (
+  species_id INTEGER, game TEXT, location TEXT, method TEXT, note TEXT
+);
+CREATE TABLE dex_flavor (
+  species_id INTEGER, game TEXT, version_label TEXT, text TEXT
+);
+CREATE TABLE tm_how (
+  vg INTEGER, machine_number INTEGER, move_id INTEGER,
+  how TEXT, materials TEXT, PRIMARY KEY (vg, machine_number)
+);
+CREATE TABLE sandwiches (
+  no INTEGER PRIMARY KEY, name TEXT, ingredients TEXT,
+  seasonings TEXT, effects TEXT, how TEXT
+);
 CREATE INDEX idx_learnsets_move ON learnsets (move_id, vg, method);
 CREATE INDEX idx_learnsets_form ON learnsets (form_id, vg);
 CREATE INDEX idx_enc_species ON encounters (vg, species_id);
@@ -388,6 +403,21 @@ def main() -> None:
     con.executemany("INSERT OR IGNORE INTO encounters VALUES (?,?,?,?,?,?,?,?,?,?)", enc_rows)
     con.executemany("INSERT OR REPLACE INTO move_flavor VALUES (?,?,?)",
                     [(mid, t, "zh") for mid, t in flavor_zh.items()])
+
+    # 种族图鉴描述（PokeAPI 简中仅覆盖到剑盾，新游戏由 52poke 补充）
+    ver_ident = {to_int(r["id"]): r["identifier"] for r in read_csv("versions")}
+    ver_label = {"sword": ("sword-shield", "剑"), "shield": ("sword-shield", "盾"),
+                 "legends-arceus": ("legends-arceus", "洗翠"),
+                 "scarlet": ("scarlet-violet", "朱"), "violet": ("scarlet-violet", "紫"),
+                 "legends-za": ("legends-za", "Z-A")}
+    for r in read_csv("pokemon_species_flavor_text"):
+        if to_int(r["language_id"]) != ZH:
+            continue
+        lab = ver_label.get(ver_ident.get(to_int(r["version_id"])))
+        if lab:
+            txt = r["flavor_text"].replace("\n", " ").replace("\f", " ")
+            con.execute("INSERT OR IGNORE INTO dex_flavor VALUES (?,?,?,?)",
+                        (to_int(r["species_id"]), lab[0], lab[1], txt))
 
     con.commit()
 
