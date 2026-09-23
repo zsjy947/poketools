@@ -45,6 +45,54 @@ SPECIAL_MOVES = {"freeze-dry": {"水": 2}, "flying-press": "__both__"}
 # 对极巨化目标 ×2 的招式
 DYNAMAX_SUPER = {"巨兽斩击", "巨兽弹击", "极巨炮"}
 
+# ---------------------------------------------------------------- Z招式 / 极巨招式威力（Bulbapedia/52poke 换算表）
+Z_SPECIAL = {  # 常见特例（其余按区间）
+    "giga-drain": 120, "weather-ball": 160, "hex": 160, "v-create": 220,
+    "flying-press": 170, "thousand-arrows": 180, "core-enforcer": 140,
+    "multi-attack": 185, "struggle": 1,
+}
+
+
+def z_power(base: int, move_ident: str = "") -> int:
+    if move_ident in Z_SPECIAL:
+        return Z_SPECIAL[move_ident]
+    if base < 60:
+        return 100
+    if base < 70:
+        return 120
+    if base < 80:
+        return 140
+    if base < 90:
+        return 160
+    if base < 100:
+        return 175
+    if base < 110:
+        return 180
+    if base < 120:
+        return 185
+    if base < 130:
+        return 190
+    if base < 140:
+        return 195
+    return 200
+
+
+def max_power(base: int, move_type: str = "") -> int:
+    fp = move_type in ("格斗", "毒")   # 格斗/毒极巨招式威力独立
+    if base <= 40:
+        return 70 if fp else 90
+    if base < 55:
+        return 75 if fp else 100
+    if base <= 60:
+        return 80 if fp else 110
+    if base <= 70:
+        return 85 if fp else 120
+    if base <= 100:
+        return 90 if fp else 130
+    if base <= 140:
+        return 95 if fp else 140
+    return 100 if fp else 150
+
 
 def rnd_half_down(x: float) -> int:
     f = math.floor(x)
@@ -109,8 +157,10 @@ def effectiveness(move_type: str, def_types: list[str], move_ident: str = "",
 
 def calc_modern_stats(form: dict, level: int, nature: dict | None,
                       evs: dict, ivs: dict, choice_item: str = "",
-                      dynamax: bool = False) -> dict:
-    """nature: {up, down}；evs/ivs: {hp,atk,def,spa,spd,spe}。"""
+                      dynamax: bool = False,
+                      def_spd_mult: float = 1.0) -> dict:
+    """nature: {up, down}；evs/ivs: {hp,atk,def,spa,spd,spe}。
+    def_spd_mult: 防守向道具对防御/特防的乘数（突击背心/进化奇石）。"""
     up = (nature or {}).get("up")
     down = (nature or {}).get("down")
 
@@ -129,6 +179,8 @@ def calc_modern_stats(form: dict, level: int, nature: dict | None,
         v = stat_other(form[k], ivs.get(k, 31), evs.get(k, 0), level, nm(k))
         if CHOICE.get(choice_item, ("",))[0] == k:
             v = int(v * CHOICE[choice_item][1])
+        if k in ("def", "spd") and def_spd_mult != 1.0:
+            v = int(v * def_spd_mult)
         out[k] = v
     return out
 
@@ -189,9 +241,17 @@ def calc_damage_modern(a: dict, d: dict, move: dict, opt: dict) -> dict:
     power = opt.get("move_power_override") or move.get("power") or 0
     if not power or move["damage_class"] == "status":
         return {"error": "status_or_no_power"}
+    # Z招式 / 极巨招式威力换算（覆盖基础威力）
+    if opt.get("z_move"):
+        power = z_power(power, move.get("identifier", ""))
+    elif opt.get("max_move"):
+        power = max_power(power, move["type_zh"])
 
     atk_types = [t for t in (a["types"] or "").split(",") if t]
+    tera_a = a.get("tera_type") or ""
     def_types = [t for t in (d["types"] or "").split(",") if t]
+    if d.get("tera_type"):
+        def_types = [d["tera_type"]]
     a_abil = a.get("ability") or ""
     d_abil = d.get("ability") or ""
 
@@ -226,6 +286,10 @@ def calc_damage_modern(a: dict, d: dict, move: dict, opt: dict) -> dict:
     stab_mod = 4096
     if move["type_zh"] in atk_types:
         stab_mod = 8192 if a_abil == "适应力" else 6144
+    if tera_a == move["type_zh"]:
+        # 太晶属性 STAB：与原属性一致或适应力时为 2 倍，否则 1.5 倍；保留原属性 STAB
+        stab_mod = max(stab_mod, 8192 if (move["type_zh"] in atk_types
+                                          or a_abil == "适应力") else 6144)
     apply_burn = opt.get("burn") and physical and a_abil != "毅力" and move.get("name_zh") != "装模作样"
 
     # finalMod 4096 链（顺序对齐 smogon）

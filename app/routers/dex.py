@@ -1,6 +1,8 @@
 """图鉴与捕捉状态 API。"""
 from __future__ import annotations
 
+import json
+
 from fastapi import APIRouter, Body, HTTPException, Query
 
 from ..db import state_conn, static_conn
@@ -22,6 +24,10 @@ def games():
     con = static_conn()
     out = []
     for g in con.execute("SELECT * FROM games ORDER BY sort"):
+        try:
+            features = json.loads(g["features"] or "[]")
+        except (TypeError, ValueError):
+            features = []
         dexes = []
         for d in con.execute(
             """SELECT d.id, d.name_zh, d.name_en, COUNT(e.species_id) AS total
@@ -29,7 +35,8 @@ def games():
                LEFT JOIN dex_entries e ON e.dex_id = d.id
                WHERE d.game_id = ? GROUP BY d.id ORDER BY d.sort""", (g["id"],)):
             dexes.append(dict(d))
-        out.append({**dict(g), "dexes": dexes})
+        out.append({**{k: g[k] for k in g.keys() if k != "features"},
+                    "features": features, "dexes": dexes})
     con.close()
     return out
 

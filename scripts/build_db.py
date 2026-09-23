@@ -523,8 +523,6 @@ def main() -> None:
             con.execute("INSERT OR IGNORE INTO dex_flavor VALUES (?,?,?,?)",
                         (to_int(r["species_id"]), lab[0], lab[1], txt))
 
-    con.commit()
-
     # ---- evolutions（进化条件）----
     evo_trigger = {to_int(r["id"]): r["identifier"]
                    for r in read_csv("evolution_triggers")}
@@ -550,8 +548,9 @@ def main() -> None:
             to_int(r["needs_overworld_rain"]) or 0,
             to_int(r["turn_upside_down"]) or 0,
         ))
-
     con.executemany("INSERT OR REPLACE INTO evolutions VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", evo_rows)
+
+    con.commit()
 
     # ---- report ----
     for table in ("games", "regional_dexes", "dex_entries", "species", "forms",

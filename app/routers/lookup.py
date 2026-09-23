@@ -1,11 +1,12 @@
-"""努力值筛选 / 三明治 / 生蛋链查询 API。"""
+"""努力值筛选 / 三明治 / 甜甜圈 / 咖喱 / 生蛋链 / 自定义食谱 API。"""
 from __future__ import annotations
 
 import json
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Body, HTTPException, Query
 
-from ..db import static_conn
+from ..db import static_conn, state_conn
+from ..services import damage
 from ..services.breeding import breed_chains
 
 router = APIRouter(prefix="/api")
@@ -97,3 +98,114 @@ def api_breed_chains(species_id: int = Query(...), move_id: int = Query(...),
         return breed_chains(con, species_id, move_id, game)
     finally:
         con.close()
+
+
+# ---------------------------------------------------------------- 三期：属性相性 / 特化功能
+
+@router.get("/meta/typechart")
+def typechart():
+    return {"types": damage.TYPES,
+            "chart": {atk: {dfd: mult for dfd, mult in pairs.items()}
+                      for atk, pairs in damage.CHART.items()}}
+
+
+@router.get("/picnic-items")
+def picnic_items(kind: str = Query("", pattern="^(|食材|调味料|咖喱食材)$")):
+    con = static_conn()
+    if kind:
+        rows = con.execute(
+            "SELECT rowid AS no_rowid, * FROM picnic_items WHERE kind=? ORDER BY kind, name",
+            (kind,))
+    else:
+        rows = con.execute("SELECT rowid AS no_rowid, * FROM picnic_items ORDER BY kind, name")
+    out = [dict(r) for r in rows]
+    con.close()
+    return out
+
+
+@router.get("/donuts")
+def donuts():
+    con = static_conn()
+    out = {
+        "types": [dict(r) for r in con.execute("SELECT * FROM donut_types")],
+        "special": [dict(r) for r in con.execute("SELECT * FROM special_donuts")],
+        "berries": [dict(r) for r in con.execute(
+            "SELECT * FROM berries ORDER BY energy, name")],
+        "flavor_powers": [dict(r) for r in con.execute("SELECT * FROM flavor_powers")],
+    }
+    con.close()
+    return out
+
+
+@router.get("/curries")
+def curries(q: str = "", key_ingredient: str = ""):
+    con = static_conn()
+    sql = "SELECT * FROM curries WHERE 1=1"
+    args: list = []
+    if q:
+        sql += " AND (name LIKE ? OR key_ingredient LIKE ?)"
+        kw = f"%{q.strip()}%"
+        args += [kw, kw]
+    if key_ingredient:
+        sql += " AND key_ingredient=?"
+        args.append(key_ingredient)
+    sql += " ORDER BY no"
+    out = [dict(r) for r in con.execute(sql, args)]
+    con.close()
+    return out
+
+
+# ---------------------------------------------------------------- 自定义食谱（userstate.db）
+
+CUSTOM_RECIPE_GAMES = ("scarlet-violet", "legends-za")
+
+
+@router.get("/custom-recipes")
+def list_custom_recipes(profile: int = 1, game: str = ""):
+    con = state_conn()
+    sql = "SELECT id, game, name, effects, ingredients, seasonings, created_at " \
+          "FROM custom_recipes WHERE profile_id=?"
+    args: list = [profile]
+    if game:
+        sql += " AND game=?"
+        args.append(game)
+    out = [dict(r) for r in con.execute(sql + " ORDER BY id DESC", args)]
+    con.close()
+    for r in out:
+        r["effects"] = json.loads(r["effects"] or "[]")
+    return out
+
+
+@router.post("/custom-recipes")
+def add_custom_recipe(body: dict = Body(...)):
+    pid = int(body.get("profile_id") or 1)
+    game = body.get("game") or ""
+    if game not in CUSTOM_RECIPE_GAMES:
+        raise HTTPException(400, "该游戏不支持自定义食谱")
+    effects = body.get("effects") or []
+    ingredients = (body.get("ingredients") or "").strip()
+    seasonings = (body.get("seasonings") or "").strip()
+    if not effects or not ingredients or not seasonings:
+        raise HTTPException(400, "效果、食材、调味料均为必填")
+    name = (body.get("name") or "").strip() or "我的食谱"
+    con = state_conn()
+    cur = con.execute(
+        """INSERT INTO custom_recipes (profile_id, game, name, effects, ingredients, seasonings)
+           VALUES (?,?,?,?,?,?)""",
+        (pid, game, name, json.dumps(effects, ensure_ascii=False), ingredients, seasonings))
+    con.commit()
+    rid = cur.lastrowid
+    row = con.execute("SELECT * FROM custom_recipes WHERE id=?", (rid,)).fetchone()
+    con.close()
+    d = dict(row)
+    d["effects"] = json.loads(d["effects"] or "[]")
+    return d
+
+
+@router.delete("/custom-recipes/{recipe_id}")
+def del_custom_recipe(recipe_id: int, profile: int = 1):
+    con = state_conn()
+    con.execute("DELETE FROM custom_recipes WHERE id=? AND profile_id=?", (recipe_id, profile))
+    con.commit()
+    con.close()
+    return {"ok": True}

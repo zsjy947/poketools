@@ -11,9 +11,10 @@ from __future__ import annotations
 
 GAME_LEARNSET_VG = {
     "sword-shield": 20,
+    "brilliant-diamond-shining-pearl": 23,
     "legends-arceus": 24,
     "scarlet-violet": 25,
-    "legends-za": 32,
+    "legends-za": 30,
 }
 
 METHOD_TEXT = {"level-up": "升级学会", "machine": "招式学习器", "tutor": "教授招式", "egg": "蛋招式"}

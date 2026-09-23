@@ -45,13 +45,77 @@ def test_pokemon_detail_and_moves():
     assert p["species"]["name_zh"] == "新叶喵"
     assert p["ev"]["spe"] == 1
     assert p["get_methods"] and p["flavor"]
+    assert p["base_stats"]["hp"] == 40
+    # 特性带隐藏标记
+    assert any(isinstance(a.get("hidden"), bool) for a in p["default_form"]["ability_list"])
+    # 进化链（新叶喵家族；JSON 序列化后键为字符串）
+    assert "906" in p["evolution"]["nodes"] and "907" in p["evolution"]["nodes"]
+    # 按游戏裁剪：图鉴描述/获取方式只含当前游戏
+    scoped = client.get("/api/pokemon/906", params={"game": "scarlet-violet"}).json()
+    assert scoped["flavor"] and all(f["game"] == "scarlet-violet" for f in scoped["flavor"])
+    assert scoped["get_methods"] and all(g["game"] == "scarlet-violet" for g in scoped["get_methods"])
     mv = client.get("/api/pokemon/906/moves", params={"game": "scarlet-violet"}).json()
+    assert [t["key"] for t in mv["tabs"]] == ["level", "machine", "egg", "tutor"]
     assert mv["groups"]["level"] and mv["groups"]["machine"] and mv["groups"]["egg"]
+    assert "pp" in mv["groups"]["level"][0] and "priority" in mv["groups"]["level"][0]
     tm = mv["groups"]["machine"][0]["tm"]
     assert tm and tm[0]["how"]
     # 没有生蛋机制的游戏
     pla = client.get("/api/pokemon/25/moves", params={"game": "legends-arceus"}).json()
     assert pla["has_breeding"] is False
+    # Z-A：升级（含精通等级）+ 学习器
+    za = client.get("/api/pokemon/152/moves", params={"game": "legends-za"}).json()
+    assert [t["key"] for t in za["tabs"]] == ["level", "machine"]
+    assert len(za["groups"]["level"]) > 5
+    assert any(r.get("mastery") for r in za["groups"]["level"])
+    # BDSP
+    bd = client.get("/api/pokemon/1/moves", params={"game": "brilliant-diamond-shining-pearl"}).json()
+    assert bd["groups"]["egg"] and bd["groups"]["machine"]
+    # 获取方式带版本标签
+    gm = {g["version_label"] for g in scoped["get_methods"]}
+    assert any("朱" in v for v in gm)
+
+
+def test_typechart():
+    tc = client.get("/api/meta/typechart").json()
+    assert tc["chart"]["火"]["草"] == 2 and tc["chart"]["电"]["地面"] == 0
+
+
+def test_picnic_items():
+    rows = client.get("/api/picnic-items").json()
+    assert len(rows) >= 70
+    season = [r for r in rows if r["kind"] == "调味料"]
+    assert len(season) >= 15 and all(r["how"] for r in season[:5])
+
+
+def test_donuts():
+    d = client.get("/api/donuts").json()
+    assert len(d["types"]) == 6 and len(d["special"]) == 5
+    assert len(d["berries"]) > 50 and len(d["flavor_powers"]) >= 25
+    sp = next(s for s in d["special"] if s["name"] == "梦魇螺旋甜甜圈")
+    assert sp["power"] == "暗黑力" and sp["sweet"] == 310
+
+
+def test_curries():
+    rows = client.get("/api/curries").json()
+    assert len(rows) == 151
+    assert rows[0]["name"] == "咖喱" and rows[0]["key_ingredient"] == "无"
+
+
+def test_custom_recipes():
+    r = client.post("/api/custom-recipes", json={
+        "profile_id": 1, "game": "scarlet-violet", "name": "测试食谱",
+        "effects": [{"power": "蛋蛋力", "level": 2}],
+        "ingredients": "生菜、番茄片", "seasonings": "盐"})
+    assert r.status_code == 200
+    rid = r.json()["id"]
+    lst = client.get("/api/custom-recipes", params={"profile": 1, "game": "scarlet-violet"}).json()
+    assert any(x["id"] == rid and x["name"] == "测试食谱" for x in lst)
+    assert client.delete(f"/api/custom-recipes/{rid}").json()["ok"]
+    # 必填校验
+    assert client.post("/api/custom-recipes", json={
+        "profile_id": 1, "game": "scarlet-violet",
+        "effects": [], "ingredients": "x", "seasonings": "y"}).status_code == 400
 
 
 def test_ev_filter():

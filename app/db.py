@@ -39,6 +39,16 @@ CREATE TABLE IF NOT EXISTS caught_state (
   updated_at TEXT DEFAULT (datetime('now','localtime')),
   PRIMARY KEY (profile_id, dex_id, species_id)
 );
+CREATE TABLE IF NOT EXISTS custom_recipes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  profile_id INTEGER NOT NULL,
+  game TEXT NOT NULL,
+  name TEXT NOT NULL,
+  effects TEXT NOT NULL,
+  ingredients TEXT NOT NULL,
+  seasonings TEXT NOT NULL,
+  created_at TEXT DEFAULT (datetime('now','localtime'))
+);
 INSERT OR IGNORE INTO profiles (id, name) VALUES (1, '默认档案');
 """
 
