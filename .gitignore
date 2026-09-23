@@ -25,3 +25,5 @@ Thumbs.db
 *.spec
 Poketools.exe
 Poketools.log
+data/*.db-shm
+data/*.db-wal
