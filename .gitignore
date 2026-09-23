@@ -23,3 +23,5 @@ web/node_modules/
 Thumbs.db
 *.log
 *.spec
+Poketools.exe
+Poketools.log

@@ -36,11 +36,14 @@ cd web && npm install && npm run build && cd ..
 # 4) 开发模式启动（浏览器访问 http://127.0.0.1:8734）
 python app/main.py
 
-# 5) 桌面窗口模式
+# 5) 桌面窗口模式（仓库内直接运行）
 pythonw launcher.pyw
 
-# 6) 打包 exe
+# 6) 打包 exe（生成到仓库根目录，data 就在旁边，直接双击可用）
 build_exe.bat
+
+# 分发给他人：把 Poketools.exe 和 data 文件夹（含 poketools.db 与 sprites\）一起拷走即可。
+# 启动异常时查看 exe 旁的 Poketools.log。
 ```
 
 ## 目录结构

@@ -7,9 +7,17 @@ from pathlib import Path
 
 
 def project_root() -> Path:
-    """开发时=仓库根；打包后=exe 所在目录（数据文件夹随 exe 分发）。"""
+    """开发时=仓库根；打包后=exe 所在目录（data 文件夹随 exe 分发）。
+
+    exe 旁没有 data 时回退尝试工作目录下的 data。"""
     if getattr(sys, "frozen", False):
-        return Path(sys.executable).resolve().parent
+        exe_dir = Path(sys.executable).resolve().parent
+        if (exe_dir / "data").exists():
+            return exe_dir
+        cwd_data = Path.cwd() / "data"
+        if cwd_data.exists():
+            return cwd_data.parent
+        return exe_dir
     return Path(__file__).resolve().parent.parent
 
 

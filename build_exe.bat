@@ -7,9 +7,11 @@ REM After build: put Poketools.exe and the data\ folder together and double-clic
 cd /d "%~dp0"
 
 pyinstaller --noconsole --onefile --name Poketools ^
+  --distpath . --workpath build --specpath . ^
   --paths . ^
   --add-data "app\static\dist;app\static\dist" ^
   --collect-submodules uvicorn ^
+  --collect-all webview ^
   launcher.pyw
 
 if errorlevel 1 (
@@ -20,7 +22,7 @@ if errorlevel 1 (
 )
 
 echo.
-echo [OK] dist\Poketools.exe
-echo Usage: copy Poketools.exe to any folder, put the data folder next to it, double click.
+echo [OK] Poketools.exe (in repo root, data folder is already next to it)
+echo Usage: double-click Poketools.exe. To share: copy Poketools.exe + data folder together.
 echo (data folder needs poketools.db and sprites\; run the data pipeline scripts first)
 pause
