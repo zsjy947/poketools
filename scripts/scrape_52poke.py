@@ -851,7 +851,7 @@ def main() -> None:
     # 咖喱页（原题「咖喱饭」）
     fetch_titles(["咖喱饭"])
     curry_wt = None
-    for cand in ("咖喱饭", "咖喱饭"):
+    for cand in ("咖喱饭", "咖喱飯"):
         curry_wt = get_wikitext(cand)
         if curry_wt:
             break

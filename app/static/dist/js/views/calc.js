@@ -53,10 +53,10 @@ const CalcView = {
         </div>
         <div class="fld-row" v-if="formula === 'pla'">
           <span class="lbl">阿尔宙斯风格</span>
-          <el-select v-model="style" size="small" style="width:120px">
+          <el-select v-model="style" size="small" style="width:130px">
             <el-option value="" label="普通" />
             <el-option value="strong" label="刚猛(×1.5)" />
-            <el-option value="agile" label="敏捷(×0.66)" />
+            <el-option value="agile" label="迅疾(×0.66)" />
           </el-select>
         </div>
         <div class="calc-hint">
@@ -196,6 +196,7 @@ const CalcView = {
           weather: weather.value, crit: crit.value, screen: screen.value,
           move_power_override: powerOverride.value || undefined,
           style: style.value,
+          burn: A.burn,
           z_move: A.zMove, max_move: A.dynamax,
         });
         result.value = resp.result;
@@ -214,6 +215,7 @@ const CalcView = {
             weather: weather.value, crit: crit.value, screen: screen.value,
             move_power_override: powerOverride.value || undefined,
             style: style.value,
+            burn: A.burn,
             z_move: A.zMove, max_move: A.dynamax,
           },
         });
@@ -230,6 +232,8 @@ const CalcView = {
 };
 
 /* 攻/防方面板子组件 */
+const _metaCache = { natures: null, items: null };
+
 const SidePanel = {
   props: ["side", "speciesList", "sideKind"],
   template: `
@@ -310,11 +314,15 @@ const SidePanel = {
   `,
   setup(props) {
     const { ref, computed } = Vue;
-    const natures = ref([]);
-    const itemPool = ref([]);
-    const modeled = ref([]);
-    apiGet("/api/meta/natures").then((r) => (natures.value = r));
-    apiGet("/api/meta/items").then((r) => { itemPool.value = r.pool; modeled.value = r.modeled; });
+    const natures = ref(_metaCache.natures || []);
+    const itemPool = ref(_metaCache.items ? _metaCache.items.pool : []);
+    const modeled = ref(_metaCache.items ? _metaCache.items.modeled : []);
+    if (!_metaCache.natures) {
+      apiGet("/api/meta/natures").then((r) => { natures.value = r; _metaCache.natures = r; });
+      apiGet("/api/meta/items").then((r) => {
+        itemPool.value = r.pool; modeled.value = r.modeled; _metaCache.items = r;
+      });
+    }
 
     const EXTRA_ABILITIES = ["适应力", "狙击手", "有色眼镜", "超感知", "毅力", "漂浮",
       "多重鳞片", "冰鳞粉", "滤芯", "Prism装甲", "引火", "蓄电", "避雷针", "干燥皮肤",

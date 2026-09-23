@@ -166,6 +166,9 @@ def compare_forms(body: dict = Body(...)):
     species_id = body.get("species_id")
     con = static_conn()
     try:
+        mv = con.execute("SELECT * FROM moves WHERE id=?", (base["move_id"],)).fetchone()
+        if mv is None:
+            raise HTTPException(404, "move not found")
         forms = con.execute("SELECT * FROM forms WHERE species_id=? ORDER BY id",
                             (species_id,)).fetchall()
         out = []
@@ -177,7 +180,6 @@ def compare_forms(body: dict = Body(...)):
                 else:
                     atk = _assemble(con, base["attacker"], True)
                     dfd = _assemble(con, {**base["defender"], "form_id": f["id"], "species_id": species_id}, False)
-                mv = con.execute("SELECT * FROM moves WHERE id=?", (base["move_id"],)).fetchone()
                 opt = {k: base.get(k) for k
                        in ("formula", "weather", "crit", "burn", "screen", "move_power_override",
                            "item_type", "style", "defender_full_hp", "z_move", "max_move")}

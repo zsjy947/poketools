@@ -60,15 +60,14 @@ def static_conn() -> sqlite3.Connection:
     return con
 
 
+_state_init_done = False
+
+
 def state_conn() -> sqlite3.Connection:
+    global _state_init_done
     con = sqlite3.connect(STATE_DB)
     con.row_factory = sqlite3.Row
-    con.executescript(STATE_SCHEMA)
+    if not _state_init_done:
+        con.executescript(STATE_SCHEMA)
+        _state_init_done = True
     return con
-
-
-def default_profile_id() -> int:
-    con = state_conn()
-    row = con.execute("SELECT id FROM profiles ORDER BY id LIMIT 1").fetchone()
-    con.close()
-    return row["id"] if row else 1

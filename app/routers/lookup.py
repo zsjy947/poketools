@@ -2,17 +2,30 @@
 from __future__ import annotations
 
 import json
+from functools import lru_cache
 
 from fastapi import APIRouter, Body, HTTPException, Query
 
 from ..db import static_conn, state_conn
 from ..services import damage
-from ..services.breeding import breed_chains
+from ..services.breeding import breed_chains, GAME_LEARNSET_VG
 
 router = APIRouter(prefix="/api")
 
 EV_COLS = {"hp": "ev_hp", "atk": "ev_atk", "def": "ev_def",
            "spa": "ev_spa", "spd": "ev_spd", "spe": "ev_spe"}
+
+
+@lru_cache(maxsize=8)
+def _game_dex_species() -> dict[str, frozenset[int]]:
+    """game_id -> 图鉴内物种集合（进程内缓存，避免 /api/ev 每次全表扫）"""
+    con = static_conn()
+    out: dict[str, set[int]] = {}
+    for r in con.execute("""SELECT de.species_id AS sid, d.game_id AS game
+                            FROM dex_entries de JOIN regional_dexes d ON d.id = de.dex_id"""):
+        out.setdefault(r["game"], set()).add(r["sid"])
+    con.close()
+    return {g: frozenset(s) for g, s in out.items()}
 
 
 @router.get("/ev")
@@ -33,17 +46,10 @@ def ev_filter(
             WHERE f.is_default = 1 AND {cond}
             ORDER BY s.id""").fetchall()
 
-    game_dexes: dict[str, set[int]] = {}
-    if game:
-        for r in con.execute(
-                """SELECT de.species_id, d.game_id FROM dex_entries de
-                   JOIN regional_dexes d ON d.id = de.dex_id"""):
-            game_dexes.setdefault(r["game_id"], set()).add(r["species_id"])
-
     q_lower = q.strip().lower()
     out = []
     for r in rows:
-        if game and r["species_id"] not in game_dexes.get(game, set()):
+        if game and r["species_id"] not in _game_dex_species().get(game, frozenset()):
             continue
         if q_lower and q_lower not in r["name_zh"].lower() and q_lower not in (r["name_en"] or "").lower():
             continue
@@ -93,6 +99,8 @@ def sandwiches(
 @router.get("/breed-chains")
 def api_breed_chains(species_id: int = Query(...), move_id: int = Query(...),
                      game: str = Query(...)):
+    if game not in GAME_LEARNSET_VG:
+        raise HTTPException(400, "unknown game")
     con = static_conn()
     try:
         return breed_chains(con, species_id, move_id, game)
@@ -178,16 +186,26 @@ def list_custom_recipes(profile: int = 1, game: str = ""):
 
 @router.post("/custom-recipes")
 def add_custom_recipe(body: dict = Body(...)):
-    pid = int(body.get("profile_id") or 1)
+    try:
+        pid = int(body.get("profile_id") or 1)
+    except (TypeError, ValueError):
+        raise HTTPException(400, "profile_id 无效")
     game = body.get("game") or ""
     if game not in CUSTOM_RECIPE_GAMES:
         raise HTTPException(400, "该游戏不支持自定义食谱")
     effects = body.get("effects") or []
-    ingredients = (body.get("ingredients") or "").strip()
-    seasonings = (body.get("seasonings") or "").strip()
+    if not isinstance(effects, list) or not all(
+            isinstance(e, dict) for e in effects):
+        raise HTTPException(400, "effects 格式无效")
+    effects = [{"power": str(e.get("power", ""))[:20],
+                "type": str(e.get("type", ""))[:8],
+                "level": int(e.get("level", 1))}
+               for e in effects if e.get("power")]
+    ingredients = str(body.get("ingredients") or "")[:500].strip()
+    seasonings = str(body.get("seasonings") or "")[:500].strip()
     if not effects or not ingredients or not seasonings:
         raise HTTPException(400, "效果、食材、调味料均为必填")
-    name = (body.get("name") or "").strip() or "我的食谱"
+    name = str(body.get("name") or "")[:40].strip() or "我的食谱"
     con = state_conn()
     cur = con.execute(
         """INSERT INTO custom_recipes (profile_id, game, name, effects, ingredients, seasonings)

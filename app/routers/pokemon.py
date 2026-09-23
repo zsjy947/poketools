@@ -31,7 +31,7 @@ TRIGGER_ZH = {
     "level-up": "等级提升", "trade": "连接交换", "use-item": "使用道具",
     "shed": "脱皮", "spin": "旋转", "tower-of-darkness": "恶之塔",
     "three-critical-hits": "3次会心", "damage-location": "特定地点受伤",
-    "agile-style-move": "刚猛招式", "strong-style-move": "迅疾招式",
+    "agile-style-move": "迅疾招式", "strong-style-move": "刚猛招式",
     "recoil-damage": "反动伤害",
 }
 
@@ -233,14 +233,15 @@ def pokemon_moves(species_id: int, game: str = Query(...), form_id: int | None =
            WHERE l.form_id=? AND l.vg=?
            ORDER BY m.id""", (form["id"], vg)).fetchall()
 
-    # TM 编号 + 获取方式（同号跨 DLC 版本组去重，只取一次）
-    machines: dict[int, dict[int, int]] = {}
+    # TM 编号 + 获取方式（同号跨 DLC 版本组去重，只取一次；剑盾 100-199 为 TR）
+    machines: dict[int, dict[int, tuple[int, str]]] = {}
     if cfg["tm_vgs"]:
         marks = ",".join("?" * len(cfg["tm_vgs"]))
         for r in con.execute(
-                f"""SELECT machine_number, vg, move_id FROM machines
+                f"""SELECT machine_number, vg, move_id, item_identifier FROM machines
                     WHERE vg IN ({marks}) ORDER BY vg, machine_number""", cfg["tm_vgs"]):
-            machines.setdefault(r["move_id"], {})[r["machine_number"]] = r["vg"]
+            machines.setdefault(r["move_id"], {})[r["machine_number"]] = (
+                r["vg"], r["item_identifier"] or "")
     tm_how: dict[tuple, dict] = {}
     for r in con.execute("SELECT vg, machine_number, how, materials FROM tm_how"):
         tm_how[(r["vg"], r["machine_number"])] = {
@@ -249,9 +250,11 @@ def pokemon_moves(species_id: int, game: str = Query(...), form_id: int | None =
     def tm_info(move_id: int) -> list[dict]:
         out = []
         for num in sorted(machines.get(move_id, {})):
-            vgnum = machines[move_id][num]
+            vgnum, item_ident = machines[move_id][num]
             h = tm_how.get((vgnum, num), {})
-            out.append({"number": num, "how": h.get("how", ""),
+            out.append({"number": num,
+                        "kind": "TR" if item_ident.lower().startswith("tr") else "TM",
+                        "how": h.get("how", ""),
                         "materials": h.get("materials", "")})
         return out
 
@@ -272,12 +275,12 @@ def pokemon_moves(species_id: int, game: str = Query(...), form_id: int | None =
         if k != "level":
             groups[k].sort(key=lambda d: d["name_zh"])
 
-    has_breeding = con.execute(
-        "SELECT has_breeding FROM games WHERE id=?", (game,)).fetchone()["has_breeding"]
+    breeding = con.execute(
+        "SELECT has_breeding FROM games WHERE id=?", (game,)).fetchone()
     con.close()
     return {
         "species": dict(sp), "form": dict(form), "game": game, "vg": vg,
-        "has_breeding": bool(has_breeding),
+        "has_breeding": bool(breeding["has_breeding"]) if breeding else False,
         "tabs": [{"key": k, "label": lbl} for k, lbl in cfg["tabs"]],
         "groups": groups,
     }

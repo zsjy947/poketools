@@ -88,3 +88,65 @@ def test_pla_formula():
     base = int((100 + 180 + 15 * 50) * 75 / (120 + 50) / 5)  # 90
     assert r["min"] == max(int(int(base * 0.85) * 1.25) * 4, 1)   # 380
     assert r["max"] == max(int(int(base * 1.00) * 1.25) * 4, 1)   # 448
+
+
+def _vector(**opt_over):
+    a = {"types": "火", "level": 50, "stats": {"atk": 150, "def": 100, "spa": 150, "spd": 100, "spe": 100, "hp": 160},
+         "item": "", "ability": "", "boosts": {}}
+    d = {"types": "钢", "level": 50, "stats": {"atk": 100, "def": 120, "spa": 100, "spd": 120, "spe": 90, "hp": 190},
+         "item": "", "ability": "", "boosts": {}, "is_dynamax": False}
+    move = {"name_zh": "百万吨重拳", "identifier": "mega-punch", "type_zh": "一般",
+            "damage_class": "physical", "power": 80}
+    opt = {"formula": "modern"}
+    opt.update(opt_over)
+    return damage.calc_damage(a, d, move, opt)
+
+
+def test_burn_halves_physical():
+    base = _vector()
+    burned = _vector(burn=True)
+    assert burned["max"] < base["max"]
+
+
+def test_guts_burn_boost():
+    base = _vector()
+    guts = _vector(burn=True)
+    guts_a = {"types": "火", "level": 50, "stats": {"atk": 150, "def": 100, "spa": 150, "spd": 100, "spe": 100, "hp": 160},
+              "item": "", "ability": "毅力", "boosts": {}}
+    d = {"types": "钢", "level": 50, "stats": {"atk": 100, "def": 120, "spa": 100, "spd": 120, "spe": 90, "hp": 190},
+         "item": "", "ability": "", "boosts": {}, "is_dynamax": False}
+    move = {"name_zh": "百万吨重拳", "identifier": "mega-punch", "type_zh": "一般",
+            "damage_class": "physical", "power": 80}
+    r = damage.calc_damage(guts_a, d, move, {"formula": "modern", "burn": True})
+    assert r["max"] > base["max"]
+
+
+def test_za_formula_applies_07():
+    modern = _vector()
+    za = _vector(formula="za")
+    assert za["max"] < modern["max"]
+    assert za["max"] <= modern["max"] * 0.75  # 末尾 ×0.7（向下取整）
+
+
+def test_z_and_max_power_tables():
+    assert damage.z_power(85) == 160 and damage.z_power(150) == 200
+    assert damage.z_power(90, "hex") == 160          # 特例
+    assert damage.max_power(90, "火") == 130         # 85-100 档
+    assert damage.max_power(90, "格斗") == 90        # 格斗/毒独立档
+    assert damage.max_power(120, "火") == 140        # 110-140 档
+
+
+def test_tera_stab_and_defense():
+    a = {"types": "一般", "level": 50, "stats": {"atk": 150, "def": 100, "spa": 150, "spd": 100, "spe": 100, "hp": 160},
+         "item": "", "ability": "", "boosts": {}}
+    d = {"types": "钢", "level": 50, "stats": {"atk": 100, "def": 120, "spa": 100, "spd": 120, "spe": 90, "hp": 190},
+         "item": "", "ability": "", "boosts": {}, "is_dynamax": False}
+    move = {"name_zh": "百万吨重拳", "identifier": "mega-punch", "type_zh": "一般",
+            "damage_class": "physical", "power": 80}
+    base = damage.calc_damage(a, d, move, {"formula": "modern"})
+    tera_atk = damage.calc_damage({**a, "tera_type": "一般"}, d, move, {"formula": "modern"})
+    assert tera_atk["max"] > base["max"]                    # 太晶 STAB
+    tera_def = damage.calc_damage(a, {**d, "tera_type": "钢"}, move, {"formula": "modern"})
+    assert tera_def["effectiveness"] == base["effectiveness"]  # 同属性太晶相性不变
+    tera_def2 = damage.calc_damage(a, {**d, "tera_type": "幽灵"}, move, {"formula": "modern"})
+    assert tera_def2["effectiveness"] == 0                     # 太晶幽灵免疫一般

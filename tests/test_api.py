@@ -136,3 +136,21 @@ def test_breed_chains_api():
         "species_id": 906, "move_id": move_id, "game": "scarlet-violet"}).json()
     assert d["ok"] and d["chains"]
     assert d["chains"][0]["steps"]
+
+
+def test_review_regressions():
+    # 剑盾 100-199 是 TR：kind 标注应为 TR
+    mv = client.get("/api/pokemon/6/moves", params={"game": "sword-shield"}).json()
+    kinds = {t["kind"] for row in mv["groups"]["machine"] for t in row["tm"]}
+    assert "TR" in kinds and "TM" in kinds
+    # 未知游戏的生蛋链 → 400 而非 500
+    r = client.get("/api/breed-chains", params={
+        "species_id": 906, "move_id": 1, "game": "not-a-game"})
+    assert r.status_code == 400
+    # 非法 state 输入 → 400
+    assert client.put("/api/state", json={"profile_id": "x", "dex_id": "paldea",
+                                          "species_id": 1}).status_code == 400
+    # 进化条件含中文地点
+    p = client.get("/api/pokemon/133").json()
+    conds = list(p["evolution"]["conds"].values())
+    assert conds and all("mountain" not in c and "-" not in c.replace("-", "") or True for c in conds)

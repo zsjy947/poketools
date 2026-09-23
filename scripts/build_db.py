@@ -77,7 +77,7 @@ FORM_SUFFIX_ZH = {
     "hisui": "洗翠的样子", "paldea": "帕底亚的样子", "galar": "伽勒尔的样子",
     "alola": "阿罗拉的样子", "hoenn": "丰缘的样子", "sinnoh": "神奥的样子",
     "unova": "合众的样子", "kalos": "卡洛斯的样子",
-    "battle-bond": "羁绊变身", "ash": "卡璞·鸣鸣（阿ンロド）",
+    "battle-bond": "羁绊变身", "ash": "羁绊变身",
     "hero": "百战勇者", "hangry": "暴食形态", "gulping": "吞咽形态", "gorging": "饱腹形态",
     "ten-percent": "10%形态", "complete": "完全体形态", "ultra": "终极形态",
     "origin": "起源形态", "altered": "别种形态", "therian": "灵兽形态",
@@ -297,10 +297,7 @@ def main() -> None:
     # ---- species ----
     species_rows = {to_int(r["id"]): r for r in read_csv("pokemon_species")}
     egg_of_species: dict[int, set[str]] = {}
-    for r in read_csv("pokemon_egg_groups"):
-        eg = read_csv("egg_groups")
-        break
-    eg_ident = {to_int(r["id"]): r["identifier"] for r in eg}
+    eg_ident = {to_int(r["id"]): r["identifier"] for r in read_csv("egg_groups")}
     for r in read_csv("pokemon_egg_groups"):
         egg_of_species.setdefault(to_int(r["species_id"]), set()).add(
             EGG_GROUP_ZH.get(eg_ident[to_int(r["egg_group_id"])], eg_ident[to_int(r["egg_group_id"])]))
@@ -378,8 +375,10 @@ def main() -> None:
         if vg not in GAME_OF_VG:
             continue
         area = to_int(r["location_area_id"])
+        pid = to_int(r["pokemon_id"])
+        sid = to_int(pokemon_rows[pid]["species_id"]) if pid in pokemon_rows else pid
         enc_rows.append((
-            vg, GAME_OF_VG[vg], to_int(r["pokemon_id"]), to_int(r["pokemon_id"]),
+            vg, GAME_OF_VG[vg], sid, pid,
             area_ident.get(area, ""), area_prose_en.get(area, ""),
             to_int(r["min_level"]), to_int(r["max_level"]), "", ""))
 
@@ -403,10 +402,9 @@ def main() -> None:
     dex_order = {ident: i for i, ident in enumerate(DEX_ORDER)}
 
     # ---- learnsets_all（全世代，供伤害计算器招式并集） ----
-    METHOD_IDS_ALL = {1: "level-up", 2: "egg", 3: "tutor", 4: "machine"}
     learn_all: list[tuple] = []
     for r in read_csv("pokemon_moves"):
-        m = METHOD_IDS_ALL.get(to_int(r["pokemon_move_method_id"]))
+        m = METHOD_IDS.get(to_int(r["pokemon_move_method_id"]))
         if m:
             learn_all.append((to_int(r["pokemon_id"]), to_int(r["move_id"]),
                               m, to_int(r["version_group_id"])))
@@ -527,7 +525,7 @@ def main() -> None:
     evo_trigger = {to_int(r["id"]): r["identifier"]
                    for r in read_csv("evolution_triggers")}
     item_zh, _ = name_map("item_names", "item_id")
-    location_ident = {to_int(r["id"]): r["identifier"] for r in read_csv("locations")}
+    location_zh, _ = name_map("location_names", "location_id")
     evo_rows = []
     for r in read_csv("pokemon_evolution"):
         to_sid = to_int(r["evolved_species_id"])
@@ -541,7 +539,7 @@ def main() -> None:
             item_zh.get(to_int(r["trigger_item_id"]) or 0, ""),
             item_zh.get(to_int(r["held_item_id"]) or 0, ""),
             r["time_of_day"] or "",
-            location_ident.get(to_int(r["location_id"]) or 0, ""),
+            location_zh.get(to_int(r["location_id"]) or 0, ""),
             move_zh.get(to_int(r["known_move_id"]) or 0, ""),
             to_int(r["minimum_happiness"]),
             to_int(r["minimum_affection"]),

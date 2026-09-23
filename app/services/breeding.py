@@ -154,7 +154,10 @@ def breed_chains(con, species_id: int, move_id: int, game: str) -> dict:
         }
 
     def shared(a: int, b: int) -> list[str]:
-        ga, gb = learners[a]["groups"], learners[b]["groups"]
+        info_a = learners.get(a)
+        info_b = learners.get(b)
+        ga = info_a["groups"] if info_a else target_groups
+        gb = info_b["groups"] if info_b else target_groups
         if "百变怪" in ga or "百变怪" in gb:
             shared_g = sorted((ga & gb) or {"百变怪"})
         else:

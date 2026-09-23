@@ -37,7 +37,7 @@ const DetailView = {
             <b>蛋组：</b>{{ d.species.egg_groups }}</span>
           <span><b>捕获率：</b>{{ d.species.capture_rate }}</span>
           <span><b>身高/体重：</b>{{ (curForm.height / 10).toFixed(1) }}m / {{ (curForm.weight / 10).toFixed(1) }}kg</span>
-          <span><b>击倒努力值：</b><ev-badges :ev="d.ev"></ev-badges></span>
+          <span><b>击倒努力值：</b><ev-badges :ev="curEv"></ev-badges></span>
         </div>
         <div class="kv" v-if="curDex">
           <span><b>当前图鉴：</b><el-tag size="small" effect="plain" type="success">
@@ -133,7 +133,7 @@ const DetailView = {
             <el-table-column v-if="t.key === 'machine'" type="expand">
               <template #default="{ row }">
                 <div v-for="t2 in row.tm" :key="t2.number" class="tm-how">
-                  <b>招式学习器 {{ String(t2.number).padStart(3, "0") }}</b>
+                  <b>{{ t2.kind }} {{ String(t2.number).padStart(3, "0") }}</b>
                   <template v-if="t2.how"><br>获取：{{ t2.how }}</template>
                   <template v-if="t2.materials"><br>制作材料：{{ t2.materials }}</template>
                   <template v-if="!t2.how && !t2.materials"><br>获取方式待补充</template>
@@ -144,7 +144,8 @@ const DetailView = {
             <el-table-column v-if="t.key === 'machine'" label="编号" width="140">
               <template #default="{ row }">
                 <el-tag v-for="t2 in row.tm" :key="t2.number" size="small" style="margin-right:4px"
-                  effect="plain">TM{{ String(t2.number).padStart(3, "0") }}</el-tag>
+                  :effect="t2.kind === 'TR' ? 'plain' : 'plain'" :type="t2.kind === 'TR' ? 'warning' : 'info'">
+                  {{ t2.kind }}{{ String(t2.number).padStart(3, "0") }}</el-tag>
               </template>
             </el-table-column>
             <el-table-column label="招式" min-width="120" sortable prop="name_zh">
@@ -235,6 +236,13 @@ const DetailView = {
       if (!d.value) return { types: "", ability_list: [], height: 0, weight: 0, id: 0 };
       return d.value.forms.find((f) => f.id === formId.value) || d.value.default_form;
     });
+    /* 努力值随形态切换（forms 行自带 ev_* 列） */
+    const curEv = computed(() => {
+      const f = curForm.value;
+      const pick = (k) => (f["ev_" + k] != null ? f["ev_" + k] : (d.value.ev || {})[k] || 0);
+      return { hp: pick("hp"), atk: pick("atk"), def: pick("def"),
+               spa: pick("spa"), spd: pick("spd"), spe: pick("spe") };
+    });
     const curDex = computed(() => {
       if (!d.value || !game.value) return null;
       return d.value.dex_list.find((x) => x.game_id === game.value.id) || null;
@@ -306,8 +314,16 @@ const DetailView = {
         await Promise.all([loadMoves(), loadNatures()]);
       } finally { loading.value = false; }
     }
+    const { watch } = Vue;
+    /* 切换形态时重载该形态的招式表 */
+    watch(formId, () => { if (formId.value) loadMoves(); });
     async function loadNatures() {
-      if (!natures.value.length) natures.value = await apiGet("/api/meta/natures");
+      if (!natures.value.length) {
+        if (!window.__naturesCache) {
+          window.__naturesCache = await apiGet("/api/meta/natures");
+        }
+        natures.value = window.__naturesCache;
+      }
     }
     async function loadMoves() {
       if (!gameId) return;
@@ -329,11 +345,8 @@ const DetailView = {
       } finally { chainLoading.value = false; }
     }
     function goBack() {
-      const dex = backParams.get("dex");
       if (gameId) {
         location.hash = "#/game/" + gameId + "/dex";
-        // 图鉴页从 hash 恢复当前图鉴 tab
-        if (dex) setTimeout(() => { history.replaceState(null, "", "#/game/" + gameId + "/dex"); }, 0);
       } else {
         location.hash = "#/home";
       }
@@ -341,7 +354,7 @@ const DetailView = {
 
     load();
     return {
-      store, loading, d, sid, formId, curForm, curDex, game, gameId,
+      store, loading, d, sid, formId, curForm, curEv, curDex, game, gameId,
       moves, tab, chainDlg, chainLoading, chains, chainTitle,
       showChains, goBack, baseStats, statSum,
       sc, natures, computedStats, evSum, STAT_ZH,

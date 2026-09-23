@@ -124,11 +124,23 @@ def add_profile(body: dict = Body(...)):
     return {"id": pid, "name": name}
 
 
+def _int_or_400(v, name: str) -> int:
+    try:
+        return int(v)
+    except (TypeError, ValueError):
+        raise HTTPException(400, f"{name} 无效")
+
+
 @router.put("/state")
 def set_state(body: dict = Body(...)):
-    pid = int(body["profile_id"])
-    dex_id = body["dex_id"]
-    species_id = int(body["species_id"])
+    pid = _int_or_400(body.get("profile_id"), "profile_id")
+    dex_id = body.get("dex_id") or ""
+    try:
+        species_id = int(body.get("species_id"))
+    except (TypeError, ValueError):
+        raise HTTPException(400, "species_id 无效")
+    if not dex_id:
+        raise HTTPException(400, "dex_id 必填")
     caught = 1 if body.get("caught") else 0
     con = state_conn()
     con.execute(
@@ -144,10 +156,15 @@ def set_state(body: dict = Body(...)):
 
 @router.post("/state/bulk")
 def set_state_bulk(body: dict = Body(...)):
-    pid = int(body["profile_id"])
-    dex_id = body["dex_id"]
+    pid = _int_or_400(body.get("profile_id"), "profile_id")
+    dex_id = body.get("dex_id") or ""
+    if not dex_id:
+        raise HTTPException(400, "dex_id 必填")
     caught = 1 if body.get("caught") else 0
-    ids = [int(s) for s in body.get("species_ids", [])]
+    try:
+        ids = [int(s) for s in body.get("species_ids", [])]
+    except (TypeError, ValueError):
+        raise HTTPException(400, "species_ids 无效")
     con = state_conn()
     con.executemany(
         """INSERT INTO caught_state (profile_id, dex_id, species_id, caught)

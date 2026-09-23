@@ -99,14 +99,10 @@ def rnd_half_down(x: float) -> int:
     return f + 1 if (x - f) > 0.5 else f
 
 
-def chain4096(acc: int, numerator: int) -> int:
-    return int(acc * numerator / 4096 + 0.5)
-
-
 # ---------------------------------------------------------------- 能力值
 def stat_hp(base: int, iv: int, ev: int, level: int) -> int:
     if base == 1:
-        return 1  # 结灵（胡帕? 脱壳忍者）特例
+        return 1  # 脱壳忍者：HP 种族值为 1 的特例
     return int((2 * base + iv + ev // 4) * level / 100) + level + 10
 
 
@@ -124,12 +120,6 @@ def stage_mult(k: int) -> tuple[int, int]:
 
 NATURE_MULT = {"up": 1.1, "down": 0.9, "neutral": 1.0}
 
-ITEMS = {
-    "": None,
-    "生命宝珠": 5324,
-    "达人带": 4915,          # 仅属性相性 ≥2 时生效
-    "属性加成道具": 4915,     # 简化：与招式属性一致时生效（由前端给具体道具名）
-}
 CHOICE = {"讲究头带": ("atk", 1.5), "讲究眼镜": ("spa", 1.5), "讲究围巾": ("spe", 1.5)}
 
 EFFECTIVENESS_LABEL = {0: "无效", 0.25: "效果极差", 0.5: "效果不好", 1: "效果正常",
@@ -206,28 +196,74 @@ def _stab(move_type: str, atk_types: list[str], adaptability: bool) -> float:
     return 2.0 if adaptability else 1.5
 
 
-def _weather_mult(weather: str, move_type: str, formula: str) -> float:
-    if not weather:
-        return 1.0
-    strong, weak = (1.2, 0.8) if formula == "za" else (1.5, 0.5)
-    if weather == "sun":
-        if move_type == "火":
-            return strong
-        if move_type == "水":
-            return weak
-    if weather == "rain":
-        if move_type == "水":
-            return strong
-        if move_type == "火":
-            return weak
-    return 1.0
+def calc_damage_za(a: dict, d: dict, move: dict, opt: dict) -> dict:
+    """传说 Z-A（docs/DESIGN-DAMAGE-CALC.md §1.3）：现代公式变体。
 
+    与现代公式的差异：能力等级按 ×1.5/×0.67 逐级连乘（全程向下取整）；
+    天气 1.2/0.8；末尾全局 ×0.7（向下取整）。无 4096 修正链。
+    """
+    physical = move["damage_class"] == "physical"
+    power = opt.get("move_power_override") or move.get("power") or 0
+    if not power or move["damage_class"] == "status":
+        return {"error": "status_or_no_power"}
 
-def _other_chain(numerators: list[int]) -> int:
-    acc = 4096
-    for n in numerators:
-        acc = chain4096(acc, n)
-    return acc
+    atk_types = [t for t in (a["types"] or "").split(",") if t]
+    def_types = [d["tera_type"]] if d.get("tera_type") else \
+        [t for t in (d["types"] or "").split(",") if t]
+    a_abil = a.get("ability") or ""
+
+    eff = effectiveness(move["type_zh"], def_types, move.get("identifier", ""),
+                        levitate=((d.get("ability") or "") == "漂浮"))
+    if eff == 0:
+        return {"min": 0, "max": 0, "effectiveness": 0, "label": EFFECTIVENESS_LABEL[0],
+                "hp": d["stats"]["hp"], "pct_min": 0, "pct_max": 0, "ohko": False, "rolls": [0]}
+
+    def za_stat(v: int, k: int) -> int:
+        for _ in range(abs(k)):
+            v = math.floor(v * (1.5 if k > 0 else 0.67))
+        return v
+
+    atk_v = za_stat(a["stats"]["atk" if physical else "spa"],
+                    a.get("boosts", {}).get("atk" if physical else "spa", 0))
+    def_v = za_stat(d["stats"]["def" if physical else "spd"],
+                    d.get("boosts", {}).get("def" if physical else "spd", 0))
+
+    x = math.floor(math.floor(math.floor(2 * a["level"] / 5 + 2) * power) * atk_v / def_v)
+    x = math.floor(x / 50) + 2
+    w = opt.get("weather", "")
+    if (w == "sun" and move["type_zh"] == "火") or (w == "rain" and move["type_zh"] == "水"):
+        x = math.floor(x * 1.2)
+    elif (w == "sun" and move["type_zh"] == "水") or (w == "rain" and move["type_zh"] == "火"):
+        x = math.floor(x * 0.8)
+    if opt.get("crit"):
+        x = math.floor(x * 1.5)
+
+    stab = _stab(move["type_zh"], atk_types, a_abil == "适应力")
+    if a.get("tera_type") == move["type_zh"]:
+        stab = max(stab, 2.0 if move["type_zh"] in atk_types else 1.5)
+    screen_on = opt.get("screen") == ("reflect" if physical else "light_screen")
+    burn = opt.get("burn") and physical and a_abil != "毅力" and move.get("name_zh") != "装模作样"
+
+    rolls = []
+    for r in range(85, 101):
+        dmg = math.floor(x * r / 100)
+        dmg = math.floor(dmg * stab)
+        dmg = math.floor(dmg * eff)
+        if burn:
+            dmg = math.floor(dmg / 2)
+        if screen_on and not opt.get("crit"):
+            dmg = math.floor(dmg / 2)
+        dmg = math.floor(dmg * 0.7)   # Z-A 全局修正
+        rolls.append(max(1, dmg))
+
+    hp = d["stats"]["hp"]
+    pct = [math.floor(v * 1000 / hp) / 10 for v in (min(rolls), max(rolls))]
+    return {
+        "base": x, "rolls": rolls, "min": min(rolls), "max": max(rolls),
+        "effectiveness": eff, "label": EFFECTIVENESS_LABEL.get(eff, f"×{eff}"),
+        "hp": hp, "pct_min": pct[0], "pct_max": pct[1],
+        "ohko": min(rolls) >= hp,
+    }
 
 
 def calc_damage_modern(a: dict, d: dict, move: dict, opt: dict) -> dict:
@@ -374,4 +410,6 @@ def calc_damage(a: dict, d: dict, move: dict, opt: dict) -> dict:
     formula = opt.get("formula", "modern")
     if formula == "pla":
         return calc_damage_pla(a, d, move, opt)
+    if formula == "za":
+        return calc_damage_za(a, d, move, opt)
     return calc_damage_modern(a, d, move, opt)
