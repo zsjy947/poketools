@@ -1,0 +1,1014 @@
+{
+ "types": [
+  {
+   "flavor": "甜",
+   "name": "蛋白霜",
+   "desc": "撒上磨碎的，铺满香～甜蛋白霜的甜甜圈。"
+  },
+  {
+   "flavor": "辣",
+   "name": "咖喱",
+   "desc": "加入了炒过的，微辣的正宗派咖喱甜甜圈。"
+  },
+  {
+   "flavor": "酸",
+   "name": "蜜饯",
+   "desc": "放上炖成蜜饯的，味道酸酸的甜甜圈。"
+  },
+  {
+   "flavor": "苦",
+   "name": "巧克力",
+   "desc": "涂上拌入的巧克力，味道微苦的甜甜圈。"
+  },
+  {
+   "flavor": "鲜",
+   "name": "奶油",
+   "desc": "配上挤入了汁的新鲜奶油的甜甜圈。"
+  },
+  {
+   "flavor": "综合风味",
+   "name": "综合",
+   "desc": "混合了，味道无法简单概括的甜甜圈。"
+  }
+ ],
+ "special": [
+  {
+   "name": "梦魇螺旋甜甜圈",
+   "desc": "加入了一勺黑香料，味道复杂的漆黑甜甜圈。",
+   "sweet": 310,
+   "spicy": 100,
+   "sour": 310,
+   "bitter": 40,
+   "fresh": 40,
+   "ingredients": "黑香料",
+   "power": "暗黑力",
+   "target": "失控超级达克莱伊",
+   "rift": "空中的巨大扭洞",
+   "location": "２０号野生特区顶部"
+  },
+  {
+   "name": "欧米伽蛋糕甜甜圈",
+   "desc": "涂满红宝石般鲜红的糖浆，釉面的甜甜圈。",
+   "sweet": 260,
+   "spicy": 160,
+   "sour": 160,
+   "bitter": 20,
+   "fresh": 260,
+   "ingredients": "丰缘的粗盐",
+   "power": "欧米伽力",
+   "target": "失控原始固拉多",
+   "rift": "朱红色扭洞",
+   "location": "琼黄１１号街区"
+  },
+  {
+   "name": "阿尔法蛋糕甜甜圈",
+   "desc": "涂满蓝宝石般湛蓝的糖浆，釉面的甜甜圈。",
+   "sweet": 50,
+   "spicy": 50,
+   "sour": 210,
+   "bitter": 180,
+   "fresh": 370,
+   "ingredients": "丰缘的粗盐",
+   "power": "阿尔法力",
+   "target": "失控原始盖欧卡",
+   "rift": "靛蓝色扭洞",
+   "location": "５号野生特区"
+  },
+  {
+   "name": "德尔塔蛋糕甜甜圈",
+   "desc": "用精选油炸制而成，釉面的三角形甜甜圈。",
+   "sweet": 120,
+   "spicy": 40,
+   "sour": 340,
+   "bitter": 40,
+   "fresh": 390,
+   "ingredients": "奥利瓦油",
+   "power": "德尔塔力",
+   "target": "失控超级烈空坐",
+   "rift": "翠绿色扭洞",
+   "location": "旅馆Z屋顶"
+  },
+  {
+   "name": "等离子闪电甜甜圈",
+   "desc": "混有噼里啪啦糖果，会在口中爆裂的刺激甜甜圈。",
+   "sweet": 40,
+   "spicy": 200,
+   "sour": 400,
+   "bitter": 280,
+   "fresh": 40,
+   "ingredients": "噼里啪啦糖果",
+   "power": "奔雷力",
+   "target": "失控超级捷拉奥拉",
+   "rift": "带有奔雷的扭洞",
+   "location": "密阿雷南站前"
+  }
+ ],
+ "berries": [
+  {
+   "name": "樱子果",
+   "sweet": 0,
+   "spicy": 10,
+   "sour": 0,
+   "bitter": 0,
+   "fresh": 0,
+   "boost": "+1",
+   "energy": 60
+  },
+  {
+   "name": "零余果",
+   "sweet": 0,
+   "spicy": 0,
+   "sour": 0,
+   "bitter": 0,
+   "fresh": 10,
+   "boost": "+1",
+   "energy": 60
+  },
+  {
+   "name": "桃桃果",
+   "sweet": 10,
+   "spicy": 0,
+   "sour": 0,
+   "bitter": 0,
+   "fresh": 0,
+   "boost": "+1",
+   "energy": 60
+  },
+  {
+   "name": "莓莓果",
+   "sweet": 0,
+   "spicy": 0,
+   "sour": 0,
+   "bitter": 10,
+   "fresh": 0,
+   "boost": "+1",
+   "energy": 60
+  },
+  {
+   "name": "利木果",
+   "sweet": 0,
+   "spicy": 0,
+   "sour": 10,
+   "bitter": 0,
+   "fresh": 0,
+   "boost": "+1",
+   "energy": 60
+  },
+  {
+   "name": "橙橙果",
+   "sweet": 0,
+   "spicy": 5,
+   "sour": 5,
+   "bitter": 5,
+   "fresh": 5,
+   "boost": "+1",
+   "energy": 60
+  },
+  {
+   "name": "柿仔果",
+   "sweet": 5,
+   "spicy": 5,
+   "sour": 5,
+   "bitter": 0,
+   "fresh": 5,
+   "boost": "+1",
+   "energy": 60
+  },
+  {
+   "name": "木子果",
+   "sweet": 5,
+   "spicy": 5,
+   "sour": 0,
+   "bitter": 5,
+   "fresh": 5,
+   "boost": "+2",
+   "energy": 65
+  },
+  {
+   "name": "文柚果",
+   "sweet": 5,
+   "spicy": 0,
+   "sour": 5,
+   "bitter": 5,
+   "fresh": 5,
+   "boost": "+2",
+   "energy": 65
+  },
+  {
+   "name": "榴石果",
+   "sweet": 10,
+   "spicy": 10,
+   "sour": 0,
+   "bitter": 10,
+   "fresh": 0,
+   "boost": "+2",
+   "energy": 65
+  },
+  {
+   "name": "藻根果",
+   "sweet": 0,
+   "spicy": 0,
+   "sour": 10,
+   "bitter": 10,
+   "fresh": 10,
+   "boost": "+2",
+   "energy": 65
+  },
+  {
+   "name": "比巴果",
+   "sweet": 10,
+   "spicy": 10,
+   "sour": 10,
+   "bitter": 0,
+   "fresh": 0,
+   "boost": "+2",
+   "energy": 65
+  },
+  {
+   "name": "哈密果",
+   "sweet": 0,
+   "spicy": 10,
+   "sour": 0,
+   "bitter": 10,
+   "fresh": 10,
+   "boost": "+2",
+   "energy": 65
+  },
+  {
+   "name": "萄葡果",
+   "sweet": 10,
+   "spicy": 0,
+   "sour": 10,
+   "bitter": 0,
+   "fresh": 10,
+   "boost": "+2",
+   "energy": 65
+  },
+  {
+   "name": "茄番果",
+   "sweet": 0,
+   "spicy": 15,
+   "sour": 0,
+   "bitter": 0,
+   "fresh": 10,
+   "boost": "+2",
+   "energy": 65
+  },
+  {
+   "name": "巧可果",
+   "sweet": 10,
+   "spicy": 15,
+   "sour": 0,
+   "bitter": 0,
+   "fresh": 0,
+   "boost": "+3",
+   "energy": 70
+  },
+  {
+   "name": "千香果",
+   "sweet": 0,
+   "spicy": 0,
+   "sour": 0,
+   "bitter": 10,
+   "fresh": 15,
+   "boost": "+3",
+   "energy": 70
+  },
+  {
+   "name": "烛木果",
+   "sweet": 15,
+   "spicy": 0,
+   "sour": 10,
+   "bitter": 0,
+   "fresh": 0,
+   "boost": "+3",
+   "energy": 70
+  },
+  {
+   "name": "罗子果",
+   "sweet": 0,
+   "spicy": 10,
+   "sour": 0,
+   "bitter": 15,
+   "fresh": 0,
+   "boost": "+3",
+   "energy": 70
+  },
+  {
+   "name": "番荔果",
+   "sweet": 0,
+   "spicy": 0,
+   "sour": 15,
+   "bitter": 0,
+   "fresh": 10,
+   "boost": "+3",
+   "energy": 70
+  },
+  {
+   "name": "莲蒲果",
+   "sweet": 0,
+   "spicy": 15,
+   "sour": 0,
+   "bitter": 10,
+   "fresh": 0,
+   "boost": "+3",
+   "energy": 70
+  },
+  {
+   "name": "通通果",
+   "sweet": 0,
+   "spicy": 0,
+   "sour": 10,
+   "bitter": 0,
+   "fresh": 15,
+   "boost": "+3",
+   "energy": 70
+  },
+  {
+   "name": "腰木果",
+   "sweet": 15,
+   "spicy": 10,
+   "sour": 0,
+   "bitter": 0,
+   "fresh": 0,
+   "boost": "+3",
+   "energy": 70
+  },
+  {
+   "name": "棱瓜果",
+   "sweet": 0,
+   "spicy": 0,
+   "sour": 0,
+   "bitter": 15,
+   "fresh": 10,
+   "boost": "+3",
+   "energy": 70
+  },
+  {
+   "name": "福禄果",
+   "sweet": 10,
+   "spicy": 0,
+   "sour": 15,
+   "bitter": 0,
+   "fresh": 0,
+   "boost": "+3",
+   "energy": 70
+  },
+  {
+   "name": "扁樱果",
+   "sweet": 0,
+   "spicy": 20,
+   "sour": 10,
+   "bitter": 0,
+   "fresh": 0,
+   "boost": "+3",
+   "energy": 70
+  },
+  {
+   "name": "草蚕果",
+   "sweet": 0,
+   "spicy": 10,
+   "sour": 0,
+   "bitter": 0,
+   "fresh": 20,
+   "boost": "+3",
+   "energy": 70
+  },
+  {
+   "name": "佛柑果",
+   "sweet": 20,
+   "spicy": 0,
+   "sour": 0,
+   "bitter": 0,
+   "fresh": 10,
+   "boost": "+3",
+   "energy": 70
+  },
+  {
+   "name": "莓榴果",
+   "sweet": 10,
+   "spicy": 0,
+   "sour": 0,
+   "bitter": 20,
+   "fresh": 0,
+   "boost": "+3",
+   "energy": 70
+  },
+  {
+   "name": "刺耳果",
+   "sweet": 0,
+   "spicy": 0,
+   "sour": 20,
+   "bitter": 10,
+   "fresh": 0,
+   "boost": "+3",
+   "energy": 70
+  },
+  {
+   "name": "霹霹果",
+   "sweet": 0,
+   "spicy": 25,
+   "sour": 0,
+   "bitter": 0,
+   "fresh": 10,
+   "boost": "+3",
+   "energy": 70
+  },
+  {
+   "name": "灯浆果",
+   "sweet": 10,
+   "spicy": 0,
+   "sour": 0,
+   "bitter": 0,
+   "fresh": 25,
+   "boost": "+3",
+   "energy": 70
+  },
+  {
+   "name": "洛玫果",
+   "sweet": 25,
+   "spicy": 0,
+   "sour": 0,
+   "bitter": 10,
+   "fresh": 0,
+   "boost": "+3",
+   "energy": 70
+  },
+  {
+   "name": "异次元樱子果",
+   "sweet": 0,
+   "spicy": 40,
+   "sour": 0,
+   "bitter": 0,
+   "fresh": 0,
+   "boost": "+5",
+   "energy": 80
+  },
+  {
+   "name": "异次元零余果",
+   "sweet": 0,
+   "spicy": 0,
+   "sour": 0,
+   "bitter": 0,
+   "fresh": 40,
+   "boost": "+3",
+   "energy": 100
+  },
+  {
+   "name": "异次元桃桃果",
+   "sweet": 40,
+   "spicy": 0,
+   "sour": 0,
+   "bitter": 0,
+   "fresh": 0,
+   "boost": "+2",
+   "energy": 100
+  },
+  {
+   "name": "异次元莓莓果",
+   "sweet": 0,
+   "spicy": 0,
+   "sour": 0,
+   "bitter": 40,
+   "fresh": 0,
+   "boost": "+3",
+   "energy": 110
+  },
+  {
+   "name": "异次元利木果",
+   "sweet": 0,
+   "spicy": 0,
+   "sour": 40,
+   "bitter": 0,
+   "fresh": 0,
+   "boost": "+4",
+   "energy": 90
+  },
+  {
+   "name": "异次元橙橙果",
+   "sweet": 10,
+   "spicy": 20,
+   "sour": 15,
+   "bitter": 15,
+   "fresh": 0,
+   "boost": "+6",
+   "energy": 90
+  },
+  {
+   "name": "异次元柿仔果",
+   "sweet": 0,
+   "spicy": 15,
+   "sour": 15,
+   "bitter": 10,
+   "fresh": 20,
+   "boost": "+4",
+   "energy": 110
+  },
+  {
+   "name": "异次元木子果",
+   "sweet": 20,
+   "spicy": 15,
+   "sour": 10,
+   "bitter": 0,
+   "fresh": 15,
+   "boost": "+3",
+   "energy": 110
+  },
+  {
+   "name": "异次元文柚果",
+   "sweet": 15,
+   "spicy": 10,
+   "sour": 0,
+   "bitter": 20,
+   "fresh": 15,
+   "boost": "+4",
+   "energy": 120
+  },
+  {
+   "name": "异次元榴石果",
+   "sweet": 30,
+   "spicy": 35,
+   "sour": 0,
+   "bitter": 0,
+   "fresh": 5,
+   "boost": "+7",
+   "energy": 140
+  },
+  {
+   "name": "异次元藻根果",
+   "sweet": 5,
+   "spicy": 0,
+   "sour": 0,
+   "bitter": 30,
+   "fresh": 35,
+   "boost": "+5",
+   "energy": 160
+  },
+  {
+   "name": "异次元比巴果",
+   "sweet": 35,
+   "spicy": 0,
+   "sour": 30,
+   "bitter": 5,
+   "fresh": 0,
+   "boost": "+4",
+   "energy": 160
+  },
+  {
+   "name": "异次元哈密果",
+   "sweet": 0,
+   "spicy": 5,
+   "sour": 35,
+   "bitter": 0,
+   "fresh": 30,
+   "boost": "+6",
+   "energy": 150
+  },
+  {
+   "name": "异次元萄葡果",
+   "sweet": 0,
+   "spicy": 60,
+   "sour": 25,
+   "bitter": 0,
+   "fresh": 5,
+   "boost": "+8",
+   "energy": 140
+  },
+  {
+   "name": "异次元茄番果",
+   "sweet": 5,
+   "spicy": 25,
+   "sour": 0,
+   "bitter": 0,
+   "fresh": 60,
+   "boost": "+6",
+   "energy": 180
+  },
+  {
+   "name": "异次元巧可果",
+   "sweet": 60,
+   "spicy": 0,
+   "sour": 0,
+   "bitter": 5,
+   "fresh": 25,
+   "boost": "+5",
+   "energy": 180
+  },
+  {
+   "name": "异次元千香果",
+   "sweet": 25,
+   "spicy": 0,
+   "sour": 5,
+   "bitter": 60,
+   "fresh": 0,
+   "boost": "+6",
+   "energy": 200
+  },
+  {
+   "name": "异次元烛木果",
+   "sweet": 0,
+   "spicy": 5,
+   "sour": 60,
+   "bitter": 25,
+   "fresh": 0,
+   "boost": "+7",
+   "energy": 160
+  },
+  {
+   "name": "异次元罗子果",
+   "sweet": 15,
+   "spicy": 55,
+   "sour": 0,
+   "bitter": 5,
+   "fresh": 25,
+   "boost": "+9",
+   "energy": 210
+  },
+  {
+   "name": "异次元番荔果",
+   "sweet": 25,
+   "spicy": 0,
+   "sour": 5,
+   "bitter": 15,
+   "fresh": 55,
+   "boost": "+7",
+   "energy": 250
+  },
+  {
+   "name": "异次元莲蒲果",
+   "sweet": 55,
+   "spicy": 5,
+   "sour": 15,
+   "bitter": 25,
+   "fresh": 0,
+   "boost": "+6",
+   "energy": 250
+  },
+  {
+   "name": "异次元通通果",
+   "sweet": 0,
+   "spicy": 15,
+   "sour": 25,
+   "bitter": 55,
+   "fresh": 5,
+   "boost": "+7",
+   "energy": 270
+  },
+  {
+   "name": "异次元腰木果",
+   "sweet": 5,
+   "spicy": 25,
+   "sour": 55,
+   "bitter": 0,
+   "fresh": 15,
+   "boost": "+8",
+   "energy": 230
+  },
+  {
+   "name": "异次元棱瓜果",
+   "sweet": 10,
+   "spicy": 95,
+   "sour": 0,
+   "bitter": 10,
+   "fresh": 5,
+   "boost": "+10",
+   "energy": 240
+  },
+  {
+   "name": "异次元福禄果",
+   "sweet": 5,
+   "spicy": 0,
+   "sour": 10,
+   "bitter": 10,
+   "fresh": 95,
+   "boost": "+8",
+   "energy": 300
+  },
+  {
+   "name": "异次元扁樱果",
+   "sweet": 95,
+   "spicy": 10,
+   "sour": 10,
+   "bitter": 5,
+   "fresh": 0,
+   "boost": "+7",
+   "energy": 300
+  },
+  {
+   "name": "异次元草蚕果",
+   "sweet": 0,
+   "spicy": 10,
+   "sour": 5,
+   "bitter": 95,
+   "fresh": 10,
+   "boost": "+8",
+   "energy": 330
+  },
+  {
+   "name": "异次元佛柑果",
+   "sweet": 10,
+   "spicy": 5,
+   "sour": 95,
+   "bitter": 0,
+   "fresh": 10,
+   "boost": "+9",
+   "energy": 270
+  },
+  {
+   "name": "异次元莓榴果",
+   "sweet": 85,
+   "spicy": 0,
+   "sour": 0,
+   "bitter": 0,
+   "fresh": 65,
+   "boost": "+8",
+   "energy": 370
+  },
+  {
+   "name": "异次元刺耳果",
+   "sweet": 0,
+   "spicy": 0,
+   "sour": 65,
+   "bitter": 0,
+   "fresh": 85,
+   "boost": "+9",
+   "energy": 370
+  },
+  {
+   "name": "异次元霹霹果",
+   "sweet": 0,
+   "spicy": 0,
+   "sour": 65,
+   "bitter": 85,
+   "fresh": 0,
+   "boost": "+9",
+   "energy": 400
+  },
+  {
+   "name": "异次元灯浆果",
+   "sweet": 0,
+   "spicy": 85,
+   "sour": 0,
+   "bitter": 65,
+   "fresh": 0,
+   "boost": "+9",
+   "energy": 370
+  },
+  {
+   "name": "异次元洛玫果",
+   "sweet": 0,
+   "spicy": 65,
+   "sour": 85,
+   "bitter": 0,
+   "fresh": 0,
+   "boost": "+10",
+   "energy": 340
+  }
+ ],
+ "flavor_powers": [
+  {
+   "flavor": "甜",
+   "power": "头目力",
+   "effect": "遇见头目宝可梦的可能性会提高",
+   "lv1": "+10%",
+   "lv2": "+20%",
+   "lv3": "+50%",
+   "prefix": "头目"
+  },
+  {
+   "flavor": "甜",
+   "power": "闪耀力",
+   "effect": "遇见异色宝可梦的可能性会提高（按属性：一般/火/水/电/草/冰/格斗/毒/地面/飞行/超能力/虫/岩石/幽灵/龙/恶/钢/妖精/全属性）",
+   "lv1": "异色判定次数+1次",
+   "lv2": "异色判定次数+2次",
+   "lv3": "异色判定次数+3次；必定出现1只异色宝可梦",
+   "prefix": "闪耀"
+  },
+  {
+   "flavor": "甜",
+   "power": "大大力",
+   "effect": "遇见大型宝可梦的可能性会提高",
+   "lv1": "尺寸必定≥128",
+   "lv2": "尺寸必定≥160",
+   "lv3": "尺寸必定≥224",
+   "prefix": "大大"
+  },
+  {
+   "flavor": "甜",
+   "power": "小小力",
+   "effect": "遇见小型宝可梦的可能性会提高",
+   "lv1": "尺寸必定≤127",
+   "lv2": "尺寸必定≤95",
+   "lv3": "尺寸必定≤31",
+   "prefix": "小小"
+  },
+  {
+   "flavor": "辣",
+   "power": "攻击力",
+   "effect": "同行宝可梦的攻击能力会提高",
+   "lv1": "+10%",
+   "lv2": "+25%",
+   "lv3": "+50%",
+   "prefix": "攻击"
+  },
+  {
+   "flavor": "辣",
+   "power": "特攻力",
+   "effect": "同行宝可梦的特攻能力会提高",
+   "lv1": "+10%",
+   "lv2": "+25%",
+   "lv3": "+50%",
+   "prefix": "特攻"
+  },
+  {
+   "flavor": "辣",
+   "power": "招式力",
+   "effect": "同行宝可梦使出的特定属性招式威力会提高（覆盖全部18种属性）",
+   "lv1": "+10%",
+   "lv2": "+25%",
+   "lv3": "+50%",
+   "prefix": "绝招"
+  },
+  {
+   "flavor": "辣",
+   "power": "速度力",
+   "effect": "同行宝可梦的速度能力会提高",
+   "lv1": "+10%",
+   "lv2": "+25%",
+   "lv3": "+50%",
+   "prefix": "速度"
+  },
+  {
+   "flavor": "酸",
+   "power": "多多力",
+   "effect": "从浮在空中的巨球中一次出现的道具数量会增加",
+   "lv1": "+2",
+   "lv2": "+3",
+   "lv3": "+5",
+   "prefix": "多多"
+  },
+  {
+   "flavor": "酸",
+   "power": "道具力·树果",
+   "effect": "容易从巨球中获得异次元树果",
+   "lv1": "容易",
+   "lv2": "很容易",
+   "lv3": "相当容易",
+   "prefix": "现摘"
+  },
+  {
+   "flavor": "酸",
+   "power": "道具力·糖果",
+   "effect": "容易从巨球中获得经验糖果",
+   "lv1": "容易",
+   "lv2": "很容易",
+   "lv3": "相当容易",
+   "prefix": "糖糖"
+  },
+  {
+   "flavor": "酸",
+   "power": "道具力·宝物",
+   "effect": "容易从巨球中获得能卖出高价的宝物",
+   "lv1": "容易",
+   "lv2": "很容易",
+   "lv3": "相当容易",
+   "prefix": "宝物"
+  },
+  {
+   "flavor": "酸",
+   "power": "道具力·球",
+   "effect": "容易从巨球中获得捕捉宝可梦用的球",
+   "lv1": "容易",
+   "lv2": "很容易",
+   "lv3": "相当容易",
+   "prefix": "球球"
+  },
+  {
+   "flavor": "酸",
+   "power": "道具力·特别",
+   "effect": "容易从巨球中获得有特别效果的道具",
+   "lv1": "容易",
+   "lv2": "很容易",
+   "lv3": "相当容易",
+   "prefix": "特别"
+  },
+  {
+   "flavor": "酸",
+   "power": "道具力·硬币",
+   "effect": "容易从巨球中获得索财灵的硬币",
+   "lv1": "容易",
+   "lv2": "很容易",
+   "lv3": "相当容易",
+   "prefix": "索财"
+  },
+  {
+   "flavor": "酸",
+   "power": "超级力·蓄力",
+   "effect": "容易累积超级进化所需的超级能",
+   "lv1": "+10%",
+   "lv2": "+20%",
+   "lv3": "+50%",
+   "prefix": "劲劲"
+  },
+  {
+   "flavor": "酸",
+   "power": "超级力·持久",
+   "effect": "超级进化时超级能不容易减少",
+   "lv1": "超级进化时间+30%",
+   "lv2": "超级进化时间+50%",
+   "lv3": "超级进化时间+100%",
+   "prefix": "持久"
+  },
+  {
+   "flavor": "苦",
+   "power": "防御力",
+   "effect": "同行宝可梦的防御能力会提高",
+   "lv1": "+10%",
+   "lv2": "+25%",
+   "lv3": "+50%",
+   "prefix": "防御"
+  },
+  {
+   "flavor": "苦",
+   "power": "特防力",
+   "effect": "同行宝可梦的特防能力会提高",
+   "lv1": "+10%",
+   "lv2": "+25%",
+   "lv3": "+50%",
+   "prefix": "特防"
+  },
+  {
+   "flavor": "苦",
+   "power": "免疫力",
+   "effect": "对手用特定属性招式攻击时受到的伤害减少（覆盖全部18种属性）",
+   "lv1": "防御和特防+10%",
+   "lv2": "防御和特防+25%",
+   "lv3": "防御和特防+50%",
+   "prefix": "免疫"
+  },
+  {
+   "flavor": "鲜",
+   "power": "遭遇力",
+   "effect": "遇见的宝可梦数量比平时增加",
+   "lv1": "再次出现时间缩短30%",
+   "lv2": "缩短50%",
+   "lv3": "缩短70%",
+   "prefix": "遭遇"
+  },
+  {
+   "flavor": "鲜",
+   "power": "捕获力",
+   "effect": "容易捕捉特定属性的宝可梦（覆盖全部18种属性+所有属性）",
+   "lv1": "捕获率+10%",
+   "lv2": "捕获率+20%",
+   "lv3": "捕获率+30%",
+   "prefix": "好捉"
+  },
+  {
+   "flavor": "—",
+   "power": "暗黑力",
+   "effect": "能够进入出现在棱镜塔上空的巨大异次元扭洞",
+   "lv1": "",
+   "lv2": "",
+   "lv3": "发挥效果",
+   "prefix": "梦魇螺旋甜甜圈"
+  },
+  {
+   "flavor": "—",
+   "power": "欧米伽力",
+   "effect": "能够进入据说有固拉多潜伏的朱红色异次元扭洞",
+   "lv1": "",
+   "lv2": "",
+   "lv3": "发挥效果",
+   "prefix": "欧米伽蛋糕甜甜圈"
+  },
+  {
+   "flavor": "—",
+   "power": "阿尔法力",
+   "effect": "能够进入据说有盖欧卡潜伏的靛蓝色异次元扭洞",
+   "lv1": "",
+   "lv2": "",
+   "lv3": "发挥效果",
+   "prefix": "阿尔法蛋糕甜甜圈"
+  },
+  {
+   "flavor": "—",
+   "power": "德尔塔力",
+   "effect": "能够进入据说有烈空坐潜伏的翠绿色异次元扭洞",
+   "lv1": "",
+   "lv2": "",
+   "lv3": "发挥效果",
+   "prefix": "德尔塔蛋糕甜甜圈"
+  },
+  {
+   "flavor": "—",
+   "power": "奔雷力",
+   "effect": "能够进入带有迸发的奔雷的黄色异次元扭洞",
+   "lv1": "",
+   "lv2": "",
+   "lv3": "发挥效果",
+   "prefix": "等离子闪电甜甜圈"
+  }
+ ],
+ "intro": "在旅馆Ｚ的安馨儿的甜甜圈店中与安馨儿对话可以制作甜甜圈。"
+}

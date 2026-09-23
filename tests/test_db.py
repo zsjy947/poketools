@@ -21,13 +21,15 @@ def con():
 
 def test_games_and_dexes(con):
     games = {r["id"] for r in con.execute("SELECT id FROM games")}
-    assert games == {"sword-shield", "legends-arceus", "scarlet-violet", "legends-za"}
+    assert games == {"sword-shield", "brilliant-diamond-shining-pearl",
+                     "legends-arceus", "scarlet-violet", "legends-za"}
     dexes = {r["id"]: r["total"] for r in con.execute(
         """SELECT d.id, COUNT(e.species_id) AS total FROM regional_dexes d
            LEFT JOIN dex_entries e ON e.dex_id = d.id GROUP BY d.id""")}
     assert dexes["galar"] == 400 and dexes["paldea"] == 400
     assert dexes["hisui"] == 242
-    assert len(dexes) == 9
+    assert dexes["sinnoh"] == 210  # BDSP 神奥图鉴（白金编号）
+    assert len(dexes) == 10
 
 
 def test_species_names_zh(con):
@@ -43,13 +45,17 @@ def test_forms_stats_and_ev(con):
 
 
 def test_learnsets_coverage(con):
-    # 每个目标版本组都有学习集数据
+    # 每个目标版本组都有学习集数据（vg30=Z-A 来自 52poke 抓取；vg32 是 Champions 数据，不导入）
     vgs = {r["vg"] for r in con.execute("SELECT DISTINCT vg FROM learnsets")}
-    assert {20, 24, 25, 32} <= vgs
+    assert {20, 23, 24, 25, 30} <= vgs
     # 蛋招式存在于有生蛋机制的游戏
-    for vg in (20, 25):
+    for vg in (20, 23, 25):
         n = con.execute("SELECT COUNT(*) FROM learnsets WHERE vg=? AND method='egg'", (vg,)).fetchone()[0]
         assert n > 1000
+    # Z-A 学习集带精通等级
+    assert con.execute(
+        "SELECT COUNT(*) FROM learnsets WHERE vg=30 AND method='level-up' AND mastery IS NOT NULL"
+    ).fetchone()[0] > 300
 
 
 def test_get_methods_coverage(con):

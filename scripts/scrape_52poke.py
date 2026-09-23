@@ -1,10 +1,15 @@
 """Scrape game-specific Chinese data from wiki.52poke.com and merge into poketools.db.
 
 Outputs curated JSON to data/curated/ (committed to git) and merges into DB:
-  - get_methods  : 捕捉方式 (SV / PLA / Z-A primarily; SwSh as fallback to PokeAPI)
-  - dex_flavor   : 图鉴描述 (ladex/scdex/videx/zadex + sdex/bdex)
-  - tm_how       : 招式学习器获取方式与素材 (SV loc9/item9, SwSh locswsh, Z-A best-effort)
+  - get_methods  : 捕捉方式（带版本标签：本体/DLC/版本独占）
+  - dex_flavor   : 图鉴描述 (Swdex/Shdex/ladex/scdex/videx/zadex/bdspdex)
+  - tm_how       : 招式学习器获取方式与素材 (SV loc9/item9, SwSh locswsh, BDSP locbdsp)
+  - machines     : BDSP TM001-100 由 52poke 补全（PokeAPI 仅 17 条）
   - sandwiches   : 朱紫三明治食谱
+  - za_learnsets : Z-A 学习集（PokeAPI 缺失，来自 {种类}/第九世代招式表 子页，写入 vg30）
+  - picnic_items : 三明治食材/调味料（含获取方式）
+  - donuts       : Z-A 甜甜圈（基础类型/特殊配方/树果效果/风味力量）
+  - curries      : 剑盾咖喱图鉴
 
 Run AFTER scripts/build_db.py. All pages cached to data/raw/52poke-cache/.
 """
@@ -26,25 +31,46 @@ CACHE = ROOT / "data" / "raw" / "52poke-cache"
 CURATED = ROOT / "data" / "curated"
 
 API = "https://wiki.52poke.com/api.php"
-UA = "poketools/0.1 (personal offline tool; one-shot build)"
+UA = "poketools/0.3 (personal offline tool; one-shot build)"
 BATCH = 40
 
-# game code (gen, code) -> our game id
-CODE_MAP = {}
-for c in ("SW", "SH", "SWSH", "SWSHE", "SWE", "SHE", "IA", "A", "CT", "C", "IASw", "CTSw"):
-    CODE_MAP[(8, c.upper())] = "sword-shield"
-CODE_MAP[(8, "LA")] = "legends-arceus"
-CODE_MAP[(8, "PLA")] = "legends-arceus"
-for c in ("SV", "SC", "S", "VI", "V", "SVT", "TM", "ID"):
-    CODE_MAP[(9, c.upper())] = "scarlet-violet"
-for c in ("ZA", "LZ", "ZAM", "LZM"):
-    CODE_MAP[(9, c.upper())] = "legends-za"
+BDSP = "brilliant-diamond-shining-pearl"
+
+# 52poke 使用官方新译名，PokeAPI CSV 部分招式仍是旧译名 → 别名映射
+MOVE_NAME_ALIASES = {
+    "空气之刃": "空气斩",     # air-slash
+    "磷火": "鬼火",           # will-o-wisp
+    "咒术": "祸不单行",       # hex
+    "纠缠不休": "死缠烂打",   # infestation
+    "電磁波": "电磁波",       # TMtable movebdsp 偶用繁体
+}
+
+# (gen, code) -> (game_id, version_label)
+# 代码词汇来自对全缓存的普查：SWSHE/SwShE=剑盾扩展票、SVT=零之秘宝、ZAM=Z-A 异次元等
+GAME_CODES = {
+    (8, "SW"): ("sword-shield", "剑"), (8, "SH"): ("sword-shield", "盾"),
+    (8, "SWSH"): ("sword-shield", "剑/盾"),
+    (8, "SWE"): ("sword-shield", "剑·扩展票"), (8, "SHE"): ("sword-shield", "盾·扩展票"),
+    (8, "SWSHE"): ("sword-shield", "剑/盾·扩展票"),
+    (8, "BD"): (BDSP, "晶灿钻石"), (8, "SP"): (BDSP, "明亮珍珠"),
+    (8, "BDSP"): (BDSP, "晶灿钻石/明亮珍珠"),
+    (8, "LA"): ("legends-arceus", "传说 阿尔宙斯"), (8, "PLA"): ("legends-arceus", "传说 阿尔宙斯"),
+    (9, "S"): ("scarlet-violet", "朱"), (9, "V"): ("scarlet-violet", "紫"),
+    (9, "SV"): ("scarlet-violet", "朱/紫"),
+    (9, "SC"): ("scarlet-violet", "朱"), (9, "VI"): ("scarlet-violet", "紫"),
+    (9, "ST"): ("scarlet-violet", "朱·零之秘宝"), (9, "VT"): ("scarlet-violet", "紫·零之秘宝"),
+    (9, "SVT"): ("scarlet-violet", "朱/紫·零之秘宝"), (9, "ID"): ("scarlet-violet", "朱/紫·零之秘宝"),
+    (9, "ZA"): ("legends-za", "传说 Z-A"),
+    (9, "ZAM"): ("legends-za", "Z-A·异次元"),
+}
 
 FLAVOR_FIELDS = {
+    "Swdex": ("sword-shield", "剑"), "Shdex": ("sword-shield", "盾"),
     "sdex": ("sword-shield", "剑"), "bdex": ("sword-shield", "盾"),
     "ladex": ("legends-arceus", "洗翠"),
     "scdex": ("scarlet-violet", "朱"), "videx": ("scarlet-violet", "紫"),
     "zadex": ("legends-za", "Z-A"),
+    "bdspdex": (BDSP, "晶钻/明珍"),
 }
 
 SPECIAL_LOC = {
@@ -84,6 +110,7 @@ def fetch_titles(titles: list[str]) -> None:
             "rvslots": "main", "titles": "|".join(chunk),
             "format": "json", "formatversion": "2", "redirects": 1,
         }
+        data = None
         for attempt in range(4):
             try:
                 while True:
@@ -112,10 +139,6 @@ def fetch_titles(titles: list[str]) -> None:
             if revs:
                 txt = revs[0]["slots"]["main"]["content"]
                 _cache_path(page["title"]).write_text(txt, encoding="utf-8")
-        cont = data.get("continue")
-        if cont:  # response split: refetch same chunk with continuation
-            params.update(cont)
-            _session.get(API, params=params, timeout=90)  # content already merged above loop
         time.sleep(0.6)
         done = min(i + BATCH, len(todo))
         if done % 200 == 0 or done == len(todo):
@@ -251,11 +274,105 @@ def clean_wt(s: str | None) -> str:
             s = s[:inner.start()] + (last[-1] if last else "") + s[inner.end():]
     s = s.replace("<br>", "；").replace("<br/>", "；").replace("<br />", "；")
     s = re.sub(r"<[^>]+>", "", s)
+    s = s.replace("''", "")
     s = s.replace("\r", "").replace("\n", " ").replace("\t", " ")
     return re.sub(r"\s+", " ", s).strip()
 
 
-# ---------------------------------------------------------------- pokemon pages
+# ---------------------------------------------------------------- 表格工具：wikitable -> rows of cells
+
+def wikitables(wt: str, start: int = 0) -> list[list[list[str]]]:
+    """Parse {| ... |} tables into list of tables, each a list of rows (list of raw cell text)."""
+    tables = []
+    i = wt.find("{|", start)
+    while i != -1:
+        depth = 0
+        j = i
+        while j < len(wt):
+            if wt.startswith("{|", j):
+                depth += 1; j += 2
+            elif wt.startswith("|}", j):
+                depth -= 1; j += 2
+                if depth == 0:
+                    break
+            else:
+                j += 1
+        tables.append(_parse_table(wt[i:j]))
+        i = wt.find("{|", j)
+    return tables
+
+
+def _parse_table(seg: str) -> list[list[str]]:
+    rows: list[list[str]] = []
+    # 去掉嵌套表格里的 || 分隔行头；按行聚合单元格
+    cur_cells: list[str] = []
+    cur = ""
+    for line in seg.splitlines():
+        ls = line.strip()
+        if ls.startswith("{|") or ls.startswith("|}"):
+            continue
+        if ls.startswith("|-"):
+            if cur_cells or cur.strip():
+                cur_cells.append(cur)
+                rows.append([c for c in cur_cells])
+            cur_cells, cur = [], ""
+            continue
+        if ls.startswith("!"):
+            ls_cells = ls.lstrip("!").split("!!")
+            if cur_cells or cur.strip():
+                cur_cells.append(cur)
+                rows.append(cur_cells[:])
+                cur_cells, cur = [], ""
+            rows.append([c.strip() for c in ls_cells])  # 表头行（当普通行处理）
+            continue
+        if ls.startswith("|"):
+            parts = re.split(r"(?<!\|)\|\|(?!\|)", ls[1:])
+            if len(parts) > 1:
+                for k, p in enumerate(parts):
+                    if k == 0 and cur.strip():
+                        cur_cells.append(cur); cur = ""
+                    if k < len(parts) - 1:
+                        cur_cells.append(p.strip())
+                    else:
+                        cur = p.strip()
+            else:
+                if cur.strip():
+                    cur_cells.append(cur)
+                cur = ls[1:].strip()
+        else:
+            if cur_cells:
+                cur += " " + ls
+    if cur_cells or cur.strip():
+        cur_cells.append(cur)
+        rows.append(cur_cells[:])
+    return rows
+
+
+def _strip_cell_attrs(c: str) -> str:
+    """wikitable 单元格 `attr|value` 形式：取顶层第一个 | 之后的内容（模板内 | 不算）。"""
+    b = k = 0
+    for i, ch in enumerate(c):
+        if ch == "{":
+            b += 1
+        elif ch == "}":
+            b -= 1
+        elif ch == "[":
+            k += 1
+        elif ch == "]":
+            k -= 1
+        elif ch == "|" and b == 0 and k == 0:
+            return c[i + 1:]
+    return c
+
+
+def cell_text(c: str) -> str:
+    # Bag/Bag Latest 模板第 1 参数是道具名（generic 内层模板折叠会取最后一个参数）
+    c = _strip_cell_attrs(c)
+    c = re.sub(r"\{\{Bag(?:/Latest)?(?:/ZA)?\|([^|{}]+)[^{}]*\}\}", r"\1", c)
+    return clean_wt(c)
+
+
+# ---------------------------------------------------------------- pokemon pages: get_methods + flavor
 
 def parse_get_methods(wt: str) -> list[dict]:
     rows = []
@@ -269,10 +386,10 @@ def parse_get_methods(wt: str) -> list[dict]:
         except ValueError:
             continue
         code = (named.get("game") or pos.get(3, "")).strip().upper()
-        game = CODE_MAP.get((gen, code))
-        if not game:
+        mapped = GAME_CODES.get((gen, code))
+        if not mapped:
             continue
-        rowspan = pos.get(4, "1").strip()
+        game, vlabel = mapped
         loc_raw = (pos.get(5, "") or "").strip()
         method_raw = (pos.get(6, "") or "").strip()
         note = clean_wt(named.get("note") or pos.get(7) or "")
@@ -288,7 +405,8 @@ def parse_get_methods(wt: str) -> list[dict]:
                 who = clean_wt(method_raw) or named.get("baby2", "")
                 method = f"由{who}{method}" if who else method
         rows.append({
-            "game": game, "location": loc, "method": method, "note": note,
+            "game": game, "version_label": vlabel, "location": loc,
+            "method": method, "note": note,
             "form": bool(re.match(r"^\d{3,4}[A-Za-z]", pos.get(1, "").strip())),
         })
     return rows
@@ -316,7 +434,7 @@ def fw(n: int) -> str:
 
 
 def parse_tm_page(wt: str) -> dict:
-    """Return {'sv': {'loc':..,'item':..,'move':..}, 'swsh': {...}, 'za': ..., 'other_keys': [...]}"""
+    """Return {'sv': {...}, 'swsh': {...}, 'bdsp': {...}, 'za': {...}}"""
     res: dict = {"other_keys": []}
     for _, body in find_template(wt, "TMtable"):
         ordered = []
@@ -338,10 +456,8 @@ def parse_tm_page(wt: str) -> dict:
                 ordered.append((raw[:eq].strip(), raw[eq + 1:]))
         by_key = dict(ordered)
         keys = [k for k, _ in ordered]
-        # group per game suffix
-        for suffix, game in (("9", "scarlet-violet"), ("swsh", "sword-shield"),
-                             ("sw", "sword-shield"), ("za", "legends-za"),
-                             ("lz", "legends-za")):
+        for suffix, game in (("9", "sv"), ("swsh", "swsh"), ("sw", "swsh"),
+                             ("bdsp", "bdsp"), ("za", "za"), ("lz", "za")):
             loc = by_key.get(f"loc{suffix}")
             if loc is None:
                 continue
@@ -356,10 +472,39 @@ def parse_tm_page(wt: str) -> dict:
                 "move": clean_wt(move or ""),
             }
         for k in keys:
-            if k.startswith("loc") and not any(k.endswith(s) for s in ("9", "swsh", "sw", "za", "lz")):
+            if k.startswith("loc") and not any(k.endswith(s) for s in ("9", "swsh", "sw", "bdsp", "za", "lz")):
                 res["other_keys"].append(k)
         break
     return res
+
+
+# ---------------------------------------------------------------- Z-A learnsets（52poke 子页）
+
+def parse_za_learnlist(wt: str) -> dict:
+    """Parse {species}/第九世代招式表 -> {'level': [(level, mastery, move)], 'tm': [(tmno, move)]}"""
+    out: dict = {"level": [], "tm": []}
+    i = wt.find("{{game|ZA}}")
+    if i < 0:
+        return out
+    j = wt.find("===={{game|", i + 1)   # 下一个游戏小节；无则取到文末
+    seg = wt[i:j] if j > 0 else wt[i:]
+    for _, body in find_template(seg, "learnlist/level/za"):
+        pos, named = parse_params(body)
+        try:
+            level = int(re.sub(r"[^0-9]", "", pos.get(1, "")) or 0)
+        except ValueError:
+            continue
+        mastery = re.sub(r"[^0-9]", "", named.get("plus", "") or "")
+        move = clean_wt(pos.get(2, ""))
+        if move:
+            out["level"].append((level, int(mastery) if mastery else None, move))
+    for _, body in find_template(seg, "learnlist/tm/za"):
+        pos, _ = parse_params(body)
+        tmno = re.sub(r"[^0-9]", "", pos.get(1, "") or "")
+        move = clean_wt(pos.get(2, ""))
+        if tmno and move:
+            out["tm"].append((int(tmno), move))
+    return out
 
 
 # ---------------------------------------------------------------- sandwiches
@@ -405,6 +550,159 @@ def parse_sandwiches(wt: str) -> list[dict]:
     return recipes
 
 
+# ---------------------------------------------------------------- 食材/调味料（野餐道具 + 食材 + 道具页）
+
+def parse_picnic_condiments(wt: str) -> list[dict]:
+    """野餐道具页 调味料 表：道具/说明/获取地点/价格"""
+    out = []
+    i = wt.find("===调味料===")
+    if i < 0:
+        return out
+    j = wt.find("===三明治签===", i)
+    seg = wt[i:j if j > 0 else len(wt)]
+    for tb in wikitables(seg):
+        for row in tb:
+            cells = [cell_text(c) for c in row]
+            if len(cells) >= 4 and cells[0] and not cells[0].startswith("道具") and "秘传" not in cells[0][:2]:
+                price = cells[3].replace("$", "").strip()
+                out.append({"name": cells[0], "kind": "调味料",
+                            "desc": cells[1], "how": cells[2], "price": price})
+    return out
+
+
+def parse_food_ingredients(wt: str, section: str, kind: str) -> list[dict]:
+    """食材页 {{道具列表}} 条目"""
+    out = []
+    i = wt.find(section)
+    if i < 0:
+        return out
+    j = wt.find("==", i + len(section))
+    seg = wt[i:j if j > 0 else len(wt)]
+    for _, body in find_template(seg, "道具列表"):
+        _, named = parse_params(body)
+        name = clean_wt(named.get("name", ""))
+        if not name:
+            continue
+        out.append({"name": name, "kind": kind,
+                    "desc": clean_wt(named.get("desc", "")), "how": "", "price": ""})
+    return out
+
+
+def parse_item_how(wt: str) -> str:
+    """道具页 {{道具地点|...|sv=...}} 的 sv 字段"""
+    for _, body in find_template(wt, "道具地点"):
+        _, named = parse_params(body)
+        for key in ("sv", "swsh", "za"):
+            if named.get(key):
+                return clean_wt(named[key])
+        break
+    return ""
+
+
+# ---------------------------------------------------------------- 甜甜圈
+
+def _ni(s: str) -> int:
+    try:
+        return int(re.sub(r"[^0-9]", "", s) or 0)
+    except ValueError:
+        return 0
+
+
+def parse_donuts_full(wt: str) -> dict:
+    """甜甜圈页完整解析：types/special/berries/flavor_powers/intro。"""
+    out = {"types": [], "special": [], "berries": [], "flavor_powers": [], "intro": ""}
+
+    # 制作段：基础甜甜圈表（0→★5）
+    i = wt.find("=== 制作 ===")
+    j = wt.find("=== 效果 ===")
+    make_seg = wt[i:j] if 0 <= i < j else ""
+    m = re.search(r"在旅馆Ｚ的安馨儿.*?制作甜甜圈。", make_seg, re.S)
+    if m:
+        out["intro"] = clean_wt(m.group(0))
+    for tb in wikitables(make_seg):
+        for row in tb:
+            cells = [cell_text(c) for c in row]
+            if len(cells) >= 4 and cells[1] in ("蛋白霜", "咖喱", "蜜饯", "巧克力", "奶油", "综合"):
+                out["types"].append({"flavor": cells[3], "name": cells[1], "desc": cells[2]})
+
+    # 特殊甜甜圈表：13 列（含 rowspan=2 的食材列缺格时 12 列）
+    k = wt.find("安抚并捕捉扭洞深处")
+    if k > 0:
+        end = wt.find("== 现实世界中 ==")
+        seg = wt[k:end if end > 0 else len(wt)]
+        for tb in wikitables(seg):
+            last_ing = ""
+            for row in tb:
+                cells = [cell_text(c) for c in row]
+                if len(cells) < 12 or not cells[1].endswith("甜甜圈"):
+                    continue
+                nums = cells[3:8]
+                if not all(re.fullmatch(r"\d+", n) for n in nums):
+                    continue
+                if len(cells) >= 13:
+                    ing = cells[8] or last_ing
+                    if cells[8]:
+                        last_ing = ing
+                    power, target, rift, loc = cells[9], cells[10], cells[11], cells[12]
+                else:  # 食材列被上一行 rowspan 占用
+                    ing = last_ing
+                    power, target, rift, loc = cells[8], cells[9], cells[10], cells[11]
+                out["special"].append({
+                    "name": cells[1], "desc": cells[2],
+                    "sweet": _ni(cells[3]), "spicy": _ni(cells[4]),
+                    "sour": _ni(cells[5]), "bitter": _ni(cells[6]), "fresh": _ni(cells[7]),
+                    "ingredients": ing, "power": power, "target": target,
+                    "rift": rift, "location": loc,
+                })
+
+    # 树果提供的效果
+    bi = wt.find("=== 树果提供的效果 ===")
+    bj = wt.find("=== 风味力量 ===")
+    if 0 <= bi < bj:
+        seg = wt[bi:bj]
+        for tb in wikitables(seg):
+            for row in tb:
+                cells = [cell_text(c) for c in row]
+                if len(cells) >= 8 and cells[0].endswith("果"):
+                    out["berries"].append({
+                        "name": cells[0],
+                        "sweet": _ni(cells[1]), "spicy": _ni(cells[2]), "sour": _ni(cells[3]),
+                        "bitter": _ni(cells[4]), "fresh": _ni(cells[5]),
+                        "boost": cells[6], "energy": _ni(cells[7])})
+
+    # 风味力量：表格 rowspan/colspan 布局不规则，使用人工整理的 curated 数据
+    fp_file = CURATED / "flavor_powers_manual.json"
+    if fp_file.exists():
+        out["flavor_powers"] = json.loads(fp_file.read_text(encoding="utf-8"))
+    return out
+
+
+# ---------------------------------------------------------------- 咖喱饭
+
+def parse_curries(wt: str) -> list[dict]:
+    i = wt.find("==咖哩圖鑑==")
+    j = wt.find("===圖鑑收集獎勵===")
+    seg = wt[i:j if j > 0 else len(wt)]
+    out = []
+    for tb in wikitables(seg):
+        carried_key = ""
+        for row in tb:
+            cells = [cell_text(c) for c in row]
+            if not cells or not cells[0].isdigit():
+                continue
+            no = int(cells[0])
+            name = cells[1]
+            if len(cells) >= 6:
+                key_raw = cells[4]
+                m = re.search(r"\{\{i\|([^|}]+)", row[4]) or re.search(r"link=([^]|]+?)(?:（道具）)?\|", row[4])
+                carried_key = (m.group(1) if m else key_raw)
+                desc = cells[5]
+            else:
+                desc = cells[-1]
+            out.append({"no": no, "name": name, "key_ingredient": carried_key, "desc": desc})
+    return out
+
+
 # ---------------------------------------------------------------- main
 
 def main() -> None:
@@ -414,7 +712,7 @@ def main() -> None:
 
     # ---- 1. pokemon pages: get_methods + flavor ----
     species = con.execute("SELECT id, name_zh FROM species ORDER BY id").fetchall()
-    print(f"[1/4] pokemon pages ({len(species)} species)")
+    print(f"[1/6] pokemon pages ({len(species)} species)")
     overrides = {}
     ov_file = CURATED / "species_title_overrides.json"
     if ov_file.exists():
@@ -431,25 +729,25 @@ def main() -> None:
         gm = [r for r in parse_get_methods(wt) if not r["form"]]
         seen = set()
         for r in gm:
-            key = (r["game"], r["location"], r["method"], r["note"])
-            if key not in seen:
-                seen.add(key)
-                gm_rows.append((sid, r["game"], r["location"], r["method"], r["note"]))
+            key = (r["game"], r["version_label"], r["location"], r["method"], r["note"])
+            if key in seen:
+                continue
+            seen.add(key)
+            gm_rows.append((sid, r["game"], r["version_label"], r["location"], r["method"], r["note"]))
         fl = parse_flavor(wt)
         for r in fl:
             flavor_rows.append((sid, r["game"], r["label"], r["text"]))
 
-    gm_games = Counter(g for _, g, *_ in gm_rows)
-    print("  get_methods rows per game:", dict(gm_games))
+    print("  get_methods rows per game:", dict(Counter(g for _, g, *_ in gm_rows)))
     print("  flavor rows per game:", dict(Counter(g for _, g, *_ in flavor_rows)))
     if failed:
         print(f"  !! {len(failed)} species pages not found -> TODO.json")
 
     # ---- 2. TM pages ----
-    print("[2/4] TM pages (000-260)")
+    print("[2/6] TM pages (000-260)")
     tm_titles = [f"招式学习器{fw(n)}" for n in range(0, 261)]
     fetch_titles(tm_titles)
-    tm_rows, other_keys = [], Counter()
+    tm_rows, bdsp_machines, other_keys = [], [], Counter()
     move_id_by_zh = {z: mid for mid, z in con.execute("SELECT id, name_zh FROM moves")}
     for n in range(0, 261):
         wt = get_wikitext(f"招式学习器{fw(n)}")
@@ -457,8 +755,8 @@ def main() -> None:
             continue
         info = parse_tm_page(wt)
         other_keys.update(info["other_keys"])
-        for game, vg in (("sword-shield", 20), ("scarlet-violet", 25), ("legends-za", 30)):
-            d = info.get(game)
+        for key, vg in (("swsh", 20), ("sv", 25), ("za", 30)):
+            d = info.get(key)
             if not d or not d["loc"]:
                 continue
             mid = move_id_by_zh.get(d["move"])
@@ -470,6 +768,15 @@ def main() -> None:
             if mid is None:
                 continue
             tm_rows.append((vg, n, mid, d["loc"], d["item"]))
+        # BDSP：TM001-100，机器表 PokeAPI 缺失，由 52poke 补全
+        d = info.get("bdsp")
+        if d and d["move"]:
+            mid = (move_id_by_zh.get(d["move"])
+                   or move_id_by_zh.get(MOVE_NAME_ALIASES.get(d["move"], "")))
+            if mid is not None:
+                bdsp_machines.append((23, n, mid, f"tm{n:03d}"))
+                if d["loc"]:
+                    tm_rows.append((23, n, mid, d["loc"], ""))
 
     # SwSh TR: generic how-to text joined to TR machine numbers
     tr_generic = "旷野地带用瓦特在瓦特商店购买；击败极巨团体战的野生宝可梦后概率获得"
@@ -478,22 +785,93 @@ def main() -> None:
         tm_rows.append((20, num, mid, tr_generic, ""))
 
     print("  tm_how rows per vg:", dict(Counter(v for v, *_ in tm_rows)))
+    print("  bdsp machines from 52poke:", len(bdsp_machines))
     print("  unknown TMtable loc keys:", dict(other_keys))
 
-    # ---- 3. sandwiches ----
-    print("[3/4] sandwiches")
-    fetch_titles(["三明治"])
+    # ---- 3. Z-A learnsets ----
+    print("[3/6] Z-A learnsets (52poke subpages)")
+    za_species = con.execute(
+        """SELECT DISTINCT s.id, s.name_zh FROM dex_entries e
+           JOIN regional_dexes d ON d.id = e.dex_id
+           JOIN species s ON s.id = e.species_id
+           WHERE d.game_id='legends-za' ORDER BY s.id""").fetchall()
+    sub_titles = [f"{overrides.get(str(sid)) or name}/第九世代招式表" for sid, name in za_species]
+    fetch_titles(sub_titles)
+    za_rows, za_missing = [], []
+    for sid, name in za_species:
+        base = overrides.get(str(sid)) or name
+        wt = get_wikitext(f"{base}/第九世代招式表")
+        if wt is None:
+            za_missing.append({"species_id": sid, "name": name, "reason": "ZA subpage not found"})
+            continue
+        default_form = con.execute(
+            "SELECT id FROM forms WHERE species_id=? ORDER BY is_default DESC, id LIMIT 1",
+            (sid,)).fetchone()
+        if not default_form:
+            continue
+        fid = default_form[0]
+        parsed = parse_za_learnlist(wt)
+        for level, mastery, move in parsed["level"]:
+            mid = move_id_by_zh.get(move) or move_id_by_zh.get(MOVE_NAME_ALIASES.get(move, ""))
+            if mid is None:
+                za_missing.append({"species_id": sid, "name": name, "reason": f"ZA move not in db: {move}"})
+                continue
+            za_rows.append((fid, mid, "level-up", 30, level, mastery))
+        for tmno, move in parsed["tm"]:
+            mid = move_id_by_zh.get(move) or move_id_by_zh.get(MOVE_NAME_ALIASES.get(move, ""))
+            if mid is None:
+                za_missing.append({"species_id": sid, "name": name, "reason": f"ZA tm move not in db: {move}"})
+                continue
+            za_rows.append((fid, mid, "machine", 30, None, None))
+    print(f"  za learnset rows: {len(za_rows)} (missing subpages: {len(set(m['species_id'] for m in za_missing))})")
+
+    # ---- 4. 特化功能页 ----
+    print("[4/6] feature pages (sandwich/picnic/donut/curry)")
+    fetch_titles(["三明治", "甜甜圈", "食材", "野餐道具"])
     sw_wt = get_wikitext("三明治") or ""
     recipes = parse_sandwiches(sw_wt)
-    print(f"  parsed {len(recipes)} recipes")
-    if not recipes:
-        print("  !! sandwich table parse failed -> TODO.json")
+    print(f"  sandwiches: {len(recipes)}")
 
-    # ---- 4. write curated JSON + merge into DB ----
-    print("[4/4] write curated JSON + merge into DB")
+    picnic = parse_picnic_condiments(get_wikitext("野餐道具") or "")
+    food_wt = get_wikitext("食材") or ""
+    picnic += parse_food_ingredients(food_wt, "=== 三明治的食材 ===", "食材")
+    picnic += parse_food_ingredients(food_wt, "=== 咖喱饭的食材 ===", "咖喱食材")
+    # 食材获取方式：道具页 道具地点 sv 字段
+    ing_names = [p["name"] for p in picnic if p["kind"] in ("食材",) and not p["how"]]
+    if ing_names:
+        fetch_titles([f"{n}（道具）" for n in ing_names])
+        for p in picnic:
+            if p["kind"] == "食材" and not p["how"]:
+                iwt = get_wikitext(f"{p['name']}（道具）")
+                if iwt:
+                    p["how"] = parse_item_how(iwt)
+    print(f"  picnic items: {len(picnic)} (食材含获取方式: "
+          f"{sum(1 for p in picnic if p['kind']=='食材' and p['how'])}/{sum(1 for p in picnic if p['kind']=='食材')})")
+
+    # 咖喱页（原题「咖喱饭」）
+    fetch_titles(["咖喱饭"])
+    curry_wt = None
+    for cand in ("咖喱饭", "咖喱饭"):
+        curry_wt = get_wikitext(cand)
+        if curry_wt:
+            break
+    if curry_wt is None:
+        # 按缓存文件兜底
+        p = CACHE / "咖喱饭.txt"
+        if p.exists():
+            curry_wt = p.read_text(encoding="utf-8")
+    curries = parse_curries(curry_wt or "")
+    print(f"  curries: {len(curries)}")
+
+    # 甜甜圈（含树果效果/风味力量，复杂表用 curated 补丁）
+    donut_wt = get_wikitext("甜甜圈") or ""
+    donuts = parse_donuts_full(donut_wt)
+
+    # ---- 5. write curated JSON ----
+    print("[5/6] write curated JSON")
     CURATED.mkdir(parents=True, exist_ok=True)
-    enc_json = [{"species_id": s, "game": g, "location": l, "method": m, "note": n}
-                for s, g, l, m, n in gm_rows]
+    enc_json = [{"species_id": s, "game": g, "version_label": v, "location": l, "method": m, "note": n}
+                for s, g, v, l, m, n in gm_rows]
     (CURATED / "encounters_52poke.json").write_text(
         json.dumps(enc_json, ensure_ascii=False, indent=1), encoding="utf-8")
     (CURATED / "flavor_52poke.json").write_text(
@@ -506,31 +884,74 @@ def main() -> None:
         encoding="utf-8")
     (CURATED / "sandwiches.json").write_text(
         json.dumps(recipes, ensure_ascii=False, indent=1), encoding="utf-8")
+    (CURATED / "picnic_items.json").write_text(
+        json.dumps(picnic, ensure_ascii=False, indent=1), encoding="utf-8")
+    (CURATED / "curries.json").write_text(
+        json.dumps(curries, ensure_ascii=False, indent=1), encoding="utf-8")
+    (CURATED / "donuts.json").write_text(
+        json.dumps(donuts, ensure_ascii=False, indent=1), encoding="utf-8")
+    (CURATED / "za_learnsets.json").write_text(
+        json.dumps([{"form_id": f, "move_id": m, "method": me, "level": lv, "mastery": ma}
+                    for f, m, me, _, lv, ma in za_rows], ensure_ascii=False, indent=1),
+        encoding="utf-8")
 
-    todo = {"missing_species_pages": failed}
+    todo = {"missing_species_pages": failed,
+            "za_learnset_issues": za_missing}
     (CURATED / "TODO.json").write_text(json.dumps(todo, ensure_ascii=False, indent=1),
                                        encoding="utf-8")
 
+    # ---- 6. merge into DB ----
+    print("[6/6] merge into DB")
     cur = con.cursor()
     cur.execute("DELETE FROM get_methods")
-    cur.executemany("INSERT INTO get_methods VALUES (?,?,?,?,?)", gm_rows)
+    cur.executemany("INSERT INTO get_methods VALUES (?,?,?,?,?,?)", gm_rows)
     cur.execute("DELETE FROM tm_how")
     cur.executemany("INSERT OR REPLACE INTO tm_how VALUES (?,?,?,?,?)", tm_rows)
+    if bdsp_machines:
+        cur.executemany("INSERT OR REPLACE INTO machines VALUES (?,?,?,?)", bdsp_machines)
     cur.execute("DELETE FROM sandwiches")
     cur.executemany("INSERT OR REPLACE INTO sandwiches VALUES (?,?,?,?,?,?)",
                     [(r["no"], r["name"], r["ingredients"], r["seasonings"],
                       json.dumps(r["effects"], ensure_ascii=False), r["how"]) for r in recipes])
+    cur.execute("DELETE FROM picnic_items")
+    cur.executemany("INSERT OR REPLACE INTO picnic_items VALUES (?,?,?,?,?)",
+                    [(p["name"], p["kind"], p["desc"], p["how"], p["price"]) for p in picnic])
+    cur.execute("DELETE FROM curries")
+    cur.executemany("INSERT OR REPLACE INTO curries VALUES (?,?,?,?)",
+                    [(c["no"], c["name"], c["key_ingredient"], c["desc"]) for c in curries])
+    cur.execute("DELETE FROM donut_types")
+    cur.executemany("INSERT OR REPLACE INTO donut_types VALUES (?,?,?)",
+                    [(t["flavor"], t["name"], t["desc"]) for t in donuts["types"]])
+    cur.execute("DELETE FROM special_donuts")
+    cur.executemany("INSERT OR REPLACE INTO special_donuts VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+                    [(d["name"], d["desc"], d["sweet"], d["spicy"], d["sour"], d["bitter"], d["fresh"],
+                      d["ingredients"], d["power"], d["target"], d["rift"], d["location"])
+                     for d in donuts["special"]])
+    cur.execute("DELETE FROM berries")
+    cur.executemany("INSERT OR REPLACE INTO berries VALUES (?,?,?,?,?,?,?,?)",
+                    [(b["name"], b["sweet"], b["spicy"], b["sour"], b["bitter"], b["fresh"],
+                      b["boost"], b["energy"]) for b in donuts["berries"]])
+    cur.execute("DELETE FROM flavor_powers")
+    cur.executemany("INSERT OR REPLACE INTO flavor_powers VALUES (?,?,?,?,?,?,?)",
+                    [(f["flavor"], f["power"], f["effect"], f["lv1"], f["lv2"], f["lv3"], f["prefix"])
+                     for f in donuts["flavor_powers"]])
+    if za_rows:
+        cur.execute("DELETE FROM learnsets WHERE vg=30")
+        cur.executemany("INSERT OR REPLACE INTO learnsets VALUES (?,?,?,?,?,?)", za_rows)
     # 52poke flavor overrides PokeAPI flavor
-    cur.execute("DELETE FROM dex_flavor WHERE game IN ('legends-arceus','scarlet-violet','legends-za')")
+    cur.execute("DELETE FROM dex_flavor WHERE game IN ('legends-arceus','scarlet-violet','legends-za',?)", (BDSP,))
     for s, g, lb, t in flavor_rows:
         cur.execute("DELETE FROM dex_flavor WHERE species_id=? AND game=? AND version_label=?",
                     (s, g, lb))
         cur.execute("INSERT INTO dex_flavor VALUES (?,?,?,?)", (s, g, lb, t))
     con.commit()
 
-    for t in ("get_methods", "dex_flavor", "tm_how", "sandwiches"):
+    for t in ("get_methods", "dex_flavor", "tm_how", "sandwiches", "picnic_items",
+              "curries", "donut_types", "special_donuts", "berries", "flavor_powers"):
         n = con.execute(f"SELECT COUNT(*) FROM {t}").fetchone()[0]
-        print(f"  {t:14s} {n}")
+        print(f"  {t:16s} {n}")
+    n = con.execute("SELECT COUNT(*) FROM learnsets WHERE vg=30").fetchone()[0]
+    print(f"  learnsets(vg30)    {n}")
     con.close()
     print("OK")
 

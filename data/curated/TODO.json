@@ -1,3 +1,475 @@
 {
- "missing_species_pages": []
+ "missing_species_pages": [],
+ "za_learnset_issues": [
+  {
+   "species_id": 41,
+   "name": "超音蝠",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 42,
+   "name": "大嘴蝠",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 63,
+   "name": "凯西",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 64,
+   "name": "勇基拉",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 65,
+   "name": "胡地",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 66,
+   "name": "腕力",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 67,
+   "name": "豪力",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 68,
+   "name": "怪力",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 83,
+   "name": "大葱鸭",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 95,
+   "name": "大岩蛇",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 104,
+   "name": "卡拉卡拉",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 105,
+   "name": "嘎啦嘎啦",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 115,
+   "name": "袋兽",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 120,
+   "name": "海星星",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 121,
+   "name": "宝石海星",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 122,
+   "name": "魔墙人偶",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 127,
+   "name": "凯罗斯",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 142,
+   "name": "化石翼龙",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 169,
+   "name": "叉字蝠",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 208,
+   "name": "大钢蛇",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 303,
+   "name": "大嘴娃",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 304,
+   "name": "可可多拉",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 305,
+   "name": "可多拉",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 306,
+   "name": "波士可多拉",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 309,
+   "name": "落雷兽",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 310,
+   "name": "雷电兽",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 315,
+   "name": "毒蔷薇",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 318,
+   "name": "利牙鱼",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 319,
+   "name": "巨牙鲨",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 352,
+   "name": "变隐龙",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 359,
+   "name": "阿勃梭鲁",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 406,
+   "name": "含羞苞",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 407,
+   "name": "罗丝雷朵",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 427,
+   "name": "卷卷耳",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 428,
+   "name": "长耳兔",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 439,
+   "name": "魔尼尼",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 504,
+   "name": "探探鼠",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 505,
+   "name": "步哨鼠",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 509,
+   "name": "扒手猫",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 510,
+   "name": "酷豹",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 517,
+   "name": "食梦梦",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 518,
+   "name": "梦梦蚀",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 531,
+   "name": "差不多娃娃",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 538,
+   "name": "投摔鬼",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 539,
+   "name": "打击鬼",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 543,
+   "name": "百足蜈蚣",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 544,
+   "name": "车轮球",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 545,
+   "name": "蜈蚣王",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 562,
+   "name": "哭哭面具",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 563,
+   "name": "迭失棺",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 568,
+   "name": "破破袋",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 569,
+   "name": "灰尘山",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 582,
+   "name": "迷你冰",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 583,
+   "name": "多多冰",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 584,
+   "name": "双倍多多冰",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 587,
+   "name": "电飞鼠",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 618,
+   "name": "泥巴鱼",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 649,
+   "name": "盖诺赛克特",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 674,
+   "name": "顽皮熊猫",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 675,
+   "name": "霸道熊猫",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 676,
+   "name": "多丽米亚",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 679,
+   "name": "独剑鞘",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 680,
+   "name": "双剑鞘",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 681,
+   "name": "坚盾剑怪",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 682,
+   "name": "粉香香",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 683,
+   "name": "芳香精",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 684,
+   "name": "绵绵泡芙",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 685,
+   "name": "胖甜妮",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 688,
+   "name": "龟脚脚",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 689,
+   "name": "龟足巨铠",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 694,
+   "name": "伞电蜥",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 695,
+   "name": "光电伞蜥",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 696,
+   "name": "宝宝暴龙",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 697,
+   "name": "怪颚龙",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 698,
+   "name": "冰雪龙",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 699,
+   "name": "冰雪巨龙",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 710,
+   "name": "南瓜精",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 711,
+   "name": "南瓜怪人",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 716,
+   "name": "哲尔尼亚斯",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 717,
+   "name": "伊裴尔塔尔",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 718,
+   "name": "基格尔德",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 767,
+   "name": "胆小虫",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 768,
+   "name": "具甲武者",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 780,
+   "name": "老翁龙",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 802,
+   "name": "玛夏多",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 808,
+   "name": "美录坦",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 809,
+   "name": "美录梅塔",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 827,
+   "name": "狡小狐",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 828,
+   "name": "猾大狐",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 852,
+   "name": "拳拳蛸",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 853,
+   "name": "八爪武师",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 865,
+   "name": "葱游兵",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 866,
+   "name": "踏冰人偶",
+   "reason": "ZA subpage not found"
+  },
+  {
+   "species_id": 867,
+   "name": "迭失板",
+   "reason": "ZA subpage not found"
+  }
+ ]
 }

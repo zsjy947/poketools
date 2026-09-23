@@ -6,9 +6,12 @@ CSV dir: data/raw/pokeapi/data/v2/csv
 Language ids: 12 = zh-Hans, 9 = en.
 Target Switch games (version group ids):
   20 sword-shield | 21 isle-of-armor | 22 crown-tundra
+  23 brilliant-diamond-shining-pearl
   24 legends-arceus
   25 scarlet-violet | 26 teal-mask | 27 indigo-disk
-  30 legends-za | 32 mega-dimension
+  30 legends-za
+  注意：vg32 是 Pokémon Champions 的数据（method=train），不是 Z-A；
+  Z-A 学习集由 scrape_52poke.py 从 52poke 子页抓取写入 vg30。
 """
 from __future__ import annotations
 
@@ -30,25 +33,43 @@ DAMAGE_CLASS = {1: "status", 2: "physical", 3: "special"}
 
 GAME_OF_VG = {
     20: "sword-shield", 21: "sword-shield", 22: "sword-shield",
+    23: "brilliant-diamond-shining-pearl",
     24: "legends-arceus",
     25: "scarlet-violet", 26: "scarlet-violet", 27: "scarlet-violet",
-    30: "legends-za", 32: "legends-za",
+    30: "legends-za",
 }
-TARGET_VGS = sorted(GAME_OF_VG)
+# learnsets 只导真正有 pokemon_moves 数据的 vg（Z-A 由 52poke 抓取补进 vg30）
+LEARNSET_VGS = (20, 23, 24, 25, 30)
+# machines：SV 的 vg26/27 与 vg25 同号同招式（重复），剑盾 DLC 无新增，只导主版本组
+MACHINE_VGS = (20, 23, 25, 30)
 
 GAMES = {
-    "sword-shield":   {"name_zh": "剑／盾", "name_en": "Sword/Shield", "gen": 8, "has_breeding": 1, "has_tms": 1},
-    "legends-arceus": {"name_zh": "传说 阿尔宙斯", "name_en": "Legends: Arceus", "gen": 8, "has_breeding": 0, "has_tms": 0},
-    "scarlet-violet": {"name_zh": "朱／紫", "name_en": "Scarlet/Violet", "gen": 9, "has_breeding": 1, "has_tms": 1},
-    "legends-za":     {"name_zh": "传说 Z-A", "name_en": "Legends: Z-A", "gen": 9, "has_breeding": 0, "has_tms": 1},
+    "sword-shield":   {"name_zh": "剑／盾", "name_en": "Sword/Shield", "gen": 8, "has_breeding": 1, "has_tms": 1,
+                       "features": ["dex", "ev", "curry"]},
+    "brilliant-diamond-shining-pearl": {"name_zh": "晶灿钻石／明亮珍珠", "name_en": "Brilliant Diamond/Shining Pearl",
+                       "gen": 8, "has_breeding": 1, "has_tms": 1, "features": ["dex", "ev"]},
+    "legends-arceus": {"name_zh": "传说 阿尔宙斯", "name_en": "Legends: Arceus", "gen": 8, "has_breeding": 0, "has_tms": 0,
+                       "features": ["dex", "ev"]},
+    "scarlet-violet": {"name_zh": "朱／紫", "name_en": "Scarlet/Violet", "gen": 9, "has_breeding": 1, "has_tms": 1,
+                       "features": ["dex", "ev", "sandwich"]},
+    "legends-za":     {"name_zh": "传说 Z-A", "name_en": "Legends: Z-A", "gen": 9, "has_breeding": 0, "has_tms": 1,
+                       "features": ["dex", "ev", "donut"]},
 }
 
 DEX_ZH = {
     "galar": "伽勒尔图鉴", "isle-of-armor": "铠岛图鉴", "crown-tundra": "王冠雪原图鉴",
+    "sinnoh": "神奥图鉴",
     "hisui": "洗翠图鉴",
     "paldea": "帕底亚图鉴", "kitakami": "北上乡图鉴", "blueberry": "蓝莓图鉴",
     "lumiose-city": "密阿雷市图鉴", "hyperspace": "超空间图鉴",
 }
+
+# pokedex identifier -> our dex id（extended-sinnoh=白金系 210 只，即 BDSP 神奥图鉴）
+DEX_ID_MAP = {"extended-sinnoh": "sinnoh"}
+# 手工指定图鉴归属游戏（覆盖 vg 推断）：BDSP 图鉴编号同白金（extended-sinnoh, pokedex 6）
+DEX_GAME_OVERRIDE = {"sinnoh": "brilliant-diamond-shining-pearl"}
+DEX_ORDER = ["galar", "isle-of-armor", "crown-tundra", "sinnoh", "hisui",
+             "paldea", "kitakami", "blueberry", "lumiose-city", "hyperspace"]
 
 FORM_SUFFIX_ZH = {
     "mega": "超级进化", "mega-x": "超级进化X", "mega-y": "超级进化Y",
@@ -113,7 +134,7 @@ PRAGMA journal_mode=WAL;
 
 CREATE TABLE games (
   id TEXT PRIMARY KEY, name_zh TEXT, name_en TEXT, generation INTEGER,
-  has_breeding INTEGER, has_tms INTEGER, sort INTEGER
+  has_breeding INTEGER, has_tms INTEGER, features TEXT, sort INTEGER
 );
 CREATE TABLE regional_dexes (
   id TEXT PRIMARY KEY, game_id TEXT, name_zh TEXT, name_en TEXT, sort INTEGER
@@ -132,7 +153,7 @@ CREATE TABLE species (
 CREATE TABLE forms (
   id INTEGER PRIMARY KEY, species_id INTEGER, identifier TEXT,
   form_label TEXT, is_default INTEGER, is_mega INTEGER,
-  types TEXT, abilities TEXT,
+  types TEXT, abilities TEXT, hidden_abilities TEXT,
   hp INTEGER, atk INTEGER, def INTEGER, spa INTEGER, spd INTEGER, spe INTEGER,
   ev_hp INTEGER, ev_atk INTEGER, ev_def INTEGER,
   ev_spa INTEGER, ev_spd INTEGER, ev_spe INTEGER,
@@ -146,7 +167,8 @@ CREATE TABLE moves (
   generation INTEGER, effect_zh TEXT
 );
 CREATE TABLE learnsets (
-  form_id INTEGER, move_id INTEGER, method TEXT, vg INTEGER, level INTEGER
+  form_id INTEGER, move_id INTEGER, method TEXT, vg INTEGER, level INTEGER,
+  mastery INTEGER
 );
 CREATE TABLE machines (
   vg INTEGER, machine_number INTEGER, move_id INTEGER, item_identifier TEXT
@@ -162,7 +184,8 @@ CREATE TABLE move_flavor (
 );
 -- 以下为 52poke 抓取/人工整理数据（scrape_52poke.py 填充，build_db.py 建空表）
 CREATE TABLE get_methods (
-  species_id INTEGER, game TEXT, location TEXT, method TEXT, note TEXT
+  species_id INTEGER, game TEXT, version_label TEXT,
+  location TEXT, method TEXT, note TEXT
 );
 -- 二期伤害计算器数据
 CREATE TABLE learnsets_all (
@@ -188,10 +211,42 @@ CREATE TABLE sandwiches (
   no INTEGER PRIMARY KEY, name TEXT, ingredients TEXT,
   seasonings TEXT, effects TEXT, how TEXT
 );
+-- 三期：游戏特化功能
+CREATE TABLE picnic_items (          -- 三明治食材/调味料（含获取方式）
+  name TEXT PRIMARY KEY, kind TEXT, desc TEXT, how TEXT, price TEXT
+);
+CREATE TABLE donut_types (           -- Z-A 基础甜甜圈（按风味）
+  flavor TEXT PRIMARY KEY, name TEXT, desc TEXT
+);
+CREATE TABLE special_donuts (        -- Z-A 特殊甜甜圈配方
+  name TEXT PRIMARY KEY, desc TEXT,
+  sweet INTEGER, spicy INTEGER, sour INTEGER, bitter INTEGER, fresh INTEGER,
+  ingredients TEXT, power TEXT, target TEXT, rift TEXT, location TEXT
+);
+CREATE TABLE berries (               -- 树果（Z-A 甜甜圈效果表）
+  name TEXT PRIMARY KEY,
+  sweet INTEGER, spicy INTEGER, sour INTEGER, bitter INTEGER, fresh INTEGER,
+  boost TEXT, energy INTEGER
+);
+CREATE TABLE flavor_powers (         -- 风味力量说明
+  flavor TEXT, power TEXT, effect TEXT,
+  lv1 TEXT, lv2 TEXT, lv3 TEXT, prefix TEXT
+);
+CREATE TABLE curries (               -- 咖喱图鉴
+  no INTEGER PRIMARY KEY, name TEXT, key_ingredient TEXT, desc TEXT
+);
+CREATE TABLE evolutions (            -- 进化条件（PokeAPI pokemon_evolution）
+  from_species INTEGER, to_species INTEGER, trigger TEXT,
+  min_level INTEGER, item TEXT, held_item TEXT, time_of_day TEXT,
+  location TEXT, known_move TEXT, min_happiness INTEGER, min_affection INTEGER,
+  needs_overworld_rain INTEGER, turn_upside_down INTEGER,
+  PRIMARY KEY (from_species, to_species, trigger)
+);
 CREATE INDEX idx_learnsets_move ON learnsets (move_id, vg, method);
 CREATE INDEX idx_learnsets_form ON learnsets (form_id, vg);
 CREATE INDEX idx_enc_species ON encounters (vg, species_id);
 CREATE INDEX idx_dex_species ON dex_entries (species_id);
+CREATE INDEX idx_gm_species ON get_methods (species_id);
 """
 
 
@@ -270,9 +325,10 @@ def main() -> None:
     for r in read_csv("pokemon_types"):
         types_of.setdefault(to_int(r["pokemon_id"]), []).append(to_int(r["type_id"]))
 
-    abils_of: dict[int, list[int]] = {}
+    abils_of: dict[int, list[tuple[int, int]]] = {}
     for r in read_csv("pokemon_abilities"):
-        abils_of.setdefault(to_int(r["pokemon_id"]), []).append(to_int(r["ability_id"]))
+        abils_of.setdefault(to_int(r["pokemon_id"]), []).append(
+            (to_int(r["ability_id"]), to_int(r["is_hidden"]) or 0))
 
     # ---- moves ----
     move_rows = {to_int(r["id"]): r for r in read_csv("moves")}
@@ -291,7 +347,7 @@ def main() -> None:
     learn: list[tuple] = []
     for r in read_csv("pokemon_moves"):
         vg = to_int(r["version_group_id"])
-        if vg not in GAME_OF_VG:
+        if vg not in LEARNSET_VGS:
             continue
         mid = to_int(r["move_id"])
         if mid not in move_rows:
@@ -300,12 +356,12 @@ def main() -> None:
         level = to_int(r["level"])
         if method == "level-up" and level in (0, None):
             level = 1
-        learn.append((to_int(r["pokemon_id"]), mid, method, vg, level))
+        learn.append((to_int(r["pokemon_id"]), mid, method, vg, level, None))
 
     machine_rows = []
     for r in read_csv("machines"):
         vg = to_int(r["version_group_id"])
-        if vg in GAME_OF_VG:
+        if vg in MACHINE_VGS:
             machine_rows.append((vg, to_int(r["machine_number"]), to_int(r["move_id"]),
                                  item_ident.get(to_int(r["item_id"]), "")))
 
@@ -332,17 +388,19 @@ def main() -> None:
     seen_dexes: dict[str, dict] = {}
     for r in read_csv("pokemon_dex_numbers"):
         dex_id = to_int(r["pokedex_id"])
-        ident = dex_ident.get(dex_id)
+        ident = DEX_ID_MAP.get(dex_ident.get(dex_id), dex_ident.get(dex_id))
         if ident not in DEX_ZH:
             continue
         vg = dex_vgs.get(dex_id, [])
-        game = GAME_OF_VG.get(vg[0]) if vg else None
+        game = DEX_GAME_OVERRIDE.get(ident)
+        if game is None:
+            game = next((GAME_OF_VG[v] for v in vg if v in GAME_OF_VG), None)
         if game is None:
             continue
         dex_rows.append((ident, to_int(r["pokedex_number"]), to_int(r["species_id"])))
         if ident not in seen_dexes:
             seen_dexes[ident] = {"game": game, "id": dex_id}
-    dex_order = {ident: i for i, ident in enumerate(seen_dexes)}
+    dex_order = {ident: i for i, ident in enumerate(DEX_ORDER)}
 
     # ---- learnsets_all（全世代，供伤害计算器招式并集） ----
     METHOD_IDS_ALL = {1: "level-up", 2: "egg", 3: "tutor", 4: "machine"}
@@ -381,9 +439,10 @@ def main() -> None:
                     [(to_int(r["id"]), r["identifier"], to_int(r["generation_id"]))
                      for r in vg_rows.values()])
 
-    con.executemany("INSERT INTO games VALUES (?,?,?,?,?,?,?)",
+    con.executemany("INSERT INTO games VALUES (?,?,?,?,?,?,?,?)",
                     [(gid, g["name_zh"], g["name_en"], g["gen"], g["has_breeding"],
-                      g["has_tms"], i) for i, (gid, g) in enumerate(GAMES.items())])
+                      g["has_tms"], json.dumps(g["features"], ensure_ascii=False), i)
+                     for i, (gid, g) in enumerate(GAMES.items())])
 
     for ident, info in seen_dexes.items():
         did = info["id"]
@@ -415,19 +474,21 @@ def main() -> None:
         sp = base_stats.get(pid, {})
         ev = evs.get(pid, {})
         t_ids = types_of.get(pid, [])
+        abil_list = [(ability_zh.get(a, str(a)), hidden) for a, hidden in abils_of.get(pid, [])]
         form_rows.append((
             pid, sid, r["identifier"], label,
             to_int(r["is_default"]) or 0,
             to_int(meta.get("is_mega")) or 0,
             ",".join(type_zh.get(t, type_en.get(t, str(t))) for t in t_ids),
-            ",".join(filter(None, (ability_zh.get(a) for a in abils_of.get(pid, [])))),
+            ",".join(n for n, _ in abil_list),
+            ",".join(n for n, h in abil_list if h),
             sp.get("hp"), sp.get("atk"), sp.get("def"), sp.get("spa"), sp.get("spd"), sp.get("spe"),
             ev.get("hp", 0), ev.get("atk", 0), ev.get("def", 0),
             ev.get("spa", 0), ev.get("spd", 0), ev.get("spe", 0),
             to_int(r["height"]), to_int(r["weight"]),
         ))
     con.executemany(
-        "INSERT INTO forms VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", form_rows)
+        "INSERT INTO forms VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", form_rows)
 
     mv_rows = []
     for mid, r in move_rows.items():
@@ -441,7 +502,7 @@ def main() -> None:
         ))
     con.executemany("INSERT INTO moves VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", mv_rows)
 
-    con.executemany("INSERT OR IGNORE INTO learnsets VALUES (?,?,?,?,?)", learn)
+    con.executemany("INSERT OR IGNORE INTO learnsets VALUES (?,?,?,?,?,?)", learn)
     con.executemany("INSERT OR IGNORE INTO machines VALUES (?,?,?,?)", machine_rows)
     con.executemany("INSERT OR IGNORE INTO encounters VALUES (?,?,?,?,?,?,?,?,?,?)", enc_rows)
     con.executemany("INSERT OR REPLACE INTO move_flavor VALUES (?,?,?)",
@@ -463,6 +524,34 @@ def main() -> None:
                         (to_int(r["species_id"]), lab[0], lab[1], txt))
 
     con.commit()
+
+    # ---- evolutions（进化条件）----
+    evo_trigger = {to_int(r["id"]): r["identifier"]
+                   for r in read_csv("evolution_triggers")}
+    item_zh, _ = name_map("item_names", "item_id")
+    location_ident = {to_int(r["id"]): r["identifier"] for r in read_csv("locations")}
+    evo_rows = []
+    for r in read_csv("pokemon_evolution"):
+        to_sid = to_int(r["evolved_species_id"])
+        frm = to_int(species_rows[to_sid]["evolves_from_species_id"]) \
+            if to_sid in species_rows and species_rows[to_sid]["evolves_from_species_id"] else None
+        evo_rows.append((
+            frm,
+            to_sid,
+            evo_trigger.get(to_int(r["evolution_trigger_id"]), ""),
+            to_int(r["minimum_level"]),
+            item_zh.get(to_int(r["trigger_item_id"]) or 0, ""),
+            item_zh.get(to_int(r["held_item_id"]) or 0, ""),
+            r["time_of_day"] or "",
+            location_ident.get(to_int(r["location_id"]) or 0, ""),
+            move_zh.get(to_int(r["known_move_id"]) or 0, ""),
+            to_int(r["minimum_happiness"]),
+            to_int(r["minimum_affection"]),
+            to_int(r["needs_overworld_rain"]) or 0,
+            to_int(r["turn_upside_down"]) or 0,
+        ))
+
+    con.executemany("INSERT OR REPLACE INTO evolutions VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", evo_rows)
 
     # ---- report ----
     for table in ("games", "regional_dexes", "dex_entries", "species", "forms",

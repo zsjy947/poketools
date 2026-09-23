@@ -17,9 +17,12 @@ client = TestClient(app)
 
 def test_games():
     games = client.get("/api/games").json()
-    assert {g["id"] for g in games} == {"sword-shield", "legends-arceus", "scarlet-violet", "legends-za"}
+    assert {g["id"] for g in games} == {"sword-shield", "brilliant-diamond-shining-pearl",
+                                        "legends-arceus", "scarlet-violet", "legends-za"}
     sv = next(g for g in games if g["id"] == "scarlet-violet")
     assert {d["id"] for d in sv["dexes"]} == {"paldea", "kitakami", "blueberry"}
+    bdsp = next(g for g in games if g["id"] == "brilliant-diamond-shining-pearl")
+    assert {d["id"] for d in bdsp["dexes"]} == {"sinnoh"}
 
 
 def test_dex_entries_and_state():
