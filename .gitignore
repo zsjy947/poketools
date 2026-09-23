@@ -2,13 +2,14 @@
 data/raw/
 data/*.db
 data/pokeapi-*.zip
+data/sprites/
 
 # --- python ---
 __pycache__/
 *.pyc
 .pytest_cache/
-build/
-dist/
+/build/
+/dist/
 *.egg-info/
 .venv/
 venv/
@@ -16,14 +17,16 @@ venv/
 # --- node ---
 node_modules/
 web/dist/
-web/node_modules/
+
+# --- frontend 构建产物随仓库分发（勿忽略 app/static/dist）---
+!app/static/dist/
 
 # --- misc ---
 .DS_Store
 Thumbs.db
 *.log
-*.spec
 Poketools.exe
 Poketools.log
+Poketools.spec
 data/*.db-shm
 data/*.db-wal
