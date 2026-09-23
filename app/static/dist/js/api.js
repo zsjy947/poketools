@@ -1,21 +1,37 @@
-/* 轻量 API 封装 */
+/* 轻量 API 封装：失败时派发全局事件（app.js 统一 toast） */
+function _apiError(e) {
+  console.error(e);
+  try { window.dispatchEvent(new CustomEvent("api-error", { detail: String(e.message || e) })); } catch (_) {}
+}
 async function apiGet(url, params = {}) {
   const qs = new URLSearchParams();
   for (const [k, v] of Object.entries(params)) {
     if (v !== undefined && v !== null && v !== "") qs.set(k, v);
   }
   const s = qs.toString();
-  const res = await fetch(url + (s ? "?" + s : ""));
-  if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+  let res;
+  try {
+    res = await fetch(url + (s ? "?" + s : ""));
+  } catch (e) { _apiError(new Error("网络请求失败：" + url)); throw e; }
+  if (!res.ok) {
+    const e = new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+    _apiError(e); throw e;
+  }
   return res.json();
 }
 async function apiSend(method, url, body) {
-  const res = await fetch(url, {
-    method,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+  let res;
+  try {
+    res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+  } catch (e) { _apiError(new Error("网络请求失败：" + url)); throw e; }
+  if (!res.ok) {
+    const e = new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+    _apiError(e); throw e;
+  }
   return res.json();
 }
 

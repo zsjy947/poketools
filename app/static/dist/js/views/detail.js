@@ -4,6 +4,10 @@ const DetailView = {
   <div v-loading="loading">
     <div class="page-head">
       <el-button size="small" @click="goBack">← 返回图鉴</el-button>
+      <template v-if="navList.length">
+        <el-button size="small" :disabled="!prevId" @click="goNeighbor(prevId)">← 上一只</el-button>
+        <el-button size="small" :disabled="!nextId" @click="goNeighbor(nextId)">下一只 →</el-button>
+      </template>
       <el-tag v-if="game" size="small" effect="plain">{{ game.name_zh }}</el-tag>
       <div class="spacer"></div>
       <el-select v-if="d && d.forms.length > 1" v-model="formId" size="small" style="width:220px">
@@ -346,11 +350,33 @@ const DetailView = {
     }
     function goBack() {
       if (gameId) {
-        location.hash = "#/game/" + gameId + "/dex";
+        location.hash = "#/game/" + gameId + "/dex" + (backParams.get("dex") ? "?dex=" + backParams.get("dex") : "");
       } else {
         location.hash = "#/home";
       }
     }
+
+    /* 图鉴内上一只/下一只（按当前图鉴编号顺序） */
+    const navList = ref([]);
+    const navIdx = computed(() => navList.value.indexOf(sid));
+    const prevId = computed(() => (navIdx.value > 0 ? navList.value[navIdx.value - 1] : 0));
+    const nextId = computed(() =>
+      (navIdx.value >= 0 && navIdx.value < navList.value.length - 1)
+        ? navList.value[navIdx.value + 1] : 0);
+    function goNeighbor(id) {
+      if (!id) return;
+      const dex = backParams.get("dex");
+      location.hash = "#/pokemon/" + id + "?game=" + gameId + (dex ? "&dex=" + dex : "");
+    }
+    async function loadNav() {
+      const dex = backParams.get("dex");
+      if (!dex) return;
+      try {
+        const data = await apiGet("/api/dex/" + dex, { profile: store.profileId });
+        navList.value = data.entries.map((e) => e.species_id);
+      } catch (_) { /* 导航缺失不影响详情 */ }
+    }
+    loadNav();
 
     load();
     return {
@@ -359,6 +385,7 @@ const DetailView = {
       showChains, goBack, baseStats, statSum,
       sc, natures, computedStats, evSum, STAT_ZH,
       effGroups, effClass,
+      navList, prevId, nextId, goNeighbor,
     };
   },
 };

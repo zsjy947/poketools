@@ -88,6 +88,7 @@ const App = {
 
     provide("store", store);
     window.addEventListener("hashchange", parseHash);
+    window.addEventListener("api-error", (e) => store.toast("请求失败：" + e.detail, "error"));
     onMounted(async () => {
       store.games = await apiGet("/api/games");
       store.profiles = await apiGet("/api/profiles");

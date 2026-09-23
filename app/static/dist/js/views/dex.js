@@ -143,17 +143,22 @@ const DexView = {
     function openDetail(e) {
       location.hash = "#/pokemon/" + e.species_id + "?game=" + store.gameId + "&dex=" + dexId.value;
     }
-
-    watch(dexId, loadDex);
+    watch(dexId, () => {
+      if (dexId.value) sessionStorage.setItem("poketools-dex-" + store.gameId, dexId.value);
+      loadDex();
+    });
     watch(() => store.profileId, loadDex);
-    watch(() => store.games, () => {
-      if (!dexId.value && game.value && game.value.dexes.length) {
-        dexId.value = game.value.dexes[0].id;
-      }
-    }, { immediate: true });
-    if (!dexId.value && game.value && game.value.dexes.length) {
-      dexId.value = game.value.dexes[0].id;
+    watch(() => store.games, () => initDex(), { immediate: true });
+
+    /* 初始化当前图鉴 tab：hash 参数 > sessionStorage > 第一个 */
+    function initDex() {
+      if (dexId.value || !game.value || !game.value.dexes.length) return;
+      const fromHash = new URLSearchParams((location.hash.split("?")[1] || "")).get("dex");
+      const saved = sessionStorage.getItem("poketools-dex-" + store.gameId);
+      const valid = (id) => game.value.dexes.some((x) => x.id === id);
+      dexId.value = valid(fromHash) ? fromHash : (valid(saved) ? saved : game.value.dexes[0].id);
     }
+    initDex();
 
     return {
       store, dexId, filter, typeFilter, q, loading, entries,
