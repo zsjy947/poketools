@@ -23,6 +23,8 @@ const CurryView = {
 
     <div class="curry-grid">
       <div v-for="c in filtered" :key="c.no" class="curry-card">
+        <img v-if="isGroupFirst(c)" class="curry-img" :src="curryImg(c)" loading="lazy"
+          onerror="this.style.display='none'">
         <div class="curry-no">#{{ String(c.no).padStart(3, "0") }}</div>
         <div class="curry-name">{{ c.name }}</div>
         <el-tag size="small" effect="plain" type="info">{{ c.key_ingredient }}</el-tag>
@@ -45,7 +47,20 @@ const CurryView = {
       (!q.value || c.name.includes(q.value) || c.key_ingredient.includes(q.value))
       && (!ingredient.value || c.key_ingredient === ingredient.value)));
 
+    /* 分组首卡显示组图：组名 = 去掉口味前缀（辣味/涩味/…）后的名字 */
+    function familyName(name) {
+      return name.replace(/^(辣味|涩味|甜味|苦味|酸味)/, "");
+    }
+    function isGroupFirst(c) {
+      const fam = familyName(c.name);
+      const first = list.value.find((x) => familyName(x.name) === fam);
+      return first && first.no === c.no;
+    }
+    function curryImg(c) {
+      return "/assets/curry_" + encodeURIComponent(familyName(c.name) + " SWSH.png");
+    }
+
     apiGet("/api/curries").then((r) => { list.value = r; loading.value = false; });
-    return { loading, list, q, ingredient, ingredients, filtered };
+    return { loading, list, q, ingredient, ingredients, filtered, isGroupFirst, curryImg };
   },
 };

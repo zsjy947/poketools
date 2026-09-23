@@ -19,6 +19,10 @@ const DonutView = {
       <el-tab-pane :label="'特殊配方 (' + d.special.length + ')'" name="special">
         <div class="sand-grid">
           <div v-for="s in d.special" :key="s.name" class="sand-card donut-card">
+            <div class="donut-img-wrap">
+              <img class="donut-img" :src="'/assets/donut_' + s.name + '.png'" loading="lazy"
+                onerror="this.style.display='none'">
+            </div>
             <h4>🍩 {{ s.name }}</h4>
             <div class="flavor-row">
               <span v-for="(v, k) in FLAVOR_NAMES" :key="k" class="flavor-chip"
@@ -37,6 +41,10 @@ const DonutView = {
       <el-tab-pane :label="'基础甜甜圈 (' + d.types.length + ')'" name="types">
         <div class="sand-grid">
           <div v-for="t in d.types" :key="t.name" class="sand-card">
+            <div class="donut-img-wrap small">
+              <img class="donut-img" :src="'/assets/donut_' + t.name + '甜甜圈.png'" loading="lazy"
+                onerror="this.style.display='none'">
+            </div>
             <h4><span class="flavor-chip" :class="flClass(t.flavor)">{{ t.flavor }}</span>{{ t.name }}</h4>
             <div class="ing desc">{{ t.desc }}</div>
             <div class="ing" style="color:#98a1b3">树果 ×N（0→★5，风味随树果变化）</div>

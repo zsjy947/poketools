@@ -7,6 +7,7 @@ REM After build: put Poketools.exe and the data\ folder together and double-clic
 cd /d "%~dp0"
 
 pyinstaller --noconsole --onefile --name Poketools ^
+  --icon app\static\distssetsppicon.ico ^
   --distpath . --workpath build --specpath . ^
   --paths . ^
   --add-data "app\static\dist;app\static\dist" ^

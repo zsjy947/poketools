@@ -8,6 +8,10 @@ const SandwichView = {
       <span style="color:#888;font-size:13px">按食力筛选 · 自由模式可录入自己的配方</span>
     </div>
 
+    <div class="hero-banner">
+      <img src="/assets/sandwich_hero.png" onerror="this.parentNode.style.display='none'">
+    </div>
+
     <el-tabs v-model="tabName">
       <el-tab-pane label="食谱列表" name="recipes">
         <div class="page-head">

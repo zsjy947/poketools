@@ -186,6 +186,14 @@ body { margin: 0; font-family: "Segoe UI", "Microsoft YaHei", sans-serif; backgr
 
 .progress-line { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; color: #666; }
 
+/* 配图 */
+.hero-banner { margin-bottom: 12px; border-radius: 12px; overflow: hidden; max-height: 220px; }
+.hero-banner img { width: 100%; max-height: 220px; object-fit: cover; display: block; }
+.donut-img-wrap { text-align: center; }
+.donut-img-wrap.small .donut-img { width: 84px; height: 84px; }
+.donut-img { width: 110px; height: 110px; object-fit: contain; }
+.curry-img { width: 100%; border-radius: 8px; margin-bottom: 6px; display: block; }
+
 /* 伤害计算器 */
 .calc-grid { display: grid; grid-template-columns: 1fr 290px 1fr; gap: 12px; align-items: start; }
 @media (max-width: 1100px) { .calc-grid { grid-template-columns: 1fr; } }

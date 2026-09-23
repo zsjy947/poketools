@@ -1,22 +1,26 @@
 # PokéTools 宝可梦工具助手
 
-Switch 宝可梦游戏（剑／盾、传说 阿尔宙斯、朱／紫、传说 Z-A）的本地工具助手。
-完全离线运行，界面为中文，双击 exe 即可启动（无命令行窗口）。
+Switch 宝可梦游戏（剑／盾、晶灿钻石／明亮珍珠、传说 阿尔宙斯、朱／紫、传说 Z-A）的本地工具助手。
+完全离线运行，界面为中文，双击 exe 即可启动（无命令行窗口，精灵球图标）。
+
+**功能按游戏入口组织**：游戏中心选择游戏 → 该游戏的图鉴 / 努力值查询 / 游戏特化功能；伤害计算器为全局工具。
 
 ## 功能
 
-1. **地区图鉴追踪** —— 按游戏 / 地区图鉴（伽勒尔、铠岛、王冠雪原、洗翠、帕底亚、北上乡、蓝莓、密阿雷市、超空间）浏览宝可梦，勾选已捕捉 / 反选未捕捉，一键筛选未捕捉；详情页含捕捉方式（地点 / 方式 / 等级）、图鉴描述、努力值。
-2. **招式学习表** —— 按升级 / 招式学习器 / 蛋招式 / 教授分类；招式学习器可查看当前游戏中的编号与获取方式；蛋招式可自动计算**最短生蛋链**（BFS，展示全部最短路径与每一环的招式来源）。
-3. **努力值查询** —— 每只宝可梦击倒获得的努力值点数；按努力值种类 / 点数 / 游戏反向筛选全部宝可梦。
-4. **朱紫三明治助手** —— 按食力（蛋蛋力 / 遭遇力 / 闪光力 / 捕获力 / 大大力 / 经验力 / 掉物力 / 团战力 / 称号力）、目标属性、等级筛选排序食谱。
-5. **伤害计算器** —— 不分世代：招式列表取**全世代并集**（标注可学会世代），可选现代公式（剑盾/朱紫）、传说 Z-A（×0.7）、传说 阿尔宙斯三套公式；支持等级/性格/努力值/个体值/能力等级/道具/特性/天气/屏幕/会心/灼伤/极巨化(HP×2)/阿尔宙斯风格等修正；**全形态对比**一键遍历攻/防方所有形态按伤害排序（超级进化 vs 极巨化等跨形态比较）。数值与 Pokémon Showdown 官方计算器引擎逐 roll 校准一致（见 `tools/calib/` 与 `docs/damage-calc-design.md`）。
+1. **地区图鉴追踪** —— 10 张图鉴（伽勒尔、铠岛、王冠雪原、神奥、洗翠、帕底亚、北上乡、蓝莓、密阿雷市、超空间）浏览宝可梦；精灵球按钮标记捕捉、反选未捕捉、属性/名称筛选；环形进度显示完成度。
+2. **宝可梦详情**（按当前游戏裁剪）—— 进化链（含条件）、图鉴介绍、获取方式（按「本体 / 扩展票 / 零之秘宝 / 版本独占」分组）、**种族值 + 能力值计算器**（等级/性格/努力值/个体值实时计算）、**属性相性（防守）**、招式表（含 PP / 优先度；学习器展开获取方式与材料；蛋招式计算**最短生蛋链**）。特性标注隐藏特性。
+3. **努力值查询** —— 游戏入口内使用，仅当前游戏图鉴宝可梦，点击直达详情。
+4. **三明治食谱（朱／紫）** —— 食力/属性/等级筛选排序；**食材与调味料表**（获得方式与价格）；**我的食谱**自由录入（按档案保存）。
+5. **甜甜圈工房（传说 Z-A）** —— 特殊配方（风味数值/食材/失控超级进化对象/扭洞位置）、基础甜甜圈、**树果效果图鉴**、**风味力量说明**、自定义配方录入。
+6. **咖喱图鉴（剑／盾）** —— 151 种咖喱图鉴与介绍，搜索与关键食材筛选。
+7. **伤害计算器** —— 不分世代、全形态对比；三套公式（现代 / Z-A / 阿尔宙斯）；等级/性格/努力值/个体值/能力等级/特性（自动带出并置顶）/道具（分组含防守向）/天气/光墙反射壁/会心/灼伤/**太晶化**（双方）/**Z招式与极巨化威力换算**/**超级进化**快捷切换。现代公式与 Pokémon Showdown 引擎逐 roll 校准一致（`tools/calib/`）。
 
 ## 技术栈
 
 - 后端：Python 3.10 + FastAPI（本地 REST API，运行时完全离线）
-- 前端：Vue 3 + Element Plus（构建产物由后端托管）
-- 桌面化：pywebview 原生窗口 + PyInstaller 打包
-- 数据：SQLite（`data/poketools.db` 静态数据只读 + `data/userstate.db` 用户勾选状态）
+- 前端：Vue 3 + Element Plus（免构建，`app/static/dist` 由后端托管）
+- 桌面化：pywebview 原生窗口 + PyInstaller 打包（精灵球图标）
+- 数据：SQLite（`data/poketools.db` 静态数据只读 + `data/userstate.db` 勾选状态与自定义食谱）
 
 ## 快速开始
 
@@ -28,18 +32,17 @@ pip install -r requirements.txt
 git clone --depth 1 https://github.com/PokeAPI/pokeapi data/raw/pokeapi
 python scripts/build_db.py          # PokeAPI CSV -> data/poketools.db
 python scripts/scrape_52poke.py     # 52poke wiki -> data/curated/*.json -> 合并入库
-python scripts/fetch_sprites.py     # 下载宝可梦图片到 data/sprites
+python scripts/fetch_sprites.py     # 官方绘图(三级回退) -> data/sprites
+python scripts/fetch_feature_images.py  # 特化功能配图 -> app/static/dist/assets（可选）
+python scripts/make_icon.py         # 应用图标（可选）
 
-# 3) 前端（可选：仓库已含构建产物时可跳过）
-cd web && npm install && npm run build && cd ..
+# 3) 开发模式启动（浏览器访问 http://127.0.0.1:8734）
+python -m app.main
 
-# 4) 开发模式启动（浏览器访问 http://127.0.0.1:8734）
-python app/main.py
-
-# 5) 桌面窗口模式（仓库内直接运行）
+# 4) 桌面窗口模式
 pythonw launcher.pyw
 
-# 6) 打包 exe（生成到仓库根目录，data 就在旁边，直接双击可用）
+# 5) 打包 exe（生成到仓库根目录，data 就在旁边，直接双击可用）
 build_exe.bat
 
 # 分发给他人：把 Poketools.exe 和 data 文件夹（含 poketools.db 与 sprites\）一起拷走即可。
@@ -51,22 +54,23 @@ build_exe.bat
 ```
 poketools/
 ├─ app/                # FastAPI 后端（routers/ API、services/ 算法）
-├─ web/                # Vue3 前端源码（构建产物复制到 app/static/dist）
-├─ scripts/            # 数据管线：build_db.py / scrape_52poke.py / fetch_sprites.py
+│  └─ static/dist/     # 前端（免构建 Vue3 + Element Plus，随仓库分发）
+├─ scripts/            # 数据管线：build_db / scrape_52poke / fetch_sprites / fetch_feature_images / make_icon
 ├─ data/
 │  ├─ raw/pokeapi/     # PokeAPI 离线 CSV（gitignore，需克隆）
 │  ├─ curated/         # 52poke 抓取与人工整理数据（JSON，已提交）
 │  ├─ poketools.db     # 静态数据（构建产物）
-│  └─ userstate.db     # 用户勾选状态
+│  └─ userstate.db     # 用户勾选状态与自定义食谱
 ├─ tests/              # pytest
 ├─ launcher.pyw        # pywebview 桌面启动器
-└─ docs/               # 设计文档（二期伤害计算器等）
+└─ docs/               # 设计文档（DESIGN-*）、数据缺口（DATA-GAPS）、手册（USER-MANUAL）
 ```
 
 ## 数据来源与致谢
 
-- [PokeAPI](https://pokeapi.co)（离线数据集 [PokeAPI/pokeapi](https://github.com/PokeAPI/pokeapi)）：宝可梦 / 形态 / 招式 / 学习方式 / TM 映射 / 剑盾捕捉地点 / 中文名。
-- [52poke 中文维基](https://wiki.52poke.com)：朱紫 / 阿尔宙斯 / Z-A 捕捉方式、图鉴描述、招式学习器获取方式、三明治食谱、地点中文名。
+- [PokeAPI](https://pokeapi.co)（离线数据集 [PokeAPI/pokeapi](https://github.com/PokeAPI/pokeapi) 与 sprites 图片仓库）：宝可梦 / 形态 / 招式 / 学习方式 / TM 映射 / 进化条件 / 中文名 / 官方绘图。
+- [52poke 中文维基](https://wiki.52poke.com)：捕捉方式（含版本独占与 DLC 标签）、图鉴描述、招式学习器获取方式、Z-A 学习集、三明治食谱与食材、甜甜圈/树果/风味力量、咖喱图鉴。
+- 数据完整性说明见 `docs/DATA-GAPS.md`；缺失数据界面标「待补充」。
 - 宝可梦及相关数据 © Nintendo / Creatures Inc. / GAME FREAK inc.，本项目仅为个人本地工具，不作商业用途。
 
 ## 测试
