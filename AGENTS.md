@@ -31,6 +31,7 @@ pythonw launcher.pyw               # 桌面窗口启动
 - 版本组（vg）映射：sword-shield=20/21/22（本体/DLC 合并查 20 的学习集与 20+26+27 的 TM）、legends-arceus=24、scarlet-violet=25/26/27（学习集查 25，TM 查 25+26+27）、legends-za=30/32（**学习集只存在于 vg32**）。
 - 语言：PokeAPI CSV 中 zh-Hans=12，en=9。
 - 生蛋链算法在 `app/services/breeding.py`：多源 BFS，节点=能学会该招式的物种，边=共享蛋组；从「自学」（升级/学习器/教授）节点到目标蛋组，输出全部最短路径。
+- 一期设计与验收记录见 `docs/phase1-design.md`（数据源坑、模板解析、里程碑验收都在里面）。
 - 二期伤害计算器：`app/services/damage.py`（服务）+ `app/routers/calc.py`（API）+ `web 前端 calc.js`。
   - 现代公式已与 Pokémon Showdown 官方引擎 `@smogon/calc` **逐 roll 校准一致**；
     校准脚本 `tools/calib/`（node harness.mjs 生成基准 → python check.py 比对，改公式后必须重跑）。
