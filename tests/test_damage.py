@@ -19,7 +19,7 @@ def _glaceon_garchomp_vector(crit=False):
          "item": "", "ability": "", "boosts": {}, "is_dynamax": False}
     move = {"name_zh": "冰牙", "identifier": "ice-fang", "type_zh": "冰",
             "damage_class": "physical", "power": 65}
-    opt = {"formula": "modern", "crit": crit}
+    opt = {"crit": crit}
     return damage.calc_damage(a, d, move, opt)
 
 
@@ -42,7 +42,7 @@ def test_immunity():
     a = {"types": "一般", "level": 50, "stats": {"atk": 100, "def": 100, "spa": 100, "spd": 100, "spe": 100, "hp": 100}, "item": "", "ability": "", "boosts": {}}
     d = {"types": "幽灵", "level": 50, "stats": {"atk": 100, "def": 100, "spa": 100, "spd": 100, "spe": 100, "hp": 100}, "item": "", "ability": "", "boosts": {}}
     move = {"name_zh": "破坏光线", "identifier": "hyper-beam", "type_zh": "一般", "damage_class": "special", "power": 150}
-    r = damage.calc_damage(a, d, move, {"formula": "modern"})
+    r = damage.calc_damage(a, d, move, {})
     assert r["effectiveness"] == 0 and r["max"] == 0
 
 
@@ -50,7 +50,7 @@ def test_levitate_ground_immune():
     a = {"types": "地面", "level": 50, "stats": {"atk": 150, "def": 100, "spa": 100, "spd": 100, "spe": 100, "hp": 100}, "item": "", "ability": "", "boosts": {}}
     d = {"types": "超能力,飞行", "level": 50, "stats": {"atk": 100, "def": 100, "spa": 100, "spd": 100, "spe": 100, "hp": 100}, "item": "", "ability": "漂浮", "boosts": {}}
     move = {"name_zh": "地震", "identifier": "earthquake", "type_zh": "地面", "damage_class": "physical", "power": 100}
-    r = damage.calc_damage(a, d, move, {"formula": "modern"})
+    r = damage.calc_damage(a, d, move, {})
     assert r["max"] == 0
 
 
@@ -70,25 +70,13 @@ def test_dynamax_hp_and_behemoth():
     a = {"types": "钢", "level": 100, "stats": {"atk": 200, "def": 150, "spa": 100, "spd": 150, "spe": 100, "hp": 100}, "item": "", "ability": "", "boosts": {}}
     d_normal = {"types": "龙", "level": 100, "stats": {"atk": 150, "def": 150, "spa": 100, "spd": 120, "spe": 100, "hp": 300}, "item": "", "ability": "", "boosts": {}}
     move = {"name_zh": "巨兽斩击", "identifier": "behemoth-blade", "type_zh": "钢", "damage_class": "physical", "power": 100}
-    r1 = damage.calc_damage(a, d_normal, move, {"formula": "modern"})
+    r1 = damage.calc_damage(a, d_normal, move, {})
     # 极巨化 HP×2 在能力值计算层完成；直接构造上下文时手动翻倍
     d_max = {**d_normal, "is_dynamax": True, "stats": {**d_normal["stats"], "hp": 600}}
-    r2 = damage.calc_damage(a, d_max, move, {"formula": "modern"})
+    r2 = damage.calc_damage(a, d_max, move, {})
     assert r2["hp"] == 600
     # 巨兽系对极巨化 ×2（other 链 8192/4096）
     assert (r2["min"], r2["max"]) == (r1["min"] * 2, r1["max"] * 2)
-
-
-def test_pla_formula():
-    a = {"types": "岩石", "level": 50, "stats": {"atk": 180, "def": 100, "spa": 100, "spd": 100, "spe": 100, "hp": 100}, "item": "", "ability": "", "boosts": {}}
-    d = {"types": "火,飞行", "level": 50, "stats": {"atk": 100, "def": 120, "spa": 100, "spd": 100, "spe": 100, "hp": 160}, "item": "", "ability": "", "boosts": {}}
-    move = {"name_zh": "岩崩", "identifier": "rock-slide", "type_zh": "岩石", "damage_class": "physical", "power": 75}
-    r = damage.calc_damage(a, d, move, {"formula": "pla"})
-    # 公式: floor(((100+A+15L)*P/(D+50)/5)) * roll * STAB1.25 * eff4，全程向下取整
-    base = int((100 + 180 + 15 * 50) * 75 / (120 + 50) / 5)  # 90
-    assert r["min"] == max(int(int(base * 0.85) * 1.25) * 4, 1)   # 380
-    assert r["max"] == max(int(int(base * 1.00) * 1.25) * 4, 1)   # 448
-
 
 def _vector(**opt_over):
     a = {"types": "火", "level": 50, "stats": {"atk": 150, "def": 100, "spa": 150, "spd": 100, "spe": 100, "hp": 160},
@@ -97,7 +85,7 @@ def _vector(**opt_over):
          "item": "", "ability": "", "boosts": {}, "is_dynamax": False}
     move = {"name_zh": "百万吨重拳", "identifier": "mega-punch", "type_zh": "一般",
             "damage_class": "physical", "power": 80}
-    opt = {"formula": "modern"}
+    opt = {}
     opt.update(opt_over)
     return damage.calc_damage(a, d, move, opt)
 
@@ -117,16 +105,8 @@ def test_guts_burn_boost():
          "item": "", "ability": "", "boosts": {}, "is_dynamax": False}
     move = {"name_zh": "百万吨重拳", "identifier": "mega-punch", "type_zh": "一般",
             "damage_class": "physical", "power": 80}
-    r = damage.calc_damage(guts_a, d, move, {"formula": "modern", "burn": True})
+    r = damage.calc_damage(guts_a, d, move, {"burn": True})
     assert r["max"] > base["max"]
-
-
-def test_za_formula_applies_07():
-    modern = _vector()
-    za = _vector(formula="za")
-    assert za["max"] < modern["max"]
-    assert za["max"] <= modern["max"] * 0.75  # 末尾 ×0.7（向下取整）
-
 
 def test_z_and_max_power_tables():
     assert damage.z_power(85) == 160 and damage.z_power(150) == 200
@@ -143,10 +123,56 @@ def test_tera_stab_and_defense():
          "item": "", "ability": "", "boosts": {}, "is_dynamax": False}
     move = {"name_zh": "百万吨重拳", "identifier": "mega-punch", "type_zh": "一般",
             "damage_class": "physical", "power": 80}
-    base = damage.calc_damage(a, d, move, {"formula": "modern"})
-    tera_atk = damage.calc_damage({**a, "tera_type": "一般"}, d, move, {"formula": "modern"})
+    base = damage.calc_damage(a, d, move, {})
+    tera_atk = damage.calc_damage({**a, "tera_type": "一般"}, d, move, {})
     assert tera_atk["max"] > base["max"]                    # 太晶 STAB
-    tera_def = damage.calc_damage(a, {**d, "tera_type": "钢"}, move, {"formula": "modern"})
+    tera_def = damage.calc_damage(a, {**d, "tera_type": "钢"}, move, {})
     assert tera_def["effectiveness"] == base["effectiveness"]  # 同属性太晶相性不变
-    tera_def2 = damage.calc_damage(a, {**d, "tera_type": "幽灵"}, move, {"formula": "modern"})
+    tera_def2 = damage.calc_damage(a, {**d, "tera_type": "幽灵"}, move, {})
     assert tera_def2["effectiveness"] == 0                     # 太晶幽灵免疫一般
+
+
+def _vector_with(move_type="冰", power=65, **opt):
+    a = {"types": "冰", "level": 75, "stats": {"atk": 123, "def": 100, "spa": 200, "spd": 150, "spe": 100, "hp": 200},
+         "item": "", "ability": "", "boosts": {}}
+    d = {"types": "龙,地面", "level": 75, "stats": {"atk": 150, "def": 163, "spa": 100, "spd": 110, "spe": 102, "hp": 270},
+         "item": "", "ability": "", "boosts": {}, "is_dynamax": False}
+    move = {"name_zh": "测试招式", "identifier": "test-move", "type_zh": move_type,
+            "damage_class": "physical", "power": power}
+    return damage.calc_damage(a, d, move, opt)
+
+
+def test_helping_hand_multiplies():
+    base = _vector_with()
+    helped = _vector_with(helping_hand=True)
+    # 帮助为 finalMod 6144/4096 = 1.5 倍（4096 链取整，近似 1.5）
+    assert helped["max"] == max(1, round(base["max"] * 6144 / 4096)) or helped["max"] in (
+        int(base["max"] * 6144 / 4096 + 0.5), int(base["max"] * 1.5))
+    assert helped["max"] > base["max"]
+
+
+def test_aurora_veil_like_screens():
+    plain = _vector_with()
+    veiled_no_crit = _vector_with(screen="aurora")
+    assert veiled_no_crit["max"] < plain["max"]   # 极光幕减半（非会心）
+    crit_plain = _vector_with(crit=True)
+    crit_veiled = _vector_with(screen="aurora", crit=True)
+    assert crit_veiled["max"] == crit_plain["max"]  # 会心无视壁
+
+
+def test_grassy_terrain_halves_ground():
+    base = _vector_with(move_type="地面", power=90)
+    grassy = _vector_with(move_type="地面", power=90, terrain="grassy")
+    other_type = _vector_with(move_type="冰", power=90, terrain="grassy")
+    base_ice = _vector_with(move_type="冰", power=90)
+    assert grassy["max"] < base["max"]          # 地面招式减半
+    assert other_type["max"] == base_ice["max"]  # 非地面不受影响
+
+
+def test_harsh_weather_alias():
+    sun = _vector_with(move_type="火", power=90, weather="sun")
+    harsh = _vector_with(move_type="火", power=90, weather="harsh_sun")
+    neutral = _vector_with(move_type="火", power=90)
+    sand = _vector_with(move_type="火", power=90, weather="sand")
+    assert harsh["max"] == sun["max"] > neutral["max"]
+    assert sand["max"] == neutral["max"]        # 沙暴不影响伤害数值

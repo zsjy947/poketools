@@ -1,6 +1,5 @@
 /* 宝可梦详情页：PC 两栏布局（左=信息/介绍/特性/相性，右=种族值能力值/进化链/获取/招式表）。
    形态用缩略图 tab 条切换，内容随形态独立变化；翻页原地换数据不整页重建。 */
-const STAT_KEYS = ["hp", "atk", "def", "spa", "spd", "spe"];
 const DetailView = {
   template: `
   <div v-loading="loading">

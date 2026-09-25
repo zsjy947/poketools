@@ -119,6 +119,10 @@ def _assemble(con, side: dict, is_attacker: bool) -> dict:
                                      evs, ivs, choice_item=item,
                                      dynamax=bool(side.get("is_dynamax")),
                                      def_spd_mult=def_spd_mult)
+    # 实际值覆盖（六项任意覆盖，覆盖后不再参与后续加成换算）
+    for k, v in (side.get("stat_overrides") or {}).items():
+        if k in stats and isinstance(v, (int, float)) and v >= 1:
+            stats[k] = int(v)
     hidden = {a for a in (form["hidden_abilities"] or "").split(",") if a}
     return {
         "species_id": species_id, "name": sp["name_zh"],
@@ -129,10 +133,32 @@ def _assemble(con, side: dict, is_attacker: bool) -> dict:
                          for a in (form["abilities"] or "").split(",") if a],
         "boosts": side.get("boosts") or {},
         "is_dynamax": bool(side.get("is_dynamax")),
+        "is_mega": bool(form["is_mega"]),
         "tera_type": side.get("tera_type") or "",
         "stats": stats, "_raw": {**side},
         "evs": evs, "ivs": ivs,
     }
+
+
+def _validate_mechanisms(atk: dict, dfd: dict, body: dict) -> None:
+    """机制互斥（P4）：超级进化 / Z招式 / 极巨化 / 太晶化 同侧只能点亮一个。"""
+    def _check(side_label: str, flags: list[str]) -> None:
+        on = [f for f in flags if f]
+        if len(on) > 1:
+            raise HTTPException(
+                400, f"{side_label}的机制互斥：超级进化/Z招式/极巨化/太晶化只能选择一个")
+    _check("攻击方", [atk["is_mega"] and "超级进化",
+                     body.get("z_move") and "Z招式",
+                     (body.get("max_move") or atk["is_dynamax"]) and "极巨化",
+                     atk["tera_type"] and "太晶化"])
+    _check("防御方", [dfd["is_mega"] and "超级进化",
+                     dfd["is_dynamax"] and "极巨化",
+                     dfd["tera_type"] and "太晶化"])
+
+
+CALC_OPTS = ("weather", "crit", "burn", "screen", "move_power_override",
+             "item_type", "defender_full_hp", "z_move", "max_move",
+             "helping_hand", "terrain")
 
 
 @router.post("/calc")
@@ -141,13 +167,12 @@ def calc(body: dict = Body(...)):
     try:
         atk = _assemble(con, body["attacker"], True)
         dfd = _assemble(con, body["defender"], False)
+        _validate_mechanisms(atk, dfd, body)
         mv = con.execute("SELECT * FROM moves WHERE id=?",
                          (body["move_id"],)).fetchone()
         if mv is None:
             raise HTTPException(404, "move not found")
-        opt = {k: body.get(k) for k
-               in ("formula", "weather", "crit", "burn", "screen", "move_power_override",
-                   "item_type", "style", "defender_full_hp", "z_move", "max_move")}
+        opt = {k: body.get(k) for k in CALC_OPTS}
         result = damage.calc_damage(atk, dfd, dict(mv), opt)
         return {"attacker": {k: atk[k] for k in ("name", "types", "level", "stats", "tera_type")},
                 "defender": {k: dfd[k] for k in ("name", "types", "level", "stats", "is_dynamax", "tera_type")},
@@ -180,9 +205,8 @@ def compare_forms(body: dict = Body(...)):
                 else:
                     atk = _assemble(con, base["attacker"], True)
                     dfd = _assemble(con, {**base["defender"], "form_id": f["id"], "species_id": species_id}, False)
-                opt = {k: base.get(k) for k
-                       in ("formula", "weather", "crit", "burn", "screen", "move_power_override",
-                           "item_type", "style", "defender_full_hp", "z_move", "max_move")}
+                _validate_mechanisms(atk, dfd, base)
+                opt = {k: base.get(k) for k in CALC_OPTS}
                 r = damage.calc_damage(atk, dfd, dict(mv), opt)
                 if "error" in r:
                     continue

@@ -44,3 +44,6 @@ const POWER_COLORS = {
   "大大力": "#e05a5a", "小小力": "#6fc7e8", "经验力": "#8f7ff0", "掉物力": "#63b0a2",
   "团战力": "#5a9be0", "称号力": "#c8a2d8",
 };
+
+const STAT_KEYS = ["hp", "atk", "def", "spa", "spd", "spe"];
+const STAT_ZH = { hp: "HP", atk: "攻击", def: "防御", spa: "特攻", spd: "特防", spe: "速度" };

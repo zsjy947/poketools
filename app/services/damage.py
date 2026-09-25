@@ -1,9 +1,11 @@
-"""伤害计算器服务：现代公式（剑盾/朱紫）、传说 阿尔宙斯公式、传说 Z-A 公式。
+"""伤害计算器服务：现代公式（第五世代起回合制，剑盾/朱紫）。
 
-取整语义（依据 Bulbapedia「Damage」）：
-- 现代公式：基础伤害向下取整；此后每步乘法四舍五入（0.5 舍去），
-  Critical 与 Type 两步向下取整；other 修正链以 4096 为基相乘（0.5 进位取整）。
-- 阿尔宙斯 / Z-A：全程向下取整（Z-A 末尾 ×0.7）。
+四期 P4-1 起只保留现代公式（阿尔宙斯 / Z-A 公式模式已移除，见 docs/DESIGN.md 变更历史）。
+
+取整语义（依据 Bulbapedia「Damage」，与 @smogon/calc 逐 roll 校准，勿改顺序）：
+- 基础伤害向下取整；天气以 4096 分数 pokeRound 作用于基础伤害；会心 ×1.5 向下取整；
+- 随机最先 floor(base×(85+i)/100)；STAB 为 4096 分数链；
+- other/finalMod 修正链以 4096 为基相乘（每步 0.5 进位取整）。
 """
 from __future__ import annotations
 
@@ -196,83 +198,12 @@ def _stab(move_type: str, atk_types: list[str], adaptability: bool) -> float:
     return 2.0 if adaptability else 1.5
 
 
-def calc_damage_za(a: dict, d: dict, move: dict, opt: dict) -> dict:
-    """传说 Z-A（docs/DESIGN-DAMAGE-CALC.md §1.3）：现代公式变体。
-
-    与现代公式的差异：能力等级按 ×1.5/×0.67 逐级连乘（全程向下取整）；
-    天气 1.2/0.8；末尾全局 ×0.7（向下取整）。无 4096 修正链。
-    """
-    physical = move["damage_class"] == "physical"
-    power = opt.get("move_power_override") or move.get("power") or 0
-    if not power or move["damage_class"] == "status":
-        return {"error": "status_or_no_power"}
-
-    atk_types = [t for t in (a["types"] or "").split(",") if t]
-    def_types = [d["tera_type"]] if d.get("tera_type") else \
-        [t for t in (d["types"] or "").split(",") if t]
-    a_abil = a.get("ability") or ""
-
-    eff = effectiveness(move["type_zh"], def_types, move.get("identifier", ""),
-                        levitate=((d.get("ability") or "") == "漂浮"))
-    if eff == 0:
-        return {"min": 0, "max": 0, "effectiveness": 0, "label": EFFECTIVENESS_LABEL[0],
-                "hp": d["stats"]["hp"], "pct_min": 0, "pct_max": 0, "ohko": False, "rolls": [0]}
-
-    def za_stat(v: int, k: int) -> int:
-        for _ in range(abs(k)):
-            v = math.floor(v * (1.5 if k > 0 else 0.67))
-        return v
-
-    atk_v = za_stat(a["stats"]["atk" if physical else "spa"],
-                    a.get("boosts", {}).get("atk" if physical else "spa", 0))
-    def_v = za_stat(d["stats"]["def" if physical else "spd"],
-                    d.get("boosts", {}).get("def" if physical else "spd", 0))
-
-    x = math.floor(math.floor(math.floor(2 * a["level"] / 5 + 2) * power) * atk_v / def_v)
-    x = math.floor(x / 50) + 2
-    w = opt.get("weather", "")
-    if (w == "sun" and move["type_zh"] == "火") or (w == "rain" and move["type_zh"] == "水"):
-        x = math.floor(x * 1.2)
-    elif (w == "sun" and move["type_zh"] == "水") or (w == "rain" and move["type_zh"] == "火"):
-        x = math.floor(x * 0.8)
-    if opt.get("crit"):
-        x = math.floor(x * 1.5)
-
-    stab = _stab(move["type_zh"], atk_types, a_abil == "适应力")
-    if a.get("tera_type") == move["type_zh"]:
-        stab = max(stab, 2.0 if move["type_zh"] in atk_types else 1.5)
-    screen_on = opt.get("screen") == ("reflect" if physical else "light_screen")
-    burn = opt.get("burn") and physical and a_abil != "毅力" and move.get("name_zh") != "装模作样"
-
-    rolls = []
-    for r in range(85, 101):
-        dmg = math.floor(x * r / 100)
-        dmg = math.floor(dmg * stab)
-        dmg = math.floor(dmg * eff)
-        if burn:
-            dmg = math.floor(dmg / 2)
-        if screen_on and not opt.get("crit"):
-            dmg = math.floor(dmg / 2)
-        dmg = math.floor(dmg * 0.7)   # Z-A 全局修正
-        rolls.append(max(1, dmg))
-
-    hp = d["stats"]["hp"]
-    pct = [math.floor(v * 1000 / hp) / 10 for v in (min(rolls), max(rolls))]
-    return {
-        "base": x, "rolls": rolls, "min": min(rolls), "max": max(rolls),
-        "effectiveness": eff, "label": EFFECTIVENESS_LABEL.get(eff, f"×{eff}"),
-        "hp": hp, "pct_min": pct[0], "pct_max": pct[1],
-        "ohko": min(rolls) >= hp,
-    }
-
-
 def calc_damage_modern(a: dict, d: dict, move: dict, opt: dict) -> dict:
     """严格对齐 @smogon/calc gen5+ 机制（逐位校准，见 tools/calib 与 docs）。
 
     流程: base(含天气/会心) → random(floor) → STAB(4096分数) → pokeRound×相性(floor)
           → 灼伤(floor/2) → finalMod(4096链, 含屏幕/特性/道具) → pokeRound, min 1
     """
-    formula = opt.get("formula", "modern")
     physical = move["damage_class"] == "physical"
     power = opt.get("move_power_override") or move.get("power") or 0
     if not power or move["damage_class"] == "status":
@@ -309,8 +240,9 @@ def calc_damage_modern(a: dict, d: dict, move: dict, opt: dict) -> dict:
 
     # ---- 基础伤害 ----
     base = math.floor(math.floor(math.floor(math.floor(2 * a["level"] / 5 + 2) * power) * atk_v / def_v) / 50 + 2)
-    # 天气（4096 分数 pokeRound）
-    w = opt.get("weather", "")
+    # 天气（4096 分数 pokeRound）。大晴天/大雨与晴/雨同乘数；乱流/沙暴/雪不影响伤害数值
+    w = {"harsh_sun": "sun", "harsh_rain": "rain"}.get(
+        opt.get("weather", ""), opt.get("weather", ""))
     if (w == "sun" and move["type_zh"] == "火") or (w == "rain" and move["type_zh"] == "水"):
         base = rnd_half_down(base * 6144 / 4096)
     elif (w == "sun" and move["type_zh"] == "水") or (w == "rain" and move["type_zh"] == "火"):
@@ -328,10 +260,16 @@ def calc_damage_modern(a: dict, d: dict, move: dict, opt: dict) -> dict:
                                           or a_abil == "适应力") else 6144)
     apply_burn = opt.get("burn") and physical and a_abil != "毅力" and move.get("name_zh") != "装模作样"
 
-    # finalMod 4096 链（顺序对齐 smogon）
+    # finalMod 4096 链（顺序对齐 smogon；帮助 6144 置于链首）
     mods = []
-    screen_on = opt.get("screen") == ("reflect" if physical else "light_screen")
+    if opt.get("helping_hand"):
+        mods.append(6144)
+    screen = opt.get("screen", "")
+    screen_on = screen == ("reflect" if physical else "light_screen") or screen == "aurora"
     if screen_on and not opt.get("crit"):
+        mods.append(2048)
+    # 青草场地：接地的防守方受地面招式伤害减半（漂浮免疫；飞行系未判定，见 DATA-GAPS）
+    if opt.get("terrain") == "grassy" and move["type_zh"] == "地面" and d_abil != "漂浮":
         mods.append(2048)
     if a_abil == "超感知" and eff > 1:
         mods.append(5120)
@@ -376,40 +314,5 @@ def calc_damage_modern(a: dict, d: dict, move: dict, opt: dict) -> dict:
     }
 
 
-def calc_damage_pla(a: dict, d: dict, move: dict, opt: dict) -> dict:
-    physical = move["damage_class"] == "physical"
-    power = opt.get("move_power_override") or move.get("power") or 0
-    if not power or move["damage_class"] == "status":
-        return {"error": "status_or_no_power"}
-    def_types = [t for t in (d["types"] or "").split(",") if t]
-    eff = effectiveness(move["type_zh"], def_types, move.get("identifier", ""))
-    if eff == 0:
-        return {"min": 0, "max": 0, "effectiveness": 0, "label": EFFECTIVENESS_LABEL[0],
-                "hp": d["stats"]["hp"], "pct_min": 0, "pct_max": 0, "ohko": False, "rolls": [0]}
-    atk_v = a["stats"]["atk" if physical else "spa"]
-    def_v = d["stats"]["def" if physical else "spd"]
-    # 风格：strong 1.5 / agile 0.66 / normal 1
-    style = {"strong": 1.5, "agile": 0.66}.get(opt.get("style", ""), 1.0)
-    atk_v = int(atk_v * style)
-    stab = 1.25 if move["type_zh"] in a["types"].split(",") else 1.0
-    rolls = []
-    for r in range(85, 101):
-        x = math.floor((100 + atk_v + 15 * a["level"]) * power / (def_v + 50) / 5)
-        x = math.floor(x * r / 100)
-        x = math.floor(x * stab)
-        x = math.floor(x * eff)
-        rolls.append(max(x, 1))
-    hp = d["stats"]["hp"]
-    pct = [math.floor(v * 1000 / hp) / 10 for v in (min(rolls), max(rolls))]
-    return {"base": rolls[0], "rolls": rolls, "min": min(rolls), "max": max(rolls),
-            "effectiveness": eff, "label": EFFECTIVENESS_LABEL.get(eff, f"×{eff}"),
-            "hp": hp, "pct_min": pct[0], "pct_max": pct[1], "ohko": min(rolls) >= hp}
-
-
 def calc_damage(a: dict, d: dict, move: dict, opt: dict) -> dict:
-    formula = opt.get("formula", "modern")
-    if formula == "pla":
-        return calc_damage_pla(a, d, move, opt)
-    if formula == "za":
-        return calc_damage_za(a, d, move, opt)
     return calc_damage_modern(a, d, move, opt)

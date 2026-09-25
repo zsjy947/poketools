@@ -162,3 +162,22 @@ def test_review_regressions():
     p = client.get("/api/pokemon/133").json()
     conds = list(p["evolution"]["conds"].values())
     assert conds and all("mountain" not in c and "-" not in c.replace("-", "") or True for c in conds)
+
+
+def test_calc_mechanism_exclusive():
+    # 机制互斥：Z招式 + 太晶化同侧 → 400（P4）
+    body = {
+        "attacker": {"species_id": 445, "tera_type": "火", "level": 50},
+        "defender": {"species_id": 143, "level": 50},
+        "move_id": 89, "z_move": True,
+    }
+    assert client.post("/api/calc", json=body).status_code == 400
+    body["z_move"] = False
+    r = client.post("/api/calc", json=body)
+    assert r.status_code == 200
+    # 帮助/青草场地等扩项透传可用
+    r2 = client.post("/api/calc", json={
+        "attacker": {"species_id": 445, "level": 50},
+        "defender": {"species_id": 143, "level": 50},
+        "move_id": 89, "helping_hand": True})
+    assert r2.status_code == 200 and r2.json()["result"]["max"] > r.json()["result"]["max"]
