@@ -48,6 +48,18 @@ const cases = [
     move: "Freeze-Dry",
   },
   {
+    key: "helping_hand_eq",
+    atk: { species: "Garchomp", level: 50, nature: "Adamant", evs: { atk: 252 }, ivs: IV },
+    def: { species: "Snorlax", level: 50, nature: "Careful", evs: {}, ivs: IV },
+    move: "Earthquake", helpingHand: true,
+  },
+  {
+    key: "grassy_terrain_eq",
+    atk: { species: "Garchomp", level: 50, nature: "Adamant", evs: { atk: 252 }, ivs: IV },
+    def: { species: "Snorlax", level: 50, nature: "Careful", evs: {}, ivs: IV },
+    move: "Earthquake", terrain: "Grassy",
+  },
+  {
     key: "levitate_immune",
     atk: { species: "Garchomp", level: 50, nature: "Adamant", evs: { atk: 252 }, ivs: IV },
     def: { species: "Rotom-Wash", level: 50, nature: "Bold", evs: {}, ivs: IV },
@@ -64,7 +76,10 @@ const out = cases.map((c) => {
     level: c.def.level, nature: c.def.nature, evs: c.def.evs, ivs: c.def.ivs,
   });
   const move = new Move(gen, c.move, { isCrit: c.crit || undefined });
-  const field = new Field({ weather: c.weather });
+  const field = new Field({
+    weather: c.weather, terrain: c.terrain,
+    attackerSide: c.helpingHand ? { isHelpingHand: true } : undefined,
+  });
   const r = calculate(gen, atk, def, move, field);
   return {
     key: c.key,

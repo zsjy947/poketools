@@ -222,10 +222,18 @@ def add_custom_recipe(body: dict = Body(...)):
     if not isinstance(effects, list) or not all(
             isinstance(e, dict) for e in effects):
         raise HTTPException(400, "effects 格式无效")
-    effects = [{"power": str(e.get("power", ""))[:20],
-                "type": str(e.get("type", ""))[:8],
-                "level": int(e.get("level", 1))}
-               for e in effects if e.get("power")]
+    clean_effects = []
+    for e in effects:
+        if not e.get("power"):
+            continue
+        try:
+            level = int(e.get("level", 1))
+        except (TypeError, ValueError):
+            raise HTTPException(400, "effects.level 无效")
+        clean_effects.append({"power": str(e.get("power", ""))[:20],
+                              "type": str(e.get("type", ""))[:8],
+                              "level": level})
+    effects = clean_effects
     ingredients = _recipe_items(body.get("ingredients"))
     seasonings = _recipe_items(body.get("seasonings"))
     # 朱紫三明治：食材/调味料必填；Z-A 甜甜圈：树果 3~8 个（黄油固定无输入）

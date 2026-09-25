@@ -201,18 +201,14 @@ def _stab(move_type: str, atk_types: list[str], adaptability: bool) -> float:
 def calc_damage_modern(a: dict, d: dict, move: dict, opt: dict) -> dict:
     """严格对齐 @smogon/calc gen5+ 机制（逐位校准，见 tools/calib 与 docs）。
 
-    流程: base(含天气/会心) → random(floor) → STAB(4096分数) → pokeRound×相性(floor)
+    流程: 威力阶段修正(帮助/青草场地, bpMods) → Z/极巨换算
+          → base(含天气/会心) → random(floor) → STAB(4096分数) → pokeRound×相性(floor)
           → 灼伤(floor/2) → finalMod(4096链, 含屏幕/特性/道具) → pokeRound, min 1
     """
     physical = move["damage_class"] == "physical"
     power = opt.get("move_power_override") or move.get("power") or 0
     if not power or move["damage_class"] == "status":
         return {"error": "status_or_no_power"}
-    # Z招式 / 极巨招式威力换算（覆盖基础威力）
-    if opt.get("z_move"):
-        power = z_power(power, move.get("identifier", ""))
-    elif opt.get("max_move"):
-        power = max_power(power, move["type_zh"])
 
     atk_types = [t for t in (a["types"] or "").split(",") if t]
     tera_a = a.get("tera_type") or ""
@@ -221,6 +217,21 @@ def calc_damage_modern(a: dict, d: dict, move: dict, opt: dict) -> dict:
         def_types = [d["tera_type"]]
     a_abil = a.get("ability") or ""
     d_abil = d.get("ability") or ""
+
+    # ---- 威力阶段修正（对齐 smogon bpMods，作用于基础威力，先于 Z/极巨换算） ----
+    # 帮助：威力 ×1.5（6144/4096 pokeRound）
+    if opt.get("helping_hand"):
+        power = rnd_half_down(power * 6144 / 4096)
+    # 青草场地：仅地震/跺脚，且防守方接地（非漂浮、非飞行系）时威力减半
+    if (opt.get("terrain") == "grassy"
+            and move.get("identifier") in ("earthquake", "bulldoze")
+            and d_abil != "漂浮" and "飞行" not in def_types):
+        power = rnd_half_down(power * 2048 / 4096)
+    # Z招式 / 极巨招式威力换算（覆盖基础威力）
+    if opt.get("z_move"):
+        power = z_power(power, move.get("identifier", ""))
+    elif opt.get("max_move"):
+        power = max_power(power, move["type_zh"])
 
     eff = effectiveness(move["type_zh"], def_types, move.get("identifier", ""),
                         levitate=(d_abil == "漂浮"))
@@ -260,16 +271,11 @@ def calc_damage_modern(a: dict, d: dict, move: dict, opt: dict) -> dict:
                                           or a_abil == "适应力") else 6144)
     apply_burn = opt.get("burn") and physical and a_abil != "毅力" and move.get("name_zh") != "装模作样"
 
-    # finalMod 4096 链（顺序对齐 smogon；帮助 6144 置于链首）
+    # finalMod 4096 链（顺序对齐 smogon；极光幕并入屏幕项）
     mods = []
-    if opt.get("helping_hand"):
-        mods.append(6144)
     screen = opt.get("screen", "")
     screen_on = screen == ("reflect" if physical else "light_screen") or screen == "aurora"
     if screen_on and not opt.get("crit"):
-        mods.append(2048)
-    # 青草场地：接地的防守方受地面招式伤害减半（漂浮免疫；飞行系未判定，见 DATA-GAPS）
-    if opt.get("terrain") == "grassy" and move["type_zh"] == "地面" and d_abil != "漂浮":
         mods.append(2048)
     if a_abil == "超感知" and eff > 1:
         mods.append(5120)

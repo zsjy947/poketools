@@ -1423,12 +1423,6 @@
  },
  {
   "species_id": 58,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "两只一组共同负责地盘的警卫工作。体毛中混有火成岩的成分，可以推想这是受到火山活动的影响。（洗翠的样子）"
- },
- {
-  "species_id": 58,
   "game": "scarlet-violet",
   "label": "朱",
   "text": "能毫无畏惧地去对抗比自己更强更大的对手。性格勇敢非常可靠。"
@@ -1456,12 +1450,6 @@
   "game": "sword-shield",
   "label": "盾",
   "text": "从古时候起就是俘获了众多人心的美丽宝可梦。能像飞一样轻巧地奔跑。"
- },
- {
-  "species_id": 59,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "将猛烈燃烧的火焰缠绕在牙齿上扑向猎物。虽然体型很大，却能以灵巧的假动作戏弄敌手，那姿态就像是舞蹈一般。（洗翠的样子）"
  },
  {
   "species_id": 59,
@@ -2479,12 +2467,6 @@
  },
  {
   "species_id": 100,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "形状颇似精灵球的奇异宝可梦。当情绪高涨时，积蓄在腹部的电流就会放出，同时发出大笑。（洗翠的样子）"
- },
- {
-  "species_id": 100,
   "game": "scarlet-violet",
   "label": "朱",
   "text": "靠翻滚身体来移动，如果地面凹凸不平，就会受到冲击而爆炸。"
@@ -2500,12 +2482,6 @@
   "game": "brilliant-diamond-shining-pearl",
   "label": "晶钻/明珍",
   "text": "外观酷似精灵球。如果误触了就会被电麻，有时甚至还会爆炸，十分危险。"
- },
- {
-  "species_id": 101,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "体表的组织与球果的成分极为接近，不可思议。当它情绪焦躁时所放出的电流，能量足以匹敌２０次的落雷。（洗翠的样子）"
  },
  {
   "species_id": 101,
@@ -4063,12 +4039,6 @@
  },
  {
   "species_id": 157,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "据考察，它是受到耸立于洗翠中心的灵山之气影响，才形成了现在的模样。据说会用自己的火焰净化并超渡无处可去的灵魂。（洗翠的样子）"
- },
- {
-  "species_id": 157,
   "game": "scarlet-violet",
   "label": "朱",
   "text": "该宝可梦藏有大绝招。会摩擦熊熊燃烧着的体毛，掀起爆炸气浪进行攻击。"
@@ -5320,12 +5290,6 @@
   "game": "sword-shield",
   "label": "盾",
   "text": "全身上下的小针都是由鳞片变化而来的。如果被刺中的话，就会因中毒而昏迷。"
- },
- {
-  "species_id": 211,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "会用针散布毒素的棘手家伙，因而受到渔民们的厌恶。栖息在其他地区的千针鱼则是呈现着不同的姿态。（洗翠的样子）"
  },
  {
   "species_id": 211,
@@ -9768,18 +9732,6 @@
   "text": "群居的护城龙们在遭到敌人袭击时，会排成横排，用坚硬的脸来抵挡攻击。"
  },
  {
-  "species_id": 412,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "蓑衣只要稍有缺损，就会立即用身边的材料加以修补。蓑衣内的身体十分细瘦且畏惧寒冷。（草木蓑衣）"
- },
- {
-  "species_id": 413,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "草木制成的蓑衣与躯体融合，如同体毛或皮肤般成为了身体的一部分。据考察这乃是进化能量带来的作用。（草木蓑衣）"
- },
- {
   "species_id": 414,
   "game": "legends-arceus",
   "label": "洗翠",
@@ -9916,84 +9868,6 @@
   "game": "legends-arceus",
   "label": "洗翠",
   "text": "会在真身旁的果实长大成熟后，使用果实的营养来进化。之后果实会自己掉落，成为其他生物的食粮。"
- },
- {
-  "species_id": 421,
-  "game": "sword-shield",
-  "label": "剑",
-  "text": "花苞形态时性格稳重，几乎不会动，只是静静地等待太阳光的出现。（阴天形态）"
- },
- {
-  "species_id": 421,
-  "game": "sword-shield",
-  "label": "盾",
-  "text": "盖起来的花瓣很硬。即使被鸟宝可梦啄到，也完全没问题。（阴天形态）"
- },
- {
-  "species_id": 421,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "除了偶尔颤动之外几乎动也不动。从紧闭的花瓣中泄漏而出的香气会吸引多种宝可梦聚集而来。（阴天形态）"
- },
- {
-  "species_id": 422,
-  "game": "sword-shield",
-  "label": "剑",
-  "text": "样子会因环境不同而改变。也有人说它到了温暖的海里就会变成这个样子。（西海）"
- },
- {
-  "species_id": 422,
-  "game": "sword-shield",
-  "label": "盾",
-  "text": "如果用力按住它，它就会分泌出神秘的紫色液体。虽然液体无害，不过黏糊糊的。（西海）"
- },
- {
-  "species_id": 422,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "多数生息在水温较暖的岩岸。性情意外地亲人，会主动靠近过来，但要小心被它的黏液沾满全身。（西海）"
- },
- {
-  "species_id": 422,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "以前它的背上曾有贝壳。与大舌贝等宝可梦属于相近的物种。（西海）"
- },
- {
-  "species_id": 422,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "会渗透出紫色的汁液来威吓敌人。跟过去相比，这个样子的群体似乎更多了。（西海）"
- },
- {
-  "species_id": 423,
-  "game": "sword-shield",
-  "label": "剑",
-  "text": "为了觅食也会登上陆地。海兔兽经过的地方会留下黏糊糊的粘液。（西海）"
- },
- {
-  "species_id": 423,
-  "game": "sword-shield",
-  "label": "盾",
-  "text": "身体软瘫瘫的但十分强韧。因为它身体的软度可以帮助分散它所受到的冲击。（西海）"
- },
- {
-  "species_id": 423,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "以海中沙子作为粮食。不同颜色的海兔兽相遇时，将会展开激烈无比的斗争。（西海）"
- },
- {
-  "species_id": 423,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "全身都是稠稠的黏液。过去这个样子的它，数量可谓压倒性地多。（西海）"
- },
- {
-  "species_id": 423,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "能在岩岸发现它的踪影。会用黏液慢慢溶解并吸食捕捉到的猎物。（西海）"
  },
  {
   "species_id": 424,
@@ -11545,24 +11419,6 @@
  },
  {
   "species_id": 479,
-  "game": "sword-shield",
-  "label": "剑",
-  "text": "某位少年的发明促使人们开始制造各种活用洛托姆的机器 。（洛托姆的样子）"
- },
- {
-  "species_id": 479,
-  "game": "sword-shield",
-  "label": "盾",
-  "text": "会用由离子构成的身体潜入各种各样的机器里。最喜欢恶作剧吓人。（洛托姆的样子）"
- },
- {
-  "species_id": 479,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "看来像是靠电能运作的灵魂，怪异至极的宝可梦。天生聪慧，但喜欢恶作剧，需小心应付。（洛托姆的样子）"
- },
- {
-  "species_id": 479,
   "game": "scarlet-violet",
   "label": "朱",
   "text": "如同电一般的身体能够进入到一部分机器里，并将其作为躯体来恶作剧。"
@@ -11659,12 +11515,6 @@
  },
  {
   "species_id": 487,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "洗翠地区自古流传着这样一句话：强光照而暗影生。在本人的想象中，暗影指的正是这种宝可梦。（别种形态）"
- },
- {
-  "species_id": 487,
   "game": "brilliant-diamond-shining-pearl",
   "label": "晶钻/明珍",
   "text": "据说这种宝可梦栖息在位于这个世界背面的世界里。会出现在古代的墓地中。"
@@ -11710,12 +11560,6 @@
   "game": "legends-za",
   "label": "Z-A",
   "text": "拥有诱使人们进入深度睡眠并做梦的能力。在朔月的夜晚活动。"
- },
- {
-  "species_id": 492,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "当人们欣喜于严冬随着季节更替而终结，向上天奉献感谢之意时，此宝可梦就会现身，令荒寂的大地开满鲜花。（陆上形态）"
  },
  {
   "species_id": 493,
@@ -11848,12 +11692,6 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "它性情勤勉，严以律己。会通过踏踏实实地反复练习来掌握运用扇贝贝的技巧。"
- },
- {
-  "species_id": 503,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "性情与刀路皆是残酷无情。连绵不断的攻击彷如千层浪涛。此乃只在洗翠进化而成的稀有姿态。（洗翠的样子）"
  },
  {
   "species_id": 503,
@@ -12046,12 +11884,6 @@
   "game": "sword-shield",
   "label": "盾",
   "text": "头脑聪明而且记性很好。似乎有许多快递员将它选为自己的搭档。"
- },
- {
-  "species_id": 521,
-  "game": "sword-shield",
-  "label": "剑",
-  "text": "拥有高度的飞行能力。雌性擅于持久，雄性擅长速度。（Male）"
  },
  {
   "species_id": 521,
@@ -12547,12 +12379,6 @@
  },
  {
   "species_id": 549,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "据考察，雪山深处的栖息环境为其带来了发达的脚力。会从头冠般的花中发出鼓舞周围伙伴的香气。（洗翠的样子）"
- },
- {
-  "species_id": 549,
   "game": "scarlet-violet",
   "label": "朱",
   "text": "只要闻了它头上花饰所散发出的香气就能感到精神舒缓，但却非常难以打理。"
@@ -12562,36 +12388,6 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "无论花多少工夫和金钱，比起借助人工手段让它开放，在野外绽放的花更美。"
- },
- {
-  "species_id": 550,
-  "game": "sword-shield",
-  "label": "剑",
-  "text": "它上钩时顽强的抵抗深受垂钓者的喜爱。由于人们擅自把它们放生到池塘里，数量越来越多。（紅條紋的樣子）"
- },
- {
-  "species_id": 550,
-  "game": "sword-shield",
-  "label": "盾",
-  "text": "从前也曾经登上餐桌。红条纹野蛮鲈鱼的肉脂肪含量高，适合年轻人食用。（紅條紋的樣子）"
- },
- {
-  "species_id": 550,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "此宝可梦具有多项野蛮鲈鱼的特征，虽然有性情温驯等不同点存在，本人仍将其定义为野蛮鲈鱼的地区形态。（白条纹的样子）"
- },
- {
-  "species_id": 550,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "性情狂暴，充满攻击性。并且拥有顽强的生命力，会在不知不觉间数量增多。（红条纹的样子）"
- },
- {
-  "species_id": 550,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "性情凶恶，甚至被称为河里的小混混，其实它是吃吼霸和下石鸟等的袭击目标。（红条纹的样子）"
  },
  {
   "species_id": 551,
@@ -12949,12 +12745,6 @@
  },
  {
   "species_id": 570,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "死后灵魂在洗翠地区复苏。怨恨化为力量，从其头部冉冉飘升。会化成对手的样貌去洗刷仇恨。（洗翠的样子）"
- },
- {
-  "species_id": 570,
   "game": "scarlet-violet",
   "label": "朱",
   "text": "会幻化成对手的外表来使其受到惊吓。似乎经常幻化成沉默寡言的小孩。"
@@ -12976,12 +12766,6 @@
   "game": "sword-shield",
   "label": "盾",
   "text": "孤独的训练家会命令索罗亚克为自己展现幻像，借以排遣孤身一人的寂寞。"
- },
- {
-  "species_id": 571,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "疯狂舞动白发的姿态如同死神。在足以撕裂自身的深刻仇怨驱使下，抱定同归于尽之心袭杀仇敌。（洗翠的样子）"
  },
  {
   "species_id": 571,
@@ -13264,30 +13048,6 @@
   "game": "legends-za",
   "label": "Z-A",
   "text": "如果２个头同时发怒，就会从角上喷出猛烈的暴风雪。会用大雪掩埋四周。"
- },
- {
-  "species_id": 585,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "气味会随着季节而改变，初春的气味略带甘甜，能使情绪稳定下来。（春天的样子）"
- },
- {
-  "species_id": 585,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "虽然外形很可爱，却因为喜爱吃草木的新芽而被农民们疏远。（春天的样子）"
- },
- {
-  "species_id": 586,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "角上的花很多的萌芽鹿由于会被花抢走养分，从而成长速度略显缓慢。（春天的样子）"
- },
- {
-  "species_id": 586,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "拥有许多爱好者的宝可梦。人们认为它角上绽放的淡红色花朵颜色越淡就代表越美丽。（春天的样子）"
  },
  {
   "species_id": 587,
@@ -14119,12 +13879,6 @@
  },
  {
   "species_id": 628,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "勇猛的大鸟。狩猎时会发出气势骇人的战吼，朝湖水发出冲击波，捕捉浮出水面的猎物。（洗翠的样子）"
- },
- {
-  "species_id": 628,
   "game": "scarlet-violet",
   "label": "朱",
   "text": "勇猛果敢的天空战士。身上受的伤越多，就越会受到伙伴的尊敬。"
@@ -14382,18 +14136,6 @@
   "text": "以敏捷的身手像旋风一般将敌人玩弄于股掌之中，会用锋利的角毫不留情地切斩对手。"
  },
  {
-  "species_id": 641,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "可引发风暴的宝可梦。传说由于它搅拌大气，季节因此得以循环不息。据本人考察，近似人类的形态才是假象而非真身。（化身形态）"
- },
- {
-  "species_id": 642,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "传说它凭借自身的雷击，自古便与宿敌龙卷云不断斗争。它那贯穿大地的雷击使得土壤得到了精炼。（化身形态）"
- },
- {
   "species_id": 643,
   "game": "sword-shield",
   "label": "剑",
@@ -14418,12 +14160,6 @@
   "text": "在神话的描述里，如果人类失去了正义之心，它就会用狂暴的雷电毁灭他们的王国。"
  },
  {
-  "species_id": 645,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "会在旋风与电击的化身互相斗争之时现身并加以平息。在风暴与雷电过后，大地必将迎来丰收。（化身形态）"
- },
- {
   "species_id": 646,
   "game": "sword-shield",
   "label": "剑",
@@ -14434,30 +14170,6 @@
   "game": "sword-shield",
   "label": "盾",
   "text": "为了稳定细胞组织，它似乎用自己制造出的冷气冰冻着身体。"
- },
- {
-  "species_id": 647,
-  "game": "sword-shield",
-  "label": "剑",
-  "text": "从勾帕路翁、代拉基翁和毕力吉翁那里学会了战斗。驰骋全世界，不断修行。（平常的样子）"
- },
- {
-  "species_id": 647,
-  "game": "sword-shield",
-  "label": "盾",
-  "text": "据说当它挺过了艰难的战斗，额头上的角就能得到锻炼，从而激发出自己真正的力量。（平常的样子）"
- },
- {
-  "species_id": 647,
-  "game": "legends-za",
-  "label": "Z-A",
-  "text": "会从蹄子里喷出水，从而在水面上滑行移动。用擅长的腿技战斗。（平常的样子）"
- },
- {
-  "species_id": 648,
-  "game": "legends-za",
-  "label": "Z-A",
-  "text": "用特殊的发声法唱出的旋律可以自由地操纵听者的情绪。（歌声形态）"
  },
  {
   "species_id": 649,
@@ -14790,24 +14502,6 @@
   "text": "隐藏在繁茂的树荫中生活。一旦被敌人袭击，就会尖尖地竖起体毛威吓对方。"
  },
  {
-  "species_id": 666,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "身上的花纹会受到诞生地的气候和风土影响而改变。这是它在极为寒冷的地方的样子。（冰雪花纹）"
- },
- {
-  "species_id": 666,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "诞生在极为寒冷的地方。会从翅膀撒出色彩艳丽的毒鳞粉来战斗。（冰雪花纹）"
- },
- {
-  "species_id": 666,
-  "game": "legends-za",
-  "label": "Z-A",
-  "text": "身上的花纹会受到诞生地的气候和风土影响而改变。这是它在极为寒冷的地方的样子。（冰雪花纹）"
- },
- {
   "species_id": 667,
   "game": "scarlet-violet",
   "label": "朱",
@@ -14842,60 +14536,6 @@
   "game": "legends-za",
   "label": "Z-A",
   "text": "群体中，拥有最大火焰鬃毛的雄性会作为首领率领着伙伴。"
- },
- {
-  "species_id": 669,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "它所拥有的能力可以激发出野花潜藏的力量。尤其喜欢红花。（红花）"
- },
- {
-  "species_id": 669,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "乘着红花的花蓓蓓。从出生那一刻起就会为了寻找喜欢的花而四处飞行。（红花）"
- },
- {
-  "species_id": 669,
-  "game": "legends-za",
-  "label": "Z-A",
-  "text": "它所拥有的能力可以激发出野花潜藏的力量。尤其喜欢红花。（红花）"
- },
- {
-  "species_id": 670,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "抱着红花的花叶蒂。会将枯萎的花里剩余的能量激发出来，从而使其恢复生机。（红花）"
- },
- {
-  "species_id": 670,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "会通过红色的波长把自己的能量传递给花，以激发花的潜在能力。（红花）"
- },
- {
-  "species_id": 670,
-  "game": "legends-za",
-  "label": "Z-A",
-  "text": "会通过红色的波长把自己的能量传递给花，以激发花的潜在能力。（红花）"
- },
- {
-  "species_id": 671,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "会在自己的地盘内打造出漂亮的花园。能激发颈部上红花的力量。（红花）"
- },
- {
-  "species_id": 671,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "据说由花洁夫人打造的花园中会源源不断地倾注着能够治愈身心的力量。（红花）"
- },
- {
-  "species_id": 671,
-  "game": "legends-za",
-  "label": "Z-A",
-  "text": "据说由花洁夫人打造的花园中会源源不断地倾注着能够治愈身心的力量。（红花）"
  },
  {
   "species_id": 672,
@@ -15006,36 +14646,6 @@
   "text": "为了不让强大的精神力量漏出，用耳朵捂住释放力量的器官。"
  },
  {
-  "species_id": 678,
-  "game": "sword-shield",
-  "label": "剑",
-  "text": "会从耳朵内侧眼珠花纹的地方释放出精神力量，但平时会将那种力量隐藏起来。（雄性的样子）"
- },
- {
-  "species_id": 678,
-  "game": "sword-shield",
-  "label": "盾",
-  "text": "雄性的防卫本能很强，在保护自己和伙伴时能发挥最大的威力。（雄性的样子）"
- },
- {
-  "species_id": 678,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "拥有能击飞任何对手的精神力量，但比起攻击敌人，它更愿意用于守护伙伴。（雄性的样子）"
- },
- {
-  "species_id": 678,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "如果持续释放强大的精神力量，那么超能妙喵自身的肉体也会受到伤害。（雄性的样子）"
- },
- {
-  "species_id": 678,
-  "game": "legends-za",
-  "label": "Z-A",
-  "text": "如果危险逼近，就会竖起耳朵，释放出能拧碎１０吨重卡车的精神力量。（雄性的样子）"
- },
- {
   "species_id": 679,
   "game": "sword-shield",
   "label": "剑",
@@ -15070,24 +14680,6 @@
   "game": "legends-za",
   "label": "Z-A",
   "text": "进化后分裂为２把。通过心灵感应对话，用配合攻击砍碎敌人。"
- },
- {
-  "species_id": 681,
-  "game": "sword-shield",
-  "label": "剑",
-  "text": "处于防御状态时，会用钢之身体和灵力的屏障来减弱一切的攻击。（盾牌形态）"
- },
- {
-  "species_id": 681,
-  "game": "sword-shield",
-  "label": "盾",
-  "text": "坚盾剑怪曾经用强大的灵力控制人和宝可梦，建立了适合自己生活的国家。（盾牌形态）"
- },
- {
-  "species_id": 681,
-  "game": "legends-za",
-  "label": "Z-A",
-  "text": "好像能看出哪个人有成为国王的潜质。据说，被它认可的人最终会成为国王。（盾牌形态）"
  },
  {
   "species_id": 682,
@@ -15661,12 +15253,6 @@
  },
  {
   "species_id": 705,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "性情阴沉。据考察，洗翠地区的水中含有的铁质对皮肤的黏液产生作用，使其变化成了金属外壳。（洗翠的样子）"
- },
- {
-  "species_id": 705,
   "game": "scarlet-violet",
   "label": "朱",
   "text": "背上漩涡状的突起物里装着它的大脑和心脏等所有重要的器官。"
@@ -15694,12 +15280,6 @@
   "game": "sword-shield",
   "label": "盾",
   "text": "用伸长角产生的力道来攻击对手，产生的威力比重量级拳击手的拳击还强１００倍。"
- },
- {
-  "species_id": 706,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "能自在操纵可刚可柔的金属外壳。性情执着且厌恶孤独，一旦喜爱的对象离开自己便会怒不可遏。（洗翠的样子）"
  },
  {
   "species_id": 706,
@@ -15810,42 +15390,6 @@
   "text": "用根茎代替神经操纵森林里的树木。对住在它身体里的宝可梦很亲切。"
  },
  {
-  "species_id": 710,
-  "game": "sword-shield",
-  "label": "剑",
-  "text": "在这个世界游荡的灵魂会被装到南瓜精的身体里，启程前往另一个世界。（普通尺寸）"
- },
- {
-  "species_id": 710,
-  "game": "sword-shield",
-  "label": "盾",
-  "text": "南瓜的洞里发出的光会催眠并控制看到它的人和宝可梦。（普通尺寸）"
- },
- {
-  "species_id": 710,
-  "game": "legends-za",
-  "label": "Z-A",
-  "text": "最近发现各类尺寸的南瓜精品种不同，不仅身体大小有别，带走的灵魂尺寸也有差异。（中颗种）"
- },
- {
-  "species_id": 711,
-  "game": "sword-shield",
-  "label": "剑",
-  "text": "深夜时分，它身体里发出的诡异叫声似乎是死者在另一个世界里的痛苦哭声。（普通尺寸）"
- },
- {
-  "species_id": 711,
-  "game": "sword-shield",
-  "label": "盾",
-  "text": "南瓜怪人会在朔月的夜里去别人家门口敲门。开了门的人会被它带往另一个世界。（普通尺寸）"
- },
- {
-  "species_id": 711,
-  "game": "legends-za",
-  "label": "Z-A",
-  "text": "在朔月的夜晚一边在街上游荡一边用诡异的声音唱歌。如果听到那歌声，就会被诅咒。（中颗种）"
- },
- {
   "species_id": 712,
   "game": "sword-shield",
   "label": "剑",
@@ -15892,12 +15436,6 @@
   "game": "sword-shield",
   "label": "盾",
   "text": "虽然身体的裂缝会因白天的活动而变大，但只要一晚就能全部长好。"
- },
- {
-  "species_id": 713,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "包覆下颚的冰块装甲硬度更胜钢铁，能轻易地击碎岩石。冰岩怪借此铲开厚重积雪，在险峻的山路上猛冲。（洗翠的样子）"
  },
  {
   "species_id": 713,
@@ -15990,22 +15528,10 @@
   "text": "听说，寿命终结时，会吸光所有生物的生命，返回到茧的样子。"
  },
  {
-  "species_id": 718,
-  "game": "legends-za",
-  "label": "Z-A",
-  "text": "据说，生活在洞窟的深处，一直在监视着破坏生态系统者的一举一动。（５０％形态）"
- },
- {
   "species_id": 719,
   "game": "legends-za",
   "label": "Z-A",
   "text": "小碎钻的突变体。闪着粉红色光辉的身体被赞为全世界最美。"
- },
- {
-  "species_id": 720,
-  "game": "legends-za",
-  "label": "Z-A",
-  "text": "会使用圆环把自己喜欢的东西收集到秘密的住所中。会钻入环里瞬间移动。 （惩戒胡帕）"
  },
  {
   "species_id": 721,
@@ -16054,12 +15580,6 @@
   "game": "sword-shield",
   "label": "盾",
   "text": "只要０.１秒就可以在翅膀的藤蔓上搭好箭羽、射向敌人，并在敌人发现前贯穿其要害。"
- },
- {
-  "species_id": 724,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "为抵抗洗翠的严寒气候，羽毛的芯中含有空气，因而能够防寒。由此可见环境会对进化产生影响。（洗翠的样子）"
  },
  {
   "species_id": 724,
@@ -16374,18 +15894,6 @@
   "text": "比起思考，会先试着打打看。曾经有过用拳头猛攻打退雪崩的记录。"
  },
  {
-  "species_id": 741,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "热情的舞蹈与帕底亚人们的性情似乎很合得来，因此非常受欢迎。（热辣热辣风格）"
- },
- {
-  "species_id": 741,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "吸食了朱红色花蜜的样子。会踩着热情的舞步，卷起猛烈的火焰。（热辣热辣风格）"
- },
- {
   "species_id": 742,
   "game": "sword-shield",
   "label": "剑",
@@ -16456,42 +15964,6 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "在长大之前会集体行动。一旦心情变差，就会开始用脖子上的岩石敲打地面。"
- },
- {
-  "species_id": 745,
-  "game": "sword-shield",
-  "label": "剑",
-  "text": "既冷静又慎重。鬃毛里的岩石像剃刀那样锋利。（白昼的样子）"
- },
- {
-  "species_id": 745,
-  "game": "sword-shield",
-  "label": "盾",
-  "text": "会用敏捷的动作将猎物一点一点逼入绝境。利齿总是瞄准着对方的要害。（白昼的样子）"
- },
- {
-  "species_id": 745,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "会用尖爪和利牙袭击猎物。只要是信赖的训练家所下的指令，它都会忠诚地听从。（白昼的样子）"
- },
- {
-  "species_id": 745,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "性情沉着冷静。会迅速地接近猎物，然后用鬃毛岩石将其击碎。（白昼的样子）"
- },
- {
-  "species_id": 746,
-  "game": "sword-shield",
-  "label": "剑",
-  "text": "单独１只十分弱小，所以学会了通过群体行动来对抗敌人的能力。（單獨的樣子）"
- },
- {
-  "species_id": 746,
-  "game": "sword-shield",
-  "label": "盾",
-  "text": "感觉到危险时眼睛就会变得湿润。眼泪的光亮会成为召集伙伴的信号，让许多的弱丁鱼聚在一起。（單獨的樣子）"
  },
  {
   "species_id": 747,
@@ -17046,30 +16518,6 @@
   "text": "以神话中的宝可梦为原型所创造出的宝可梦，被戴上了抑制力量失控的面罩。"
  },
  {
-  "species_id": 773,
-  "game": "sword-shield",
-  "label": "剑",
-  "text": "与伙伴间深厚的牵绊让蕴藏在自己体内的力量觉醒。可以随意改变属性。（属性：一般）"
- },
- {
-  "species_id": 773,
-  "game": "sword-shield",
-  "label": "盾",
-  "text": "与所信赖的训练家之间的牵绊是解放它真正力量的最后一个要素。（属性：一般）"
- },
- {
-  "species_id": 774,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "诞生于臭氧层的宝可梦。当包裹核心的外壳变重了，就会掉落到地面上。（流星的样子）"
- },
- {
-  "species_id": 774,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "摸它叫它，它都会作出些什么反应，但并不清楚这些反应是否出自它自身的意志。（流星的样子）"
- },
- {
   "species_id": 775,
   "game": "scarlet-violet",
   "label": "朱",
@@ -17104,36 +16552,6 @@
   "game": "sword-shield",
   "label": "盾",
   "text": "在危急时刻会把身体卷成一团，倒竖起背上的尖刺，不分青红皂白地发出电击。"
- },
- {
-  "species_id": 778,
-  "game": "sword-shield",
-  "label": "剑",
-  "text": "为了让别人不要害怕自己，特意穿上了看似皮卡丘的破布，结果却变得更加令人毛骨悚然。（化形的樣子）"
- },
- {
-  "species_id": 778,
-  "game": "sword-shield",
-  "label": "盾",
-  "text": "有一位学者为了研究而看了它的破布里面，结果患上怪病而离开人世。（化形的樣子）"
- },
- {
-  "species_id": 778,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "栖息在阳光照射不到的阴暗处。在人们面前现身时会用酷似皮卡丘的布来盖住全身。（化形的樣子）"
- },
- {
-  "species_id": 778,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "最近才被认定为宝可梦。在这之前，大家一直以为它是穿着布的幽灵。（化形的樣子）"
- },
- {
-  "species_id": 778,
-  "game": "legends-za",
-  "label": "Z-A",
-  "text": "这个怕寂寞的家伙，会用破布隐藏自己可怕的样子来接近人和其他宝可梦。（化形的样子）"
  },
  {
   "species_id": 779,
@@ -17308,12 +16726,6 @@
   "game": "sword-shield",
   "label": "盾",
   "text": "为生存而发狂般地寻找着光。会发射出激光，将所有东西切成碎片。"
- },
- {
-  "species_id": 801,
-  "game": "legends-za",
-  "label": "Z-A",
-  "text": "大约５００年前由科学家制作而成。被称为魂心的部分是它的本体。（現在的顏色）"
  },
  {
   "species_id": 802,
@@ -18228,36 +17640,6 @@
   "text": "通过让自身的毒素产生化学反应来发电。电力虽然弱，却能造成麻痹。"
  },
  {
-  "species_id": 849,
-  "game": "sword-shield",
-  "label": "剑",
-  "text": "当它用力抓挠胸部的突起物来制造电力时，四周会响起如同吉他演奏般的声音。（高调的样子）"
- },
- {
-  "species_id": 849,
-  "game": "sword-shield",
-  "label": "盾",
-  "text": "气势汹汹的急性子。会大口喝下浑浊的水，吸收其中所含的毒素。（高调的样子）"
- },
- {
-  "species_id": 849,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "当它一边排出带毒的汗水一边放电时，周围会响起仿佛吉他般的旋律。（高调的样子）"
- },
- {
-  "species_id": 849,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "会凶暴地弹奏胸部的突起物。弹奏时释放出的电击可轻易超过１５０００伏特。（高调的样子）"
- },
- {
-  "species_id": 849,
-  "game": "legends-za",
-  "label": "Z-A",
-  "text": "当它用力抓挠胸部的突起物来制造电力时，四周会响起如同吉他演奏般的声音。（高调的样子）"
- },
- {
   "species_id": 850,
   "game": "sword-shield",
   "label": "剑",
@@ -18316,54 +17698,6 @@
   "game": "legends-za",
   "label": "Z-A",
   "text": "会用自豪的触手施展寝技压制对手。即便力量惊人的宝可梦也无法挣脱并逃走。"
- },
- {
-  "species_id": 854,
-  "game": "sword-shield",
-  "label": "剑",
-  "text": "据说这只宝可梦是因为害怕寂寞的灵魂住进了凉透的喝剩红茶而诞生的。（贗品形態）"
- },
- {
-  "species_id": 854,
-  "game": "sword-shield",
-  "label": "盾",
-  "text": "被它当成住处的茶杯是有名的古董餐具。市面上有很多赝品。（贗品形態）"
- },
- {
-  "species_id": 854,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "死于孤独的死者之魂附在了喝剩的红茶上。会在旅馆或民宅出现。（赝品形态）"
- },
- {
-  "species_id": 854,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "趁着自己被喝掉时进入对方身体里，从内部夺走对方的生物能量。味道很糟糕。（赝品形态）"
- },
- {
-  "species_id": 855,
-  "game": "sword-shield",
-  "label": "剑",
-  "text": "住在古董茶壶里。虽然大多数都是赝品，但偶尔也能发现真货。（贗品形態）"
- },
- {
-  "species_id": 855,
-  "game": "sword-shield",
-  "label": "盾",
-  "text": "每当发现喝剩的红茶，它就会把自己的身体倒进去，让那壶红茶变成怖思壶。（贗品形態）"
- },
- {
-  "species_id": 855,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "由红茶组成的身体风味独特又不失美味，但饮用过量可能会致死。（赝品形态）"
- },
- {
-  "species_id": 855,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "会潜入茶壶里，然后把自己倒进喝到一半的红茶里来增加份量。（赝品形态）"
  },
  {
   "species_id": 856,
@@ -18630,30 +17964,6 @@
   "text": "遭到敌人袭击时会使出撞击，或是令敌人沾满奶油而封住视线，或是趁敌人惊叹美味时逃之夭夭。"
  },
  {
-  "species_id": 869,
-  "game": "sword-shield",
-  "label": "剑",
-  "text": "它会把自己用鲜奶油装饰过的树果送给自己信任的训练家。（奶香香草）"
- },
- {
-  "species_id": 869,
-  "game": "sword-shield",
-  "label": "盾",
-  "text": "当它感到幸福的时候，手中产生出的鲜奶油会变得更加香浓甜美。（奶香香草）"
- },
- {
-  "species_id": 869,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "霜奶仙装饰过的甜点甜味浓郁，不论是谁吃了之后都能变得幸福。（奶香香草）"
- },
- {
-  "species_id": 869,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "备受照料的霜奶仙产出的鲜奶油可谓极品，因此训练家都会温柔地培育它。（奶香香草）"
- },
- {
   "species_id": 870,
   "game": "sword-shield",
   "label": "剑",
@@ -18778,90 +18088,6 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "每天眺望着日升日落。会用超过２００公斤的双脚悠然自得地在草原上阔步。"
- },
- {
-  "species_id": 875,
-  "game": "sword-shield",
-  "label": "剑",
-  "text": "从非常寒冷的地方漂流而来。随时都用冰块冰镇着自己的脸。（结冻头）"
- },
- {
-  "species_id": 875,
-  "game": "sword-shield",
-  "label": "盾",
-  "text": "无论何时都用冰块冰镇着自己怕热的脸。会把头顶上的毛垂到海里钓食物吃。（结冻头）"
- },
- {
-  "species_id": 875,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "在高温的日子里，伙伴之间会互相紧贴着头上的冰块，借此来给彼此降温度日。（结冻头）"
- },
- {
-  "species_id": 875,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "脸部的冰块舔起来略带咸味。它是乘着海流从遥远的寒冷地带来到这里的。（结冻头）"
- },
- {
-  "species_id": 876,
-  "game": "sword-shield",
-  "label": "剑",
-  "text": "会用头上的角读取对方的心情。雄性就像管家一样，在主人的身边打理一切。（雄性的样子）"
- },
- {
-  "species_id": 876,
-  "game": "sword-shield",
-  "label": "盾",
-  "text": "能通过自己的角去感受附近生物的情感。正面情绪是它的能量之源。（雄性的样子）"
- },
- {
-  "species_id": 876,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "会用角来接收其他生物的正面情绪，然后将其转换为自身的能量。（雄性的样子）"
- },
- {
-  "species_id": 876,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "时时刻刻都待在训练家身边。它会用精神力量来预知训练家的行动，并照顾其日常起居。（雄性的样子）"
- },
- {
-  "species_id": 876,
-  "game": "legends-za",
-  "label": "Z-A",
-  "text": "能通过自己的角去感受附近生物的情感。正面情绪是它的能量之源。（雄性的样子）"
- },
- {
-  "species_id": 877,
-  "game": "sword-shield",
-  "label": "剑",
-  "text": "总是饿着肚子。会吃掉装在像口袋一样的袋子里的种子来发电。（满腹花纹）"
- },
- {
-  "species_id": 877,
-  "game": "sword-shield",
-  "label": "盾",
-  "text": "无论怎么吃都会马上肚子饿。十分珍爱自己用电烘烤过的种子，随时都带在身上。（满腹花纹）"
- },
- {
-  "species_id": 877,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "虽然总是在靠吃种子来抑制饥饿感，但若是饿过头，就会心烦意乱变得粗暴。（满腹花纹）"
- },
- {
-  "species_id": 877,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "胃很小，所以不常吃袋子里的种子的话，肚子马上就会饿。（满腹花纹）"
- },
- {
-  "species_id": 877,
-  "game": "legends-za",
-  "label": "Z-A",
-  "text": "总是饿着肚子。会吃掉装在像口袋一样的袋子里的种子来发电。（满腹花纹）"
  },
  {
   "species_id": 878,
@@ -19056,30 +18282,6 @@
   "text": "群体里飞得最快的个体总是被想要体验音速飞行的多龙梅西亚包围。"
  },
  {
-  "species_id": 888,
-  "game": "sword-shield",
-  "label": "剑",
-  "text": "被称为传说中的英雄。能够吸收金属，并将之转化为武器来战斗。（百战勇者）"
- },
- {
-  "species_id": 888,
-  "game": "sword-shield",
-  "label": "盾",
-  "text": "这只宝可梦被认为是沉睡已久的藏玛然特的姐姐，也有人认为它们之间是劲敌关系。（百战勇者）"
- },
- {
-  "species_id": 889,
-  "game": "sword-shield",
-  "label": "剑",
-  "text": "与众人之王协力拯救了伽勒尔的宝可梦。吸收金属来进行战斗。（百战勇者）"
- },
- {
-  "species_id": 889,
-  "game": "sword-shield",
-  "label": "盾",
-  "text": "以石像般的姿态陷入长久沉眠的宝可梦。几乎就要被人们所遗忘。（百战勇者）"
- },
- {
   "species_id": 890,
   "game": "sword-shield",
   "label": "剑",
@@ -19102,18 +18304,6 @@
   "game": "sword-shield",
   "label": "盾",
   "text": "拉紧头上又白又长的体毛，就会变得斗气势高昂，并从丹田涌出力量。"
- },
- {
-  "species_id": 892,
-  "game": "sword-shield",
-  "label": "剑",
-  "text": "一击必杀是它的信条。飞冲到对方的怀中，用自己经过千锤百炼的拳头一拳击入。（一击流）"
- },
- {
-  "species_id": 892,
-  "game": "sword-shield",
-  "label": "盾",
-  "text": "生活在遥远地区的山岳地带。通过在断崖绝壁上奔跑来锻炼腰腿，磨炼招式。（一击流）"
  },
  {
   "species_id": 893,
@@ -19224,34 +18414,10 @@
   "text": "考察结果显示，正是遍布在洗翠大地上的湿地土壤，造就了它坚实的躯体和自在运用泥炭的新能力。"
  },
  {
-  "species_id": 901,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "在飘洋过海所到达的土地上存活下来的结果，让它的样子和能力起了特别的变化。（赫月）"
- },
- {
-  "species_id": 901,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "很特别的月月熊，会用如铁般坚硬的泥土保护身体，并拥有能看穿黑暗的左眼。（赫月）"
- },
- {
   "species_id": 902,
   "game": "legends-arceus",
   "label": "洗翠",
   "text": "在溯河而上的旅程中半途丧命的伙伴的灵魂缠绕其身。在流经洗翠地区的河川里可谓所向无敌。"
- },
- {
-  "species_id": 902,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "在前往出生的河川的艰苦旅程中丧命的伙伴的灵魂时刻缠绕在它的身上。（雄性的样子）"
- },
- {
-  "species_id": 902,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "拥有惊人的弹跳力。死去的伙伴的怒火染红了它的身体。（雄性的样子）"
  },
  {
   "species_id": 903,
@@ -19282,12 +18448,6 @@
   "game": "legends-za",
   "label": "Z-A",
   "text": "强化得又粗又长的毒针能够自行针对会动的东西发起攻击。"
- },
- {
-  "species_id": 905,
-  "game": "legends-arceus",
-  "label": "洗翠",
-  "text": "当它越过大海飞来，便代表严寒的冬季即将终结。传说中其慈爱将使新的生命在洗翠大地上萌芽。（化身形态）"
  },
  {
   "species_id": 906,
@@ -19410,18 +18570,6 @@
   "text": "只吃精挑细选过的食物。虫宝可梦很讨厌它身上散发的那种仿佛香草的气味。"
  },
  {
-  "species_id": 916,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "以自己细致透亮的肌肤为傲。会从尾巴的前端释放出凝缩的香气。（雄性的样子）"
- },
- {
-  "species_id": 916,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "会从全身散发出香甜妖艳的气味，令雌性的宝可梦为它神魂颠倒。（雄性的样子）"
- },
- {
   "species_id": 917,
   "game": "scarlet-violet",
   "label": "朱",
@@ -19518,18 +18666,6 @@
   "text": "无论何时２只待都在一起。会把寻获的食物均分成两半，亲密无间地一起进食。"
  },
  {
-  "species_id": 925,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "会制造巨大的巢穴，并根据用途来分出多个房间，包含寝室、餐厅等等。（三只家庭）"
- },
- {
-  "species_id": 925,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "不知不觉之间多了个小孩。虽然像一家子一样生活，但３只的关系仍是个迷。（三只家庭）"
- },
- {
   "species_id": 926,
   "game": "scarlet-violet",
   "label": "朱",
@@ -19600,24 +18736,6 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "会以连岩石都能粉碎的力道把香醇浓郁的油发射出去，击退敌人。"
- },
- {
-  "species_id": 931,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "喜欢栖息在街道上。会以羽毛的颜色来组队，然后展开领地之争。（绿羽毛）"
- },
- {
-  "species_id": 931,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "拥有绿色羽毛的怒鹦哥势力最为庞大。在觅食时段的早晨和夜晚会非常吵。（绿羽毛）"
- },
- {
-  "species_id": 931,
-  "game": "legends-za",
-  "label": "Z-A",
-  "text": "会根据羽毛的颜色来组队。绿色比其他颜色更易遗传，因此个体数很多。（绿羽毛）"
  },
  {
   "species_id": 932,
@@ -20094,18 +19212,6 @@
   "text": "水环是由从头部的洞冒出的黏胶与海水混合之后制作而成的。"
  },
  {
-  "species_id": 964,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "只要听见伙伴求助的声音，它就会改变自己的样子。那瞬间绝不会让谁看见。（平凡形态）"
- },
- {
-  "species_id": 964,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "体能与波普海豚差不多，可一旦伙伴陷入了危机，就会变身来提高自己的力量。（平凡形态）"
- },
- {
   "species_id": 965,
   "game": "scarlet-violet",
   "label": "朱",
@@ -20304,24 +19410,6 @@
   "text": "大闹起来时会引发巨浪。它虽然拥有巨大的身体和惊人的力量，却不擅长捕食。"
  },
  {
-  "species_id": 978,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "小型的龙宝可梦。会住在吃吼霸嘴里，保护自己免于外敌袭击。（上弓姿势）"
- },
- {
-  "species_id": 978,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "非常狡猾奸诈的宝可梦。会假装虚弱来吸引猎物接近，接着让自己同伙的宝可梦发动攻击。（上弓姿势）"
- },
- {
-  "species_id": 978,
-  "game": "legends-za",
-  "label": "Z-A",
-  "text": "为了争夺作为搭档的吃吼霸，米立龙之间会展开激烈的战斗。（上弓姿势）"
- },
- {
   "species_id": 979,
   "game": "scarlet-violet",
   "label": "朱",
@@ -20362,18 +19450,6 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "以坚硬的尾巴头保护着本体的头，并甩动长长的脖子让对手吃它一记头槌。"
- },
- {
-  "species_id": 982,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "会用坚硬的尾巴来挖穿地下深处的岩盘来筑巢。巢穴长达１０公里。（二节形态）"
- },
- {
-  "species_id": 982,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "会吸进空气充满细长的肺部，然后掀起强烈的爆炸气浪，将敌人赶出自己的巢穴。（二节形态）"
  },
  {
   "species_id": 983,
@@ -20586,24 +19662,6 @@
   "text": "从嘴里吐出连熔岩都能冻结的冷气，再用尾巴一击粉碎冻住的敌人。"
  },
  {
-  "species_id": 999,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "大约１５００年前在宝箱里出生。若有坏蛋打算偷走宝藏，就会被它吸走精气。（宝箱形态）"
- },
- {
-  "species_id": 999,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "栖息在老旧的宝箱中。有时会因没人注意到自己是宝可梦，而被搁置在道具店的角落。（宝箱形态）"
- },
- {
-  "species_id": 999,
-  "game": "legends-za",
-  "label": "Z-A",
-  "text": "藏身在坚固的宝箱里。虽然拥有很高的防御力，但身体沉重，不擅长移动。（宝箱形态）"
- },
- {
   "species_id": 1000,
   "game": "scarlet-violet",
   "label": "朱",
@@ -20694,30 +19752,6 @@
   "text": "它有可能就是某本探险记中记载的名为铁武者的物体。"
  },
  {
-  "species_id": 1007,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "它似乎就是古老的探险记所提到的翼大王本尊。据记载，它曾用拳头击裂大地。（完全形态）"
- },
- {
-  "species_id": 1007,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "虽然外观与摩托蜥相似，但却远比后者更为顽强凶暴。有关它的生态等信息一切未明。（完全形态）"
- },
- {
-  "species_id": 1008,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "关于它的详情尚且不明。与摩托蜥有着相似的印象，但强大与冷酷的程度远超摩托蜥。（完整模式）"
- },
- {
-  "species_id": 1008,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "它似乎就是古老的书籍中提及的铁大蛇。传说它曾用雷电将大地变为灰烬。（完整模式）"
- },
- {
   "species_id": 1009,
   "game": "scarlet-violet",
   "label": "朱",
@@ -20754,30 +19788,6 @@
   "text": "露出脑袋的外头虫与露出尾巴的里头虫互相帮助，一起生活在苹果里面。"
  },
  {
-  "species_id": 1012,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "据说是死前未能在茶道上登峰造极的茶道家的遗恨附到抹茶上所变成的宝可梦。（冒牌货的样子）"
- },
- {
-  "species_id": 1012,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "看似是来悲茶的地区形态，但最近被发现其实两者之间毫无关系。（冒牌货的样子）"
- },
- {
-  "species_id": 1013,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "虽然会假装成茶企图吸取误饮者的精气，但经常会被识破。（凡作的样子）"
- },
- {
-  "species_id": 1013,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "喜欢待在民宅的地板下和架子深处等阴凉的地方。日落后会四处徘徊寻找猎物。（凡作的样子）"
- },
- {
   "species_id": 1014,
   "game": "scarlet-violet",
   "label": "朱",
@@ -20812,18 +19822,6 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "扇动艳丽的翅膀抛撒费洛蒙让人和宝可梦为其神魂颠倒。"
- },
- {
-  "species_id": 1017,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "属性根据身着的面具而改变。会以敏捷的身手和踢技将敌人玩弄于股掌之中。（碧草面具）"
- },
- {
-  "species_id": 1017,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "喜欢恶作剧，好奇心旺盛。会释出蕴藏在面具内的属性的能量战斗。（碧草面具）"
  },
  {
   "species_id": 1018,
@@ -20896,18 +19894,6 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "据说它曾经射出发光的刀刃砍断了周围的一切，但无其他信息，身份不明。"
- },
- {
-  "species_id": 1024,
-  "game": "scarlet-violet",
-  "label": "朱",
-  "text": "通过将能量变为坚硬的结晶来保护自身。堪称太晶之源的宝可梦。（普通形态）"
- },
- {
-  "species_id": 1024,
-  "game": "scarlet-violet",
-  "label": "紫",
-  "text": "人们以前一直认为它们曾生活在古代帕底亚，但因地壳变动影响而灭绝。（普通形态）"
  },
  {
   "species_id": 1025,

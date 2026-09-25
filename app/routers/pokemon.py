@@ -283,10 +283,10 @@ def pokemon_moves(species_id: int, game: str = Query(...), form_id: int | None =
     for r in rows:
         d = dict(r)
         d["tm"] = tm_info(r["move_id"]) if r["method"] == "machine" else []
-        key = (r["method"], r["move_id"], r["level"])
         mkey = method_key.get(r["method"], r["method"])
         if game in RECALL_AS_LEVEL_GAMES and mkey == "tutor":
             mkey, d["level"], d["recall"] = "level", None, True
+        key = (mkey, r["move_id"])   # 以分组+招式去重（回忆并入升级后不重复）
         if key in seen or mkey not in groups:
             continue
         seen.add(key)

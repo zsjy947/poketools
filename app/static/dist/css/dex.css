@@ -121,3 +121,6 @@
 .chain-target { background: #f2fbef; border-color: #b8e5a3; }
 
 .tm-how { margin: 4px 0 10px 18px; background: #fffbee; border: 1px dashed #ecd9a0; border-radius: 6px; padding: 8px 12px; font-size: 13px; color: #6b5b1e; }
+
+/* 缺图隐藏：形态 tab / 进化链节点（PokeImg 三级回退全 404 时） */
+.form-chip img.img-missing, .evo-node img.img-missing { visibility: hidden; }

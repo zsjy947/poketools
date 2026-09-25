@@ -263,7 +263,7 @@ const DetailView = {
   </div>
   `,
   setup() {
-    const { ref, reactive, computed, inject, watch } = Vue;
+    const { ref, reactive, computed, inject, watch, onUnmounted } = Vue;
     const store = inject("store");
     const loading = ref(true);
     const d = ref(null);
@@ -414,7 +414,7 @@ const DetailView = {
     }
 
     /* ---- 数据加载（翻页用预取缓存 + 原地替换） ---- */
-    const detailCache = new Map();   // key: sid|game -> detail payload
+    const detailCache = new Map();   // key: sid|game -> detail payload（上限 40 条，先进先出）
     let loadToken = 0;
     async function load(silent = false) {
       const token = ++loadToken;
@@ -424,12 +424,18 @@ const DetailView = {
         if (!detailCache.has(key)) {
           const data = await apiGet("/api/pokemon/" + sid.value, { game: gameId.value });
           detailCache.set(key, data);
+          if (detailCache.size > 40) detailCache.delete(detailCache.keys().next().value);
         }
         if (token !== loadToken) return;
         d.value = detailCache.get(key);
+        suppressMoveWatch = true;
         formId.value = d.value.default_form ? d.value.default_form.id : null;
-        await Promise.all([loadMoves(), loadNatures()]);
-        prefetchNeighbors();
+        suppressMoveWatch = false;
+        try {
+          await Promise.all([loadMoves(), loadNatures()]);
+        } catch (_) { moves.value = null; }   // 招式失败不阻塞详情，避免新旧数据混排
+      } catch (_) {
+        if (token === loadToken && !silent) d.value = null;  // 详情失败显示空态
       } finally { if (token === loadToken && !silent) loading.value = false; }
     }
     function prefetchNeighbors() {
@@ -450,16 +456,23 @@ const DetailView = {
         natures.value = window.__naturesCache;
       }
     }
+    let moveToken = 0;
+    let suppressMoveWatch = false;
     async function loadMoves() {
       if (!gameId.value) { moves.value = null; return; }
-      moves.value = await apiGet("/api/pokemon/" + sid.value + "/moves",
+      const token = ++moveToken;
+      const res = await apiGet("/api/pokemon/" + sid.value + "/moves",
         { game: gameId.value, form_id: formId.value || undefined });
+      if (token !== moveToken) return;   // 慢请求过期丢弃，防止旧形态招式表覆盖新形态
+      moves.value = res;
       if (moves.value.tabs.length && !moves.value.tabs.some((t) => t.key === tab.value)) {
         tab.value = moves.value.tabs[0].key;
       }
     }
     /* 切换形态时重载该形态的招式表（介绍/特性/种族值随 curForm 响应式联动） */
-    watch(formId, () => { if (formId.value) loadMoves(); });
+    watch(formId, () => {
+      if (formId.value && !suppressMoveWatch) loadMoves().catch(() => {});
+    });
 
     async function showChains(row) {
       chainDlg.value = true;
@@ -502,19 +515,21 @@ const DetailView = {
       } catch (_) { /* 导航缺失不影响详情 */ }
     }
 
-    /* hash 变化：同组件内原地重载（翻页不闪白），并平滑回顶 */
-    window.addEventListener("hashchange", () => {
+    /* hash 变化：同组件内原地重载（翻页不闪白），并平滑回顶（卸载时移除监听） */
+    function onHashChange() {
       if (!location.hash.startsWith("#/pokemon/")) return;
       const changed = parseRoute();
       if (changed) {
-        loadNav();
+        loadNav().then(prefetchNeighbors);
         load(true);
         const main = document.querySelector(".main");
         if (main) main.scrollTo({ top: 0, behavior: "smooth" });
       }
-    });
+    }
+    window.addEventListener("hashchange", onHashChange);
+    onUnmounted(() => window.removeEventListener("hashchange", onHashChange));
 
-    loadNav();
+    loadNav().then(prefetchNeighbors);
     load();
     return {
       loading, d, sid, formId, curForm, formName, curFlavor, curEv, curDex, game, gameId,

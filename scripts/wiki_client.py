@@ -37,13 +37,14 @@ def _api(params: dict, retries: int = 5) -> dict | None:
     import sys
     for attempt in range(retries):
         try:
-            while True:
+            for _ in range(5):   # 内层同样有界，避免确定性 5xx 死循环
                 r = _session.get(API, params=params, timeout=90)
                 if r.status_code in (429, 502, 503):
                     time.sleep(8 * (attempt + 1))
                     continue
                 r.raise_for_status()
                 return r.json()
+            raise RuntimeError("api 5xx 重试上限")
         except Exception as e:  # noqa: BLE001 —— 单批失败重试后跳过
             if attempt == retries - 1:
                 print(f"  !! api 批次异常: {type(e).__name__}: {str(e)[:160]}",

@@ -133,7 +133,9 @@ def _assemble(con, side: dict, is_attacker: bool) -> dict:
                          for a in (form["abilities"] or "").split(",") if a],
         "boosts": side.get("boosts") or {},
         "is_dynamax": bool(side.get("is_dynamax")),
-        "is_mega": bool(form["is_mega"]),
+        # 互斥用「特殊形态」标记：mega 之外，原始回归/超极巨化在 PokeAPI 中 is_mega=0
+        "is_mega": bool(form["is_mega"])
+        or (form["identifier"] or "").endswith(("-primal", "-gmax")),
         "tera_type": side.get("tera_type") or "",
         "stats": stats, "_raw": {**side},
         "evs": evs, "ivs": ivs,
@@ -185,7 +187,10 @@ def calc(body: dict = Body(...)):
 
 @router.post("/calc/compare-forms")
 def compare_forms(body: dict = Body(...)):
-    """固定一方与招式，遍历另一方的全部形态计算伤害并排序。"""
+    """固定一方与招式，遍历另一方的全部形态计算伤害并排序。
+
+    机制互斥只对固定方严格校验（400）；被遍历方与机制冲突的形态跳过不报错
+    （如 太晶化 + mega 形态本就不可能同时存在）。"""
     side = body.get("side") or "attacker"
     base = body.get("base") or {}
     species_id = body.get("species_id")
@@ -196,16 +201,28 @@ def compare_forms(body: dict = Body(...)):
             raise HTTPException(404, "move not found")
         forms = con.execute("SELECT * FROM forms WHERE species_id=? ORDER BY id",
                             (species_id,)).fetchall()
+        # 固定方只组装校验一次（机制冲突直接 400，不再被循环吞掉）
+        if side == "attacker":
+            dfd_fixed = _assemble(con, base["defender"], False)
+            _validate_mechanisms({"is_mega": False, "is_dynamax": False, "tera_type": ""},
+                                 dfd_fixed, base)
+        else:
+            atk_fixed = _assemble(con, base["attacker"], True)
+            _validate_mechanisms(atk_fixed, {"is_mega": False, "is_dynamax": False,
+                                             "tera_type": ""}, base)
         out = []
         for f in forms:
             try:
                 if side == "attacker":
                     atk = _assemble(con, {**base["attacker"], "form_id": f["id"], "species_id": species_id}, True)
                     dfd = _assemble(con, base["defender"], False)
+                    _validate_mechanisms(atk, {"is_mega": False, "is_dynamax": False,
+                                               "tera_type": ""}, base)
                 else:
                     atk = _assemble(con, base["attacker"], True)
                     dfd = _assemble(con, {**base["defender"], "form_id": f["id"], "species_id": species_id}, False)
-                _validate_mechanisms(atk, dfd, base)
+                    _validate_mechanisms({"is_mega": False, "is_dynamax": False, "tera_type": ""},
+                                         dfd, base)
                 opt = {k: base.get(k) for k in CALC_OPTS}
                 r = damage.calc_damage(atk, dfd, dict(mv), opt)
                 if "error" in r:
@@ -215,7 +232,7 @@ def compare_forms(body: dict = Body(...)):
                             "types": f["types"], "min": r["min"], "max": r["max"],
                             "pct_max": r["pct_max"], "ohko": r["ohko"]})
             except HTTPException:
-                continue
+                continue  # 被遍历方的形态与机制互斥（不可能组合），跳过
         out.sort(key=lambda x: -x["max"])
         return out
     finally:

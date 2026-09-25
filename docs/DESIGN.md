@@ -61,16 +61,16 @@ python scripts/make_icon.py           # 精灵球应用图标
 
 ## 3. 数据库 Schema
 
-### poketools.db（24 表，静态，构建期重建）
+### poketools.db（25 表，静态，构建期重建）
 
 核心：`games`（含 features JSON）· `regional_dexes`+`dex_entries` · `species`（含 evolves_from）·
 `forms`（属性/种族值/努力值/形态标签/特性/隐藏特性）· `moves` · `learnsets`（**仅目标游戏**版本组，含 Z-A mastery）·
 `learnsets_all`（**全世代**，计算器招式并集）· `machines`（TM/TR 编号→招式）· `vgs`（版本组→世代）· `natures`（up/down）·
 `evolutions`（进化条件，from/to）
 
-52poke 合并：`get_methods`（中文捕捉方式+version_label）· `dex_flavor`（中文图鉴描述）· `tm_how` · `sandwiches`
+52poke 合并：`get_methods`（中文捕捉方式+version_label）· `dex_flavor`（中文图鉴描述）· `form_flavor`（地区形态/洛托姆换装等形态独立介绍）· `tm_how` · `sandwiches`
 
-特化功能：`picnic_items` · `donut_types` · `special_donuts` · `berries` · `flavor_powers` · `curries` · `encounters`（剑盾英文兜底）· `move_flavor` · `species_title_overrides`（以 curated 文件为准）
+特化功能：`picnic_items` · `donut_types` · `special_donuts` · `berries` · `flavor_powers` · `curries` · `encounters`（剑盾英文兜底）· `move_flavor`（species_title_overrides 是 curated 文件而非数据表）
 
 ### userstate.db（3 表，用户可写）
 
@@ -83,7 +83,7 @@ python scripts/make_icon.py           # 精灵球应用图标
 |---|---|
 | `GET /api/games` | 游戏列表 + features + 各图鉴计数 |
 | `GET /api/dex/{dex_id}?profile&filter&type&q` | 图鉴条目（含捕捉状态） |
-| `GET/POST /api/profiles` | 档案（四期 P3-1 起前端固定默认档案，接口保留兼容） |
+| ~~`GET/POST /api/profiles`~~ | 已随 P3-1 下线（前端固定默认档案 profile_id=1，userstate 表保留） |
 | `PUT /api/state` · `POST /api/state/bulk` | 捕捉勾选 / 批量标记 |
 | `GET /api/pokemon/{id}?game=` | 详情（介绍/获取方式/进化链/形态/种族值/努力值，按游戏裁剪） |
 | `GET /api/pokemon/{id}/moves?game=&form_id=` | 招式分组表（tab 随游戏；TM 展开 how/materials） |
@@ -109,13 +109,14 @@ Damage = ((2×Level/5 + 2) × Power × A/D / 50 + 2)
 
 **取整语义是关键，勿改顺序**（源码级对齐 `@smogon/calc` gen789）：
 
-1. 基础伤害 = floor(floor(floor(floor(2L/5+2)×威力)×A/D)/50+2)；
+0. 威力阶段修正（bpMods）：帮助 ×6144/4096；青草场地仅地震/跺脚且防守方接地 ×2048/4096；随后 Z/极巨威力换算；
+1. 基础伤害 = floor(floor(floor(floor(2L/5+2)×威力)×A/D)/50+2)；大晴天/大雨按晴/雨同乘数，乱流/沙暴/雪不影响数值；
 2. 天气以 4096 分数（晴火/雨水 6144/4096，反向 2048/4096）pokeRound 作用于**基础伤害**；
 3. 会心 ×1.5 **向下取整**，作用于基础伤害（狙击手走 finalMod 链）；
 4. 随机数**最先**：floor(base×(85+i)/100)，i=0..15；
 5. STAB 为 4096 分数（6144；适应力/太晶同属性 8192），无即时取整；
 6. pokeRound 后乘属性相性并**向下取整**；灼伤 floor(dmg/2)（毅力免除并改为攻击 ×1.5）；
-7. finalMod 单链（反射壁/光墙→超感知→狙击手→有色眼镜→巨兽系对极巨化→多重鳞片→冰鳞粉→滤芯→达人带→生命宝珠），
+7. finalMod 单链（反射壁/光墙/极光幕→超感知→狙击手→有色眼镜→巨兽系对极巨化→多重鳞片→冰鳞粉→滤芯→达人带→生命宝珠），
    每步 (M×mod+2048)>>12，最终 pokeRound、最低 1（免疫为 0）。
 
 ### 能力值
@@ -142,7 +143,7 @@ node harness.mjs > smogon_baseline.json
 python check.py                        # 需先完成数据管线
 ```
 
-8 个基准案例逐 roll 比对（基础/相性/宝珠会心/雨天/毅力灼伤/讲究晴天/冷冻干燥/漂浮免疫），全绿才可提交。
+10 个基准案例逐 roll 比对（基础/相性/宝珠会心/雨天/毅力灼伤/讲究晴天/冷冻干燥/漂浮免疫/帮助/青草场地），全绿才可提交。
 
 ### 明确不做的
 
@@ -155,7 +156,7 @@ python check.py                        # 需先完成数据管线
 ```
 app/static/dist/
   index.html          引入 vendor UMD + js + css（无构建步骤）
-  css/app.css         全部样式（按注释分页定位）
+  css/base|dex|features|calc.css   按页拆分的样式（免构建，index.html 多链引入）
   js/api.js           fetch 封装 + 全局常量（TYPE_LIST/POWER_LIST…）
   js/components.js    store + 全局组件（TypeBadge/MoveClassBadge/PokeToggle/PokeImg/EvoChain/StatBars…）
   js/app.js           根组件 + 哈希路由（#/#game/{id}/{feature}/#pokemon/{id}/#calc）

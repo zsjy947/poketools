@@ -266,6 +266,20 @@
   "text": "圆脸是富贵的象征。体型丰满，大盘脸的猫老大会被认为是美丽的。"
  },
  {
+  "species_id": 58,
+  "suffix": "hisui",
+  "game": "legends-arceus",
+  "label": "洗翠",
+  "text": "两只一组共同负责地盘的警卫工作。体毛中混有火成岩的成分，可以推想这是受到火山活动的影响。"
+ },
+ {
+  "species_id": 59,
+  "suffix": "hisui",
+  "game": "legends-arceus",
+  "label": "洗翠",
+  "text": "将猛烈燃烧的火焰缠绕在牙齿上扑向猎物。虽然体型很大，却能以灵巧的假动作戏弄敌手，那姿态就像是舞蹈一般。"
+ },
+ {
   "species_id": 74,
   "suffix": "alola",
   "game": "scarlet-violet",
@@ -455,6 +469,20 @@
   "text": "看上去像牙齿或爪子的东西其实是毒素的结晶。只要碰到就会中毒，所以靠近它很危险。"
  },
  {
+  "species_id": 100,
+  "suffix": "hisui",
+  "game": "legends-arceus",
+  "label": "洗翠",
+  "text": "形状颇似精灵球的奇异宝可梦。当情绪高涨时，积蓄在腹部的电流就会放出，同时发出大笑。"
+ },
+ {
+  "species_id": 101,
+  "suffix": "hisui",
+  "game": "legends-arceus",
+  "label": "洗翠",
+  "text": "体表的组织与球果的成分极为接近，不可思议。当它情绪焦躁时所放出的电流，能量足以匹敌２０次的落雷。"
+ },
+ {
   "species_id": 103,
   "suffix": "alola",
   "game": "sword-shield",
@@ -623,6 +651,13 @@
   "text": "能像燃起烈火一般燃起邪恶的气场。因为这样的外表而被命名为火焰鸟。"
  },
  {
+  "species_id": 157,
+  "suffix": "hisui",
+  "game": "legends-arceus",
+  "label": "洗翠",
+  "text": "据考察，它是受到耸立于洗翠中心的灵山之气影响，才形成了现在的模样。据说会用自己的火焰净化并超渡无处可去的灵魂。"
+ },
+ {
   "species_id": 194,
   "suffix": "paldea",
   "game": "scarlet-violet",
@@ -670,6 +705,13 @@
   "game": "legends-za",
   "label": "Z-A",
   "text": "受到进化的冲击和毒素的影响，大舌贝的智力飙升到了可以控制呆呆王的程度。"
+ },
+ {
+  "species_id": 211,
+  "suffix": "hisui",
+  "game": "legends-arceus",
+  "label": "洗翠",
+  "text": "会用针散布毒素的棘手家伙，因而受到渔民们的厌恶。栖息在其他地区的千针鱼则是呈现着不同的姿态。"
  },
  {
   "species_id": 211,
@@ -952,6 +994,20 @@
   "text": "钻进由特殊马达驱动的割草机里的洛托姆。会把割下的草到处乱撒。"
  },
  {
+  "species_id": 503,
+  "suffix": "hisui",
+  "game": "legends-arceus",
+  "label": "洗翠",
+  "text": "性情与刀路皆是残酷无情。连绵不断的攻击彷如千层浪涛。此乃只在洗翠进化而成的稀有姿态。"
+ },
+ {
+  "species_id": 549,
+  "suffix": "hisui",
+  "game": "legends-arceus",
+  "label": "洗翠",
+  "text": "据考察，雪山深处的栖息环境为其带来了发达的脚力。会从头冠般的花中发出鼓舞周围伙伴的香气。"
+ },
+ {
   "species_id": 554,
   "suffix": "galar",
   "game": "sword-shield",
@@ -974,10 +1030,24 @@
  },
  {
   "species_id": 555,
+  "suffix": "galar-zen",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "原本已经退化的火囊因愤怒而重生。在所到之处胡乱喷火大闹一番。"
+ },
+ {
+  "species_id": 555,
   "suffix": "galar",
   "game": "sword-shield",
   "label": "盾",
   "text": "性格敦厚的大力士。会一口气冻住头上的雪球，然后用头锤撞击对手。"
+ },
+ {
+  "species_id": 555,
+  "suffix": "galar-zen",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "达摩狒狒情绪激昂的样子。在怒气平息之前，即使身体融化也会不断喷出火焰。"
  },
  {
   "species_id": 562,
@@ -1001,6 +1071,20 @@
   "text": "被诅咒的黏土板与死者的灵魂融合在一起。会满怀怨恨地挥舞黏土板。"
  },
  {
+  "species_id": 570,
+  "suffix": "hisui",
+  "game": "legends-arceus",
+  "label": "洗翠",
+  "text": "死后灵魂在洗翠地区复苏。怨恨化为力量，从其头部冉冉飘升。会化成对手的样貌去洗刷仇恨。"
+ },
+ {
+  "species_id": 571,
+  "suffix": "hisui",
+  "game": "legends-arceus",
+  "label": "洗翠",
+  "text": "疯狂舞动白发的姿态如同死神。在足以撕裂自身的深刻仇怨驱使下，抱定同归于尽之心袭杀仇敌。"
+ },
+ {
   "species_id": 618,
   "suffix": "galar",
   "game": "sword-shield",
@@ -1022,11 +1106,32 @@
   "text": "栖息于富含铁质的泥巴里，因此获得了结实坚固的钢铁身躯。"
  },
  {
+  "species_id": 628,
+  "suffix": "hisui",
+  "game": "legends-arceus",
+  "label": "洗翠",
+  "text": "勇猛的大鸟。狩猎时会发出气势骇人的战吼，朝湖水发出冲击波，捕捉浮出水面的猎物。"
+ },
+ {
+  "species_id": 705,
+  "suffix": "hisui",
+  "game": "legends-arceus",
+  "label": "洗翠",
+  "text": "性情阴沉。据考察，洗翠地区的水中含有的铁质对皮肤的黏液产生作用，使其变化成了金属外壳。"
+ },
+ {
   "species_id": 705,
   "suffix": "hisui",
   "game": "legends-za",
   "label": "Z-A",
   "text": "在饮用水所含的铁成分的作用下，壳变成了金属。晴天时不会冒出来。"
+ },
+ {
+  "species_id": 706,
+  "suffix": "hisui",
+  "game": "legends-arceus",
+  "label": "洗翠",
+  "text": "能自在操纵可刚可柔的金属外壳。性情执着且厌恶孤独，一旦喜爱的对象离开自己便会怒不可遏。"
  },
  {
   "species_id": 706,
@@ -1038,8 +1143,22 @@
  {
   "species_id": 713,
   "suffix": "hisui",
+  "game": "legends-arceus",
+  "label": "洗翠",
+  "text": "包覆下颚的冰块装甲硬度更胜钢铁，能轻易地击碎岩石。冰岩怪借此铲开厚重积雪，在险峻的山路上猛冲。"
+ },
+ {
+  "species_id": 713,
+  "suffix": "hisui",
   "game": "legends-za",
   "label": "Z-A",
   "text": "为了寻找营养十足的越冬蔬菜，会用冰的颚部将雪拨开，在山野之间跑来跑去。"
+ },
+ {
+  "species_id": 724,
+  "suffix": "hisui",
+  "game": "legends-arceus",
+  "label": "洗翠",
+  "text": "为抵抗洗翠的严寒气候，羽毛的芯中含有空气，因而能够防寒。由此可见环境会对进化产生影响。"
  }
 ]

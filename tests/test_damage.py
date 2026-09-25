@@ -132,23 +132,23 @@ def test_tera_stab_and_defense():
     assert tera_def2["effectiveness"] == 0                     # 太晶幽灵免疫一般
 
 
-def _vector_with(move_type="冰", power=65, **opt):
+def _vector_with(move_type="冰", power=65, identifier="test-move", **opt):
     a = {"types": "冰", "level": 75, "stats": {"atk": 123, "def": 100, "spa": 200, "spd": 150, "spe": 100, "hp": 200},
          "item": "", "ability": "", "boosts": {}}
     d = {"types": "龙,地面", "level": 75, "stats": {"atk": 150, "def": 163, "spa": 100, "spd": 110, "spe": 102, "hp": 270},
          "item": "", "ability": "", "boosts": {}, "is_dynamax": False}
-    move = {"name_zh": "测试招式", "identifier": "test-move", "type_zh": move_type,
+    move = {"name_zh": "测试招式", "identifier": identifier, "type_zh": move_type,
             "damage_class": "physical", "power": power}
     return damage.calc_damage(a, d, move, opt)
 
 
-def test_helping_hand_multiplies():
-    base = _vector_with()
-    helped = _vector_with(helping_hand=True)
-    # 帮助为 finalMod 6144/4096 = 1.5 倍（4096 链取整，近似 1.5）
-    assert helped["max"] == max(1, round(base["max"] * 6144 / 4096)) or helped["max"] in (
-        int(base["max"] * 6144 / 4096 + 0.5), int(base["max"] * 1.5))
-    assert helped["max"] > base["max"]
+def test_helping_hand_is_bp_mod():
+    # 帮助是威力阶段修正（bpMods 6144/4096）：65×1.5=97.5，pokeRound 0.5 舍去 → 97
+    base = _vector_with(power=65)
+    helped = _vector_with(power=97)
+    same = _vector_with(power=65, helping_hand=True)
+    assert same["min"] == helped["min"] and same["max"] == helped["max"]
+    assert same["max"] > base["max"]
 
 
 def test_aurora_veil_like_screens():
@@ -160,13 +160,34 @@ def test_aurora_veil_like_screens():
     assert crit_veiled["max"] == crit_plain["max"]  # 会心无视壁
 
 
-def test_grassy_terrain_halves_ground():
-    base = _vector_with(move_type="地面", power=90)
-    grassy = _vector_with(move_type="地面", power=90, terrain="grassy")
-    other_type = _vector_with(move_type="冰", power=90, terrain="grassy")
-    base_ice = _vector_with(move_type="冰", power=90)
-    assert grassy["max"] < base["max"]          # 地面招式减半
-    assert other_type["max"] == base_ice["max"]  # 非地面不受影响
+def test_grassy_terrain_only_quake_on_grounded():
+    # 仅地震/跺脚、且防守方接地时威力减半（bpMods 2048/4096）
+    base = _vector_with(move_type="地面", power=90, identifier="earthquake")
+    grassy = _vector_with(move_type="地面", power=90, identifier="earthquake", terrain="grassy")
+    expected = _vector_with(move_type="地面", power=45, identifier="earthquake")
+    assert grassy["max"] == expected["max"] < base["max"]
+    # 非地震/跺脚的地面招式不受影响（游戏机制仅作用此二者）
+    other_move = _vector_with(move_type="地面", power=90, identifier="test-move", terrain="grassy")
+    other_base = _vector_with(move_type="地面", power=90, identifier="test-move")
+    assert other_move["max"] == other_base["max"]
+    # 飞行系防守方接地判定：不受青草场地影响
+    flying = damage.calc_damage(
+        {"types": "冰", "level": 75, "stats": {"atk": 123, "def": 100, "spa": 200, "spd": 150, "spe": 100, "hp": 200},
+         "item": "", "ability": "", "boosts": {}},
+        {"types": "飞行", "level": 75, "stats": {"atk": 150, "def": 163, "spa": 100, "spd": 110, "spe": 102, "hp": 270},
+         "item": "", "ability": "", "boosts": {}, "is_dynamax": False},
+        {"name_zh": "地震", "identifier": "earthquake", "type_zh": "地面",
+         "damage_class": "physical", "power": 90},
+        {"terrain": "grassy"})
+    flying_plain = damage.calc_damage(
+        {"types": "冰", "level": 75, "stats": {"atk": 123, "def": 100, "spa": 200, "spd": 150, "spe": 100, "hp": 200},
+         "item": "", "ability": "", "boosts": {}},
+        {"types": "飞行", "level": 75, "stats": {"atk": 150, "def": 163, "spa": 100, "spd": 110, "spe": 102, "hp": 270},
+         "item": "", "ability": "", "boosts": {}, "is_dynamax": False},
+        {"name_zh": "地震", "identifier": "earthquake", "type_zh": "地面",
+         "damage_class": "physical", "power": 90},
+        {})
+    assert flying["max"] == flying_plain["max"]
 
 
 def test_harsh_weather_alias():

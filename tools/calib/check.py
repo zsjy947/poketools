@@ -49,6 +49,14 @@ CASES = [
      "atk": {"sp": "Glaceon", "level": 50, "nature": "modest", "evs": {"spa": 252}},
      "def": {"sp": "Gyarados", "level": 50, "nature": "careful"},
      "move": "Freeze-Dry"},
+    {"key": "helping_hand_eq",
+     "atk": {"sp": "Garchomp", "level": 50, "nature": "adamant", "evs": {"atk": 252}},
+     "def": {"sp": "Snorlax", "level": 50, "nature": "careful"},
+     "move": "Earthquake", "helping_hand": True},
+    {"key": "grassy_terrain_eq",
+     "atk": {"sp": "Garchomp", "level": 50, "nature": "adamant", "evs": {"atk": 252}},
+     "def": {"sp": "Snorlax", "level": 50, "nature": "careful"},
+     "move": "Earthquake", "terrain": "grassy"},
     {"key": "levitate_immune",
      "atk": {"sp": "Garchomp", "level": 50, "nature": "adamant", "evs": {"atk": 252}},
      "def": {"sp": "Rotom-Wash", "level": 50, "nature": "bold", "ability": "漂浮"},
@@ -85,8 +93,10 @@ def main():
         mv = con.execute("SELECT * FROM moves WHERE name_zh=?",
                          (MOVE_EN[case["move"]],)).fetchone()
         r = damage.calc_damage(a, d, dict(mv), {
-            "formula": "modern", "crit": case.get("crit", False),
+            "crit": case.get("crit", False),
             "weather": case.get("weather", ""),
+            "helping_hand": case.get("helping_hand", False),
+            "terrain": case.get("terrain", ""),
         })
         ref = baseline[case["key"]]["damage"]
         mine = r["rolls"]

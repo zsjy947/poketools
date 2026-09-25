@@ -260,7 +260,9 @@ const DonutView = {
       return { "甜": "fl-sweet", "辣": "fl-spicy", "酸": "fl-sour", "苦": "fl-bitter", "鲜": "fl-fresh" }[flavor] || "";
     }
 
-    apiGet("/api/donuts").then((r) => { d.value = r; loading.value = false; });
+    apiGet("/api/donuts").then((r) => { d.value = r; })
+      .catch(() => {})
+      .finally(() => { loading.value = false; });
     loadCustom();
 
     return {

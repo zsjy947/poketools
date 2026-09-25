@@ -350,6 +350,7 @@ FORM_MARKERS = {
     "帕底亚的样子，斗战种": "paldea-combat-breed",
     "帕底亚的样子，火炽种": "paldea-blaze-breed",
     "帕底亚的样子，水澜种": "paldea-aqua-breed",
+    "伽勒尔的样子，达摩模式": "galar-zen",
     "加热洛托姆": "rotom-heat", "清洗洛托姆": "rotom-wash",
     "结冰洛托姆": "rotom-frost", "旋转洛托姆": "rotom-fan",
     "切割洛托姆": "rotom-mow",
@@ -381,21 +382,23 @@ def parse_flavor(wt: str) -> tuple[list[dict], list[dict], list[dict]]:
             if not val:
                 continue
             segs = val.split("<hr>")
-            text = clean_wt(segs[0])
-            if text:
-                out.append({"game": game, "label": label, "text": text})
-            for seg in segs[1:]:
-                seg_text, marker = _strip_form_marker(seg)
+            # 首段也可能整体属于形态（洗翠限定种的 ladex 只有形态文本，无 <hr> 分段）
+            first_text, first_marker = _strip_form_marker(segs[0])
+            head_segs = [(first_text, first_marker)] if first_marker                 else [(segs[0], "")]
+            for seg_text, marker in head_segs + [
+                    _strip_form_marker(s) for s in segs[1:]]:
                 t = clean_wt(seg_text)
                 if not t:
                     continue
-                suffix = FORM_MARKERS.get(marker)
+                suffix = FORM_MARKERS.get(marker) if marker else None
                 if suffix:
                     forms_out.append({"suffix": suffix, "game": game,
                                       "label": label, "text": t})
-                else:
+                elif marker:
                     unknown.append({"field": field, "marker": marker,
                                     "text": t[:60]})
+                else:
+                    out.append({"game": game, "label": label, "text": t})
         break  # only the first {{图鉴}} block
     return out, forms_out, unknown
 
@@ -792,6 +795,10 @@ def main() -> None:
             continue
         fid = default_form[0]
         parsed = parse_za_learnlist(wt)
+        if not parsed["level"] and not parsed["tm"]:
+            za_missing.append({"species_id": sid, "name": name,
+                               "reason": "subpage has no Z-A move table section"})
+            continue
         for level, mastery, move in parsed["level"]:
             mid = move_id_by_zh.get(move) or move_id_by_zh.get(MOVE_NAME_ALIASES.get(move, ""))
             if mid is None:
@@ -889,25 +896,59 @@ def main() -> None:
     # ---- 6. merge into DB ----
     print("[6/6] merge into DB")
     cur = con.cursor()
-    cur.execute("DELETE FROM get_methods")
-    cur.executemany("INSERT INTO get_methods VALUES (?,?,?,?,?,?)", gm_rows)
-    cur.execute("DELETE FROM tm_how")
-    cur.executemany("INSERT OR REPLACE INTO tm_how VALUES (?,?,?,?,?)", tm_rows)
-    if bdsp_machines:
-        cur.executemany("INSERT OR REPLACE INTO machines VALUES (?,?,?,?)", bdsp_machines)
-    cur.execute("DELETE FROM sandwiches")
-    cur.executemany("INSERT OR REPLACE INTO sandwiches VALUES (?,?,?,?,?,?)",
-                    [(r["no"], r["name"], r["ingredients"], r["seasonings"],
-                      json.dumps(r["effects"], ensure_ascii=False), r["how"]) for r in recipes])
-    cur.execute("DELETE FROM picnic_items")
-    cur.executemany("INSERT OR REPLACE INTO picnic_items VALUES (?,?,?,?,?)",
-                    [(p["name"], p["kind"], p["desc"], p["how"], p["price"]) for p in picnic])
-    cur.execute("DELETE FROM curries")
-    cur.executemany("INSERT OR REPLACE INTO curries VALUES (?,?,?,?)",
-                    [(c["no"], c["name"], c["key_ingredient"], c["desc"]) for c in curries])
-    cur.execute("DELETE FROM donut_types")
-    cur.executemany("INSERT OR REPLACE INTO donut_types VALUES (?,?,?)",
-                    [(t["flavor"], t["name"], t["desc"]) for t in donuts["types"]])
+
+    def guarded(name: str, min_rows: int, merge_fn) -> None:
+        """护栏：解析行数过低（抓取/解析失败）时跳过该表，防止清空已交付数据。"""
+        try:
+            n = merge_fn()
+            if n < min_rows:
+                print(f"  !! {name} 仅 {n} 行（<{min_rows}），跳过合并并保留原表", file=sys.stderr)
+        except Exception as e:  # noqa: BLE001
+            print(f"  !! {name} 合并异常：{e}，保留原表", file=sys.stderr)
+
+    def _merge_get_methods():
+        cur.execute("DELETE FROM get_methods")
+        cur.executemany("INSERT INTO get_methods VALUES (?,?,?,?,?,?)", gm_rows)
+        return len(gm_rows)
+
+    def _merge_tm():
+        cur.execute("DELETE FROM tm_how")
+        cur.executemany("INSERT OR REPLACE INTO tm_how VALUES (?,?,?,?,?)", tm_rows)
+        if bdsp_machines:
+            cur.executemany("INSERT OR REPLACE INTO machines VALUES (?,?,?,?)", bdsp_machines)
+        return len(tm_rows)
+
+    def _merge_sandwiches():
+        cur.execute("DELETE FROM sandwiches")
+        cur.executemany("INSERT OR REPLACE INTO sandwiches VALUES (?,?,?,?,?,?)",
+                        [(r["no"], r["name"], r["ingredients"], r["seasonings"],
+                          json.dumps(r["effects"], ensure_ascii=False), r["how"]) for r in recipes])
+        return len(recipes)
+
+    def _merge_picnic():
+        cur.execute("DELETE FROM picnic_items")
+        cur.executemany("INSERT OR REPLACE INTO picnic_items VALUES (?,?,?,?,?)",
+                        [(p["name"], p["kind"], p["desc"], p["how"], p["price"]) for p in picnic])
+        return len(picnic)
+
+    def _merge_curries():
+        cur.execute("DELETE FROM curries")
+        cur.executemany("INSERT OR REPLACE INTO curries VALUES (?,?,?,?)",
+                        [(c["no"], c["name"], c["key_ingredient"], c["desc"]) for c in curries])
+        return len(curries)
+
+    def _merge_donut_types():
+        cur.execute("DELETE FROM donut_types")
+        cur.executemany("INSERT OR REPLACE INTO donut_types VALUES (?,?,?)",
+                        [(t["flavor"], t["name"], t["desc"]) for t in donuts["types"]])
+        return len(donuts["types"])
+
+    guarded("get_methods", 1000, _merge_get_methods)
+    guarded("tm_how", 100, _merge_tm)
+    guarded("sandwiches", 100, _merge_sandwiches)
+    guarded("picnic_items", 60, _merge_picnic)
+    guarded("curries", 100, _merge_curries)
+    guarded("donut_types", 5, _merge_donut_types)
     cur.execute("DELETE FROM special_donuts")
     cur.executemany("INSERT OR REPLACE INTO special_donuts VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
                     [(d["name"], d["desc"], d["sweet"], d["spicy"], d["sour"], d["bitter"], d["fresh"],
@@ -924,29 +965,41 @@ def main() -> None:
     if za_rows:
         cur.execute("DELETE FROM learnsets WHERE vg=30")
         cur.executemany("INSERT OR REPLACE INTO learnsets VALUES (?,?,?,?,?,?)", za_rows)
-    # 52poke flavor overrides PokeAPI flavor
-    cur.execute("DELETE FROM dex_flavor WHERE game IN ('legends-arceus','scarlet-violet','legends-za',?)", (BDSP,))
-    for s, g, lb, t in flavor_rows:
-        cur.execute("DELETE FROM dex_flavor WHERE species_id=? AND game=? AND version_label=?",
-                    (s, g, lb))
-        cur.execute("INSERT INTO dex_flavor VALUES (?,?,?,?)", (s, g, lb, t))
+    # 52poke flavor overrides PokeAPI flavor（空结果护栏）
+    if not flavor_rows:
+        print("  !! flavor_rows 为空，跳过 dex_flavor 合并", file=sys.stderr)
+    else:
+        cur.execute("DELETE FROM dex_flavor WHERE game IN ('legends-arceus','scarlet-violet','legends-za',?)", (BDSP,))
+        for s, g, lb, txt in flavor_rows:
+            cur.execute("DELETE FROM dex_flavor WHERE species_id=? AND game=? AND version_label=?",
+                        (s, g, lb))
+            cur.execute("INSERT INTO dex_flavor VALUES (?,?,?,?)", (s, g, lb, txt))
 
-    # 形态独立图鉴介绍（suffix → form_id）。三种匹配：尾部（marowak-alola）、
-    # 整体（rotom-heat）、中缀（darmanitan-galar-standard）；同后缀多形态取最短 identifier。
+    # 形态独立图鉴介绍（suffix → form_id）。匹配优先级：尾部精确（marowak-alola）
+    # > 整体相等（rotom-heat）> 中缀（darmanitan-galar-standard），
+    # 中缀命中时带 -standard 的形态优先于兄弟形态（达摩模式等）。
     cur.execute("DELETE FROM form_flavor")
     unmatched = []
-    for s, suffix, g, lb, t in form_flavor_rows:
-        row = cur.execute(
-            """SELECT id FROM forms WHERE species_id=? AND
-                 (identifier LIKE '%-'||? OR identifier = ? OR identifier LIKE '%-'||?||'-%')
-               ORDER BY LENGTH(identifier) LIMIT 1""",
-            (s, suffix, suffix, suffix)).fetchone()
+    for s, suffix, g, lb, txt in form_flavor_rows:
+        row = con.execute(
+            """SELECT id, identifier,
+                   CASE
+                     WHEN identifier LIKE '%-'||? THEN 0
+                     WHEN identifier = ? THEN 1
+                     WHEN identifier LIKE '%-'||?||'-%' THEN 2
+                     ELSE 9 END AS score
+               FROM forms WHERE species_id=? AND score < 9
+               ORDER BY score,
+                 CASE WHEN identifier LIKE '%-standard' THEN 0 ELSE 1 END,
+                 LENGTH(identifier)
+               LIMIT 1""",
+            (suffix, suffix, suffix, s)).fetchone()
         if row is None:
             unmatched.append((s, suffix))
             continue
         cur.execute("DELETE FROM form_flavor WHERE form_id=? AND game=? AND version_label=?",
                     (row[0], g, lb))
-        cur.execute("INSERT INTO form_flavor VALUES (?,?,?,?)", (row[0], g, lb, t))
+        cur.execute("INSERT INTO form_flavor VALUES (?,?,?,?)", (row[0], g, lb, txt))
     if unmatched:
         print(f"  !! form_flavor 未匹配形态: {sorted(set(unmatched))[:10]}")
     con.commit()

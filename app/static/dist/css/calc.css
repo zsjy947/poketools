@@ -55,3 +55,5 @@
 .fp-side, .fp-center { min-width: 0; }
 .fp-title { font-size: 13px; font-weight: 700; color: #555; margin-bottom: 6px; }
 .fp-note { font-size: 11.5px; color: #a8b0c0; margin-top: 6px; line-height: 1.5; }
+
+.sum-art img.img-missing { visibility: hidden; }

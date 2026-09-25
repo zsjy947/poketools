@@ -58,7 +58,9 @@ const CalcView = {
     <!-- 结果条 -->
     <div class="block result-bar" v-if="activeResult">
       <template v-if="activeResult.error">
-        <el-alert type="warning" :closable="false" title="变化招式或缺少威力，无法计算伤害" />
+        <el-alert type="warning" :closable="false"
+          :title="activeResult.error === 'status_or_no_power'
+            ? '变化招式或缺少威力，无法计算伤害' : activeResult.error" />
       </template>
       <template v-else>
         <div class="res-desc">{{ resultDesc }}</div>
@@ -147,9 +149,8 @@ const CalcView = {
     });
     const { onMounted } = Vue;
     onMounted(async () => {
-      await loadSpeciesInto(A, 445);   // 烈咬陆鲨
+      await loadSpeciesInto(A, 445);   // 烈咬陆鲨（深 watch 自动触发首次计算）
       await loadSpeciesInto(D, 143);   // 卡比兽
-      recalcAll();
     });
 
     const activeResult = computed(() => {
@@ -504,7 +505,10 @@ const SideEditor = {
     const itemPool = ref(_metaCache.items ? _metaCache.items.pool : []);
     const modeled = ref(_metaCache.items ? _metaCache.items.modeled : []);
     if (!_metaCache.natures) {
-      apiGet("/api/meta/natures").then((r) => { natures.value = r; _metaCache.natures = r; });
+      apiGet("/api/meta/natures").then((r) => {
+        natures.value = r; _metaCache.natures = r;
+        window.__naturesCache = r;   // 计算器直入时 resultDesc 也需要性格名
+      });
       apiGet("/api/meta/items").then((r) => {
         itemPool.value = r.pool; modeled.value = r.modeled; _metaCache.items = r;
       });
@@ -552,6 +556,7 @@ const SideEditor = {
     function setBoost(k, v) { props.side.boosts[k] = v; emit("changed"); }
     function setMech(mk) {
       const s = props.side;
+      const wasMega = s.mechanism === "mega";
       s.mechanism = s.mechanism === mk ? "" : mk;
       if (mk === "mega" && s.mechanism === "mega") {
         const mega = s.forms.find(f => f.is_mega);
@@ -561,9 +566,15 @@ const SideEditor = {
           loadMoveOptions(s).then(() => { pruneMoves(s); emit("changed"); });
           return;
         }
-      } else if (s.mechanism === "" && mk === "mega") {
+      } else if (wasMega) {
+        // 从超级进化切走（或关闭）：恢复默认形态，避免 mega 形态与新机制互斥
         const def = s.forms.find(f => f.is_default);
-        if (def) { s.formId = def.id; pickDefaultAbility(s); }
+        if (def) {
+          s.formId = def.id;
+          pickDefaultAbility(s);
+          loadMoveOptions(s).then(() => { pruneMoves(s); emit("changed"); });
+          return;
+        }
       }
       emit("changed");
     }
