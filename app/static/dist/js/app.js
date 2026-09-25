@@ -22,14 +22,6 @@ const App = {
           <span>🧮</span><span>伤害计算器</span>
         </div>
       </div>
-      <div class="sidebar-footer">
-        <div style="margin-bottom:6px">档案</div>
-        <el-select v-model="store.profileId" size="small" style="width:100%">
-          <el-option v-for="p in store.profiles" :key="p.id" :value="p.id" :label="p.name" />
-        </el-select>
-        <el-button size="small" text style="color:#8a93a8; margin-top:6px; padding:0"
-          @click="addProfile">＋ 新建档案</el-button>
-      </div>
     </div>
     <div class="main">
       <home-view v-if="route.page === 'home'"></home-view>
@@ -46,8 +38,7 @@ const App = {
   </div>
   `,
   setup() {
-    const { reactive, computed, onMounted, provide, watch } = Vue;
-    const { ElMessageBox } = ElementPlus;
+    const { reactive, computed, onMounted, provide } = Vue;
     const route = reactive({ page: "home", gameId: "", feature: "", hash: "" });
 
     const game = computed(() => store.games.find((g) => g.id === route.gameId) || null);
@@ -75,28 +66,17 @@ const App = {
       }
     }
     function go(hash) { location.hash = hash; }
-    async function addProfile() {
-      const { value } = await ElMessageBox.prompt("输入新档案名称（如：剑盾真结局、闪光猎手）", "新建档案", {
-        confirmButtonText: "创建", cancelButtonText: "取消",
-        inputPattern: /.+/, inputErrorMessage: "名称不能为空",
-      });
-      const p = await apiSend("POST", "/api/profiles", { name: value.trim() });
-      store.profiles.push(p);
-      store.profileId = p.id;
-      store.toast("已创建档案：" + p.name, "success");
-    }
 
     provide("store", store);
     window.addEventListener("hashchange", parseHash);
     window.addEventListener("api-error", (e) => store.toast("请求失败：" + e.detail, "error"));
     onMounted(async () => {
       store.games = await apiGet("/api/games");
-      store.profiles = await apiGet("/api/profiles");
       store.typeChart = await apiGet("/api/meta/typechart");
       parseHash();
     });
 
-    return { store, route, game, gameFeatures, go, addProfile };
+    return { store, route, game, gameFeatures, go };
   },
 };
 

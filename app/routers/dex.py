@@ -99,29 +99,8 @@ def dex_entries(
             "total": len(entries), "entries": entries}
 
 
-@router.get("/profiles")
-def profiles():
-    con = state_conn()
-    rows = [dict(r) for r in con.execute("SELECT id, name FROM profiles ORDER BY id")]
-    con.close()
-    return rows
-
-
-@router.post("/profiles")
-def add_profile(body: dict = Body(...)):
-    name = (body.get("name") or "").strip()
-    if not name:
-        raise HTTPException(400, "name required")
-    con = state_conn()
-    try:
-        cur = con.execute("INSERT INTO profiles (name) VALUES (?)", (name,))
-        con.commit()
-        pid = cur.lastrowid
-    except Exception:
-        raise HTTPException(400, "档案名已存在")
-    finally:
-        con.close()
-    return {"id": pid, "name": name}
+# 档案 API 已随四期 P3-1 下线：UI 固定默认档案（profile_id=1），
+# userstate.db 的 profiles 表与历史数据保留不动（零迁移零丢失）。
 
 
 def _int_or_400(v, name: str) -> int:

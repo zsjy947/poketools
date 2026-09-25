@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import re
 from functools import lru_cache
 
 from fastapi import APIRouter, Body, HTTPException, Query
@@ -168,6 +169,28 @@ def curries(q: str = "", key_ingredient: str = ""):
 CUSTOM_RECIPE_GAMES = ("scarlet-violet", "legends-za")
 
 
+def _recipe_items(v) -> list[str]:
+    """食材/调味料字段：兼容数组（新）与顿号/逗号分隔文本（旧）。"""
+    if isinstance(v, list):
+        return [str(x).strip()[:40] for x in v if str(x).strip()][:20]
+    s = str(v or "").strip()
+    if not s:
+        return []
+    return [x.strip()[:40] for x in re.split("[、,，\n]", s) if x.strip()][:20]
+
+
+def _parse_items(s: str):
+    """读取：JSON 数组（新格式）→ list；否则按原文返回（旧文本）。"""
+    s = s or ""
+    try:
+        v = json.loads(s)
+        if isinstance(v, list):
+            return v
+    except (ValueError, TypeError):
+        pass
+    return s
+
+
 @router.get("/custom-recipes")
 def list_custom_recipes(profile: int = 1, game: str = ""):
     con = state_conn()
@@ -181,6 +204,8 @@ def list_custom_recipes(profile: int = 1, game: str = ""):
     con.close()
     for r in out:
         r["effects"] = json.loads(r["effects"] or "[]")
+        r["ingredients"] = _parse_items(r["ingredients"])
+        r["seasonings"] = _parse_items(r["seasonings"])
     return out
 
 
@@ -201,22 +226,32 @@ def add_custom_recipe(body: dict = Body(...)):
                 "type": str(e.get("type", ""))[:8],
                 "level": int(e.get("level", 1))}
                for e in effects if e.get("power")]
-    ingredients = str(body.get("ingredients") or "")[:500].strip()
-    seasonings = str(body.get("seasonings") or "")[:500].strip()
-    if not effects or not ingredients or not seasonings:
+    ingredients = _recipe_items(body.get("ingredients"))
+    seasonings = _recipe_items(body.get("seasonings"))
+    # 朱紫三明治：食材/调味料必填；Z-A 甜甜圈：树果 3~8 个（黄油固定无输入）
+    if game == "legends-za":
+        if not 3 <= len(ingredients) <= 8:
+            raise HTTPException(400, "树果数量需为 3~8 个")
+    elif not ingredients or not seasonings:
         raise HTTPException(400, "效果、食材、调味料均为必填")
+    if not effects:
+        raise HTTPException(400, "效果为必填")
     name = str(body.get("name") or "")[:40].strip() or "我的食谱"
     con = state_conn()
     cur = con.execute(
         """INSERT INTO custom_recipes (profile_id, game, name, effects, ingredients, seasonings)
            VALUES (?,?,?,?,?,?)""",
-        (pid, game, name, json.dumps(effects, ensure_ascii=False), ingredients, seasonings))
+        (pid, game, name, json.dumps(effects, ensure_ascii=False),
+         json.dumps(ingredients, ensure_ascii=False),
+         json.dumps(seasonings, ensure_ascii=False)))
     con.commit()
     rid = cur.lastrowid
     row = con.execute("SELECT * FROM custom_recipes WHERE id=?", (rid,)).fetchone()
     con.close()
     d = dict(row)
     d["effects"] = json.loads(d["effects"] or "[]")
+    d["ingredients"] = _parse_items(d["ingredients"])
+    d["seasonings"] = _parse_items(d["seasonings"])
     return d
 
 

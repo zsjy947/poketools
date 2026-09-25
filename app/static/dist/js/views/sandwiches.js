@@ -83,7 +83,7 @@ const SandwichView = {
 
       <el-tab-pane :label="'我的食谱 (' + customList.length + ')'" name="custom">
         <div class="page-head">
-          <span style="color:#888;font-size:13px">自由模式配方记录（按档案保存，效果/食材/调味料必填）</span>
+          <span style="color:#888;font-size:13px">自由模式配方记录（效果/食材/调味料必填）</span>
           <div class="spacer"></div>
           <el-button type="primary" size="small" @click="openEditor">＋ 录入食谱</el-button>
         </div>
@@ -99,8 +99,8 @@ const SandwichView = {
                 {{ e.power }}<template v-if="e.type">：{{ e.type }}</template> Lv.{{ e.level }}
               </span>
             </div>
-            <div class="ing"><b>食材：</b>{{ r.ingredients }}</div>
-            <div class="ing"><b>调味料：</b>{{ r.seasonings }}</div>
+            <div class="ing"><b>食材：</b>{{ fmtList(r.ingredients) }}</div>
+            <div class="ing"><b>调味料：</b>{{ fmtList(r.seasonings) }}</div>
           </div>
         </div>
         <div v-else class="empty-hint" style="padding:30px">还没有自定义食谱，点击右上角「录入食谱」开始记录</div>
@@ -129,10 +129,14 @@ const SandwichView = {
           <el-button size="small" text type="primary" @click="editor.effects.push({power: '', type: '', level: 1})">＋ 添加效果</el-button>
         </el-form-item>
         <el-form-item label="食材" required>
-          <el-input v-model="editor.ingredients" type="textarea" :rows="2" placeholder="如：生菜、番茄片、辣香肠" />
+          <el-select v-model="editor.ingredients" multiple filterable placeholder="搜索并选择食材（可多选）" style="width:100%">
+            <el-option v-for="i in itemOptions('食材')" :key="i" :value="i" :label="i" />
+          </el-select>
         </el-form-item>
         <el-form-item label="调味料" required>
-          <el-input v-model="editor.seasonings" type="textarea" :rows="2" placeholder="如：盐、蛋黄酱" />
+          <el-select v-model="editor.seasonings" multiple filterable placeholder="搜索并选择调味料（可多选）" style="width:100%">
+            <el-option v-for="i in itemOptions('调味料')" :key="i" :value="i" :label="i" />
+          </el-select>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -161,10 +165,11 @@ const SandwichView = {
     const editorDlg = ref(false);
     const saving = ref(false);
     const editor = reactive({ name: "", effects: [{ power: "", type: "", level: 1 }],
-      ingredients: "", seasonings: "" });
+      ingredients: [], seasonings: [] });
 
     const filteredItems = computed(() => items.value.filter((p) =>
-      (!itemKind.value || p.kind === itemKind.value)
+      p.kind !== "咖喱食材"
+      && (!itemKind.value || p.kind === itemKind.value)
       && (!itemQ.value || p.name.includes(itemQ.value) || (p.desc || "").includes(itemQ.value))));
 
     async function load() {
@@ -183,13 +188,16 @@ const SandwichView = {
     function openEditor() {
       editor.name = "";
       editor.effects = [{ power: "", type: "", level: 1 }];
-      editor.ingredients = "";
-      editor.seasonings = "";
+      editor.ingredients = [];
+      editor.seasonings = [];
       editorDlg.value = true;
+    }
+    function itemOptions(kind) {
+      return items.value.filter((p) => p.kind === kind).map((p) => p.name);
     }
     async function saveCustom() {
       const effects = editor.effects.filter((e) => e.power);
-      if (!effects.length || !editor.ingredients.trim() || !editor.seasonings.trim()) {
+      if (!effects.length || !editor.ingredients.length || !editor.seasonings.length) {
         store.toast("效果、食材、调味料均为必填", "warning");
         return;
       }
@@ -213,18 +221,21 @@ const SandwichView = {
     }
 
     watch([power, ptype, level, sort], load);
-    watch(() => store.profileId, loadCustom);
     let qt;
     watch(q, () => { clearTimeout(qt); qt = setTimeout(load, 300); });
     load();
     apiGet("/api/picnic-items").then((r) => (items.value = r));
     loadCustom();
 
+    function fmtList(v) {
+      return Array.isArray(v) ? v.join("、") : (v || "—");
+    }
+
     return {
       tabName, power, ptype, level, sort, q, list, loading,
-      itemKind, itemQ, items, filteredItems,
+      itemKind, itemQ, items, filteredItems, itemOptions,
       customList, editorDlg, editor, saving,
-      openEditor, saveCustom, removeCustom,
+      openEditor, saveCustom, removeCustom, fmtList,
       POWER_LIST, TYPE_LIST, POWER_COLORS,
     };
   },

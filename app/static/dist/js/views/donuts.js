@@ -90,7 +90,7 @@ const DonutView = {
 
       <el-tab-pane :label="'我的配方 (' + customList.length + ')'" name="custom">
         <div class="page-head">
-          <span style="color:#888;font-size:13px">自由组合记录（按档案保存）</span>
+          <span style="color:#888;font-size:13px">自由组合记录</span>
           <div class="spacer"></div>
           <el-button type="primary" size="small" @click="openEditor">＋ 录入配方</el-button>
         </div>
@@ -106,8 +106,7 @@ const DonutView = {
                 {{ e.power }}<template v-if="e.type">：{{ e.type }}</template> Lv.{{ e.level }}
               </span>
             </div>
-            <div class="ing"><b>树果：</b>{{ r.ingredients }}</div>
-            <div class="ing"><b>调味/黄油：</b>{{ r.seasonings }}</div>
+            <div class="ing"><b>树果：</b>{{ Array.isArray(r.ingredients) ? r.ingredients.join("、") : r.ingredients }}</div>
           </div>
         </div>
         <div v-else class="empty-hint" style="padding:30px">还没有自定义配方</div>
@@ -136,10 +135,38 @@ const DonutView = {
             @click="editor.effects.push({power: '', type: '', level: 1})">＋ 添加</el-button>
         </el-form-item>
         <el-form-item label="树果" required>
-          <el-input v-model="editor.ingredients" type="textarea" :rows="2" placeholder="如：樱子果×2、零余果×1" />
-        </el-form-item>
-        <el-form-item label="黄油" required>
-          <el-input v-model="editor.seasonings" placeholder="密阿雷黄油 / 异次元黄油…" />
+          <div style="width:100%">
+            <el-select v-model="editor.ingredients" multiple filterable
+              placeholder="搜索并选择树果（3~8 个）" style="width:100%">
+              <el-option v-for="b in d.berries" :key="b.name" :value="b.name" :label="b.name" />
+            </el-select>
+            <div class="berry-count" :class="{bad: editor.ingredients.length > 0 && (editor.ingredients.length < 3 || editor.ingredients.length > 8)}">
+              已选 {{ editor.ingredients.length }} / 8 个（最少 3 个；黄油随剧情固定，无需选择）
+            </div>
+            <!-- 风味预览 -->
+            <div v-if="flavorPreview" class="flavor-preview">
+              <div class="fp-row">
+                <span class="fp-lbl">风味合计</span>
+                <span v-for="e in flavorPreview.sums" :key="e[0]" class="flavor-chip"
+                  :class="flClass(FLAVOR_NAMES[e[0]])" :style="{opacity: e[1] > 0 ? 1 : .35}">
+                  {{ FLAVOR_NAMES[e[0]] }} {{ e[1] }}
+                </span>
+              </div>
+              <div class="fp-row">
+                <span class="fp-lbl">风味级别</span>
+                <span class="fp-star">{{ "★".repeat(flavorPreview.star) }}<template v-if="flavorPreview.star < 5">{{ "☆".repeat(5 - flavorPreview.star) }}</template></span>
+                <span v-if="flavorPreview.star >= 3" style="color:#67c23a">达到 3★，将产生风味力量</span>
+                <span v-else style="color:#98a1b3">未达 3★，不产生风味力量</span>
+              </div>
+              <div class="fp-row" v-if="flavorPreview.star >= 3">
+                <span class="fp-lbl">预期力量</span>
+                <span style="font-size:12.5px;color:#555">
+                  由最大风味「{{ FLAVOR_NAMES[flavorPreview.maxFlavor] }}」决定（次高「{{ FLAVOR_NAMES[flavorPreview.second[0]] }} {{ flavorPreview.second[1] }}」影响具体种类）：
+                  <el-tag v-for="pw in flavorPreview.powers" :key="pw" size="small" style="margin:2px 4px 2px 0">{{ pw }}</el-tag>
+                </span>
+              </div>
+            </div>
+          </div>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -161,7 +188,7 @@ const DonutView = {
     const editorDlg = ref(false);
     const saving = ref(false);
     const editor = reactive({ name: "", effects: [{ power: "", type: "", level: 1 }],
-      ingredients: "", seasonings: "" });
+      ingredients: [] });
 
     const filteredBerries = computed(() => d.value
       ? d.value.berries.filter((b) => !berryQ.value || b.name.includes(berryQ.value))
@@ -179,21 +206,44 @@ const DonutView = {
     function openEditor() {
       editor.name = "";
       editor.effects = [{ power: "", type: "", level: 1 }];
-      editor.ingredients = "";
-      editor.seasonings = "";
+      editor.ingredients = [];
       editorDlg.value = true;
     }
+
+    /* 风味预览：五维求和 → 最大风味对照阈值定★（0/120/240/350/700/960）→
+       3★ 起产生风味力量，由最大 1~2 项风味决定种类（次高风味影响具体种类） */
+    const STAR_THRESHOLDS = [120, 240, 350, 700, 960];
+    const flavorPreview = computed(() => {
+      if (!d.value || !editor.ingredients.length) return null;
+      const sums = { sweet: 0, spicy: 0, sour: 0, bitter: 0, fresh: 0 };
+      for (const name of editor.ingredients) {
+        const b = d.value.berries.find((x) => x.name === name);
+        if (b) for (const k of Object.keys(sums)) sums[k] += b[k] || 0;
+      }
+      const entries = Object.entries(sums).sort((a, b) => b[1] - a[1]);
+      const star = STAR_THRESHOLDS.filter((th) => entries[0][1] >= th).length;
+      const powers = [];
+      if (star >= 3) {
+        const zh = FLAVOR_NAMES[entries[0][0]];
+        const seen = new Set();
+        for (const fp of d.value.flavor_powers) {
+          if (fp.flavor === zh && !seen.has(fp.power)) { seen.add(fp.power); powers.push(fp.power); }
+        }
+      }
+      return { sums: entries, star, maxFlavor: entries[0][0], second: entries[1], powers };
+    });
     async function saveCustom() {
       const effects = editor.effects.filter((e) => e.power);
-      if (!effects.length || !editor.ingredients.trim() || !editor.seasonings.trim()) {
-        store.toast("风味力量、树果、黄油均为必填", "warning");
+      if (!effects.length) { store.toast("风味力量为必填", "warning"); return; }
+      if (editor.ingredients.length < 3 || editor.ingredients.length > 8) {
+        store.toast("树果需要 3~8 个", "warning");
         return;
       }
       saving.value = true;
       try {
         await apiSend("POST", "/api/custom-recipes", {
           profile_id: store.profileId, game: "legends-za",
-          name: editor.name, effects, ingredients: editor.ingredients, seasonings: editor.seasonings,
+          name: editor.name, effects, ingredients: editor.ingredients, seasonings: [],
         });
         editorDlg.value = false;
         await loadCustom();
@@ -215,7 +265,7 @@ const DonutView = {
 
     return {
       loading, d, tabName, berryQ, filteredBerries, customList,
-      editorDlg, editor, saving, openEditor, saveCustom, removeCustom,
+      editorDlg, editor, saving, openEditor, saveCustom, removeCustom, flavorPreview,
       powerNames, flClass, FLAVOR_NAMES, TYPE_LIST, POWER_COLORS,
     };
   },

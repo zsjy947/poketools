@@ -1,10 +1,10 @@
 /* 全局共享组件与 store */
 const { h } = Vue;
 
-/* 全局响应式 store（游戏上下文 / 图鉴勾选状态等） */
+/* 全局响应式 store（游戏上下文 / 图鉴勾选状态等）。
+   档案功能已移除（P3-1）：固定默认档案 profileId=1，数据仍按该档案隔离。 */
 const store = Vue.reactive({
   games: [],
-  profiles: [],
   profileId: 1,
   gameId: "",            // 当前游戏上下文（按游戏入口）
   typeChart: null,       // /api/meta/typechart 缓存

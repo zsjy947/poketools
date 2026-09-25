@@ -193,6 +193,14 @@ body { margin: 0; font-family: "Segoe UI", "Microsoft YaHei", sans-serif; backgr
 
 .flavor-row { display: flex; gap: 6px; flex-wrap: wrap; margin: 4px 0 8px; }
 .flavor-chip { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; border-radius: 6px; padding: 2px 8px; font-size: 12px; color: #fff; font-weight: 600; }
+
+/* 甜甜圈录入：树果计数与风味预览 */
+.berry-count { margin-top: 6px; font-size: 12px; color: #8a93a8; }
+.berry-count.bad { color: #c45656; }
+.flavor-preview { margin-top: 10px; background: #f7f9fd; border: 1px dashed #d5e2f7; border-radius: 8px; padding: 8px 12px; }
+.fp-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 4px 0; }
+.fp-lbl { font-size: 12px; color: #98a1b3; min-width: 56px; }
+.fp-star { color: #f6a5c8; letter-spacing: 2px; font-size: 15px; }
 .fl-sweet, .fl-甜 { background: #fa92b2; }
 .fl-spicy, .fl-辣 { background: #f5ac78; }
 .fl-sour, .fl-酸 { background: #fae078; color: #7a6a10; }
