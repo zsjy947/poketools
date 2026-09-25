@@ -8,46 +8,23 @@
 编号 ↔ 文件对应关系来自 data/raw/52poke-cache/三明治.txt 食谱列表表格
 （每行含编号单元格与 [[File:Picnic {名字} Sprite.png]]，顺序天然对齐）。
 可重复执行：已存在的文件跳过；`--force` 全部重下（规格变更时用）。
+wiki 访问复用 scripts/wiki_client.py。
 """
 from __future__ import annotations
 
 import io
 import re
 import sys
-import time
 from pathlib import Path
 
-import requests
 from PIL import Image
 
-ROOT = Path(__file__).resolve().parent.parent
-CACHE = ROOT / "data" / "raw" / "52poke-cache"
-OUT = ROOT / "app" / "static" / "dist" / "assets" / "sandwiches"
-API = "https://wiki.52poke.com/api.php"
-UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) poketools/0.4 (asset build)"
+import wiki_client as wc
+
+OUT = wc.ROOT / "app" / "static" / "dist" / "assets" / "sandwiches"
 SIZE_CAP = 40 * 1024          # 单张体积上限，超过则降档
 THUMB_W = (640, 512)          # 首选 / 降档缩略图宽度（原比例 16:9）
 QUALITY = 85
-
-S = requests.Session()
-S.headers["User-Agent"] = UA
-
-
-def get_wikitext(title: str) -> str:
-    p = CACHE / f"{title}.txt"
-    if p.exists():
-        return p.read_text(encoding="utf-8")
-    CACHE.mkdir(parents=True, exist_ok=True)
-    r = S.get(API, params={
-        "action": "query", "prop": "revisions", "rvprop": "content",
-        "rvslots": "main", "titles": title,
-        "format": "json", "formatversion": "2", "redirects": 1,
-    }, timeout=90)
-    r.raise_for_status()
-    pages = r.json()["query"].get("pages", [])
-    wt = pages[0]["slots"]["main"]["content"] if pages else ""
-    p.write_text(wt, encoding="utf-8")
-    return wt
 
 
 def parse_rows(wt: str) -> list[tuple[int, str]]:
@@ -67,37 +44,6 @@ def parse_rows(wt: str) -> list[tuple[int, str]]:
     return rows
 
 
-def thumb_urls(titles: list[str], width: int) -> dict[str, str]:
-    out: dict[str, str] = {}
-    for k in range(0, len(titles), 40):
-        chunk = titles[k:k + 40]
-        for attempt in range(4):
-            try:
-                r = S.get(API, params={
-                    "action": "query", "prop": "imageinfo",
-                    "iiprop": "url", "iiurlwidth": width,
-                    "titles": "|".join(chunk),
-                    "format": "json", "formatversion": "2",
-                }, timeout=90)
-                r.raise_for_status()
-                for page in r.json()["query"].get("pages", []):
-                    ii = (page.get("imageinfo") or [{}])[0]
-                    if ii.get("thumburl"):
-                        out[page["title"]] = ii["thumburl"]
-                break
-            except requests.RequestException as e:
-                if attempt == 3:
-                    print(f"  imageinfo 批次失败: {e}", file=sys.stderr)
-                time.sleep(2 * (attempt + 1))
-    return out
-
-
-def fetch(url: str) -> bytes:
-    r = S.get(url, headers={"Referer": "https://wiki.52poke.com/"}, timeout=90)
-    r.raise_for_status()
-    return r.content
-
-
 def encode(data: bytes, dest: Path) -> int:
     im = Image.open(io.BytesIO(data)).convert("RGB")
     buf = io.BytesIO()
@@ -107,23 +53,21 @@ def encode(data: bytes, dest: Path) -> int:
 
 
 def main() -> None:
-    force = "--force" in sys.argv
-    if force:
+    if "--force" in sys.argv:
         for p in OUT.glob("sandwich_*.webp"):
             p.unlink()
 
-    wt = get_wikitext("三明治")
+    wt = wc.fetch_wikitext("三明治")
     rows = parse_rows(wt)
     print(f"[1/3] 食谱表格解析: {len(rows)} 个 (编号, 文件) 对")
     missing_no = sorted({n for n in range(1, 152)} - {n for n, _ in rows})
     if missing_no:
         print(f"  缺编号: {missing_no}", file=sys.stderr)
 
-    titles = [t for _, t in rows]
-    url_640 = thumb_urls(titles, THUMB_W[0])
+    url_640 = wc.image_urls([t for _, t in rows], thumb_width=THUMB_W[0])
 
     OUT.mkdir(parents=True, exist_ok=True)
-    print(f"[2/3] 下载缩略图（16:9 不裁剪）→ {OUT.relative_to(ROOT)}")
+    print(f"[2/3] 下载缩略图（16:9 不裁剪）→ {OUT.relative_to(wc.ROOT)}")
     ok, failed, fallback = 0, [], []
     need_512: list[tuple[int, str]] = []
     for no, title in rows:
@@ -136,7 +80,8 @@ def main() -> None:
             failed.append((no, title, "无 thumburl"))
             continue
         try:
-            size = encode(fetch(url), dest)
+            data = wc.fetch_bytes(url)
+            size = encode(data, dest)
             if size > SIZE_CAP:
                 dest.unlink()
                 need_512.append((no, title))
@@ -148,7 +93,7 @@ def main() -> None:
             print(f"    {ok}/{len(rows)}")
 
     if need_512:
-        url_512 = thumb_urls([t for _, t in need_512], THUMB_W[1])
+        url_512 = wc.image_urls([t for _, t in need_512], thumb_width=THUMB_W[1])
         for no, title in need_512:
             dest = OUT / f"sandwich_{no:03d}.webp"
             url = url_512.get(title)
@@ -156,7 +101,7 @@ def main() -> None:
                 failed.append((no, title, "降档无 thumburl"))
                 continue
             try:
-                encode(fetch(url), dest)
+                encode(wc.fetch_bytes(url), dest)
                 fallback.append(no)
                 ok += 1
             except Exception as e:  # noqa: BLE001

@@ -14,14 +14,16 @@ git clone --depth 1 https://github.com/PokeAPI/pokeapi data/raw/pokeapi   # 一�
 python scripts/build_db.py         # PokeAPI CSV -> data/poketools.db（可重复执行，重建）
 python scripts/scrape_52poke.py    # 52poke wiki -> data/curated/*.json + 合并入库
 python scripts/fetch_sprites.py    # 官方绘图(三级回退+Pillow缩放) -> data/sprites/
-python scripts/fetch_feature_images.py  # 特化功能配图 -> app/static/dist/assets/
+python scripts/fetch_feature_images.py  # 属性雪碧图/游戏商标/特化页配图 -> app/static/dist/assets/
+python scripts/fetch_sandwich_images.py # 三明治 151 张 16:9 食谱图
 python scripts/make_icon.py        # 精灵球应用图标
+# 52poke 访问统一走 scripts/wiki_client.py（缓存/批量 wikitext/imageinfo 直链/Referer 下载），勿再各写一份
 
 # 开发
 python -m app.main                 # 启动 API + 静态前端，http://127.0.0.1:8734
 pytest tests/ -v                   # 测试（改伤害公式后另跑 tools/calib 校准）
 pythonw launcher.pyw               # 桌面窗口启动
-./build_exe.bat                    # PyInstaller 打包 exe（含图标）
+./build_exe.bat                    # PyInstaller 打包 → release/poketools/（exe+data 即拷即用；release/ 已 gitignore）
 ```
 
 注意：前端是**免构建**的 Vue3 + Element Plus（UMD），源码就是 `app/static/dist/`，
@@ -30,14 +32,16 @@ pythonw launcher.pyw               # 桌面窗口启动
 ## 架构要点
 
 - `data/poketools.db`：静态数据，应用**只读**。每次由 `scripts/build_db.py` 重建，不要手工编辑。
-- `data/userstate.db`：用户状态（多档案 profile），应用可写。表：`profiles`、`caught_state(profile_id, dex_id, species_id, caught, note)`、`custom_recipes(profile_id, game, name, effects, ingredients, seasonings)`。
+- `data/userstate.db`：用户状态，应用可写。表：`profiles`（P3-1 起档案 UI 已移除，固定默认档案 id=1，表保留）、`caught_state(profile_id, dex_id, species_id, caught, note)`、`custom_recipes(profile_id, game, name, effects, ingredients, seasonings)`（食材/调味料/树果存 JSON 数组，读取兼容旧文本）。
 - `data/curated/*.json`：52poke 抓取结果 + 人工补录，**随 git 提交**（是数据库的可复现来源）。`TODO.json` 记录解析失败/数据缺口；风味力量为人工整理（`flavor_powers_manual.json`，wiki 表格 rowspan 布局不规则勿尝试程序化解析）。
 - 版本组（vg）映射：sword-shield=20/21/22、**bdsp=23**（图鉴用 extended-sinnoh 白金 210 编号；TM001-100 由 52poke 补全，PokeAPI machines 仅 17 条）、legends-arceus=24、scarlet-violet=25/26/27（**machines 只导 vg25**，26/27 同号重复）、**legends-za=30（学习集来自 52poke `{种类}/第九世代招式表` 子页抓取写入 vg30；vg32 是 Pokémon Champions 的 train 数据，与 Z-A 无关，勿导入）**。
-- 功能入口**按游戏组织**（`games.features`：dex/ev/sandwich/donut/curry），伤害计算器全局；详情页内容按当前游戏裁剪（介绍/获取方式/招式表）。
+- 功能入口**按游戏组织**（`games.features`：dex/ev/sandwich/donut/curry），伤害计算器为全局独立入口；详情页两栏布局、内容按当前游戏与**所选形态**裁剪（介绍/获取方式/招式表；`form_flavor` 存地区形态/洛托姆换装的独立图鉴介绍）。
+- 招式表 tab 逐游戏不同（`GAME_MOVE_CONFIG`）：**朱紫无教授**（PokeAPI vg25 的 4 条 tutor 在 52poke 为「回忆」，并入升级组）；Z-A 仅 升级/学习器。
 - 语言：PokeAPI CSV 中 zh-Hans=12，en=9。
 - 生蛋链算法在 `app/services/breeding.py`：多源 BFS，节点=能学会该招式的物种，边=共享蛋组；从「自学」（升级/学习器/教授）节点到目标蛋组，输出全部最短路径。
 - 设计总纲：`docs/DESIGN.md`（技术栈/数据管线/Schema/API/伤害计算器/前端架构/取舍/变更历史）；数据缺口清单 `docs/DATA-GAPS.md`（Z-A 94 种学习集缺失、SV 31 个 TM 无获取文本等）；操作手册 `docs/USER-MANUAL.md`。**文档命名规范：内容描述 + 全大写**。
-- 伤害计算器：`app/services/damage.py`（服务）+ `app/routers/calc.py`（API）+ 前端 `views/calc.js`。
+- 伤害计算器（四期重建）：`app/services/damage.py`（**仅现代公式**，阿尔宙斯/Z-A 公式已删）+ `app/routers/calc.py`（机制 mega/Z/极巨/太晶同侧互斥校验）+ 前端 `views/calc.js`（对战场/编辑面板/场地三区，四招式即点即算）。
+  - 前端 CSS 按页拆分：`css/base|dex|features|calc.css`（免构建，index.html 多链）。
   - 现代公式已与 Pokémon Showdown 官方引擎 `@smogon/calc` **逐 roll 校准一致**；
     校准脚本 `tools/calib/`（node harness.mjs 生成基准 → python check.py 比对，改公式后必须重跑）。
   - 取整语义是关键：天气/会心作用于基础伤害（会心 ×1.5 向下取整）；随机最先 floor(base×(85+i)/100)；

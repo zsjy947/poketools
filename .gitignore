@@ -34,3 +34,6 @@ data/*.db-wal
 # --- ZCode session artifacts ---
 .zcode/
 .zcodeignore
+
+# --- release build output (exe + data, copy-to-run) ---
+/release/

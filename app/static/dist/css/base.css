@@ -1,3 +1,4 @@
+/* 基础：变量 / 布局 / 侧栏 / 通用卡片与徽章（跨页组件） */
 :root {
   --type-一般: #9fa19f; --type-火: #e62829; --type-水: #2980ef; --type-电: #fac000;
   --type-草: #3fa129; --type-冰: #3dcef3; --type-格斗: #ff8000; --type-毒: #9141cb;
@@ -20,46 +21,11 @@ body { margin: 0; font-family: "Segoe UI", "Microsoft YaHei", sans-serif; backgr
 .menu-item.sub { padding-left: 30px; font-size: 13.5px; padding-top: 8px; padding-bottom: 8px; }
 .menu-sep { height: 1px; background: #2f3850; margin: 8px 14px; }
 .menu-game { padding: 10px 18px 4px; font-size: 12.5px; color: var(--accent); font-weight: 600; display: flex; align-items: center; gap: 6px; }
-.sidebar-footer { padding: 10px 16px; font-size: 12px; color: #6b7487; }
 .main { flex: 1; overflow-y: auto; padding: 16px 22px 40px; }
 
 .page-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
 .page-title { font-size: 20px; font-weight: 700; margin: 0 8px 0 0; }
 .spacer { flex: 1; }
-
-/* 首页 */
-.home-hero { padding: 26px 6px 18px; }
-.home-hero h1 { margin: 0; font-size: 26px; }
-.game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; margin-bottom: 18px; }
-.game-card { background: #fff; border: 1px solid #e4e8f0; border-radius: 14px; padding: 20px 18px; cursor: pointer; transition: all .16s; }
-.game-card:hover { box-shadow: 0 6px 18px rgba(31,42,68,.14); transform: translateY(-2px); border-color: #c8d4f0; }
-.game-icon-imgs { display: flex; align-items: center; height: 50px; margin-bottom: 10px; }
-.game-name { font-size: 17px; font-weight: 700; }
-.game-sub { color: #8a93a8; font-size: 12.5px; margin-top: 4px; }
-
-/* 图鉴 tabs 与进度 */
-.dex-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
-.dex-tab { padding: 7px 14px; border-radius: 18px; background: #fff; border: 1px solid #dfe3ec; cursor: pointer; font-size: 14px; }
-.dex-tab.active { background: #409eff; border-color: #409eff; color: #fff; }
-.dex-tab .cnt { opacity: .75; font-size: 12px; margin-left: 6px; }
-.dex-progress { display: flex; align-items: center; gap: 10px; }
-.dex-progress-txt { font-size: 13px; line-height: 1.35; }
-
-/* 图鉴卡片：精灵球捕捉交互 */
-.dex-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
-.dex-card { background: #fff; border-radius: 12px; border: 1.5px solid #e4e8f0; padding: 8px 10px 10px; cursor: pointer; position: relative; transition: box-shadow .15s; text-align: center; }
-.dex-card:hover { box-shadow: 0 4px 14px rgba(31,42,68,.14); }
-.dex-card.caught { border-color: #8fd06a; background: #f6fcf1; }
-.dex-card.caught::before { content: "●"; position: absolute; left: 8px; top: 4px; color: #67c23a; font-size: 10px; }
-.dex-card .card-top { display: flex; justify-content: space-between; align-items: center; }
-.dex-card .ndex { color: #9aa3b5; font-size: 12px; }
-.dex-card .pname { font-weight: 600; font-size: 14px; margin-top: 2px; }
-.dex-card .en { color: #a8b0c0; font-size: 11px; min-height: 14px; }
-.dex-card img.poke-img { display: block; margin: 2px auto; object-fit: contain; }
-.dex-card img.img-missing { visibility: hidden; }
-.poke-toggle { display: inline-flex; cursor: pointer; color: #b6bdc9; transition: transform .12s; }
-.poke-toggle:hover { transform: scale(1.18); }
-.poke-toggle.caught { color: #e5484d; }
 
 /* 属性徽章：等宽胶囊 + 雪碧图图标（type_sprite.webp 每 16px 一格，18 属性 + 3 分类） */
 .type-badge { display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-width: 62px; padding: 2px 8px; border-radius: 5px; font-size: 12px; color: #fff; background: var(--t); margin: 1px 4px 1px 0; text-shadow: 0 1px 1px rgba(0,0,0,.3); box-shadow: inset 0 0 0 1px rgba(255,255,255,.18); }
@@ -86,28 +52,6 @@ body { margin: 0; font-family: "Segoe UI", "Microsoft YaHei", sans-serif; backgr
 .block { background: #fff; border: 1px solid #e4e8f0; border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; }
 .block h3 { margin: 0 0 10px; font-size: 15px; color: #333; border-left: 3px solid var(--accent); padding-left: 8px; }
 
-/* 详情页：形态 tab 条 + PC 两栏 */
-.form-strip { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
-.form-chip { display: flex; flex-direction: column; align-items: center; gap: 2px; background: #fff; border: 1.5px solid #e4e8f0; border-radius: 12px; padding: 8px 12px 6px; cursor: pointer; min-width: 88px; transition: all .14s; }
-.form-chip:hover { border-color: #409eff; }
-.form-chip.active { border-color: var(--accent); background: #fffaf0; box-shadow: 0 2px 8px rgba(246,195,68,.25); }
-.form-chip .fname { font-size: 12px; color: #555; max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.form-chip.active .fname { color: #8a6a00; font-weight: 600; }
-
-.detail-cols { display: grid; grid-template-columns: minmax(0, 11fr) minmax(0, 13fr); gap: 14px; align-items: start; }
-@media (max-width: 1080px) { .detail-cols { grid-template-columns: 1fr; } }
-.dcol { min-width: 0; display: flex; flex-direction: column; gap: 14px; }
-.dcol .block { margin-bottom: 0; }
-
-/* 详情页头部 */
-.detail-head { display: flex; gap: 22px; align-items: flex-start; background: linear-gradient(120deg, #ffffff, #f2f6ff); border: 1px solid #e4e8f0; border-radius: 14px; padding: 18px; }
-.detail-art { width: 186px; flex-shrink: 0; text-align: center; }
-.detail-art img { width: 176px; height: 176px; object-fit: contain; }
-.detail-art img.img-missing { visibility: hidden; }
-.detail-head .meta { flex: 1; min-width: 0; }
-.detail-head .names { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-.detail-head .names h2 { margin: 0; font-size: 26px; }
-.detail-head .names .en { color: #98a1b3; font-size: 14px; }
 .chip { display: inline-block; background: #f0f3fa; color: #4a5b82; border-radius: 10px; padding: 2px 10px; font-size: 12.5px; }
 .kv { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 9px; font-size: 13px; color: #555; }
 .kv b { color: #333; }
@@ -213,7 +157,6 @@ body { margin: 0; font-family: "Segoe UI", "Microsoft YaHei", sans-serif; backgr
 .curry-name { font-weight: 700; font-size: 14.5px; margin: 2px 0 6px; }
 .curry-desc { font-size: 12.5px; color: #777; margin-top: 8px; line-height: 1.5; }
 
-.progress-line { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; color: #666; }
 
 /* 配图 */
 .hero-banner { margin-bottom: 12px; border-radius: 12px; overflow: hidden; max-height: 220px; }
@@ -285,3 +228,15 @@ body { margin: 0; font-family: "Segoe UI", "Microsoft YaHei", sans-serif; backgr
 .fp-side, .fp-center { min-width: 0; }
 .fp-title { font-size: 13px; font-weight: 700; color: #555; margin-bottom: 6px; }
 .fp-note { font-size: 11.5px; color: #a8b0c0; margin-top: 6px; line-height: 1.5; }
+
+.fld-row { display: flex; align-items: center; gap: 8px; margin: 7px 0; flex-wrap: wrap; }
+.fld-row .lbl { font-size: 13px; color: #667; min-width: 56px; }
+.fld-row .mini { font-size: 11.5px; color: #98a1b3; }
+.fld-row .mini.result b { color: #2a7be4; font-size: 14px; }
+
+.toggle-chip { display: inline-flex; align-items: center; gap: 5px; border: 1.5px solid #d5dae5; border-radius: 14px; padding: 2px 11px; font-size: 12.5px; cursor: pointer; user-select: none; color: #6b7487; background: #fff; transition: all .12s; }
+.toggle-chip .dot { width: 7px; height: 7px; border-radius: 50%; background: #c9cfda; }
+.toggle-chip.on { border-color: #e0962f; color: #8a5a00; background: #fff7e6; font-weight: 700; }
+.toggle-chip.on .dot { background: #f6a5c8; box-shadow: 0 0 4px #f6a5c8; }
+.toggle-chip.small { padding: 1px 9px; font-size: 12px; }
+.toggle-chip.disabled { opacity: .4; cursor: not-allowed; }

@@ -23,16 +23,11 @@ import time
 from collections import Counter
 from pathlib import Path
 
-import requests
+from wiki_client import (  # 共享 52poke 客户端（缓存/批量 wikitext/别名回退）
+    CACHE, ROOT, fetch_titles, get_wikitext)
 
-ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = ROOT / "data" / "poketools.db"
-CACHE = ROOT / "data" / "raw" / "52poke-cache"
 CURATED = ROOT / "data" / "curated"
-
-API = "https://wiki.52poke.com/api.php"
-UA = "poketools/0.3 (personal offline tool; one-shot build)"
-BATCH = 40
 
 BDSP = "brilliant-diamond-shining-pearl"
 
@@ -84,75 +79,7 @@ SPECIAL_LOC = {
     "unknown": ("", "未知"), "未知": ("", "未知"),
 }
 
-# ---------------------------------------------------------------- wiki fetch
-
-_session = requests.Session()
-_session.headers["User-Agent"] = UA
-_aliases: dict[str, str] = {}
-
-
-def _cache_path(title: str) -> Path:
-    safe = re.sub(r'[\\/:*?"<>|]', "_", title)
-    return CACHE / f"{safe}.txt"
-
-
-def fetch_titles(titles: list[str]) -> None:
-    """Download wikitext for titles into cache (50-ish per request, with continue)."""
-    CACHE.mkdir(parents=True, exist_ok=True)
-    todo = [t for t in dict.fromkeys(titles) if not _cache_path(t).exists()]
-    if not todo:
-        return
-    print(f"  fetching {len(todo)} pages from 52poke ...")
-    for i in range(0, len(todo), BATCH):
-        chunk = todo[i:i + BATCH]
-        params = {
-            "action": "query", "prop": "revisions", "rvprop": "content",
-            "rvslots": "main", "titles": "|".join(chunk),
-            "format": "json", "formatversion": "2", "redirects": 1,
-        }
-        data = None
-        for attempt in range(4):
-            try:
-                while True:
-                    r = _session.get(API, params=params, timeout=90)
-                    if r.status_code in (429, 503):
-                        time.sleep(5 * (attempt + 1)); continue
-                    r.raise_for_status()
-                    data = r.json()
-                    break
-                break
-            except Exception:
-                if attempt == 3:
-                    print(f"  !! batch {i} failed, skipping")
-                    data = None
-                    break
-                time.sleep(3)
-        if data is None:
-            continue
-        q = data.get("query", {})
-        for red in q.get("redirects", []):
-            _aliases[red["from"]] = red["to"]
-        for page in q.get("pages", []):
-            if page.get("missing"):
-                continue
-            revs = page.get("revisions") or []
-            if revs:
-                txt = revs[0]["slots"]["main"]["content"]
-                _cache_path(page["title"]).write_text(txt, encoding="utf-8")
-        time.sleep(0.6)
-        done = min(i + BATCH, len(todo))
-        if done % 200 == 0 or done == len(todo):
-            print(f"    {done}/{len(todo)}")
-
-
-def get_wikitext(title: str) -> str | None:
-    for t in (title, _aliases.get(title), f"{title}（宝可梦）"):
-        if not t:
-            continue
-        p = _cache_path(t)
-        if p.exists():
-            return p.read_text(encoding="utf-8")
-    return None
+# ------------------------------------------------- wiki fetch（统一走 wiki_client）
 
 
 # ---------------------------------------------------------------- wikitext utils
