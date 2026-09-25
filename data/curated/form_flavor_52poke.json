@@ -1,0 +1,1045 @@
+[
+ {
+  "species_id": 26,
+  "suffix": "alola",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "人们认为，它会进化成这个样子，是受到了阿罗拉地区的气候、风土以及食物的影响。"
+ },
+ {
+  "species_id": 26,
+  "suffix": "alola",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "它会站在自己的尾巴上，用精神力量飘浮在空中，同时用做成星形的十万伏特攻击对手。"
+ },
+ {
+  "species_id": 26,
+  "suffix": "alola",
+  "game": "legends-za",
+  "label": "Z-A",
+  "text": "用念力操纵电力。乘在尾巴上，利用精神力量浮起，就这么移动。"
+ },
+ {
+  "species_id": 27,
+  "suffix": "alola",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "栖息于被雪包围着的山岳地带，因此获得了钢铁般坚硬的冰雪之躯。"
+ },
+ {
+  "species_id": 27,
+  "suffix": "alola",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "栖息在南方海岛的雪山上。刮起暴风雪时，为了不被吹飞，会趴在雪里一动不动地忍耐。"
+ },
+ {
+  "species_id": 27,
+  "suffix": "alola",
+  "game": "scarlet-violet",
+  "label": "朱",
+  "text": "栖息在雪山。钢的甲壳非常坚固，但因为过于坚硬，身体没法蜷缩起来。"
+ },
+ {
+  "species_id": 27,
+  "suffix": "alola",
+  "game": "scarlet-violet",
+  "label": "紫",
+  "text": "让穿山鼠在冰上滑行，比赛滑行的距离。这是自古就有的阿罗拉的庆典之一。"
+ },
+ {
+  "species_id": 28,
+  "suffix": "alola",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "会用大大的钩爪铲开厚厚的积雪奔跑。在雪山，它的速度比任何宝可梦都快。"
+ },
+ {
+  "species_id": 28,
+  "suffix": "alola",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "有许多人攀登雪山就是为了一睹它那冰针在朝阳的沐浴下晶莹闪耀的样子。"
+ },
+ {
+  "species_id": 28,
+  "suffix": "alola",
+  "game": "scarlet-violet",
+  "label": "朱",
+  "text": "钢针是用冰覆盖住的。被它刺中会造成很深的伤口，还会被冻伤。"
+ },
+ {
+  "species_id": 28,
+  "suffix": "alola",
+  "game": "scarlet-violet",
+  "label": "紫",
+  "text": "很久以前曾栖息在沙漠里。会用利爪牢牢地插入山体，即便是攀爬冰山也不会滑落。"
+ },
+ {
+  "species_id": 37,
+  "suffix": "alola",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "长年在阿罗拉地区万年积雪的山上生活，使得六尾拥有了冰的能力。"
+ },
+ {
+  "species_id": 37,
+  "suffix": "alola",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "如果用显微镜观察它头部和尾巴上卷毛，就能看到上面涌出冰粒的样子。"
+ },
+ {
+  "species_id": 37,
+  "suffix": "alola",
+  "game": "legends-arceus",
+  "label": "洗翠",
+  "text": "成群栖息在积雪深厚的山中，可以推测其姿态的变化是为了适应寒冷的气候。会吐出冰冻的气息来保护自己。"
+ },
+ {
+  "species_id": 37,
+  "suffix": "alola",
+  "game": "scarlet-violet",
+  "label": "朱",
+  "text": "会成群结队地互助生活。能以零下５０度的吐息将猎物冻结实后再进食。"
+ },
+ {
+  "species_id": 37,
+  "suffix": "alola",
+  "game": "scarlet-violet",
+  "label": "紫",
+  "text": "在炎热的时候，用６根尾巴制作冰砾在周围挥洒，让身体冷却下来。"
+ },
+ {
+  "species_id": 38,
+  "suffix": "alola",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "由于它生活在被冰雪封闭，有着神明居住的山上，在过去被人们敬仰为神的化身。"
+ },
+ {
+  "species_id": 38,
+  "suffix": "alola",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "会引导在雪山遇险的人下山，但绝对不会轻饶不守规矩、破坏雪山环境的家伙。"
+ },
+ {
+  "species_id": 38,
+  "suffix": "alola",
+  "game": "legends-arceus",
+  "label": "洗翠",
+  "text": "栖息在万年积雪覆盖的圣山。据说当心地善良者在山中迷路时，它会现身引领迷路者下山。"
+ },
+ {
+  "species_id": 38,
+  "suffix": "alola",
+  "game": "scarlet-violet",
+  "label": "朱",
+  "text": "性格温和。在被人知道是九尾的地区形态之前，人们一直把它敬为神的化身。"
+ },
+ {
+  "species_id": 38,
+  "suffix": "alola",
+  "game": "scarlet-violet",
+  "label": "紫",
+  "text": "从体毛中生出冰粒，泼向敌人。如果惹恼它，一瞬间就会被冰镇。"
+ },
+ {
+  "species_id": 50,
+  "suffix": "alola",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "受到富含金属成分的土质影响，它的头上长出了钢胡须。"
+ },
+ {
+  "species_id": 50,
+  "suffix": "alola",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "３根胡须的形状会因自身的情绪而变化，对伙伴间的沟通很有帮助。"
+ },
+ {
+  "species_id": 50,
+  "suffix": "alola",
+  "game": "scarlet-violet",
+  "label": "朱",
+  "text": "从头上长出的金属物体是由胡子变化而来的。通过摆动跟伙伴进行交流。"
+ },
+ {
+  "species_id": 50,
+  "suffix": "alola",
+  "game": "scarlet-violet",
+  "label": "紫",
+  "text": "金色的胡子拥有感应器的功能。从洞里伸出，查探周围的状态。"
+ },
+ {
+  "species_id": 51,
+  "suffix": "alola",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "它漂亮的金属胡须不但像头盔一样保护着头部，同样也是灵敏的感应器。"
+ },
+ {
+  "species_id": 51,
+  "suffix": "alola",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "３只的感情非常好。会用超群的团队默契打败所面临的强敌。"
+ },
+ {
+  "species_id": 51,
+  "suffix": "alola",
+  "game": "scarlet-violet",
+  "label": "朱",
+  "text": "闪着金光的胡须是高灵敏的感应器。连数公里外的声音也能通过振动感知到。"
+ },
+ {
+  "species_id": 51,
+  "suffix": "alola",
+  "game": "scarlet-violet",
+  "label": "紫",
+  "text": "金属材质的胡须很重，所以速度不怎么快，但有着能挖穿坚硬岩盘的力量。"
+ },
+ {
+  "species_id": 52,
+  "suffix": "alola",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "过去曾经和阿罗拉的王族一起享受奢侈浮华的生活，所以对食物十分挑剔。"
+ },
+ {
+  "species_id": 52,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "和好战的海洋民族一起生活，久而久之身体的各个地方就都变成了黑铁。"
+ },
+ {
+  "species_id": 52,
+  "suffix": "alola",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "自尊心和智商都很高。会狡猾地应战，反复攻击敌人的弱点。"
+ },
+ {
+  "species_id": 52,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "额头上的金币越黑就越硬，也越能受到伙伴的尊敬。性格勇猛，什么都不怕。"
+ },
+ {
+  "species_id": 52,
+  "suffix": "alola",
+  "game": "legends-za",
+  "label": "Z-A",
+  "text": "浮躁、任性、耐不住性子。深受那些比起被别人照顾，更喜欢照顾别人的训练家欢迎。"
+ },
+ {
+  "species_id": 52,
+  "suffix": "galar",
+  "game": "legends-za",
+  "label": "Z-A",
+  "text": "充满野性的胡须是受到了曾栖息于寒冷地带的影响。会用钢爪勇猛果敢地战斗。"
+ },
+ {
+  "species_id": 53,
+  "suffix": "alola",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "由于在阿罗拉地区圆脸是富贵的象征，人们对猫老大呵护备至。"
+ },
+ {
+  "species_id": 53,
+  "suffix": "alola",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "不但拥有优秀的体能，还擅长卑鄙的战斗方式，非常不好对付。"
+ },
+ {
+  "species_id": 53,
+  "suffix": "alola",
+  "game": "legends-za",
+  "label": "Z-A",
+  "text": "圆脸是富贵的象征。体型丰满，大盘脸的猫老大会被认为是美丽的。"
+ },
+ {
+  "species_id": 74,
+  "suffix": "alola",
+  "game": "scarlet-violet",
+  "label": "朱",
+  "text": "带有磁力的石头身体。在磁力特别强的部分，铁矿砂密密麻麻地附着哦。"
+ },
+ {
+  "species_id": 74,
+  "suffix": "alola",
+  "game": "scarlet-violet",
+  "label": "紫",
+  "text": "如果踩到在地面睡觉的小拳石，就会发出叮——的响声，一下子全身都麻痹了。"
+ },
+ {
+  "species_id": 75,
+  "suffix": "alola",
+  "game": "scarlet-violet",
+  "label": "朱",
+  "text": "为寻找吃的石头而打架。每次隆隆石之间互相碰撞都会迸发出爆炸声和光芒。"
+ },
+ {
+  "species_id": 75,
+  "suffix": "alola",
+  "game": "scarlet-violet",
+  "label": "紫",
+  "text": "受到喜欢吃的石头影响，它全身都带着电。性格非常好斗。"
+ },
+ {
+  "species_id": 76,
+  "suffix": "alola",
+  "game": "scarlet-violet",
+  "label": "朱",
+  "text": "个性顽固且难以相处。如果它不高兴了，就会全身放电，并以雷鸣般的声音吼叫。"
+ },
+ {
+  "species_id": 76,
+  "suffix": "alola",
+  "game": "scarlet-violet",
+  "label": "紫",
+  "text": "发射出带着电的岩石。哪怕没有命中，只是擦到，对手也会麻痹而失去意识。"
+ },
+ {
+  "species_id": 77,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "小小的角里蕴藏着治愈之力。如果只是一点小伤，它只要用角轻擦伤口就能治愈。"
+ },
+ {
+  "species_id": 77,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "能从眼神中读取对方的内心。如果发现了邪恶的想法，就会在转眼间消失不见。"
+ },
+ {
+  "species_id": 78,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "会从犄角发射强力的精神利刃。那超群的破坏力甚至可以在厚厚的铁板上开出洞来。"
+ },
+ {
+  "species_id": 78,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "勇猛果敢，自尊心强。会在蹄子上的毛里储存精神力量，在森林中轻快地奔跑。"
+ },
+ {
+  "species_id": 79,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "平时一直都在发呆，但偶尔会突然露出锐利的神色。据说这和它所吃的食物有关。"
+ },
+ {
+  "species_id": 79,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "它以只生长于伽勒尔地区的植物的种子为食，因此尾巴是辣味的。"
+ },
+ {
+  "species_id": 79,
+  "suffix": "galar",
+  "game": "scarlet-violet",
+  "label": "朱",
+  "text": "之所以会散发刺激的香味，是因为它以香料为主食，其成分会渗入身体。"
+ },
+ {
+  "species_id": 79,
+  "suffix": "galar",
+  "game": "scarlet-violet",
+  "label": "紫",
+  "text": "虽然会用尾巴来垂钓，但渗出的香料味却害得它总是成果一般。"
+ },
+ {
+  "species_id": 79,
+  "suffix": "galar",
+  "game": "legends-za",
+  "label": "Z-A",
+  "text": "平时一直都在发呆，但偶尔会突然露出锐利的神色。据说这和它所吃的食物有关。"
+ },
+ {
+  "species_id": 80,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "由于被大舌贝咬住时的刺激和体内的香料发生化学反应，而变成了毒属性。"
+ },
+ {
+  "species_id": 80,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "如果去捏咬着它的大舌贝的舌头，它就会从螺的尖端喷出含有剧毒的液体。"
+ },
+ {
+  "species_id": 80,
+  "suffix": "galar",
+  "game": "scarlet-violet",
+  "label": "朱",
+  "text": "咬在手臂上的大舌贝会因渗出的毒素而失去意识，但也会因味道太好而宛如做梦。"
+ },
+ {
+  "species_id": 80,
+  "suffix": "galar",
+  "game": "scarlet-violet",
+  "label": "紫",
+  "text": "大舌贝为了吸取更多手臂的毒素会用力咬它，而这似乎会让它发痒，所以它偶尔会发狂。"
+ },
+ {
+  "species_id": 80,
+  "suffix": "galar",
+  "game": "legends-za",
+  "label": "Z-A",
+  "text": "由于被大舌贝咬住时的刺激和体内的香料发生化学反应，而变成了毒属性。"
+ },
+ {
+  "species_id": 83,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "生活在伽勒尔的大葱鸭挥舞着又粗又壮的大葱，是英勇奋战的战士。"
+ },
+ {
+  "species_id": 83,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "在不断活用又粗又长的伽勒尔大葱的过程中，大葱鸭演化成了独特的样子。"
+ },
+ {
+  "species_id": 83,
+  "suffix": "galar",
+  "game": "legends-za",
+  "label": "Z-A",
+  "text": "使用又粗又重的葱逐渐让身体得到锻炼。输赢全凭一击的破坏力。"
+ },
+ {
+  "species_id": 88,
+  "suffix": "alola",
+  "game": "scarlet-violet",
+  "label": "朱",
+  "text": "因为会将毒素储存在体内，所以和别的地区的臭泥不同，即使接近它也不会觉得臭。"
+ },
+ {
+  "species_id": 88,
+  "suffix": "alola",
+  "game": "scarlet-violet",
+  "label": "紫",
+  "text": "任何垃圾都能吃得很美味，因此在处理垃圾的地方它能大显身手，十分受欢迎。"
+ },
+ {
+  "species_id": 89,
+  "suffix": "alola",
+  "game": "scarlet-violet",
+  "label": "朱",
+  "text": "体内的毒素有１００种以上。毒素和毒素之间的化学反应是其生命之源。"
+ },
+ {
+  "species_id": 89,
+  "suffix": "alola",
+  "game": "scarlet-violet",
+  "label": "紫",
+  "text": "看上去像牙齿或爪子的东西其实是毒素的结晶。只要碰到就会中毒，所以靠近它很危险。"
+ },
+ {
+  "species_id": 103,
+  "suffix": "alola",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "在炽热阳光的暴晒下，椰蛋树原本的样子和能力觉醒了。"
+ },
+ {
+  "species_id": 103,
+  "suffix": "alola",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "拥有的超能力有所减弱。尾巴上的头会通过微弱的心灵感应来探查周围的状况。"
+ },
+ {
+  "species_id": 103,
+  "suffix": "alola",
+  "game": "scarlet-violet",
+  "label": "朱",
+  "text": "能让长脖子像鞭子一样弯曲，并用头重重地敲打对手。自己也会有些头晕眼花。"
+ },
+ {
+  "species_id": 103,
+  "suffix": "alola",
+  "game": "scarlet-violet",
+  "label": "紫",
+  "text": "悠然惬意地长大之后，它便不再需要原来的精神力量，沉睡于体内的龙之力量已经觉醒。"
+ },
+ {
+  "species_id": 105,
+  "suffix": "alola",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "点燃手中的骨头，为吊慰伙伴而通宵舞蹈。"
+ },
+ {
+  "species_id": 105,
+  "suffix": "alola",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "据说，它手中的骨头上燃烧的诅咒之火，会给它的身心留下永远无法治愈的痛楚。"
+ },
+ {
+  "species_id": 105,
+  "suffix": "alola",
+  "game": "legends-za",
+  "label": "Z-A",
+  "text": "把死别母亲的灵魂变为火焰，今晚也将跳起吊慰伙伴的舞蹈。"
+ },
+ {
+  "species_id": 110,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "会吸收大气中的污染成分，然后吐出新鲜的空气，这就是它的排泄方式。"
+ },
+ {
+  "species_id": 110,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "在往昔工厂林立，空气严重污染的时代，双弹瓦斯不知道为什么变成了这个样子。"
+ },
+ {
+  "species_id": 122,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "擅长踢踏舞。会用冷气制造出冰之地板并将其踢起，以此作为保护自己的障壁。"
+ },
+ {
+  "species_id": 122,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "会从脚底释放出冷气。一整天都会在自己冻住的地板上努力练习踢踏舞。"
+ },
+ {
+  "species_id": 122,
+  "suffix": "galar",
+  "game": "legends-za",
+  "label": "Z-A",
+  "text": "通过踢踏舞的舞步让周围的温度迅速下降，打造出漂亮的冰之舞台。"
+ },
+ {
+  "species_id": 128,
+  "suffix": "paldea-combat-breed",
+  "game": "scarlet-violet",
+  "label": "朱",
+  "text": "擅长以肌肉发达的身体打格斗战。会用短短的角瞄准对手的要害。"
+ },
+ {
+  "species_id": 128,
+  "suffix": "paldea-blaze-breed",
+  "game": "scarlet-violet",
+  "label": "朱",
+  "text": "用火之能量加热过的角高达摄氏１０００度，被它刺中的敌人会遭受创伤和灼伤之苦。"
+ },
+ {
+  "species_id": 128,
+  "suffix": "paldea-aqua-breed",
+  "game": "scarlet-violet",
+  "label": "朱",
+  "text": "从角尖端的洞猛烈地喷射出水，以形成高压的水流将敌人贯穿。"
+ },
+ {
+  "species_id": 128,
+  "suffix": "paldea-combat-breed",
+  "game": "scarlet-violet",
+  "label": "紫",
+  "text": "特征是厚实有力的肌肉以及粗鲁暴躁的性格。这种样子被称为斗战种。"
+ },
+ {
+  "species_id": 128,
+  "suffix": "paldea-blaze-breed",
+  "game": "scarlet-violet",
+  "label": "紫",
+  "text": "会喷出高温的鼻息，因此被命名为火炽种。３根尾巴总是拧在一起。"
+ },
+ {
+  "species_id": 128,
+  "suffix": "paldea-aqua-breed",
+  "game": "scarlet-violet",
+  "label": "紫",
+  "text": "会从角喷出水来游泳。因脂肪含量高而容易浮在水面上，这是水澜种的特征。"
+ },
+ {
+  "species_id": 144,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "用精神力量制作出的羽毛形刀刃能像裁纸般轻松地劈开厚厚的铁板。"
+ },
+ {
+  "species_id": 144,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "拥有急冻鸟之名的宝可梦。发射出的光束能让对方的身体像结冰一样失去自由。"
+ },
+ {
+  "species_id": 145,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "羽毛相互摩擦时会发出像电一样的噼噼啪啪声，因此得到了闪电鸟这个名字。"
+ },
+ {
+  "species_id": 145,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "脚力强劲，仅凭一脚就能把翻斗车踢得粉碎。据说能以３００公里的时速在山中奔驰。"
+ },
+ {
+  "species_id": 146,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "如果有谁接触到了它那如烈火般邪恶的气场，便会灵魂枯竭，烧得只剩白色灰烬。"
+ },
+ {
+  "species_id": 146,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "能像燃起烈火一般燃起邪恶的气场。因为这样的外表而被命名为火焰鸟。"
+ },
+ {
+  "species_id": 194,
+  "suffix": "paldea",
+  "game": "scarlet-violet",
+  "label": "朱",
+  "text": "在地盘的争夺中落败而到陆地生活，渐渐地就变成用有毒的粘膜来保护身体。"
+ },
+ {
+  "species_id": 194,
+  "suffix": "paldea",
+  "game": "scarlet-violet",
+  "label": "紫",
+  "text": "由于单独行动很危险，因此在沼地里行走时会３、４只排成一列来彼此协助。"
+ },
+ {
+  "species_id": 199,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "受到进化的冲击和毒素的影响，大舌贝的智力飙升到了可以控制呆呆王的程度。"
+ },
+ {
+  "species_id": 199,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "会一边咏唱诡异的咒语，一边混合吃掉的东西和体内的毒素来制造可疑的药。"
+ },
+ {
+  "species_id": 199,
+  "suffix": "galar",
+  "game": "scarlet-violet",
+  "label": "朱",
+  "text": "一旦发现虚弱的宝可梦，它就会从角上的洞取出由毒液制成的药给对方。"
+ },
+ {
+  "species_id": 199,
+  "suffix": "galar",
+  "game": "scarlet-violet",
+  "label": "紫",
+  "text": "虽然会混合吃掉的东西和毒液来制造药物，但其效果连呆呆王自己也不知道。"
+ },
+ {
+  "species_id": 199,
+  "suffix": "galar",
+  "game": "legends-za",
+  "label": "Z-A",
+  "text": "受到进化的冲击和毒素的影响，大舌贝的智力飙升到了可以控制呆呆王的程度。"
+ },
+ {
+  "species_id": 211,
+  "suffix": "hisui",
+  "game": "scarlet-violet",
+  "label": "朱",
+  "text": "栖息在寒冷地区的水边。比起其他地区的千针鱼，它的毒针更粗更短。"
+ },
+ {
+  "species_id": 211,
+  "suffix": "hisui",
+  "game": "scarlet-violet",
+  "label": "紫",
+  "text": "会从食物摄取毒素。突显紫色的针是它充满剧毒的证据。"
+ },
+ {
+  "species_id": 211,
+  "suffix": "hisui",
+  "game": "legends-za",
+  "label": "Z-A",
+  "text": "会食用有毒的矿石，并在体内储存毒素。被它刺到会受苦三天三夜。"
+ },
+ {
+  "species_id": 215,
+  "suffix": "hisui",
+  "game": "legends-arceus",
+  "label": "洗翠",
+  "text": "强健的爪子形状有助于在断崖绝壁上行动自如。爪子尖端滴出的毒液会在捉住猎物时侵袭其神经。"
+ },
+ {
+  "species_id": 222,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "常出现在从前曾是大海的地方。如果不小心错把它当成石头踢，就会遭到它的诅咒。"
+ },
+ {
+  "species_id": 222,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "它是因急遽环境变化而死去的远古太阳珊瑚。会用珊瑚枝吸取人的精气。"
+ },
+ {
+  "species_id": 263,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "一直在奔跑，永远静不下来。如果发现了其他的宝可梦，就会故意撞上去挑起事端。"
+ },
+ {
+  "species_id": 263,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "这似乎是蛇纹熊最古老的样子。会之字形乱走，把周围弄得一团糟。"
+ },
+ {
+  "species_id": 264,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "会用长舌头挑衅猎物。一旦猎物被自己激怒，便会猛烈地冲撞上去。"
+ },
+ {
+  "species_id": 264,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "有着十分好战的性情。即使是比自己强的对手也会鲁莽地发起挑战。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-heat",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "钻进由特殊马达驱动的烤箱微波炉里的洛托姆。十分擅长控制火焰。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-wash",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "会让房间发大水。喜欢利用水来恶作剧的洛托姆。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-frost",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "钻进由特殊马达驱动的电冰箱里的洛托姆。会吐出冷气战斗。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-fan",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "会吹飞你重要的资料。喜欢利用刮风来恶作剧的洛托姆。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-mow",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "钻进由特殊马达驱动的割草机里的洛托姆。会把割下的草到处乱撒。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-heat",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "会烤焦你最爱的衣服。喜欢用加热来恶作剧的洛托姆。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-wash",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "钻进由特殊马达驱动的洗衣机里的洛托姆。会放水威吓对手。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-frost",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "会冻住浴缸里放好的水。喜欢用冷气来恶作剧的洛托姆。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-fan",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "钻进由特殊马达驱动的电风扇里的洛托姆。会制造强风来吹飞敌人。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-mow",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "会割掉你种好的花。喜欢与草有关的恶作剧的洛托姆。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-heat",
+  "game": "legends-arceus",
+  "label": "洗翠",
+  "text": "藏身于怪异饭锅中的形态。此饭锅来历不明。是个会喷火来作恶的麻烦家伙。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-wash",
+  "game": "legends-arceus",
+  "label": "洗翠",
+  "text": "藏身于奇特柜子中的形态。柜子原本的用途不得而知。是个会泼洒冷水来作恶的麻烦家伙。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-frost",
+  "game": "legends-arceus",
+  "label": "洗翠",
+  "text": "藏身于奇怪橱柜中的形态。橱柜由未知的物质所制成。是个会制造冰霜来作恶的麻烦家伙。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-fan",
+  "game": "legends-arceus",
+  "label": "洗翠",
+  "text": "藏身于神秘器具中的形态。器具的用途不得而知。是个会喷吐狂风来作恶的麻烦家伙。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-mow",
+  "game": "legends-arceus",
+  "label": "洗翠",
+  "text": "藏身于异样推车中的形态。推车的构造十分不可思议。是个会砍断草木来作恶的麻烦家伙。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-heat",
+  "game": "scarlet-violet",
+  "label": "朱",
+  "text": "如果烤箱微波炉本身运转不良，钻进里边的洛托姆也会变得无精打采。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-wash",
+  "game": "scarlet-violet",
+  "label": "朱",
+  "text": "钻进洗衣机里的样子。会用水淹没四周，然后心满意足地点头。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-frost",
+  "game": "scarlet-violet",
+  "label": "朱",
+  "text": "钻进冰箱里的样子。会用冷气冻结四周，然后愉快地跳来跳去。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-fan",
+  "game": "scarlet-violet",
+  "label": "朱",
+  "text": "钻进电风扇里的样子。会吹飞四周的东西，然后发出得逞了的窃笑。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-mow",
+  "game": "scarlet-violet",
+  "label": "朱",
+  "text": "成为了洛托姆图鉴的诞生契机的其中一个家电产品就是割草机。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-heat",
+  "game": "scarlet-violet",
+  "label": "紫",
+  "text": "钻进了烤箱微波炉的样子。会用高温将周围烤得焦黑，然后开心地大笑。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-wash",
+  "game": "scarlet-violet",
+  "label": "紫",
+  "text": "由于已经停止生产，能让洛托姆钻进去的洗衣机在市场上被高价买卖。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-frost",
+  "game": "scarlet-violet",
+  "label": "紫",
+  "text": "装在冰箱里的特殊马达是让洛托姆发生形态变化的关键。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-fan",
+  "game": "scarlet-violet",
+  "label": "紫",
+  "text": "虽然能让洛托姆钻进去的家电产品有好几种，但最先被研发出来的是电风扇。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-mow",
+  "game": "scarlet-violet",
+  "label": "紫",
+  "text": "钻进割草机的样子。砍倒花草后，它会自信满满地耀武扬威。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-heat",
+  "game": "legends-za",
+  "label": "Z-A",
+  "text": "钻进由特殊马达驱动的烤箱微波炉里的洛托姆。十分擅长控制火焰。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-wash",
+  "game": "legends-za",
+  "label": "Z-A",
+  "text": "钻进由特殊马达驱动的洗衣机里的洛托姆。会放水威吓对手。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-frost",
+  "game": "legends-za",
+  "label": "Z-A",
+  "text": "钻进由特殊马达驱动的电冰箱里的洛托姆。会吐出冷气战斗。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-fan",
+  "game": "legends-za",
+  "label": "Z-A",
+  "text": "钻进由特殊马达驱动的电风扇里的洛托姆。会制造强风来吹飞敌人。"
+ },
+ {
+  "species_id": 479,
+  "suffix": "rotom-mow",
+  "game": "legends-za",
+  "label": "Z-A",
+  "text": "钻进由特殊马达驱动的割草机里的洛托姆。会把割下的草到处乱撒。"
+ },
+ {
+  "species_id": 554,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "由于居住在积雪深厚的地域，火囊也因受到冷却而退化了。取而代之的是制造冷气的器官。"
+ },
+ {
+  "species_id": 554,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "身体越冷就越有活力。会把呼出来的气冻起来做成雪球和伙伴互相扔着玩。"
+ },
+ {
+  "species_id": 555,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "会把食物装到头顶的雪球里带回家。在暴风雪的日子会下山来到人类居住的村落。"
+ },
+ {
+  "species_id": 555,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "性格敦厚的大力士。会一口气冻住头上的雪球，然后用头锤撞击对手。"
+ },
+ {
+  "species_id": 562,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "刻有诅咒的黏土板附在了哭哭面具上。据说会吸收怨念的能量。"
+ },
+ {
+  "species_id": 562,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "据说它是古代黏土板被带有强烈怨念的灵魂吸引后诞生的宝可梦。"
+ },
+ {
+  "species_id": 562,
+  "suffix": "galar",
+  "game": "legends-za",
+  "label": "Z-A",
+  "text": "被诅咒的黏土板与死者的灵魂融合在一起。会满怀怨恨地挥舞黏土板。"
+ },
+ {
+  "species_id": 618,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "剑",
+  "text": "栖息于富含铁质的泥巴里，因此获得了结实坚固的钢铁身躯。"
+ },
+ {
+  "species_id": 618,
+  "suffix": "galar",
+  "game": "sword-shield",
+  "label": "盾",
+  "text": "会藏在泥巴里，用显眼的嘴唇吸引猎物接近自己，接着用锯齿般的钢鳍紧紧将对手夹住。"
+ },
+ {
+  "species_id": 618,
+  "suffix": "galar",
+  "game": "legends-za",
+  "label": "Z-A",
+  "text": "栖息于富含铁质的泥巴里，因此获得了结实坚固的钢铁身躯。"
+ },
+ {
+  "species_id": 705,
+  "suffix": "hisui",
+  "game": "legends-za",
+  "label": "Z-A",
+  "text": "在饮用水所含的铁成分的作用下，壳变成了金属。晴天时不会冒出来。"
+ },
+ {
+  "species_id": 706,
+  "suffix": "hisui",
+  "game": "legends-za",
+  "label": "Z-A",
+  "text": "一不高兴就会缩在壳里，如橡胶球一般跳来跳去，横扫树木，把山掏得千疮百孔。"
+ },
+ {
+  "species_id": 713,
+  "suffix": "hisui",
+  "game": "legends-za",
+  "label": "Z-A",
+  "text": "为了寻找营养十足的越冬蔬菜，会用冰的颚部将雪拨开，在山野之间跑来跑去。"
+ }
+]

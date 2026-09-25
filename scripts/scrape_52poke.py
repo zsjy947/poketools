@@ -412,19 +412,65 @@ def parse_get_methods(wt: str) -> list[dict]:
     return rows
 
 
-def parse_flavor(wt: str) -> list[dict]:
-    out = []
+# {{图鉴}} 字段值中 <hr> 分段的形态标记 → forms.identifier 后缀
+# （段尾 <small>（标记）</small>，简繁均有；未收录标记落 TODO.json 不静默丢弃）
+FORM_MARKERS = {
+    "阿罗拉的样子": "alola", "阿羅拉的樣子": "alola",
+    "伽勒尔的样子": "galar", "伽勒尔的樣子": "galar",
+    "伽勒爾的樣子": "galar", "伽勒爾的样子": "galar",
+    "洗翠的样子": "hisui", "洗翠的樣子": "hisui",
+    "帕底亚的样子": "paldea", "帕底亞的樣子": "paldea",
+    "帕底亚的样子，斗战种": "paldea-combat-breed",
+    "帕底亚的样子，火炽种": "paldea-blaze-breed",
+    "帕底亚的样子，水澜种": "paldea-aqua-breed",
+    "加热洛托姆": "rotom-heat", "清洗洛托姆": "rotom-wash",
+    "结冰洛托姆": "rotom-frost", "旋转洛托姆": "rotom-fan",
+    "切割洛托姆": "rotom-mow",
+}
+
+
+def _strip_form_marker(seg: str) -> tuple[str, str]:
+    """剥掉段尾 <small>（形态标记）</small>，返回 (正文, 标记)。"""
+    m = re.search(r"<small>（(.+?)）</small>\s*$", seg)
+    if not m:
+        return seg, ""
+    return seg[: m.start()].strip(), m.group(1)
+
+
+def parse_flavor(wt: str) -> tuple[list[dict], list[dict], list[dict]]:
+    """图鉴介绍 → (默认形态行, 形态独立行, 失败记录)。
+
+    字段值可能是「默认段 <hr> 形态段<small>（标记）</small> <hr> …」的多段结构
+    （如 嘎啦嘎啦-阿罗拉、洛托姆换装形态各有一段）；首段属默认形态，
+    其余按 FORM_MARKERS 映射形态。未收录标记记入失败列表。
+    """
+    out: list[dict] = []
+    forms_out: list[dict] = []
+    unknown: list[dict] = []
     for _, body in find_template(wt, "图鉴"):
         _, named = parse_params(body)
         for field, (game, label) in FLAVOR_FIELDS.items():
             val = named.get(field)
             if not val:
                 continue
-            text = clean_wt(val)
+            segs = val.split("<hr>")
+            text = clean_wt(segs[0])
             if text:
                 out.append({"game": game, "label": label, "text": text})
+            for seg in segs[1:]:
+                seg_text, marker = _strip_form_marker(seg)
+                t = clean_wt(seg_text)
+                if not t:
+                    continue
+                suffix = FORM_MARKERS.get(marker)
+                if suffix:
+                    forms_out.append({"suffix": suffix, "game": game,
+                                      "label": label, "text": t})
+                else:
+                    unknown.append({"field": field, "marker": marker,
+                                    "text": t[:60]})
         break  # only the first {{图鉴}} block
-    return out
+    return out, forms_out, unknown
 
 
 # ---------------------------------------------------------------- TM pages
@@ -720,7 +766,8 @@ def main() -> None:
     titles = [overrides.get(str(sid)) or name for sid, name in species]
     fetch_titles(titles)
 
-    gm_rows, flavor_rows, failed = [], [], []
+    gm_rows, flavor_rows, form_flavor_rows, failed = [], [], [], []
+    form_marker_unknown: list[dict] = []
     for sid, name in species:
         wt = get_wikitext(overrides.get(str(sid)) or name)
         if wt is None:
@@ -734,12 +781,19 @@ def main() -> None:
                 continue
             seen.add(key)
             gm_rows.append((sid, r["game"], r["version_label"], r["location"], r["method"], r["note"]))
-        fl = parse_flavor(wt)
+        fl, fl_forms, fl_unknown = parse_flavor(wt)
         for r in fl:
             flavor_rows.append((sid, r["game"], r["label"], r["text"]))
+        for r in fl_forms:
+            form_flavor_rows.append((sid, r["suffix"], r["game"], r["label"], r["text"]))
+        for u in fl_unknown:
+            form_marker_unknown.append({"species_id": sid, "name": name,
+                                        "field": u["field"], "marker": u["marker"],
+                                        "text": u["text"]})
 
     print("  get_methods rows per game:", dict(Counter(g for _, g, *_ in gm_rows)))
     print("  flavor rows per game:", dict(Counter(g for _, g, *_ in flavor_rows)))
+    print(f"  form flavor rows: {len(form_flavor_rows)}")
     if failed:
         print(f"  !! {len(failed)} species pages not found -> TODO.json")
 
@@ -878,6 +932,10 @@ def main() -> None:
         json.dumps([{"species_id": s, "game": g, "label": lb, "text": t}
                     for s, g, lb, t in flavor_rows], ensure_ascii=False, indent=1),
         encoding="utf-8")
+    (CURATED / "form_flavor_52poke.json").write_text(
+        json.dumps([{"species_id": s, "suffix": fx, "game": g, "label": lb, "text": t}
+                    for s, fx, g, lb, t in form_flavor_rows], ensure_ascii=False, indent=1),
+        encoding="utf-8")
     (CURATED / "tm_locations.json").write_text(
         json.dumps([{"vg": v, "number": n, "move_id": m, "how": h, "materials": i}
                     for v, n, m, h, i in tm_rows], ensure_ascii=False, indent=1),
@@ -896,6 +954,7 @@ def main() -> None:
         encoding="utf-8")
 
     todo = {"missing_species_pages": failed,
+            "form_flavor_unparsed_markers": form_marker_unknown,
             "za_learnset_issues": za_missing}
     (CURATED / "TODO.json").write_text(json.dumps(todo, ensure_ascii=False, indent=1),
                                        encoding="utf-8")
@@ -944,9 +1003,28 @@ def main() -> None:
         cur.execute("DELETE FROM dex_flavor WHERE species_id=? AND game=? AND version_label=?",
                     (s, g, lb))
         cur.execute("INSERT INTO dex_flavor VALUES (?,?,?,?)", (s, g, lb, t))
+
+    # 形态独立图鉴介绍（suffix → form_id）。三种匹配：尾部（marowak-alola）、
+    # 整体（rotom-heat）、中缀（darmanitan-galar-standard）；同后缀多形态取最短 identifier。
+    cur.execute("DELETE FROM form_flavor")
+    unmatched = []
+    for s, suffix, g, lb, t in form_flavor_rows:
+        row = cur.execute(
+            """SELECT id FROM forms WHERE species_id=? AND
+                 (identifier LIKE '%-'||? OR identifier = ? OR identifier LIKE '%-'||?||'-%')
+               ORDER BY LENGTH(identifier) LIMIT 1""",
+            (s, suffix, suffix, suffix)).fetchone()
+        if row is None:
+            unmatched.append((s, suffix))
+            continue
+        cur.execute("DELETE FROM form_flavor WHERE form_id=? AND game=? AND version_label=?",
+                    (row[0], g, lb))
+        cur.execute("INSERT INTO form_flavor VALUES (?,?,?,?)", (row[0], g, lb, t))
+    if unmatched:
+        print(f"  !! form_flavor 未匹配形态: {sorted(set(unmatched))[:10]}")
     con.commit()
 
-    for t in ("get_methods", "dex_flavor", "tm_how", "sandwiches", "picnic_items",
+    for t in ("get_methods", "dex_flavor", "form_flavor", "tm_how", "sandwiches", "picnic_items",
               "curries", "donut_types", "special_donuts", "berries", "flavor_powers"):
         n = con.execute(f"SELECT COUNT(*) FROM {t}").fetchone()[0]
         print(f"  {t:16s} {n}")

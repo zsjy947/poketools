@@ -8,6 +8,9 @@ from ..db import static_conn
 router = APIRouter(prefix="/api")
 
 # 每个游戏的招式表结构：学习集 vg、TM 机器 vg、分组 tab（key→中文标签）
+# （逐游戏核对过 52poke 各作招式表列：剑盾教授=铠岛/雪原，BDSP 有教授列（tutor8 模板），
+#   阿尔宙斯=训练场佐思，朱紫无教授——4 条 PokeAPI tutor 数据在 52poke 为「回忆」，
+#   并入升级表以「回忆」标注；Z-A 仅 升级/学习器 两列，无回忆列）
 GAME_MOVE_CONFIG = {
     "sword-shield": {"vg": 20, "tm_vgs": [20],
                      "tabs": [("level", "升级"), ("machine", "招式学习器"),
@@ -19,10 +22,13 @@ GAME_MOVE_CONFIG = {
                        "tabs": [("level", "升级"), ("tutor", "教授")]},
     "scarlet-violet": {"vg": 25, "tm_vgs": [25],
                        "tabs": [("level", "升级"), ("machine", "招式学习器"),
-                                ("egg", "蛋招式"), ("tutor", "教授")]},
+                                ("egg", "蛋招式")]},
     "legends-za": {"vg": 30, "tm_vgs": [30],
                    "tabs": [("level", "升级"), ("machine", "招式学习器")]},
 }
+
+# 朱紫的「回忆」招式（PokeAPI 标 tutor，52poke 在升级表内标「回忆」）并入 level 组
+RECALL_AS_LEVEL_GAMES = {"scarlet-violet"}
 
 GAME_ORDER = ["sword-shield", "brilliant-diamond-shining-pearl", "legends-arceus",
               "scarlet-violet", "legends-za"]
@@ -144,6 +150,15 @@ def pokemon_detail(species_id: int, game: str = ""):
         f"""SELECT game, version_label, text FROM dex_flavor
             WHERE species_id=? ORDER BY {game_order}, version_label""",
         (species_id,))]
+    # 形态独立图鉴介绍（地区形态/洛托姆换装等），无条目的形态沿用默认介绍
+    form_flavor: dict[int, list] = {}
+    for r in con.execute(
+            f"""SELECT ff.form_id, ff.game, ff.version_label, ff.text
+                FROM form_flavor ff JOIN forms f ON f.id = ff.form_id
+                WHERE f.species_id=? ORDER BY {game_order}, ff.version_label""",
+            (species_id,)):
+        form_flavor.setdefault(r["form_id"], []).append(
+            {k: r[k] for k in ("game", "version_label", "text")})
     gm = [dict(r) for r in con.execute(
         f"""SELECT game, version_label, location, method, note FROM get_methods
             WHERE species_id=? ORDER BY {game_order}, version_label""",
@@ -152,6 +167,9 @@ def pokemon_detail(species_id: int, game: str = ""):
     # 按当前入口游戏裁剪（版本图鉴介绍/获取方式只看当前游戏）
     if game:
         flavor = [f for f in flavor if f["game"] == game]
+        form_flavor = {fid: [r for r in rows if r["game"] == game]
+                       for fid, rows in form_flavor.items()}
+        form_flavor = {fid: rows for fid, rows in form_flavor.items() if rows}
         gm = [g for g in gm if g["game"] == game]
 
     games_with_gm = {r["game"] for r in gm}
@@ -197,6 +215,7 @@ def pokemon_detail(species_id: int, game: str = ""):
         "base_stats": ({k: default[k] for k in ("hp", "atk", "def", "spa", "spd", "spe")}
                        if default else {}),
         "flavor": flavor,
+        "form_flavor": form_flavor,
         "get_methods": gm,
         "encounters_api": enc_dedup,
         "dex_list": dex_list,
@@ -266,11 +285,13 @@ def pokemon_moves(species_id: int, game: str = Query(...), form_id: int | None =
         d["tm"] = tm_info(r["move_id"]) if r["method"] == "machine" else []
         key = (r["method"], r["move_id"], r["level"])
         mkey = method_key.get(r["method"], r["method"])
+        if game in RECALL_AS_LEVEL_GAMES and mkey == "tutor":
+            mkey, d["level"], d["recall"] = "level", None, True
         if key in seen or mkey not in groups:
             continue
         seen.add(key)
         groups[mkey].append(d)
-    groups["level"].sort(key=lambda d: (d["level"] or 0, d["move_id"]))
+    groups["level"].sort(key=lambda d: (d.get("recall") is True, d["level"] or 0, d["move_id"]))
     for k in groups:
         if k != "level":
             groups[k].sort(key=lambda d: d["name_zh"])

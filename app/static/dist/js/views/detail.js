@@ -1,4 +1,6 @@
-/* 宝可梦详情页：按当前游戏裁剪（介绍/获取/招式）+ 进化链 + 种族值计算 + 属性相性 */
+/* 宝可梦详情页：PC 两栏布局（左=信息/介绍/特性/相性，右=种族值能力值/进化链/获取/招式表）。
+   形态用缩略图 tab 条切换，内容随形态独立变化；翻页原地换数据不整页重建。 */
+const STAT_KEYS = ["hp", "atk", "def", "spa", "spd", "spe"];
 const DetailView = {
   template: `
   <div v-loading="loading">
@@ -9,177 +11,222 @@ const DetailView = {
         <el-button size="small" :disabled="!nextId" @click="goNeighbor(nextId)">下一只 →</el-button>
       </template>
       <el-tag v-if="game" size="small" effect="plain">{{ game.name_zh }}</el-tag>
-      <div class="spacer"></div>
-      <el-select v-if="d && d.forms.length > 1" v-model="formId" size="small" style="width:220px">
-        <el-option v-for="f in d.forms" :key="f.id" :value="f.id"
-          :label="(f.form_label || f.identifier) + (f.is_default ? '（默认）' : '')" />
-      </el-select>
     </div>
 
     <template v-if="d">
-    <!-- 头部信息 -->
-    <div class="detail-head">
-      <div class="detail-art">
-        <poke-img :form-id="curForm.id" :size="168"></poke-img>
-      </div>
-      <div class="meta">
-        <div class="names">
-          <h2>{{ d.species.name_zh }}</h2>
-          <span class="en">{{ d.species.name_en }}</span>
-          <span class="en">#{{ String(d.species.id).padStart(4, "0") }}</span>
-        </div>
-        <div style="margin-top:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-          <type-badge :types="curForm.types"></type-badge>
-          <span class="genus">{{ d.species.genus_zh }}宝可梦</span>
-        </div>
-        <div class="kv">
-          <span><b>特性：</b><ability-list :abilities="curForm.ability_list"></ability-list>
-            <i class="hidden-hint">★ = 隐藏特性</i></span>
-        </div>
-        <div class="kv">
-          <span v-if="d.species.egg_groups && d.species.egg_groups !== '未发现'">
-            <b>蛋组：</b>{{ d.species.egg_groups }}</span>
-          <span><b>捕获率：</b>{{ d.species.capture_rate }}</span>
-          <span><b>身高/体重：</b>{{ (curForm.height / 10).toFixed(1) }}m / {{ (curForm.weight / 10).toFixed(1) }}kg</span>
-          <span><b>击倒努力值：</b><ev-badges :ev="curEv"></ev-badges></span>
-        </div>
-        <div class="kv" v-if="curDex">
-          <span><b>当前图鉴：</b><el-tag size="small" effect="plain" type="success">
-            {{ game.name_zh }}·{{ curDex.dex_zh }} #{{ curDex.ndex }}</el-tag></span>
-        </div>
-        <div class="kv" v-else-if="d.dex_list.length">
-          <span><b>图鉴收录：</b>
-            <el-tag v-for="x in d.dex_list" :key="x.dex_id" size="small" style="margin-right:6px"
-              effect="plain">{{ x.game_zh }}·{{ x.dex_zh }} #{{ x.ndex }}</el-tag>
-          </span>
-        </div>
+    <!-- 形态选择：缩略图 tab 条（多形态时） -->
+    <div v-if="d.forms.length > 1" class="form-strip">
+      <div v-for="f in d.forms" :key="f.id" class="form-chip" :class="{active: f.id === formId}"
+        @click="formId = f.id">
+        <poke-img :form-id="f.id" :size="52"></poke-img>
+        <span class="fname">{{ formName(f) }}<template v-if="f.is_default">（默认）</template></span>
       </div>
     </div>
 
-    <!-- 进化链 -->
-    <div class="block">
-      <h3>进化链</h3>
-      <evo-chain :evo="d.evolution" :current="sid"></evo-chain>
-    </div>
-
-    <!-- 当前版本图鉴介绍 -->
-    <div class="block">
-      <h3>图鉴介绍<template v-if="game">（{{ game.name_zh }}）</template></h3>
-      <flavor-list :flavor="d.flavor"></flavor-list>
-    </div>
-
-    <!-- 获取方式（本体/DLC/独占分组） -->
-    <div class="block">
-      <h3>获取方式<template v-if="game">（{{ game.name_zh }}）</template></h3>
-      <get-method-list :rows="d.get_methods" :extra="d.encounters_api"></get-method-list>
-    </div>
-
-    <!-- 种族值 + 能力值计算器 -->
-    <div class="block">
-      <h3>种族值与能力值计算</h3>
-      <div class="calc-stat-wrap">
-        <div style="flex:1;min-width:280px">
-          <stat-bars :stats="baseStats" :max="255"></stat-bars>
-          <div class="stat-sum">种族值合计：<b>{{ statSum }}</b></div>
-        </div>
-        <div class="stat-calc-panel">
-          <div class="fld-row">
-            <span class="lbl">等级</span>
-            <el-input-number v-model="sc.level" :min="1" :max="100" size="small" style="width:100px" />
-            <span class="lbl">性格</span>
-            <el-select v-model="sc.nature" size="small" style="width:130px">
-              <el-option v-for="n in natures" :key="n.identifier" :value="n.identifier"
-                :label="n.name_zh + (n.up ? '（+' + STAT_ZH[n.up] + ' -' + STAT_ZH[n.down] + '）' : '')" />
-            </el-select>
+    <div class="detail-cols">
+      <!-- 左栏 -->
+      <div class="dcol">
+        <!-- 头部信息卡 -->
+        <div class="detail-head">
+          <div class="detail-art">
+            <poke-img :form-id="curForm.id" :size="176"></poke-img>
           </div>
-          <div class="fld-row" v-for="k in ['hp','atk','def','spa','spd','spe']" :key="k">
-            <span class="lbl">{{ STAT_ZH[k] }}</span>
-            <span class="mini">努力值</span>
-            <el-input-number v-model="sc.ev[k]" :min="0" :max="252" :step="4" size="small" style="width:96px" />
-            <span class="mini">个体值</span>
-            <el-input-number v-model="sc.iv[k]" :min="0" :max="31" size="small" style="width:96px" />
-            <span class="mini result">= <b>{{ computedStats[k] }}</b></span>
+          <div class="meta">
+            <div class="names">
+              <h2>{{ d.species.name_zh }}</h2>
+              <span class="en">{{ d.species.name_en }}</span>
+              <span class="en">#{{ String(d.species.id).padStart(4, "0") }}</span>
+            </div>
+            <div style="margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+              <type-badge :types="curForm.types"></type-badge>
+              <span class="chip">{{ d.species.genus_zh }}宝可梦</span>
+              <span class="chip" v-if="d.species.egg_groups && d.species.egg_groups !== '未发现'">
+                {{ d.species.egg_groups }}</span>
+            </div>
+            <div class="kv" v-if="curDex">
+              <span><el-tag size="small" effect="plain" type="success">
+                {{ game.name_zh }}·{{ curDex.dex_zh }} #{{ curDex.ndex }}</el-tag></span>
+            </div>
+            <div class="kv" v-else-if="d.dex_list.length">
+              <span><b>图鉴收录：</b>
+                <el-tag v-for="x in d.dex_list" :key="x.dex_id" size="small" style="margin-right:6px"
+                  effect="plain">{{ x.game_zh }}·{{ x.dex_zh }} #{{ x.ndex }}</el-tag>
+              </span>
+            </div>
           </div>
-          <div style="font-size:12px;color:#98a1b3">努力值合计 {{ evSum }}/510</div>
+        </div>
+
+        <!-- 图鉴介绍（随形态独立） -->
+        <div class="block">
+          <h3>图鉴介绍<template v-if="game">（{{ game.name_zh }}）</template></h3>
+          <flavor-list :flavor="curFlavor"></flavor-list>
+        </div>
+
+        <!-- 特性与基础数据 -->
+        <div class="block">
+          <h3>特性</h3>
+          <div style="margin-bottom:8px"><ability-list :abilities="curForm.ability_list"></ability-list></div>
+          <div class="kv">
+            <span><b>捕获率：</b>{{ d.species.capture_rate }}</span>
+            <span><b>身高/体重：</b>{{ (curForm.height / 10).toFixed(1) }}m / {{ (curForm.weight / 10).toFixed(1) }}kg</span>
+          </div>
+          <div class="kv">
+            <span><b>击倒努力值：</b><ev-badges :ev="curEv"></ev-badges></span>
+          </div>
+        </div>
+
+        <!-- 属性相性（防守 / 攻击切换） -->
+        <div class="block">
+          <div class="page-head" style="margin-bottom:8px">
+            <h3 style="margin:0">属性相性</h3>
+            <el-radio-group v-model="effMode" size="small">
+              <el-radio-button value="defend">抗击面</el-radio-button>
+              <el-radio-button value="attack">攻击面</el-radio-button>
+            </el-radio-group>
+          </div>
+          <template v-if="effMode === 'defend'">
+            <div class="eff-groups" v-if="effGroups">
+              <div v-for="g in effGroups" :key="g.m" class="eff-group">
+                <span class="eff-m" :class="effClass(g.m)">×{{ g.m }}</span>
+                <type-badge v-for="t in g.types" :key="t" :types="t"></type-badge>
+              </div>
+            </div>
+            <div v-else class="empty-hint">加载中…</div>
+          </template>
+          <template v-else>
+            <div v-for="t in myTypes" :key="t" class="eff-group atk-group">
+              <type-badge :types="t"></type-badge>
+              <div class="eff-atk-list">
+                <span v-for="g in atkGroupsOf(t)" :key="g.m" class="eff-inline">
+                  <span class="eff-m" :class="effClass(g.m)">×{{ g.m }}</span>
+                  <type-badge v-for="t2 in g.types" :key="t2" :types="t2" plain></type-badge>
+                </span>
+              </div>
+            </div>
+            <div v-if="!myTypes.length" class="empty-hint">待补充</div>
+          </template>
         </div>
       </div>
-    </div>
 
-    <!-- 属性相性（防守方视角） -->
-    <div class="block">
-      <h3>属性相性（防守）</h3>
-      <div class="eff-groups" v-if="effGroups">
-        <div v-for="g in effGroups" :key="g.m" class="eff-group">
-          <span class="eff-m" :class="effClass(g.m)">×{{ g.m }}</span>
-          <type-badge v-for="t in g.types" :key="t" :types="t"></type-badge>
+      <!-- 右栏 -->
+      <div class="dcol">
+        <!-- 种族值 + 能力值（合并一卡） -->
+        <div class="block">
+          <div class="page-head" style="margin-bottom:6px">
+            <h3 style="margin:0">种族值与能力值</h3>
+            <div class="spacer"></div>
+            <span class="stat-level-lbl">Lv.{{ sc.level }}</span>
+          </div>
+          <el-slider v-model="sc.level" :min="1" :max="100" style="margin:0 6px" />
+          <div class="stat-rows">
+            <div v-for="k in STAT_KEYS" :key="k" class="stat-row">
+              <span class="stat-k">{{ STAT_ZH[k] }}</span>
+              <span class="stat-base">{{ baseStats[k] ?? "—" }}</span>
+              <div class="stat-track"><div class="stat-fill" :style="{width: pct(baseStats[k]), background: color(baseStats[k])}"></div></div>
+              <span class="stat-range">{{ rangeOf(k) }}</span>
+              <span v-if="computedStats[k] != null" class="stat-actual">{{ computedStats[k] }}</span>
+            </div>
+          </div>
+          <div class="stat-sum">种族值合计：<b>{{ statSum }}</b>
+            <span v-if="computedStats.hp != null" class="stat-actual-hint">
+              Lv.{{ sc.level }} 实际值以蓝色数字显示</span></div>
+          <el-collapse style="margin-top:6px">
+            <el-collapse-item title="性格 / 努力值 / 个体值（展开后实时重算）" name="sc">
+              <div class="fld-row">
+                <span class="lbl">性格</span>
+                <el-select v-model="sc.nature" size="small" style="width:170px" filterable>
+                  <el-option v-for="n in natures" :key="n.identifier" :value="n.identifier"
+                    :label="n.name_zh + (n.up && n.up !== n.down ? '（+' + STAT_ZH[n.up] + ' -' + STAT_ZH[n.down] + '）' : '')" />
+                </el-select>
+                <span style="font-size:12px;color:#98a1b3;margin-left:auto">努力值合计 {{ evSum }}/510</span>
+              </div>
+              <div class="fld-row" v-for="k in STAT_KEYS" :key="k">
+                <span class="lbl">{{ STAT_ZH[k] }}</span>
+                <span class="mini">努力值</span>
+                <el-input-number v-model="sc.ev[k]" :min="0" :max="252" :step="4" size="small" style="width:96px" />
+                <span class="mini">个体值</span>
+                <el-input-number v-model="sc.iv[k]" :min="0" :max="31" size="small" style="width:96px" />
+                <span class="mini result">= <b>{{ computedStats[k] ?? "—" }}</b></span>
+              </div>
+            </el-collapse-item>
+          </el-collapse>
+        </div>
+
+        <!-- 进化链 -->
+        <div class="block">
+          <h3>进化链</h3>
+          <evo-chain :evo="d.evolution" :current="sid"></evo-chain>
+        </div>
+
+        <!-- 获取方式 -->
+        <div class="block">
+          <h3>获取方式<template v-if="game">（{{ game.name_zh }}）</template></h3>
+          <get-method-list :rows="d.get_methods" :extra="d.encounters_api"></get-method-list>
+        </div>
+
+        <!-- 招式表 -->
+        <div class="block">
+          <h3>招式表<template v-if="game">（{{ game.name_zh }}）</template></h3>
+          <el-tabs v-model="tab" v-if="moves">
+            <el-tab-pane v-for="t in moves.tabs" :key="t.key"
+              :label="t.label + ' (' + (moves.groups[t.key] || []).length + ')'" :name="t.key">
+              <el-table :data="moves.groups[t.key]" size="small" height="420" row-key="move_id">
+                <el-table-column v-if="t.key === 'level'" label="等级" width="96" sortable prop="level">
+                  <template #default="{ row }">
+                    <span v-if="row.recall" class="mastery">回忆</span>
+                    <template v-else>Lv.{{ row.level }}<template v-if="row.mastery != null">
+                      <span class="mastery">精通+{{ row.mastery }}</span></template>
+                    </template>
+                  </template>
+                </el-table-column>
+                <el-table-column v-if="t.key === 'machine'" type="expand">
+                  <template #default="{ row }">
+                    <div v-for="t2 in row.tm" :key="t2.number" class="tm-how">
+                      <b>{{ t2.kind }} {{ String(t2.number).padStart(3, "0") }}</b>
+                      <template v-if="t2.how"><br>获取：{{ t2.how }}</template>
+                      <template v-if="t2.materials"><br>制作材料：{{ t2.materials }}</template>
+                      <template v-if="!t2.how && !t2.materials"><br>获取方式待补充</template>
+                    </div>
+                    <div v-if="!row.tm.length" class="tm-how">获取方式待补充</div>
+                  </template>
+                </el-table-column>
+                <el-table-column v-if="t.key === 'machine'" label="编号" width="140">
+                  <template #default="{ row }">
+                    <el-tag v-for="t2 in row.tm" :key="t2.number" size="small" style="margin-right:4px"
+                      effect="plain" :type="t2.kind === 'TR' ? 'warning' : 'info'">
+                      {{ t2.kind }}{{ String(t2.number).padStart(3, "0") }}</el-tag>
+                  </template>
+                </el-table-column>
+                <el-table-column label="招式" min-width="120" sortable prop="name_zh">
+                  <template #default="{ row }">{{ row.name_zh }}</template>
+                </el-table-column>
+                <el-table-column label="属性" width="96">
+                  <template #default="{ row }"><type-badge :types="row.type_zh"></type-badge></template>
+                </el-table-column>
+                <el-table-column label="分类" width="76">
+                  <template #default="{ row }"><move-class-badge :cls="row.damage_class"></move-class-badge></template>
+                </el-table-column>
+                <el-table-column prop="power" label="威力" width="66" sortable />
+                <el-table-column prop="accuracy" label="命中" width="66" sortable>
+                  <template #default="{ row }">{{ row.accuracy ?? "—" }}</template>
+                </el-table-column>
+                <el-table-column prop="pp" label="PP" width="60" />
+                <el-table-column label="优先度" width="70" sortable prop="priority">
+                  <template #default="{ row }">{{ row.priority > 0 ? "+" + row.priority : row.priority }}</template>
+                </el-table-column>
+                <el-table-column v-if="t.key === 'egg'" label="生蛋链" width="120">
+                  <template #default="{ row }">
+                    <el-button size="small" type="primary" plain @click="showChains(row)">计算繁殖链</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+              <empty v-if="t.key === 'egg' && !moves.has_breeding">
+                当前游戏没有生蛋孵化机制（{{ game ? game.name_zh : "" }}）
+              </empty>
+            </el-tab-pane>
+          </el-tabs>
         </div>
       </div>
-      <div v-else class="empty-hint">加载中…</div>
-    </div>
-
-    <!-- 招式表 -->
-    <div class="block">
-      <div class="page-head">
-        <h3 style="margin:0">招式表<template v-if="game">（{{ game.name_zh }}）</template></h3>
-        <span v-if="curForm && d.forms.length > 1" style="font-size:12px;color:#98a1b3">
-          当前形态：{{ curForm.form_label || curForm.identifier }}</span>
-      </div>
-      <el-tabs v-model="tab" v-if="moves">
-        <el-tab-pane v-for="t in moves.tabs" :key="t.key"
-          :label="t.label + ' (' + (moves.groups[t.key] || []).length + ')'" :name="t.key">
-          <el-table :data="moves.groups[t.key]" size="small" height="420" row-key="move_id">
-            <el-table-column v-if="t.key === 'level'" label="等级" width="90" sortable prop="level">
-              <template #default="{ row }">
-                Lv.{{ row.level }}<template v-if="row.mastery != null">
-                  <span class="mastery">精通+{{ row.mastery }}</span></template>
-              </template>
-            </el-table-column>
-            <el-table-column v-if="t.key === 'machine'" type="expand">
-              <template #default="{ row }">
-                <div v-for="t2 in row.tm" :key="t2.number" class="tm-how">
-                  <b>{{ t2.kind }} {{ String(t2.number).padStart(3, "0") }}</b>
-                  <template v-if="t2.how"><br>获取：{{ t2.how }}</template>
-                  <template v-if="t2.materials"><br>制作材料：{{ t2.materials }}</template>
-                  <template v-if="!t2.how && !t2.materials"><br>获取方式待补充</template>
-                </div>
-                <div v-if="!row.tm.length" class="tm-how">获取方式待补充</div>
-              </template>
-            </el-table-column>
-            <el-table-column v-if="t.key === 'machine'" label="编号" width="140">
-              <template #default="{ row }">
-                <el-tag v-for="t2 in row.tm" :key="t2.number" size="small" style="margin-right:4px"
-                  :effect="t2.kind === 'TR' ? 'plain' : 'plain'" :type="t2.kind === 'TR' ? 'warning' : 'info'">
-                  {{ t2.kind }}{{ String(t2.number).padStart(3, "0") }}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column label="招式" min-width="120" sortable prop="name_zh">
-              <template #default="{ row }">{{ row.name_zh }}</template>
-            </el-table-column>
-            <el-table-column label="属性" width="96">
-              <template #default="{ row }"><type-badge :types="row.type_zh"></type-badge></template>
-            </el-table-column>
-            <el-table-column label="分类" width="72">
-              <template #default="{ row }"><move-class-badge :cls="row.damage_class"></move-class-badge></template>
-            </el-table-column>
-            <el-table-column prop="power" label="威力" width="66" sortable />
-            <el-table-column prop="accuracy" label="命中" width="66" sortable>
-              <template #default="{ row }">{{ row.accuracy ?? "—" }}</template>
-            </el-table-column>
-            <el-table-column prop="pp" label="PP" width="60" />
-            <el-table-column label="优先度" width="70" sortable prop="priority">
-              <template #default="{ row }">{{ row.priority > 0 ? "+" + row.priority : row.priority }}</template>
-            </el-table-column>
-            <el-table-column v-if="t.key === 'egg'" label="生蛋链" width="120">
-              <template #default="{ row }">
-                <el-button size="small" type="primary" plain @click="showChains(row)">计算繁殖链</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-          <empty v-if="t.key === 'egg' && !moves.has_breeding">
-            当前游戏没有生蛋孵化机制（{{ game ? game.name_zh : "" }}）
-          </empty>
-        </el-tab-pane>
-      </el-tabs>
     </div>
 
     <el-dialog v-model="chainDlg" :title="chainTitle" width="720px">
@@ -217,7 +264,7 @@ const DetailView = {
   </div>
   `,
   setup() {
-    const { ref, reactive, computed, inject } = Vue;
+    const { ref, reactive, computed, inject, watch } = Vue;
     const store = inject("store");
     const loading = ref(true);
     const d = ref(null);
@@ -229,18 +276,38 @@ const DetailView = {
     const chains = ref(null);
     const chainTitle = ref("");
     const natures = ref([]);
+    const effMode = ref("defend");
 
-    const m = location.hash.match("#/pokemon/(\\d+)\\??(.*)");
-    const sid = m ? parseInt(m[1]) : 0;
-    const backParams = m && m[2] ? new URLSearchParams(m[2].split("?").pop()) : new URLSearchParams();
-    const gameId = backParams.get("game") || store.gameId || "";
+    /* ---- 路由参数（响应式：翻页/换游戏原地重载，不销毁组件） ---- */
+    const sid = ref(0);
+    const gameId = ref("");
+    let backParams = new URLSearchParams();
+    function parseRoute() {
+      const m = location.hash.match("#/pokemon/(\\d+)\\??(.*)");
+      if (!m) return false;
+      const q = new URLSearchParams((m[2] || "").split("?").pop() || "");
+      const newSid = parseInt(m[1]);
+      const newGame = q.get("game") || store.gameId || "";
+      backParams = new URLSearchParams(q);
+      const changed = newSid !== sid.value || newGame !== gameId.value;
+      sid.value = newSid;
+      gameId.value = newGame;
+      return changed;
+    }
+    parseRoute();
 
-    const game = computed(() => store.games.find((g) => g.id === gameId) || null);
+    const game = computed(() => store.games.find((g) => g.id === gameId.value) || null);
     const curForm = computed(() => {
       if (!d.value) return { types: "", ability_list: [], height: 0, weight: 0, id: 0 };
       return d.value.forms.find((f) => f.id === formId.value) || d.value.default_form;
     });
-    /* 努力值随形态切换（forms 行自带 ev_* 列） */
+    const formName = (f) => formDisplayName(f);
+    /* 图鉴介绍随形态切换：形态独立介绍优先，否则沿用默认 */
+    const curFlavor = computed(() => {
+      if (!d.value) return [];
+      const ff = d.value.form_flavor || {};
+      return ff[curForm.value.id] || d.value.flavor;
+    });
     const curEv = computed(() => {
       const f = curForm.value;
       const pick = (k) => (f["ev_" + k] != null ? f["ev_" + k] : (d.value.ev || {})[k] || 0);
@@ -259,7 +326,7 @@ const DetailView = {
     const statSum = computed(() =>
       Object.values(baseStats.value).reduce((a, b) => a + (b || 0), 0));
 
-    /* 能力值计算器状态 */
+    /* ---- 种族值 + 能力值合并卡 ---- */
     const sc = reactive({
       level: 50, nature: "hardy",
       ev: { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 },
@@ -268,9 +335,9 @@ const DetailView = {
     const natureMult = computed(() => {
       const n = natures.value.find((x) => x.identifier === sc.nature);
       return (k) => {
-        if (!n || !n.up) return 1.0;
-        if (n.up === k && n.down !== k) return 1.1;
-        if (n.down === k && n.up !== k) return 0.9;
+        if (!n || !n.up || n.up === n.down) return 1.0;
+        if (n.up === k) return 1.1;
+        if (n.down === k) return 0.9;
         return 1.0;
       };
     });
@@ -278,7 +345,7 @@ const DetailView = {
       const b = baseStats.value;
       const L = sc.level;
       const out = {};
-      if (!b.hp) return out;
+      if (b.hp == null) return out;
       out.hp = b.hp === 1 ? 1
         : Math.floor((2 * b.hp + sc.iv.hp + Math.floor(sc.ev.hp / 4)) * L / 100) + L + 10;
       for (const k of ["atk", "def", "spa", "spd", "spe"]) {
@@ -288,20 +355,57 @@ const DetailView = {
       return out;
     });
     const evSum = computed(() => Object.values(sc.ev).reduce((a, b) => a + b, 0));
+    /* 该等级下的能力范围（HP：0~252 努力值；其他：0努力+性格负 ~ 252努力+性格正） */
+    function rangeOf(k) {
+      const b = baseStats.value[k];
+      if (b == null) return "—";
+      const L = sc.level;
+      if (k === "hp") {
+        if (b === 1) return "1";
+        const lo = Math.floor((2 * b + 31) * L / 100) + L + 10;
+        const hi = Math.floor((2 * b + 31 + 63) * L / 100) + L + 10;
+        return `${lo}~${hi}`;
+      }
+      const lo = Math.floor((Math.floor((2 * b + 31) * L / 100) + 5) * 0.9);
+      const hi = Math.floor((Math.floor((2 * b + 31 + 63) * L / 100) + 5) * 1.1);
+      return `${lo}~${hi}`;
+    }
+    function pct(v) { return Math.min(100, ((v || 0) / 255) * 100) + "%"; }
+    function color(v) {
+      if (v >= 130) return "#e05a5a";
+      if (v >= 100) return "#e8834a";
+      if (v >= 80) return "#5a9be0";
+      if (v >= 60) return "#7bc86c";
+      return "#98a1b3";
+    }
 
-    /* 属性相性 */
+    /* ---- 属性相性 ---- */
+    const myTypes = computed(() =>
+      (curForm.value.types || "").split(",").filter(Boolean));
     const effGroups = computed(() => {
-      if (!store.typeChart || !curForm.value.types) return null;
-      const mult = defenseMultipliers(curForm.value.types.split(",").filter(Boolean));
+      if (!store.typeChart || !myTypes.value.length) return null;
+      const mult = defenseMultipliers(myTypes.value);
       const groups = {};
       for (const [atk, m] of Object.entries(mult)) {
         const key = String(m);
         (groups[key] = groups[key] || []).push(atk);
       }
       const order = ["4", "2", "1", "0.5", "0.25", "0"];
-      return order.filter((k) => groups[k])
-        .map((k) => ({ m: k === "1" ? "1" : k, types: groups[k] }));
+      return order.filter((k) => groups[k]).map((k) => ({ m: k, types: groups[k] }));
     });
+    /* 攻击面：自己每个属性的打击面分组 */
+    function atkGroupsOf(t) {
+      const chart = store.typeChart;
+      if (!chart) return [];
+      const groups = {};
+      for (const def of chart.types) {
+        const m = (chart.chart[t] || {})[def] ?? 1;
+        const key = String(m);
+        (groups[key] = groups[key] || []).push(def);
+      }
+      const order = ["2", "0.5", "0"];
+      return order.filter((k) => groups[k]).map((k) => ({ m: k, types: groups[k] }));
+    }
     function effClass(mm) {
       const v = parseFloat(mm);
       if (v >= 2) return "bad";
@@ -310,17 +414,35 @@ const DetailView = {
       return "good";
     }
 
-    async function load() {
-      loading.value = true;
+    /* ---- 数据加载（翻页用预取缓存 + 原地替换） ---- */
+    const detailCache = new Map();   // key: sid|game -> detail payload
+    let loadToken = 0;
+    async function load(silent = false) {
+      const token = ++loadToken;
+      if (!silent) loading.value = true;
       try {
-        d.value = await apiGet("/api/pokemon/" + sid, { game: gameId });
+        const key = sid.value + "|" + gameId.value;
+        if (!detailCache.has(key)) {
+          const data = await apiGet("/api/pokemon/" + sid.value, { game: gameId.value });
+          detailCache.set(key, data);
+        }
+        if (token !== loadToken) return;
+        d.value = detailCache.get(key);
         formId.value = d.value.default_form ? d.value.default_form.id : null;
         await Promise.all([loadMoves(), loadNatures()]);
-      } finally { loading.value = false; }
+        prefetchNeighbors();
+      } finally { if (token === loadToken && !silent) loading.value = false; }
     }
-    const { watch } = Vue;
-    /* 切换形态时重载该形态的招式表 */
-    watch(formId, () => { if (formId.value) loadMoves(); });
+    function prefetchNeighbors() {
+      for (const nid of [prevId.value, nextId.value]) {
+        if (!nid) continue;
+        const key = nid + "|" + gameId.value;
+        if (!detailCache.has(key)) {
+          apiGet("/api/pokemon/" + nid, { game: gameId.value })
+            .then((data) => detailCache.set(key, data)).catch(() => {});
+        }
+      }
+    }
     async function loadNatures() {
       if (!natures.value.length) {
         if (!window.__naturesCache) {
@@ -330,13 +452,16 @@ const DetailView = {
       }
     }
     async function loadMoves() {
-      if (!gameId) return;
-      moves.value = await apiGet("/api/pokemon/" + sid + "/moves",
-        { game: gameId, form_id: formId.value || undefined });
+      if (!gameId.value) { moves.value = null; return; }
+      moves.value = await apiGet("/api/pokemon/" + sid.value + "/moves",
+        { game: gameId.value, form_id: formId.value || undefined });
       if (moves.value.tabs.length && !moves.value.tabs.some((t) => t.key === tab.value)) {
         tab.value = moves.value.tabs[0].key;
       }
     }
+    /* 切换形态时重载该形态的招式表（介绍/特性/种族值随 curForm 响应式联动） */
+    watch(formId, () => { if (formId.value) loadMoves(); });
+
     async function showChains(row) {
       chainDlg.value = true;
       chainLoading.value = true;
@@ -344,13 +469,14 @@ const DetailView = {
       chainTitle.value = "生蛋链：「" + row.name_zh + "」 → " + d.value.species.name_zh;
       try {
         chains.value = await apiGet("/api/breed-chains", {
-          species_id: sid, move_id: row.move_id, game: gameId,
+          species_id: sid.value, move_id: row.move_id, game: gameId.value,
         });
       } finally { chainLoading.value = false; }
     }
     function goBack() {
-      if (gameId) {
-        location.hash = "#/game/" + gameId + "/dex" + (backParams.get("dex") ? "?dex=" + backParams.get("dex") : "");
+      if (gameId.value) {
+        location.hash = "#/game/" + gameId.value + "/dex"
+          + (backParams.get("dex") ? "?dex=" + backParams.get("dex") : "");
       } else {
         location.hash = "#/home";
       }
@@ -358,7 +484,7 @@ const DetailView = {
 
     /* 图鉴内上一只/下一只（按当前图鉴编号顺序） */
     const navList = ref([]);
-    const navIdx = computed(() => navList.value.indexOf(sid));
+    const navIdx = computed(() => navList.value.indexOf(sid.value));
     const prevId = computed(() => (navIdx.value > 0 ? navList.value[navIdx.value - 1] : 0));
     const nextId = computed(() =>
       (navIdx.value >= 0 && navIdx.value < navList.value.length - 1)
@@ -366,25 +492,37 @@ const DetailView = {
     function goNeighbor(id) {
       if (!id) return;
       const dex = backParams.get("dex");
-      location.hash = "#/pokemon/" + id + "?game=" + gameId + (dex ? "&dex=" + dex : "");
+      location.hash = "#/pokemon/" + id + "?game=" + gameId.value + (dex ? "&dex=" + dex : "");
     }
     async function loadNav() {
       const dex = backParams.get("dex");
-      if (!dex) return;
+      if (!dex) { navList.value = []; return; }
       try {
         const data = await apiGet("/api/dex/" + dex, { profile: store.profileId });
         navList.value = data.entries.map((e) => e.species_id);
       } catch (_) { /* 导航缺失不影响详情 */ }
     }
-    loadNav();
 
+    /* hash 变化：同组件内原地重载（翻页不闪白），并平滑回顶 */
+    window.addEventListener("hashchange", () => {
+      if (!location.hash.startsWith("#/pokemon/")) return;
+      const changed = parseRoute();
+      if (changed) {
+        loadNav();
+        load(true);
+        const main = document.querySelector(".main");
+        if (main) main.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    });
+
+    loadNav();
     load();
     return {
-      store, loading, d, sid, formId, curForm, curEv, curDex, game, gameId,
-      moves, tab, chainDlg, chainLoading, chains, chainTitle,
-      showChains, goBack, baseStats, statSum,
-      sc, natures, computedStats, evSum, STAT_ZH,
-      effGroups, effClass,
+      loading, d, sid, formId, curForm, formName, curFlavor, curEv, curDex, game, gameId,
+      moves, tab, chainDlg, chainLoading, chains, chainTitle, showChains, goBack,
+      baseStats, statSum, sc, natures, computedStats, evSum, STAT_ZH, STAT_KEYS,
+      rangeOf, pct, color,
+      effMode, effGroups, effClass, myTypes, atkGroupsOf,
       navList, prevId, nextId, goNeighbor,
     };
   },

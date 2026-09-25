@@ -68,13 +68,56 @@ const MoveClassBadge = {
   setup() { return { MOVE_CLASS_ICON_POS }; },
 };
 
-/* 特性徽章（隐藏特性标记） */
+/* 版本主题色（图鉴介绍/获取方式标签着色；单版本游戏用游戏主题色） */
+const VERSION_COLORS = {
+  "剑": "#3a6fd8", "剑·扩展票": "#3a6fd8",
+  "盾": "#d0392e", "盾·扩展票": "#d0392e",
+  "剑/盾": "#4a5b82", "剑/盾·扩展票": "#4a5b82",
+  "晶灿钻石": "#1fa9a0", "明亮珍珠": "#d76aa8", "晶灿钻石/明亮珍珠": "#7b8bb0",
+  "朱": "#e3342f", "朱·零之秘宝": "#e3342f",
+  "紫": "#8a3fd0", "紫·零之秘宝": "#8a3fd0",
+  "朱/紫": "#a04d7a", "朱/紫·零之秘宝": "#a04d7a",
+  "洗翠": "#3f8f7d", "传说 阿尔宙斯": "#3f8f7d",
+  "Z-A": "#c99a1e", "传说 Z-A": "#c99a1e", "Z-A·异次元": "#c99a1e",
+  "晶钻/明珍": "#7b8bb0",
+};
+function versionColor(label) {
+  if (!label) return "#909399";
+  if (VERSION_COLORS[label]) return VERSION_COLORS[label];
+  if (label.startsWith("剑")) return VERSION_COLORS["剑"];
+  if (label.startsWith("盾")) return VERSION_COLORS["盾"];
+  if (label.startsWith("朱")) return VERSION_COLORS["朱"];
+  if (label.startsWith("紫")) return VERSION_COLORS["紫"];
+  if (label.startsWith("晶灿") || label.startsWith("晶钻")) return VERSION_COLORS["晶灿钻石"];
+  if (label.startsWith("明亮") || label.startsWith("明珍")) return VERSION_COLORS["明亮珍珠"];
+  return "#909399";
+}
+
+/* 常见形态标签中文（forms.form_label 未翻译时的兜底显示） */
+const FORM_LABEL_ZH = {
+  attack: "攻击形态", defense: "防御形态", speed: "速度形态",
+  heat: "加热", wash: "清洗", frost: "结冰", fan: "旋转", mow: "切割",
+  sunny: "晴天", rainy: "雨水", snowy: "雪云",
+  "sandy": "砂土蓑衣", "trash": "垃圾蓑衣", zen: "达摩模式",
+  pirouette: "舞步形态", small: "小", large: "大", super: "特大",
+  female: "雌性", male: "雄性",
+  "totem-alola": "霸主", "alola-cap": "阿罗拉帽子",
+  "blue-striped": "蓝条纹", "white-striped": "白条纹",
+  origin: "起源形态", altered: "另形态",
+};
+function formDisplayName(f) {
+  if (!f) return "";
+  const label = f.form_label || "";
+  if (label && /[\u4e00-\u9fff]/.test(label)) return label;
+  return FORM_LABEL_ZH[label] || label || f.identifier || "";
+}
+
+/* 特性徽章（隐藏特性直接挂「隐藏特性」chip） */
 const AbilityList = {
   props: ["abilities"],
   template: `<span>
-    <span v-for="(a, i) in abilities || []" :key="i" class="ab-badge"
-        :class="{hidden: a.hidden}" :title="a.hidden ? '隐藏特性' : ''">
-      {{ a.name }}<template v-if="a.hidden"> ★</template>
+    <span v-for="(a, i) in abilities || []" :key="i" class="ab-badge" :class="{hidden: a.hidden}">
+      {{ a.name }}<span v-if="a.hidden" class="ab-hidden-chip">隐藏特性</span>
     </span>
     <span v-if="!(abilities && abilities.length)" class="empty-hint">待补充</span>
   </span>`,
@@ -122,19 +165,20 @@ const FlavorList = {
   props: ["flavor"],
   template: `<div>
     <div v-for="(f, i) in flavor" :key="i" class="flavor-item">
-      <span class="flavor-tag">{{ f.version_label }}</span>{{ f.text }}
+      <span class="flavor-tag" :style="{background: versionColor(f.version_label)}">{{ f.version_label }}</span>{{ f.text }}
     </div>
     <div v-if="!flavor || !flavor.length" class="empty-hint">当前版本暂无图鉴描述（待补充）</div>
   </div>`,
+  setup() { return { versionColor }; },
 };
 
-/* 获取方式（按版本标签分组：本体 / DLC / 版本独占） */
+/* 获取方式（按版本标签分组：本体 / DLC / 版本独占；标签按版本主题色着色） */
 const GetMethodList = {
   props: ["rows"],
   template: `<div>
     <template v-for="(g, i) in grouped" :key="i">
       <div class="gm-group">
-        <el-tag size="small" effect="dark" :type="isDlc(g.label) ? 'warning' : 'info'">{{ g.label }}</el-tag>
+        <span class="gm-tag" :style="{background: versionColor(g.label), color: '#fff'}">{{ g.label }}</span>
       </div>
       <div v-for="(r, j) in g.rows" :key="i + '-' + j" class="gm-row">
         <span class="gm-loc">{{ r.location || '—' }}</span>
@@ -143,7 +187,7 @@ const GetMethodList = {
       </div>
     </template>
     <div v-if="extra.length">
-      <div class="gm-group"><el-tag size="small" type="info" effect="plain">地点数据（未翻译）</el-tag></div>
+      <div class="gm-group"><span class="gm-tag" style="background:#a8b0c0;color:#fff">地点数据（未翻译）</span></div>
       <div v-for="(e, j) in extra" :key="'x' + j" class="gm-row">
         <span class="gm-loc">{{ e.location_en }}</span>
         <span class="gm-method">Lv.{{ e.min_level }}~{{ e.max_level }}</span>
@@ -164,14 +208,10 @@ const GetMethodList = {
     },
     extra() { return this.$attrs.extra || []; },
   },
-  methods: {
-    isDlc(label) {
-      return /扩展票|零之秘宝|异次元|DLC/.test(label || "");
-    },
-  },
+  setup() { return { versionColor }; },
 };
 
-/* 进化链（支持分支家族） */
+/* 进化链（支持分支家族；节点为官方绘图 + 名字，条件在箭头下方） */
 const EvoChain = {
   props: ["evo", "current"],
   template: `<div v-if="evo && evo.root" class="evo-wrap">
@@ -187,14 +227,17 @@ const EvoNode = {
   props: ["sid", "evo", "current"],
   template: `<div class="evo-branch">
     <div class="evo-node" :class="{cur: sid === current}" @click="open">
+      <poke-img :form-id="node.form_id" :size="64"></poke-img>
       <span class="evo-name">{{ node.name }}</span>
       <type-badge :types="node.types" plain></type-badge>
     </div>
     <template v-if="children.length">
-      <div class="evo-arrow">→</div>
       <div class="evo-children">
         <div v-for="c in children" :key="c" class="evo-child">
-          <div class="evo-cond">{{ cond(c) }}</div>
+          <div class="evo-step">
+            <div class="evo-arrow">➜</div>
+            <div class="evo-cond">{{ cond(c) || "进化" }}</div>
+          </div>
           <evo-node :sid="c" :evo="evo" :current="current"></evo-node>
         </div>
       </div>
@@ -211,28 +254,6 @@ const EvoNode = {
 };
 
 /* 种族值条形图 */
-const StatBars = {
-  props: ["stats", "max"],
-  template: `<div class="stat-bars">
-    <div v-for="(v, k) in stats" :key="k" class="stat-row">
-      <span class="stat-k">{{ STAT_ZH[k] }}</span>
-      <div class="stat-track"><div class="stat-fill" :style="{width: pct(v), background: color(v)}"></div></div>
-      <span class="stat-v">{{ v }}</span>
-    </div>
-  </div>`,
-  setup() { return { STAT_ZH }; },
-  methods: {
-    pct(v) { return Math.min(100, (v / (this.max || 255)) * 100) + "%"; },
-    color(v) {
-      if (v >= 130) return "#e05a5a";
-      if (v >= 100) return "#e8834a";
-      if (v >= 80) return "#5a9be0";
-      if (v >= 60) return "#7bc86c";
-      return "#98a1b3";
-    },
-  },
-};
-
 const Empty = { template: `<div class="empty-hint"><slot/></div>` };
 
 function registerGlobalComponents(app) {
@@ -247,7 +268,6 @@ function registerGlobalComponents(app) {
   app.component("get-method-list", GetMethodList);
   app.component("evo-chain", EvoChain);
   app.component("evo-node", EvoNode);
-  app.component("stat-bars", StatBars);
 }
 
 /* 属性相性计算（防守方视角）：需要 store.typeChart 已加载 */

@@ -40,7 +40,7 @@ const App = {
         <donut-view v-else-if="route.feature === 'donut'"></donut-view>
         <curry-view v-else-if="route.feature === 'curry'"></curry-view>
       </template>
-      <detail-view v-else-if="route.page === 'pokemon'" v-bind:key="route.hash"></detail-view>
+      <detail-view v-else-if="route.page === 'pokemon'"></detail-view>
       <calc-view v-else-if="route.page === 'calc'"></calc-view>
     </div>
   </div>

@@ -203,6 +203,9 @@ CREATE TABLE vgs (
 CREATE TABLE dex_flavor (
   species_id INTEGER, game TEXT, version_label TEXT, text TEXT
 );
+CREATE TABLE form_flavor (          -- 形态独立图鉴介绍（地区形态/洛托姆换装等，默认形态走 dex_flavor）
+  form_id INTEGER, game TEXT, version_label TEXT, text TEXT
+);
 CREATE TABLE tm_how (
   vg INTEGER, machine_number INTEGER, move_id INTEGER,
   how TEXT, materials TEXT, PRIMARY KEY (vg, machine_number)
