@@ -23,32 +23,49 @@ const FEATURES = {
 };
 
 const GAME_ICONS = {
-  "sword-shield": "⚔️", "brilliant-diamond-shining-pearl": "💎",
-  "legends-arceus": "🏯", "scarlet-violet": "🌸", "legends-za": "🌀",
+  "sword-shield": ["sword", "shield"],
+  "brilliant-diamond-shining-pearl": ["diamond", "pearl"],
+  "legends-arceus": ["arceus"],
+  "scarlet-violet": ["scarlet", "violet"],
+  "legends-za": ["za"],
 };
 
-const TYPE_ICONS = {
-  "一般": "⚪", "火": "🔥", "水": "💧", "电": "⚡", "草": "🍃", "冰": "❄️",
-  "格斗": "✊", "毒": "☠️", "地面": "⛰️", "飞行": "🕊️", "超能力": "🔮",
-  "虫": "🐛", "岩石": "🪨", "幽灵": "👻", "龙": "🐉", "恶": "🌙",
-  "钢": "⚙️", "妖精": "✨",
+/* 官方简中商标图标（52poke，assets/games/*.webp）：双版本游戏并排两枚 */
+const GameIcons = {
+  props: ["gid", "h"],
+  template: `<span class="game-icons" :style="{height: (h||22)+'px'}">
+    <img v-for="k in GAME_ICONS[gid] || []" :key="k" class="game-logo"
+      :src="'/assets/games/' + k + '.webp'" :style="{height: (h||22)+'px'}"
+      :alt="gid" loading="lazy" onerror="this.style.display='none'">
+  </span>`,
+  setup() { return { GAME_ICONS }; },
 };
 
-/* 等宽属性徽章（仿 wiki 样式：图标 + 底色） */
+/* 属性图标雪碧图行号（assets/type_sprite.webp：18 属性 + 物理/特殊/变化，每格等宽） */
+const TYPE_ICON_POS = {
+  "一般": 0, "格斗": 1, "飞行": 2, "毒": 3, "地面": 4, "岩石": 5, "虫": 6, "幽灵": 7,
+  "钢": 8, "火": 9, "水": 10, "草": 11, "电": 12, "超能力": 13, "冰": 14, "龙": 15,
+  "恶": 16, "妖精": 17,
+};
+const MOVE_CLASS_ICON_POS = { physical: 18, special: 19, status: 20 };
+
+/* 等宽属性徽章：彩色胶囊 + 雪碧图图标（星晶无图标退化为纯色胶囊） */
 const TypeBadge = {
   props: ["types", "plain"],
   template: `<span><span v-for="t in list" :key="t" class="type-badge"
       :class="{plain: plain}" :style="{'--t': 'var(--type-'+t+')'}">
-    <span class="ti">{{ TYPE_ICONS[t] || "" }}</span>{{ t }}</span></span>`,
+    <span v-if="TYPE_ICON_POS[t] != null" class="ti" :style="{'--iy': TYPE_ICON_POS[t]}"></span>{{ t }}</span></span>`,
   computed: { list() { return (this.types || "").split(",").filter(Boolean); } },
-  setup() { return { TYPE_ICONS }; },
+  setup() { return { TYPE_ICON_POS }; },
 };
 
-/* 招式分类徽章（物理红 / 特殊蓝 / 变化灰，带底纹） */
+/* 招式分类徽章（物理红 / 特殊蓝 / 变化灰胶囊 + 同一雪碧图图标） */
 const MoveClassBadge = {
   props: ["cls"],
-  template: `<span class="mcls-badge" :class="'mc-' + (cls || '')">{{ label }}</span>`,
+  template: `<span class="mcls-badge" :class="'mc-' + (cls || '')">
+    <span v-if="cls in MOVE_CLASS_ICON_POS" class="ti" :style="{'--iy': MOVE_CLASS_ICON_POS[cls]}"></span>{{ label }}</span>`,
   computed: { label() { return { physical: "物理", special: "特殊", status: "变化" }[this.cls] || "-"; } },
+  setup() { return { MOVE_CLASS_ICON_POS }; },
 };
 
 /* 特性徽章（隐藏特性标记） */
@@ -221,6 +238,7 @@ const Empty = { template: `<div class="empty-hint"><slot/></div>` };
 function registerGlobalComponents(app) {
   app.component("type-badge", TypeBadge);
   app.component("move-class-badge", MoveClassBadge);
+  app.component("game-icons", GameIcons);
   app.component("ability-list", AbilityList);
   app.component("poke-toggle", PokeToggle);
   app.component("poke-img", PokeImg);

@@ -10,7 +10,7 @@ const App = {
         </div>
         <template v-if="game">
           <div class="menu-sep"></div>
-          <div class="menu-game">{{ GAME_ICONS[game.id] || "" }} {{ game.name_zh }}</div>
+          <div class="menu-game"><game-icons :gid="game.id" :h="20"></game-icons> {{ game.name_zh }}</div>
           <div v-for="f in gameFeatures" :key="f.key" class="menu-item sub"
             :class="{active: route.page === 'game' && route.feature === f.key}"
             @click="go('#/game/' + game.id + '/' + f.key)">
@@ -96,7 +96,7 @@ const App = {
       parseHash();
     });
 
-    return { store, route, game, gameFeatures, go, addProfile, GAME_ICONS };
+    return { store, route, game, gameFeatures, go, addProfile };
   },
 };
 

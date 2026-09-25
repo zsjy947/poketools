@@ -36,7 +36,7 @@ pythonw launcher.pyw               # 桌面窗口启动
 - 功能入口**按游戏组织**（`games.features`：dex/ev/sandwich/donut/curry），伤害计算器全局；详情页内容按当前游戏裁剪（介绍/获取方式/招式表）。
 - 语言：PokeAPI CSV 中 zh-Hans=12，en=9。
 - 生蛋链算法在 `app/services/breeding.py`：多源 BFS，节点=能学会该招式的物种，边=共享蛋组；从「自学」（升级/学习器/教授）节点到目标蛋组，输出全部最短路径。
-- 设计与验收记录：`docs/DESIGN-PHASE1.md`、`docs/DESIGN-DAMAGE-CALC.md`、`docs/DESIGN-UPGRADE3.md`；数据缺口清单 `docs/DATA-GAPS.md`（Z-A 94 种学习集缺失、SV 31 个 TM 无获取文本等）；操作手册 `docs/USER-MANUAL.md`。**文档命名规范：内容描述 + 全大写**。
+- 设计总纲：`docs/DESIGN.md`（技术栈/数据管线/Schema/API/伤害计算器/前端架构/取舍/变更历史）；数据缺口清单 `docs/DATA-GAPS.md`（Z-A 94 种学习集缺失、SV 31 个 TM 无获取文本等）；操作手册 `docs/USER-MANUAL.md`。**文档命名规范：内容描述 + 全大写**。
 - 伤害计算器：`app/services/damage.py`（服务）+ `app/routers/calc.py`（API）+ 前端 `views/calc.js`。
   - 现代公式已与 Pokémon Showdown 官方引擎 `@smogon/calc` **逐 roll 校准一致**；
     校准脚本 `tools/calib/`（node harness.mjs 生成基准 → python check.py 比对，改公式后必须重跑）。

@@ -65,7 +65,7 @@ poketools/
 │  └─ userstate.db     # 用户勾选状态与自定义食谱
 ├─ tests/              # pytest
 ├─ launcher.pyw        # pywebview 桌面启动器
-└─ docs/               # 设计文档（DESIGN-*）、数据缺口（DATA-GAPS）、手册（USER-MANUAL）
+└─ docs/               # 设计总纲（DESIGN）、迭代规划（PLAN）、数据缺口（DATA-GAPS）、手册（USER-MANUAL）
 ```
 
 ## 数据来源与致谢

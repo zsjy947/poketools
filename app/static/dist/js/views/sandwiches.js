@@ -35,6 +35,9 @@ const SandwichView = {
         </div>
         <div class="sand-grid" v-loading="loading">
           <div v-for="r in list" :key="r.no" class="sand-card">
+            <img class="sand-img" loading="lazy"
+              :src="'/assets/sandwiches/sandwich_' + String(r.no).padStart(3, '0') + '.webp'"
+              onerror="this.style.display='none'">
             <h4><span class="no">#{{ r.no }}</span>{{ r.name }}</h4>
             <div>
               <span v-for="(e, i) in r.effects" :key="i" class="power-badge"

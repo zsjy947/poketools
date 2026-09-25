@@ -30,3 +30,7 @@ Poketools.log
 Poketools.spec
 data/*.db-shm
 data/*.db-wal
+
+# --- ZCode session artifacts ---
+.zcode/
+.zcodeignore

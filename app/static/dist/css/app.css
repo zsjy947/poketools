@@ -19,7 +19,7 @@ body { margin: 0; font-family: "Segoe UI", "Microsoft YaHei", sans-serif; backgr
 .menu-item.active { background: #2a3245; border-left-color: var(--accent); color: #fff; }
 .menu-item.sub { padding-left: 30px; font-size: 13.5px; padding-top: 8px; padding-bottom: 8px; }
 .menu-sep { height: 1px; background: #2f3850; margin: 8px 14px; }
-.menu-game { padding: 10px 18px 4px; font-size: 12.5px; color: var(--accent); font-weight: 600; }
+.menu-game { padding: 10px 18px 4px; font-size: 12.5px; color: var(--accent); font-weight: 600; display: flex; align-items: center; gap: 6px; }
 .sidebar-footer { padding: 10px 16px; font-size: 12px; color: #6b7487; }
 .main { flex: 1; overflow-y: auto; padding: 16px 22px 40px; }
 
@@ -29,20 +29,13 @@ body { margin: 0; font-family: "Segoe UI", "Microsoft YaHei", sans-serif; backgr
 
 /* 首页 */
 .home-hero { padding: 26px 6px 18px; }
-.home-title h1 { margin: 0 0 6px; font-size: 26px; }
-.home-title p { margin: 0; color: #7c879c; font-size: 13.5px; }
+.home-hero h1 { margin: 0; font-size: 26px; }
 .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; margin-bottom: 18px; }
 .game-card { background: #fff; border: 1px solid #e4e8f0; border-radius: 14px; padding: 20px 18px; cursor: pointer; transition: all .16s; }
 .game-card:hover { box-shadow: 0 6px 18px rgba(31,42,68,.14); transform: translateY(-2px); border-color: #c8d4f0; }
-.game-icon { font-size: 34px; line-height: 1; margin-bottom: 10px; }
+.game-icon-imgs { display: flex; align-items: center; height: 50px; margin-bottom: 10px; }
 .game-name { font-size: 17px; font-weight: 700; }
-.game-sub { color: #8a93a8; font-size: 12.5px; margin: 4px 0 10px; }
-.game-feats { display: flex; gap: 6px; flex-wrap: wrap; }
-.feat-chip { background: #f0f3fa; color: #4a5b82; border-radius: 10px; padding: 2px 9px; font-size: 12px; }
-.home-calc { display: flex; align-items: center; gap: 14px; background: linear-gradient(100deg, #26304a, #1f2533); color: #fff; border-radius: 14px; padding: 16px 20px; cursor: pointer; }
-.home-calc:hover { box-shadow: 0 6px 18px rgba(31,42,68,.25); }
-.home-calc .game-icon { margin: 0; }
-.home-calc .game-sub { color: #98a1b3; margin: 2px 0 0; }
+.game-sub { color: #8a93a8; font-size: 12.5px; margin-top: 4px; }
 
 /* 图鉴 tabs 与进度 */
 .dex-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
@@ -68,16 +61,20 @@ body { margin: 0; font-family: "Segoe UI", "Microsoft YaHei", sans-serif; backgr
 .poke-toggle:hover { transform: scale(1.18); }
 .poke-toggle.caught { color: #e5484d; }
 
-/* 属性徽章：等宽 + 图标 */
-.type-badge { display: inline-flex; align-items: center; justify-content: center; gap: 3px; min-width: 58px; padding: 2px 8px; border-radius: 5px; font-size: 12px; color: #fff; background: var(--t); margin: 1px 4px 1px 0; text-shadow: 0 1px 1px rgba(0,0,0,.3); box-shadow: inset 0 0 0 1px rgba(255,255,255,.18); }
-.type-badge.plain { background: color-mix(in srgb, var(--t) 82%, #fff); min-width: 50px; font-size: 11.5px; }
-.type-badge .ti { font-size: 11px; text-shadow: none; }
+/* 属性徽章：等宽胶囊 + 雪碧图图标（type_sprite.webp 每 16px 一格，18 属性 + 3 分类） */
+.type-badge { display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-width: 62px; padding: 2px 8px; border-radius: 5px; font-size: 12px; color: #fff; background: var(--t); margin: 1px 4px 1px 0; text-shadow: 0 1px 1px rgba(0,0,0,.3); box-shadow: inset 0 0 0 1px rgba(255,255,255,.18); }
+.type-badge.plain { background: color-mix(in srgb, var(--t) 82%, #fff); min-width: 54px; font-size: 11.5px; }
+.type-badge .ti, .mcls-badge .ti { flex-shrink: 0; width: 16px; height: 16px; background-image: url(../assets/type_sprite.webp); background-repeat: no-repeat; background-size: 16px 336px; background-position: 0 calc(var(--iy, 0) * -16px); filter: drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
 
-/* 招式分类徽章（底纹） */
-.mcls-badge { display: inline-block; min-width: 44px; text-align: center; border-radius: 4px; padding: 1px 7px; font-size: 12px; }
+/* 招式分类徽章（胶囊底纹 + 同一雪碧图图标） */
+.mcls-badge { display: inline-flex; align-items: center; justify-content: center; gap: 3px; min-width: 52px; border-radius: 4px; padding: 1px 7px; font-size: 12px; }
 .mcls-badge.mc-physical { color: #8c2f39; background: repeating-linear-gradient(45deg, #fbd5d5, #fbd5d5 5px, #f7c2c2 5px, #f7c2c2 10px); }
 .mcls-badge.mc-special { color: #1d4f91; background: repeating-linear-gradient(45deg, #cfe0fb, #cfe0fb 5px, #bcd2f8 5px, #bcd2f8 10px); }
 .mcls-badge.mc-status { color: #555b66; background: repeating-linear-gradient(45deg, #e8e9ec, #e8e9ec 5px, #dcdde2 5px, #dcdde2 10px); }
+
+/* 游戏官方商标图标（52poke 简中商标，双版本并排） */
+.game-icons { display: inline-flex; align-items: center; gap: 6px; }
+.game-logo { object-fit: contain; }
 
 /* 特性徽章 */
 .ab-badge { display: inline-block; background: #eef2ff; color: #4a5fd0; border: 1px solid #ccd6f6; border-radius: 5px; padding: 1px 8px; font-size: 12.5px; margin-right: 6px; }
@@ -166,6 +163,7 @@ body { margin: 0; font-family: "Segoe UI", "Microsoft YaHei", sans-serif; backgr
 .sand-card h4 { margin: 0 0 8px; font-size: 15px; }
 .sand-card .no { color: #b0b8c8; font-size: 12px; margin-right: 6px; }
 .sand-card .desc { color: #777; }
+.sand-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 8px; margin-bottom: 8px; display: block; background: #f4f6fa; }
 .power-badge { display: inline-block; border-radius: 4px; padding: 1px 7px; font-size: 12px; color: #fff; margin: 0 6px 4px 0; background: var(--p, #909399); }
 .ing { font-size: 13px; color: #666; margin-top: 6px; line-height: 1.55; }
 .ing b { color: #444; }
