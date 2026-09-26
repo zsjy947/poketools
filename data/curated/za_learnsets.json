@@ -4313,7 +4313,7 @@
  },
  {
   "form_id": 52,
-  "move_id": 506,
+  "move_id": 174,
   "method": "machine",
   "level": null,
   "mastery": null
@@ -4600,7 +4600,7 @@
  },
  {
   "form_id": 52,
-  "move_id": 506,
+  "move_id": 174,
   "method": "machine",
   "level": null,
   "mastery": null
@@ -4936,7 +4936,7 @@
  },
  {
   "form_id": 52,
-  "move_id": 506,
+  "move_id": 174,
   "method": "machine",
   "level": null,
   "mastery": null
@@ -5496,7 +5496,7 @@
  },
  {
   "form_id": 53,
-  "move_id": 506,
+  "move_id": 174,
   "method": "machine",
   "level": null,
   "mastery": null
@@ -5825,7 +5825,7 @@
  },
  {
   "form_id": 53,
-  "move_id": 506,
+  "move_id": 174,
   "method": "machine",
   "level": null,
   "mastery": null
@@ -6441,7 +6441,7 @@
  },
  {
   "form_id": 153,
-  "move_id": 506,
+  "move_id": 174,
   "method": "machine",
   "level": null,
   "mastery": null
@@ -6763,7 +6763,7 @@
  },
  {
   "form_id": 154,
-  "move_id": 506,
+  "move_id": 174,
   "method": "machine",
   "level": null,
   "mastery": null
@@ -7050,7 +7050,7 @@
  },
  {
   "form_id": 158,
-  "move_id": 506,
+  "move_id": 174,
   "method": "machine",
   "level": null,
   "mastery": null
@@ -7365,7 +7365,7 @@
  },
  {
   "form_id": 159,
-  "move_id": 506,
+  "move_id": 174,
   "method": "machine",
   "level": null,
   "mastery": null
@@ -7729,7 +7729,7 @@
  },
  {
   "form_id": 160,
-  "move_id": 506,
+  "move_id": 174,
   "method": "machine",
   "level": null,
   "mastery": null
@@ -9563,7 +9563,7 @@
  },
  {
   "form_id": 500,
-  "move_id": 506,
+  "move_id": 174,
   "method": "machine",
   "level": null,
   "mastery": null
@@ -14596,7 +14596,7 @@
  },
  {
   "form_id": 863,
-  "move_id": 506,
+  "move_id": 174,
   "method": "machine",
   "level": null,
   "mastery": null

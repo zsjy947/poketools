@@ -43,7 +43,7 @@ python scripts/make_icon.py           # 精灵球应用图标
   | 晶灿钻石·明亮珍珠 | 23 | 图鉴用 extended-sinnoh 白金 210 编号；PokeAPI machines 仅 17 条，TM001-100 由 52poke 补全 |
   | 传说 阿尔宙斯 | 24 | 无 TM/生蛋 |
   | 朱紫 | 25/26/27 | **machines 只导 vg25**（26/27 同号重复）；tutor 数据以 52poke「进化&回忆」为准修正 |
-  | 传说 Z-A | 30 | PokeAPI 缺学习集，由 52poke `{种类}/第九世代招式表` 抓取写入 vg30。**vg32 是 Pokémon Champions 的 train 数据，与 Z-A 无关，勿导入** |
+  | 传说 Z-A | 30/31 | 学习集：52poke 主源 + PokemonDB 兜底（`parse_za_learnlist_alt`），写入 vg30；machines 导 vg30+vg31（31=异次元 DLC TM108-160）。**vg32 是 Pokémon Champions 的 train 数据，与 Z-A 无关，勿导入** |
 
 - 覆盖：地区图鉴（9 张）、种族值/努力值/蛋组/特性、招式与学习方式、剑盾 TM/TR 映射、剑盾捕捉地点（encounters **仅剑盾有**）、剑盾简中图鉴描述。
 - 已知坑：蛋组标识符是 `ground/plant/humanshape/indeterminate/no-eggs`；natures.csv 的 stat_id 顺序为 1=hp,2=atk,3=def,4=spa,5=spd,6=spe。
@@ -68,7 +68,7 @@ python scripts/make_icon.py           # 精灵球应用图标
 `learnsets_all`（**全世代**，计算器招式并集）· `machines`（TM/TR 编号→招式）· `vgs`（版本组→世代）· `natures`（up/down）·
 `evolutions`（进化条件，from/to）
 
-52poke 合并：`get_methods`（中文捕捉方式+version_label）· `dex_flavor`（中文图鉴描述）· `form_flavor`（地区形态/洛托姆换装等形态独立介绍）· `tm_how` · `sandwiches`
+52poke 合并：`get_methods`（中文捕捉方式+version_label）· `dex_flavor`（中文图鉴描述）· `form_flavor`（地区形态/洛托姆换装/超进化/帽子等形态独立介绍，FORM_MARKERS 映射支持候选列表）· `tm_how` · `sandwiches`；PokemonDB 兜底：Z-A 学习集（`za_learnsets_pokemondb.json`）
 
 特化功能：`picnic_items` · `donut_types` · `special_donuts` · `berries` · `flavor_powers` · `curries` · `encounters`（剑盾英文兜底）· `move_flavor`（species_title_overrides 是 curated 文件而非数据表）
 
@@ -174,7 +174,7 @@ app/static/dist/
 - PokeAPI 图鉴描述简中只到剑盾、encounters 仅剑盾 → 其余由 52poke 补充，缺口见 `DATA-GAPS.md`。
 - 属性图标走 52poke 雪碧图（等宽胶囊 + 图标 span），星晶无图标退化纯色胶囊。
 - 风味力量表由人工整理（wiki rowspan 布局不规则，勿程序化解析）。
-- 数据缺口清单（Z-A 94 种学习集缺失、SV 31 个 TM 无获取文本等）统一记 `DATA-GAPS.md`。
+- 数据缺口统一记 `DATA-GAPS.md`（Z-A 学习集已双源全覆盖；SV TM 已以「招式机器制作」补全；剩余为源站未写类缺口）。
 
 ## 8. 变更历史
 

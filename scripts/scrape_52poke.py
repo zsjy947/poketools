@@ -6,12 +6,14 @@ Outputs curated JSON to data/curated/ (committed to git) and merges into DB:
   - tm_how       : 招式学习器获取方式与素材 (SV loc9/item9, SwSh locswsh, BDSP locbdsp)
   - machines     : BDSP TM001-100 由 52poke 补全（PokeAPI 仅 17 条）
   - sandwiches   : 朱紫三明治食谱
-  - za_learnsets : Z-A 学习集（PokeAPI 缺失，来自 {种类}/第九世代招式表 子页，写入 vg30）
+  - za_learnsets : Z-A 学习集（52poke 主源，PokemonDB 兜底，写入 vg30）
   - picnic_items : 三明治食材/调味料（含获取方式）
   - donuts       : Z-A 甜甜圈（基础类型/特殊配方/树果效果/风味力量）
   - curries      : 剑盾咖喱图鉴
 
 Run AFTER scripts/build_db.py. All pages cached to data/raw/52poke-cache/.
+52poke 未收录的 Z-A 学习集从 pokemondb.net 兜底（缓存到 data/raw/pokemondb-cache/），
+英文 TM 地点经人工翻译后放在 data/curated/tm_locations_za_pokemondb.json。
 """
 from __future__ import annotations
 
@@ -23,6 +25,7 @@ import time
 from collections import Counter
 from pathlib import Path
 
+from pokemondb_client import fetch_html as pdb_fetch_html, strip_tags as pdb_strip_tags
 from wiki_client import (  # 共享 52poke 客户端（缓存/批量 wikitext/别名回退）
     CACHE, ROOT, fetch_titles, get_wikitext)
 
@@ -354,6 +357,70 @@ FORM_MARKERS = {
     "加热洛托姆": "rotom-heat", "清洗洛托姆": "rotom-wash",
     "结冰洛托姆": "rotom-frost", "旋转洛托姆": "rotom-fan",
     "切割洛托姆": "rotom-mow",
+    # 超级进化 / 超极巨化 / 原始回归 / 无极巨化
+    "超级进化": "mega",
+    "超级喷火龙Ｘ": "mega-x", "超级喷火龙Ｙ": "mega-y",
+    "超级超梦Ｘ": "mega-x", "超级超梦Ｙ": "mega-y",
+    "超级雷丘Ｘ": "mega-x", "超级雷丘Ｙ": "mega-y",
+    "超级阿勃梭鲁Ｚ": "mega-z", "超级烈咬陆鲨Ｚ": "mega-z", "超级路卡利欧Ｚ": "mega-z",
+    "超极巨化": "gmax",
+    "一击流超极巨化": "single-strike-gmax", "连击流超极巨化": "rapid-strike-gmax",
+    "一击流": "single-strike", "连击流": "rapid-strike",
+    "原始回归": "primal", "无极巨化": "eternamax",
+    "剑之王": "crowned", "盾之王": "crowned",
+    "黄昏之鬃": "dusk", "拂曉之翼": "dawn", "拂晓之翼": "dawn",
+    # 性别 / 花色 / 花纹 / 羽毛 / 卡带 / 姿势 / 尺寸 / 四季 / 帽子
+    "雄性的样子": "male", "雌性的样子": "female",
+    "绿羽毛": "green-plumage", "蓝羽毛": "blue-plumage",
+    "黄羽毛": "yellow-plumage", "白羽毛": "white-plumage",
+    "上弓姿势": "curly", "下垂姿势": "droopy", "平挺姿势": "stretchy",
+    "普通尺寸": "average", "小尺寸": "small", "大尺寸": "large", "特大尺寸": "super",
+    "中颗种": "average", "小颗种": "small", "大颗种": "large", "巨颗种": "super",
+    "初始帽子": "original-cap", "丰缘帽子": "hoenn-cap", "神奥帽子": "sinnoh-cap",
+    "合众帽子": "unova-cap", "卡洛斯帽子": "kalos-cap", "阿罗拉帽子": "alola-cap",
+    "就决定是你了之帽子": "partner-cap", "世界帽子": "world-cap",
+    # 梦特花纹（碧粉蝶 20 种）等地区/形态词
+    "红条纹的样子": "red-striped", "蓝条纹的样子": "blue-striped",
+    "紅條紋的樣子": "red-striped", "藍條紋的樣子": "blue-striped",
+    "白条纹的样子": "white-striped",
+    "高调的样子": "amped", "低调的样子": "low-key",
+    "满腹花纹": "full-belly", "空腹花纹": "hangry",
+    "化身形态": "incarnate", "灵兽形态": "therian",
+    "别种形态": "altered", "起源形态": "origin",
+    "白昼的样子": "midday", "黑夜的样子": "midnight", "黄昏的样子": "dusk",
+    "一口吞的样子": "gulping", "大口吞的样子": "gorging",
+    "單獨的樣子": "solo", "单独的样子": "solo",
+    "魚群的樣子": "school", "鱼群的样子": "school",
+    "达摩模式": "zen",
+    "焰白酋雷姆": "white", "暗黑酋雷姆": "black",
+    "歌声形态": "aria", "舞步形态": "pirouette",
+    "陆上形态": "land", "天空形态": "sky",
+    "永恒之花": "eternal",
+    "惩戒胡帕": "confined", "解放胡帕": "unbound",
+    "现形的样子": ["unbound", "busted"], "現形的樣子": ["unbound", "busted"],
+    "化形的样子": ["disguised", "confined"], "化形的樣子": ["disguised", "confined"],
+    "平常的样子": "ordinary", "觉悟的样子": "resolute",
+    "结冻头": "ice", "解冻头": "noice",
+    "百战勇者": "hero",
+    "阿爸": "dada",
+    "平凡形态": "zero", "全能形态": "hero",
+    "二节形态": "two-segment", "三节形态": "three-segment",
+    "完全体形态": "complete", "完全形态": "complete",
+    "５０％形态": "50", "１０％形态": "10",
+    "水井面具": "wellspring-mask",
+    "火灶面具": "hearthflame-mask", "础石面具": "cornerstone-mask",
+    "太晶形态": "terastal", "星晶形态": "stellar",
+    "盾牌形态": "shield", "刀剑形态": "blade",
+    "徒步形态": "roaming",
+    "热辣热辣风格": "baile", "啪滋啪滋风格": "pom-pom",
+    "呼拉呼拉风格": "pau", "轻盈轻盈风格": "sensu",
+    "草木蓑衣": "plant", "砂土蓑衣": "sandy", "垃圾蓑衣": "trash",
+    "骑白马的样子": "ice", "骑黑马的样子": "shadow",
+    "黃昏之鬃": "dusk",
+    "赫月": "bloodmoon",
+    "三只家庭": "family-of-three", "四只家庭": "family-of-four",
+    "超级阿勃梭鲁": "mega", "超级烈咬陆鲨": "mega", "超级路卡利欧": "mega",
+    # 霜奶仙 奶香/糖饰（ PokeAPI 后缀）
 }
 
 
@@ -392,7 +459,9 @@ def parse_flavor(wt: str) -> tuple[list[dict], list[dict], list[dict]]:
                     continue
                 suffix = FORM_MARKERS.get(marker) if marker else None
                 if suffix:
-                    forms_out.append({"suffix": suffix, "game": game,
+                    # 值可为 str 或 [候选…]（同名标记跨种歧义时按顺序试，如 化形→谜拟丘/胡帕）
+                    cands = suffix if isinstance(suffix, list) else [suffix]
+                    forms_out.append({"suffixes": cands, "game": game,
                                       "label": label, "text": t})
                 elif marker:
                     unknown.append({"field": field, "marker": marker,
@@ -481,6 +550,85 @@ def parse_za_learnlist(wt: str) -> dict:
         if tmno and move:
             out["tm"].append((int(tmno), move))
     return out
+
+
+def parse_za_learnlist_alt(html: str, default_fid: int) -> dict | None:
+    """解析 pokemondb /pokedex/{slug}/moves/9 的 Legends: Z-A 面板。
+
+    返回 {'level': {form_id: [(lv, slug, name)]}, 'tm': {form_id: [(num, slug, name)]}}；
+    面板内有内层形态 tab（id 形如 tab-moves-N-level-{form_id}，与本库 forms.id 同源）
+    时按形态分表，无内层 tab 时整体归入 default_fid。无 Z-A 面板返回 None。
+    """
+    m = re.search(r'href="#(tab-moves-\d+)"[^>]*>\s*Legends: Z-A\s*</a>', html)
+    if not m:
+        return None
+    tab_id = m.group(1)
+    span = _div_span(html, tab_id)
+    if span is None:
+        return None
+    seg = html[span[0]:span[1]]
+    out: dict = {"level": {}, "tm": {}}
+
+    def _rows(segment: str, key: str, fid: int) -> None:
+        tb = re.search(r"<table[^>]*>.*?</table>", segment, re.S)
+        if not tb:
+            return
+        for row in re.findall(r"<tr.*?</tr>", tb.group(0), re.S):
+            tds = re.findall(r"<td.*?</td>", row, re.S)
+            if len(tds) < 2:
+                continue
+            mv = re.search(r'href="/move/([a-z0-9-]+)"', tds[1])
+            if not mv:
+                continue
+            name = pdb_strip_tags(tds[1])
+            if key == "level":
+                lv = re.sub(r"[^0-9]", "", pdb_strip_tags(tds[0]))
+                if lv:
+                    out["level"].setdefault(fid, []).append((int(lv), mv.group(1), name))
+            else:
+                num = re.sub(r"[^0-9]", "", pdb_strip_tags(tds[0]))
+                if num:
+                    out["tm"].setdefault(fid, []).append((int(num), mv.group(1), name))
+
+    for h3name, key in (("Moves learnt by level up", "level"), ("Moves learnt by TM", "tm")):
+        h = seg.find(h3name)
+        if h < 0:
+            continue
+        sub = seg[h:]
+        fm = re.search(
+            r'tabset-moves-game-form sv-tabs-wrapper.*?<div class="sv-tabs-tab-list">(.*?)</div>',
+            sub, re.S)
+        if not fm:
+            _rows(sub, key, default_fid)
+            continue
+        # 内层按形态分段：面板 id 形如 tab-moves-{n}-level-{form_id}
+        hit_any = False
+        for im in re.finditer(r'<div class="sv-tabs-panel[^"]*" id="(tab-moves-\d+-[a-z]+-(\d+))"', sub):
+            ispan = _div_span(seg, im.group(1))
+            if ispan is None:
+                continue
+            fid = int(im.group(2))
+            _rows(seg[ispan[0]:ispan[1]], key, fid)
+            hit_any = True
+        if not hit_any:
+            _rows(sub, key, default_fid)
+    return out
+
+
+def _div_span(html: str, div_id: str) -> tuple[int, int] | None:
+    """返回 id=div_id 的 div 在 html 中的 [start, end) 字节区间（平衡扫描）。"""
+    open_m = re.search(rf'<div[^>]*\bid="{re.escape(div_id)}"', html)
+    if not open_m:
+        return None
+    depth = 0
+    for tag in re.finditer(r"<(/?)div\b[^>]*>", html[open_m.start():]):
+        if tag.group(1) == "/":
+            depth -= 1
+        else:
+            depth += 1
+        if depth == 0:
+            return (open_m.start(), open_m.start() + tag.end())
+    return None
 
 
 # ---------------------------------------------------------------- sandwiches
@@ -715,7 +863,7 @@ def main() -> None:
         for r in fl:
             flavor_rows.append((sid, r["game"], r["label"], r["text"]))
         for r in fl_forms:
-            form_flavor_rows.append((sid, r["suffix"], r["game"], r["label"], r["text"]))
+            form_flavor_rows.append((sid, r["suffixes"], r["game"], r["label"], r["text"]))
         for u in fl_unknown:
             form_marker_unknown.append({"species_id": sid, "name": name,
                                         "field": u["field"], "marker": u["marker"],
@@ -741,7 +889,13 @@ def main() -> None:
         other_keys.update(info["other_keys"])
         for key, vg in (("swsh", 20), ("sv", 25), ("za", 30)):
             d = info.get(key)
-            if not d or not d["loc"]:
+            if not d:
+                continue
+            loc, item = d["loc"], d["item"]
+            # 朱紫 loc9 为空但制作素材齐全：TM 皆可在招式机器用 LP+素材制作（52poke 未整理地点）
+            if not loc and item and key == "sv":
+                loc = "在招式机器用 LP 与素材制作"
+            if not loc:
                 continue
             mid = move_id_by_zh.get(d["move"])
             if mid is None:
@@ -751,7 +905,7 @@ def main() -> None:
                 mid = mid[0] if mid else None
             if mid is None:
                 continue
-            tm_rows.append((vg, n, mid, d["loc"], d["item"]))
+            tm_rows.append((vg, n, mid, loc, item))
         # BDSP：TM001-100，机器表 PokeAPI 缺失，由 52poke 补全
         d = info.get("bdsp")
         if d and d["move"]:
@@ -768,12 +922,29 @@ def main() -> None:
             "SELECT machine_number, move_id FROM machines WHERE vg=20 AND item_identifier LIKE 'tr%'"):
         tm_rows.append((20, num, mid, tr_generic, ""))
 
+    # Z-A TM 获取地点：52poke 未整理，人工翻译自 pokemondb（curated，只补缺号）
+    za_tm_curated = CURATED / "tm_locations_za_pokemondb.json"
+    if za_tm_curated.exists():
+        have_za = {n for v, n, *_ in tm_rows if v == 30}
+        added = 0
+        for r in json.loads(za_tm_curated.read_text(encoding="utf-8"))["rows"]:
+            num = int(r["number"])
+            if num in have_za:
+                continue
+            mid = con.execute(
+                "SELECT move_id FROM machines WHERE vg=30 AND machine_number=?",
+                (num,)).fetchone()
+            if mid:
+                tm_rows.append((30, num, mid[0], r["how"], ""))
+                added += 1
+        print(f"  za tm locations from curated pokemondb: +{added}")
+
     print("  tm_how rows per vg:", dict(Counter(v for v, *_ in tm_rows)))
     print("  bdsp machines from 52poke:", len(bdsp_machines))
     print("  unknown TMtable loc keys:", dict(other_keys))
 
     # ---- 3. Z-A learnsets ----
-    print("[3/6] Z-A learnsets (52poke subpages)")
+    print("[3/6] Z-A learnsets (52poke subpages + pokemondb fallback)")
     za_species = con.execute(
         """SELECT DISTINCT s.id, s.name_zh FROM dex_entries e
            JOIN regional_dexes d ON d.id = e.dex_id
@@ -781,7 +952,13 @@ def main() -> None:
            WHERE d.game_id='legends-za' ORDER BY s.id""").fetchall()
     sub_titles = [f"{overrides.get(str(sid)) or name}/第九世代招式表" for sid, name in za_species]
     fetch_titles(sub_titles)
-    za_rows, za_missing = [], []
+    za_rows, za_missing, za_tm_corrections = [], [], []
+    # machines vg30+vg31：TM 编号 → 招式（游戏数据，52poke Z-A 表偶有编号↔招式错位如 TM091）
+    tm_move_by_num: dict[int, int] = {}
+    move_zh = dict(con.execute("SELECT id, name_zh FROM moves"))
+    for vg, num, mid in con.execute(
+            "SELECT vg, machine_number, move_id FROM machines WHERE vg IN (30,31)"):
+        tm_move_by_num.setdefault(num, mid)
     for sid, name in za_species:
         base = overrides.get(str(sid)) or name
         wt = get_wikitext(f"{base}/第九世代招式表")
@@ -806,12 +983,88 @@ def main() -> None:
                 continue
             za_rows.append((fid, mid, "level-up", 30, level, mastery))
         for tmno, move in parsed["tm"]:
-            mid = move_id_by_zh.get(move) or move_id_by_zh.get(MOVE_NAME_ALIASES.get(move, ""))
+            mid = tm_move_by_num.get(tmno)
+            by_name = move_id_by_zh.get(move) or move_id_by_zh.get(MOVE_NAME_ALIASES.get(move, ""))
+            if mid is not None and by_name is not None and by_name != mid:
+                # wiki 行的招式与游戏数据 machines 不符 → 以游戏数据为准并记录
+                za_tm_corrections.append({"species_id": sid, "name": name, "tm": tmno,
+                                          "wiki": move, "fixed_to": move_zh.get(mid)})
+                by_name = mid
+            elif mid is None:
+                mid = by_name
             if mid is None:
                 za_missing.append({"species_id": sid, "name": name, "reason": f"ZA tm move not in db: {move}"})
                 continue
             za_rows.append((fid, mid, "machine", 30, None, None))
-    print(f"  za learnset rows: {len(za_rows)} (missing subpages: {len(set(m['species_id'] for m in za_missing))})")
+    print(f"  za learnset rows (52poke): {len(za_rows)} "
+          f"(missing subpages: {len(set(m['species_id'] for m in za_missing))}, "
+          f"tm corrections: {len(za_tm_corrections)})")
+
+    # ---- 3b. PokemonDB 兜底（52poke 未写 Z-A 表的种类/形态）----
+    form_species = dict(con.execute("SELECT id, species_id FROM forms"))
+    covered_forms = {f for f, *_ in za_rows}
+    move_by_ident = dict(con.execute("SELECT identifier, id FROM moves"))
+    move_by_en = {k: v for k, v in con.execute("SELECT name_en, id FROM moves") if k}
+    alt_rows: list[tuple] = []
+    for sid, name in za_species:
+        ident = con.execute("SELECT identifier FROM species WHERE id=?", (sid,)).fetchone()
+        if not ident:
+            continue
+        html = pdb_fetch_html(f"pokedex/{ident[0]}/moves/9")
+        if html is None:
+            za_missing.append({"species_id": sid, "name": name,
+                               "reason": "pokemondb page not found"})
+            continue
+        fid = con.execute(
+            "SELECT id FROM forms WHERE species_id=? ORDER BY is_default DESC, id LIMIT 1",
+            (sid,)).fetchone()
+        if not fid:
+            continue
+        alt = parse_za_learnlist_alt(html, fid[0])
+        if alt is None:
+            za_missing.append({"species_id": sid, "name": name,
+                               "reason": "pokemondb page has no Z-A panel"})
+            continue
+        if not alt["level"] and not alt["tm"]:
+            za_missing.append({"species_id": sid, "name": name,
+                               "reason": "pokemondb Z-A panel empty"})
+            continue
+        for key, method in (("level", "level-up"), ("tm", "machine")):
+            for form_id, items in alt[key].items():
+                if form_id in covered_forms:
+                    continue  # 该形态 52poke 已覆盖（默认形态优先保 52poke 源）
+                if form_id not in form_species or form_species[form_id] != sid:
+                    za_missing.append({"species_id": sid, "name": name,
+                                       "reason": f"pokemondb form_id {form_id} not in db"})
+                    continue
+                for lv_or_num, slug, disp in items:
+                    mid = None
+                    if key == "tm":
+                        mid = tm_move_by_num.get(lv_or_num)
+                    if mid is None:
+                        mid = move_by_ident.get(slug) or move_by_en.get(disp)
+                    if mid is None:
+                        za_missing.append({"species_id": sid, "name": name,
+                                           "reason": f"pokemondb move not in db: {slug}"})
+                        continue
+                    if key == "level":
+                        alt_rows.append((form_id, mid, method, 30, lv_or_num, None))
+                    else:
+                        alt_rows.append((form_id, mid, method, 30, None, None))
+    print(f"  za alt rows (pokemondb): {len(alt_rows)}")
+    # 兜底已覆盖的形态不再是缺口：清掉 52poke 侧的对应 issue，只留真实问题
+    final_covered = {form_species[f] for f, *_ in za_rows} | \
+                    {form_species[f] for f, *_ in alt_rows if f in form_species}
+    za_missing = [m for m in za_missing if m["species_id"] not in final_covered]
+    print(f"  za learnset real gaps after fallback: {len(set(m['species_id'] for m in za_missing))}")
+    if alt_rows:
+        (CURATED / "za_learnsets_pokemondb.json").write_text(
+            json.dumps({"source": "pokemondb.net /pokedex/{slug}/moves/9 Legends: Z-A 面板"
+                                 "（52poke 未收录种类的兜底；mastery 不提供）",
+                        "rows": [{"form_id": f, "move_id": m, "method": me, "vg": v,
+                                  "level": lv, "mastery": ma}
+                                 for f, m, me, v, lv, ma in alt_rows]},
+                       ensure_ascii=False, indent=1), encoding="utf-8")
 
     # ---- 4. 特化功能页 ----
     print("[4/6] feature pages (sandwich/picnic/donut/curry)")
@@ -889,7 +1142,8 @@ def main() -> None:
 
     todo = {"missing_species_pages": failed,
             "form_flavor_unparsed_markers": form_marker_unknown,
-            "za_learnset_issues": za_missing}
+            "za_learnset_issues": za_missing,
+            "za_tm_corrections": za_tm_corrections}
     (CURATED / "TODO.json").write_text(json.dumps(todo, ensure_ascii=False, indent=1),
                                        encoding="utf-8")
 
@@ -962,9 +1216,13 @@ def main() -> None:
     cur.executemany("INSERT OR REPLACE INTO flavor_powers VALUES (?,?,?,?,?,?,?)",
                     [(f["flavor"], f["power"], f["effect"], f["lv1"], f["lv2"], f["lv3"], f["prefix"])
                      for f in donuts["flavor_powers"]])
-    if za_rows:
+    if za_rows or alt_rows:
         cur.execute("DELETE FROM learnsets WHERE vg=30")
-        cur.executemany("INSERT OR REPLACE INTO learnsets VALUES (?,?,?,?,?,?)", za_rows)
+        cur.executemany("INSERT OR REPLACE INTO learnsets VALUES (?,?,?,?,?,?)",
+                        za_rows + alt_rows)
+    else:
+        print("  !! Z-A 学习集为空（抓取全失败？），跳过 vg30 合并以保护已有数据",
+              file=sys.stderr)
     # 52poke flavor overrides PokeAPI flavor（空结果护栏）
     if not flavor_rows:
         print("  !! flavor_rows 为空，跳过 dex_flavor 合并", file=sys.stderr)
@@ -980,28 +1238,32 @@ def main() -> None:
     # 中缀命中时带 -standard 的形态优先于兄弟形态（达摩模式等）。
     cur.execute("DELETE FROM form_flavor")
     unmatched = []
-    for s, suffix, g, lb, txt in form_flavor_rows:
-        row = con.execute(
-            """SELECT id, identifier,
-                   CASE
-                     WHEN identifier LIKE '%-'||? THEN 0
-                     WHEN identifier = ? THEN 1
-                     WHEN identifier LIKE '%-'||?||'-%' THEN 2
-                     ELSE 9 END AS score
-               FROM forms WHERE species_id=? AND score < 9
-               ORDER BY score,
-                 CASE WHEN identifier LIKE '%-standard' THEN 0 ELSE 1 END,
-                 LENGTH(identifier)
-               LIMIT 1""",
-            (suffix, suffix, suffix, s)).fetchone()
+    for s, suffixes, g, lb, txt in form_flavor_rows:
+        row = None
+        for suffix in suffixes:  # 候选按顺序，首个命中即用
+            row = con.execute(
+                """SELECT id, identifier,
+                       CASE
+                         WHEN identifier LIKE '%-'||? THEN 0
+                         WHEN identifier = ? THEN 1
+                         WHEN identifier LIKE '%-'||?||'-%' THEN 2
+                         ELSE 9 END AS score
+                   FROM forms WHERE species_id=? AND score < 9
+                   ORDER BY score,
+                     CASE WHEN identifier LIKE '%-standard' THEN 0 ELSE 1 END,
+                     LENGTH(identifier)
+                   LIMIT 1""",
+                (suffix, suffix, suffix, s)).fetchone()
+            if row:
+                break
         if row is None:
-            unmatched.append((s, suffix))
+            unmatched.append((s, suffixes))
             continue
         cur.execute("DELETE FROM form_flavor WHERE form_id=? AND game=? AND version_label=?",
                     (row[0], g, lb))
         cur.execute("INSERT INTO form_flavor VALUES (?,?,?,?)", (row[0], g, lb, txt))
     if unmatched:
-        print(f"  !! form_flavor 未匹配形态: {sorted(set(unmatched))[:10]}")
+        print(f"  !! form_flavor 未匹配形态: {sorted(set(map(str, unmatched)))[:10]}")
     con.commit()
 
     for t in ("get_methods", "dex_flavor", "form_flavor", "tm_how", "sandwiches", "picnic_items",

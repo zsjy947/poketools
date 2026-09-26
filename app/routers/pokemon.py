@@ -23,7 +23,8 @@ GAME_MOVE_CONFIG = {
     "scarlet-violet": {"vg": 25, "tm_vgs": [25],
                        "tabs": [("level", "升级"), ("machine", "招式学习器"),
                                 ("egg", "蛋招式")]},
-    "legends-za": {"vg": 30, "tm_vgs": [30],
+    # tm_vgs 含 vg31（异次元 DLC TM108-160），与 vg30 的 TM001-107 连续编号
+    "legends-za": {"vg": 30, "tm_vgs": [30, 31],
                    "tabs": [("level", "升级"), ("machine", "招式学习器")]},
 }
 
@@ -61,7 +62,8 @@ def _evo_condition(row) -> str:
     elif trig == "use-item":
         parts.append(f"使用{row['item']}" if row["item"] else "使用道具")
     elif trig == "trade":
-        parts.append("连接交换")
+        # 与特定宝可梦交换（盖盖虫↔小嘴蜗）优先于泛化描述
+        parts.append(f"与{row['trade_species']}交换" if row["trade_species"] else "连接交换")
     else:
         parts.append(TRIGGER_ZH.get(trig, trig))
     if row["held_item"]:
@@ -81,7 +83,50 @@ def _evo_condition(row) -> str:
         parts.append("倒置主机")
     if row["location"]:
         parts.append(f"在{row['location']}")
+    if row["region"]:
+        parts.append(f"在{row['region']}地区")
+    if row["gender"]:
+        parts.append(f"{row['gender']}限定")
+    if row["known_move_type"]:
+        parts.append(f"学会{row['known_move_type']}属性招式")
+    if row["relative_physical_stats"] is not None:
+        parts.append({1: "攻击>防御", 0: "攻击=防御", -1: "攻击<防御"}
+                     .get(row["relative_physical_stats"], ""))
+    if row["party_species"]:
+        parts.append(f"队伍中有{row['party_species']}")
+    if row["party_type"]:
+        parts.append(f"队伍中有{row['party_type']}属性宝可梦")
+    if row["near_special_rock"]:
+        parts.append("在冰岩石附近" if row["to_species"] == 471 else "在苔藓岩石附近")
+    if row["min_beauty"]:
+        parts.append(f"美丽≥{row['min_beauty']}")
+    if row["needs_multiplayer"]:
+        parts.append("联机游玩时")
+    if row["min_move_count"]:
+        parts.append(f"特定招式累计使用{row['min_move_count']}次")
+    if row["min_steps"]:
+        parts.append(f"同行走{row['min_steps']}步")
+    if row["min_damage_taken"]:
+        parts.append(f"累计受到伤害≥{row['min_damage_taken']}")
+    if row["nature_bitmask"]:
+        parts.append("性格：" + "、".join(_decode_natures(row["nature_bitmask"])))
     return "，".join(p for p in parts if p)
+
+
+# PokeAPI nature_bitmask：bit i-1 对应性格 id i（1勤奋…25浮躁）
+_NATURE_ZH = {1: "勤奋", 2: "怕寂寞", 3: "勇敢", 4: "固执", 5: "顽皮", 6: "大胆",
+              7: "坦率", 8: "悠闲", 9: "淘气", 10: "乐天", 11: "胆小", 12: "急躁",
+              13: "认真", 14: "爽朗", 15: "天真", 16: "内敛", 17: "慢吞吞", 18: "冷静",
+              19: "害羞", 20: "马虎", 21: "温和", 22: "温顺", 23: "自大", 24: "慎重",
+              25: "浮躁"}
+
+
+def _decode_natures(mask: str) -> list[str]:
+    try:
+        m = int(mask)
+    except ValueError:
+        return []
+    return [_NATURE_ZH[i + 1] for i in range(25) if m & (1 << i)]
 
 
 def _evolution_chain(con, species_id: int) -> dict:

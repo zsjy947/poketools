@@ -9,9 +9,9 @@ Target Switch games (version group ids):
   23 brilliant-diamond-shining-pearl
   24 legends-arceus
   25 scarlet-violet | 26 teal-mask | 27 indigo-disk
-  30 legends-za
-  注意：vg32 是 Pokémon Champions 的数据（method=train），不是 Z-A；
-  Z-A 学习集由 scrape_52poke.py 从 52poke 子页抓取写入 vg30。
+  30 legends-za | 31 mega-dimension（Z-A 异次元 DLC）
+  注意：vg32 是 Pokémon Champions 的数据（method=train），不是 Z-A，勿导入；
+  Z-A 学习集由 scrape_52poke.py 补齐写入 vg30（52poke 主源 + PokemonDB 兜底）。
 """
 from __future__ import annotations
 
@@ -36,12 +36,13 @@ GAME_OF_VG = {
     23: "brilliant-diamond-shining-pearl",
     24: "legends-arceus",
     25: "scarlet-violet", 26: "scarlet-violet", 27: "scarlet-violet",
-    30: "legends-za",
+    30: "legends-za", 31: "legends-za",
 }
-# learnsets 只导真正有 pokemon_moves 数据的 vg（Z-A 由 52poke 抓取补进 vg30）
+# learnsets 只导真正有 pokemon_moves 数据的 vg（Z-A 由 scrape_52poke.py 补进 vg30）
 LEARNSET_VGS = (20, 23, 24, 25, 30)
-# machines：SV 的 vg26/27 与 vg25 同号同招式（重复），剑盾 DLC 无新增，只导主版本组
-MACHINE_VGS = (20, 23, 25, 30)
+# machines：SV 的 vg26/27 与 vg25 同号同招式（重复），剑盾 DLC 无新增，只导主版本组；
+# Z-A 的 vg31（异次元 DLC）= TM108-160，52poke 的 Z-A 招式表已引用这些编号，必须导入
+MACHINE_VGS = (20, 23, 25, 30, 31)
 
 GAMES = {
     "sword-shield":   {"name_zh": "剑／盾", "name_en": "Sword/Shield", "gen": 8, "has_breeding": 1, "has_tms": 1,
@@ -78,7 +79,7 @@ FORM_SUFFIX_ZH = {
     "alola": "阿罗拉的样子", "hoenn": "丰缘的样子", "sinnoh": "神奥的样子",
     "unova": "合众的样子", "kalos": "卡洛斯的样子",
     "battle-bond": "羁绊变身", "ash": "羁绊变身",
-    "hero": "百战勇者", "hangry": "暴食形态", "gulping": "吞咽形态", "gorging": "饱腹形态",
+    "hero": "全能形态", "hangry": "暴食形态", "gulping": "吞咽形态", "gorging": "饱腹形态",
     "ten-percent": "10%形态", "complete": "完全体形态", "ultra": "终极形态",
     "origin": "起源形态", "altered": "别种形态", "therian": "灵兽形态",
     "black": "酋雷姆（黑）", "white": "酋雷姆（白）", "ordinary": "普通形态",
@@ -243,6 +244,13 @@ CREATE TABLE evolutions (            -- 进化条件（PokeAPI pokemon_evolution
   min_level INTEGER, item TEXT, held_item TEXT, time_of_day TEXT,
   location TEXT, known_move TEXT, min_happiness INTEGER, min_affection INTEGER,
   needs_overworld_rain INTEGER, turn_upside_down INTEGER,
+  relative_physical_stats INTEGER,    -- 攻防关系 1/0/-1（小拳石系）
+  party_species TEXT, party_type TEXT, trade_species TEXT, known_move_type TEXT,
+  gender TEXT, region TEXT,           -- 性别限定 / 地区限定（中文，空=无）
+  near_special_rock INTEGER,          -- 特殊岩石附近（1=苔藓 2=冰岩，按进化目标区分）
+  min_beauty INTEGER, needs_multiplayer INTEGER,
+  min_move_count INTEGER, min_steps INTEGER, min_damage_taken INTEGER,
+  nature_bitmask TEXT,                -- 性格位掩码（ToStricity）
   PRIMARY KEY (from_species, to_species, trigger)
 );
 CREATE INDEX idx_learnsets_move ON learnsets (move_id, vg, method);
@@ -529,6 +537,7 @@ def main() -> None:
                    for r in read_csv("evolution_triggers")}
     item_zh, _ = name_map("item_names", "item_id")
     location_zh, _ = name_map("location_names", "location_id")
+    region_zh, _ = name_map("region_names", "region_id")
     evo_rows = []
     for r in read_csv("pokemon_evolution"):
         to_sid = to_int(r["evolved_species_id"])
@@ -548,8 +557,23 @@ def main() -> None:
             to_int(r["minimum_affection"]),
             to_int(r["needs_overworld_rain"]) or 0,
             to_int(r["turn_upside_down"]) or 0,
+            # 冷门条件：攻击与防御关系 / 队伍条件 / 交换对象 / 性别与地区限定等
+            (None if r["relative_physical_stats"] == "" else to_int(r["relative_physical_stats"])),
+            species_zh.get(to_int(r["party_species_id"]) or 0, ""),
+            type_zh.get(to_int(r["party_type_id"]) or 0, ""),
+            species_zh.get(to_int(r["trade_species_id"]) or 0, ""),
+            type_zh.get(to_int(r["known_move_type_id"]) or 0, ""),
+            {1: "雌性", 2: "雄性"}.get(to_int(r["gender_id"]) or 0, ""),
+            region_zh.get(to_int(r["region_id"]) or 0, ""),
+            to_int(r["near_special_rock"]) or None,
+            to_int(r["minimum_beauty"]) or None,
+            to_int(r["needs_multiplayer"]) or 0,
+            to_int(r["minimum_move_count"]) or None,
+            to_int(r["minimum_steps"]) or None,
+            to_int(r["minimum_damage_taken"]) or None,
+            r["nature_bitmask"] or "",
         ))
-    con.executemany("INSERT OR REPLACE INTO evolutions VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", evo_rows)
+    con.executemany("INSERT OR REPLACE INTO evolutions VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", evo_rows)
 
     con.commit()
 
