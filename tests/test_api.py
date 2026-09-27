@@ -5,9 +5,9 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from fastapi.testclient import TestClient  # noqa: E402
+from fastapi.testclient import TestClient
 
-from app.main import app  # noqa: E402
+from app.main import app
 
 DB = Path(__file__).resolve().parent.parent / "data" / "poketools.db"
 pytestmark = pytest.mark.skipif(not DB.exists(), reason="先运行数据管线生成 poketools.db")
@@ -170,7 +170,7 @@ def test_review_regressions():
     # 进化条件含中文地点
     p = client.get("/api/pokemon/133").json()
     conds = list(p["evolution"]["conds"].values())
-    assert conds and all("mountain" not in c and "-" not in c.replace("-", "") or True for c in conds)
+    assert conds and all(("mountain" not in c and "-" not in c.replace("-", "")) or True for c in conds)
 
 
 def test_calc_mechanism_exclusive():
@@ -312,7 +312,7 @@ def test_dex_default_form_api():
     # /api/ev 同步覆盖（LA 攻击 EV 查询含洗翠风速狗形态）
     rows = client.get("/api/ev", params={"stat": "atk", "game": "legends-arceus"}).json()
     a9 = next((r for r in rows if r["species_id"] == 59), None)
-    assert a9 and a9["form_id"] and "hisui" in str(a9["form_id"]) or a9 is not None
+    assert (a9 and a9["form_id"] and "hisui" in str(a9["form_id"])) or a9 is not None
     # 详情页 dex 上下文默认选中覆盖形态
     p = client.get("/api/pokemon/58", params={"game": "legends-arceus", "dex": "hisui"}).json()
     assert p["selected_suffix"] == "hisui"

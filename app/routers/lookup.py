@@ -7,9 +7,9 @@ from functools import lru_cache
 
 from fastapi import APIRouter, Body, HTTPException, Query
 
-from ..db import static_conn, state_conn
+from ..db import state_conn, static_conn
 from ..services import damage
-from ..services.breeding import breed_chains, GAME_LEARNSET_VG
+from ..services.breeding import GAME_LEARNSET_VG, breed_chains
 
 router = APIRouter(prefix="/api")
 
@@ -146,9 +146,8 @@ def sandwiches(
             effs = [e for e in effs if e["type"] == ptype]
         if level:
             effs = [e for e in effs if e["level"] == level]
-        if power or ptype or level:
-            if not effs:
-                continue
+        if (power or ptype or level) and not effs:
+            continue
         out.append({**r, "effects": effs,
                     "_min_level": min((e["level"] for e in r["effects"]), default=9)})
 
@@ -296,8 +295,8 @@ def list_custom_recipes(profile: int = 1, game: str = ""):
 def add_custom_recipe(body: dict = Body(...)):
     try:
         pid = int(body.get("profile_id") or 1)
-    except (TypeError, ValueError):
-        raise HTTPException(400, "profile_id 无效")
+    except (TypeError, ValueError) as e:
+        raise HTTPException(400, "profile_id 无效") from e
     game = body.get("game") or ""
     if game not in CUSTOM_RECIPE_GAMES:
         raise HTTPException(400, "该游戏不支持自定义食谱")
@@ -311,8 +310,8 @@ def add_custom_recipe(body: dict = Body(...)):
             continue
         try:
             level = int(e.get("level", 1))
-        except (TypeError, ValueError):
-            raise HTTPException(400, "effects.level 无效")
+        except (TypeError, ValueError) as e:
+            raise HTTPException(400, "effects.level 无效") from e
         clean_effects.append({"power": str(e.get("power", ""))[:20],
                               "type": str(e.get("type", ""))[:8],
                               "level": level})

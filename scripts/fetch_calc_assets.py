@@ -14,7 +14,6 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 
 import requests
-
 import wiki_client as wc
 
 ROOT = wc.ROOT
@@ -68,7 +67,7 @@ def fetch_item_icons() -> tuple[int, int]:
 
     ok = 0
     with ThreadPoolExecutor(max_workers=16) as ex:
-        for ident, got in zip(todo, ex.map(dl, todo)):
+        for _ident, got in zip(todo, ex.map(dl, todo), strict=False):
             if got:
                 ok += 1
     missing = [i for i in todo if not (ITEMS_OUT / f"{i}.png").exists()]

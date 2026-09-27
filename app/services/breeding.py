@@ -72,7 +72,7 @@ def breed_chains(con, species_id: int, move_id: int, game: str) -> dict:
     # 不能交配的物种（无性别且非百变怪）不能传递蛋招式
     def breedable(info: dict) -> bool:
         return bool(info["groups"]) and (
-            "百变怪" in info["groups"] or info["gender_rate"] not in (-1,) and info["gender_rate"] is not None or "百变怪" in info["groups"])
+            "百变怪" in info["groups"] or (info["gender_rate"] not in (-1,) and info["gender_rate"] is not None) or "百变怪" in info["groups"])
 
     nodes = {sid: i for sid, i in learners.items() if sid != species_id and breedable(i)}
     sources = {sid: i for sid, i in nodes.items() if i["direct"]}
@@ -169,7 +169,7 @@ def breed_chains(con, species_id: int, move_id: int, game: str) -> dict:
         # 统一把「末环 → 目标」作为最后一步，保证 steps 覆盖全部繁殖步骤
         seq = p + [species_id]
         steps = []
-        for a, b in zip(seq, seq[1:]):
+        for a, b in zip(seq, seq[1:], strict=False):
             steps.append({
                 "from": node_payload(a),
                 "to": node_payload(b) if b != species_id else {

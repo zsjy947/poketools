@@ -311,7 +311,6 @@ def main() -> None:
 
     # ---- reference tables ----
     vg_rows = {to_int(r["id"]): r for r in read_csv("version_groups")}
-    vg_gen = {i: to_int(r["generation_id"]) for i, r in vg_rows.items()}
 
     pokedexes = {to_int(r["id"]): r for r in read_csv("pokedexes")}
     dex_prose_zh, dex_prose_en = {}, {}

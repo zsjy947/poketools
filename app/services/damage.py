@@ -96,7 +96,7 @@ def _multihit_power(base: int, ident: str, for_max: bool = False) -> int:
     mh = MULTIHIT.get(ident)
     if not mh:
         return base
-    lo, hi = mh
+    _lo, hi = mh
     if hi == 5 or hi == 3:
         n = 3
     elif hi == 2:
@@ -261,9 +261,7 @@ def _grounded(p: dict, opt: dict) -> bool:
     if opt.get("gravity"):
         return True
     types = [t for t in (p.get("types") or "").split(",") if t]
-    if "飞行" in types or p.get("ability") == "漂浮" or p.get("item") == "气球":
-        return False
-    return True
+    return not ("飞行" in types or p.get("ability") == "漂浮" or p.get("item") == "气球")
 
 
 def _modified_stat(stat: int, boost: int) -> int:
@@ -403,9 +401,7 @@ def calc_damage_modern(a: dict, d: dict, move: dict, opt: dict) -> dict:
         df_mods.append(3072)   # 灾祸之玉：对方特防 ×0.75
     if (opt.get("flower_gift_d") or d_abil == "花之礼") and weather == "sun" and not physical:
         df_mods.append(6144)   # 花之礼防守侧（大晴天）：特防 ×1.5
-    if d_item == "突击背心" and not physical:
-        df_mods.append(6144)
-    elif d_item == "进化奇石" and d.get("can_evolve"):
+    if (d_item == "突击背心" and not physical) or (d_item == "进化奇石" and d.get("can_evolve")):
         df_mods.append(6144)
     def_v = max(1, poke_round_ratio(def_v * chain_mods(df_mods)))
 

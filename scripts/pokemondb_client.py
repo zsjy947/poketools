@@ -46,7 +46,7 @@ def fetch_html(path: str, retries: int = 4) -> str | None:
             cp.write_text(r.text, encoding="utf-8")
             time.sleep(0.4)
             return r.text
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             if attempt == retries - 1:
                 print(f"  !! pokemondb {path}: {type(e).__name__}: {str(e)[:120]}",
                       file=sys.stderr)

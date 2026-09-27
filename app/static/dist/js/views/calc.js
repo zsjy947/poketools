@@ -480,7 +480,7 @@ const MoveChip = {
 };
 
 /* ---- 编辑面板 ---- */
-const _metaCache = { natures: null, items: null, abilities: null, zMeta: null };
+const _metaCache = { natures: null };   // 性格跨组件缓存（items/abilities/zMeta 由 CalcView 统一拉取）
 
 const SideEditor = {
   props: ["side", "label", "speciesList", "items", "abilities", "zMeta"],

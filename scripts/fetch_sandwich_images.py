@@ -17,9 +17,8 @@ import re
 import sys
 from pathlib import Path
 
-from PIL import Image
-
 import wiki_client as wc
+from PIL import Image
 
 OUT = wc.ROOT / "app" / "static" / "dist" / "assets" / "sandwiches"
 SIZE_CAP = 40 * 1024          # 单张体积上限，超过则降档
@@ -36,8 +35,8 @@ def parse_rows(wt: str) -> list[tuple[int, str]]:
     j = seg.find("{|")
     table = seg[j:seg.find("\n|}", j)]
     rows: list[tuple[int, str]] = []
-    for chunk in re.split(r"^\|-.*$", table, flags=re.M):
-        no_m = re.search(r"^\|\s*(\d+)\s*$", chunk, flags=re.M)
+    for chunk in re.split(r"^\|-.*$", table, flags=re.MULTILINE):
+        no_m = re.search(r"^\|\s*(\d+)\s*$", chunk, flags=re.MULTILINE)
         file_m = re.search(r"\[\[(File:Picnic [^|\]]+?)(?:\|[^\]]*)?\]\]", chunk)
         if no_m and file_m:
             rows.append((int(no_m.group(1)), file_m.group(1)))
@@ -87,7 +86,7 @@ def main() -> None:
                 need_512.append((no, title))
             else:
                 ok += 1
-        except Exception as e:  # noqa: BLE001 —— 单张失败不中断，最后汇总
+        except Exception as e:
             failed.append((no, title, str(e)))
         if ok % 40 == 0:
             print(f"    {ok}/{len(rows)}")
@@ -104,7 +103,7 @@ def main() -> None:
                 encode(wc.fetch_bytes(url), dest)
                 fallback.append(no)
                 ok += 1
-            except Exception as e:  # noqa: BLE001
+            except Exception as e:
                 failed.append((no, title, str(e)))
 
     print(f"[3/3] 完成: {ok}/{len(rows)} 张（其中 {len(fallback)} 张降为 512×288）")

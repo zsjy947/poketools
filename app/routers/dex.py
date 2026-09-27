@@ -35,7 +35,7 @@ def games():
                LEFT JOIN dex_entries e ON e.dex_id = d.id
                WHERE d.game_id = ? GROUP BY d.id ORDER BY d.sort""", (g["id"],)):
             dexes.append(dict(d))
-        out.append({**{k: g[k] for k in g.keys() if k != "features"},
+        out.append({**{k: v for k, v in dict(g).items() if k != "features"},
                     "features": features, "dexes": dexes})
     con.close()
     return out
@@ -113,8 +113,8 @@ def dex_entries(
 def _int_or_400(v, name: str) -> int:
     try:
         return int(v)
-    except (TypeError, ValueError):
-        raise HTTPException(400, f"{name} 无效")
+    except (TypeError, ValueError) as e:
+        raise HTTPException(400, f"{name} 无效") from e
 
 
 def _same_game_dex_ids(species_id: int, game_id: str) -> list[str]:
@@ -136,8 +136,8 @@ def set_state(body: dict = Body(...)):
     dex_id = body.get("dex_id") or ""
     try:
         species_id = int(body.get("species_id"))
-    except (TypeError, ValueError):
-        raise HTTPException(400, "species_id 无效")
+    except (TypeError, ValueError) as e:
+        raise HTTPException(400, "species_id 无效") from e
     if not dex_id:
         raise HTTPException(400, "dex_id 必填")
     caught = 1 if body.get("caught") else 0
@@ -172,8 +172,8 @@ def set_state_bulk(body: dict = Body(...)):
     caught = 1 if body.get("caught") else 0
     try:
         ids = [int(s) for s in body.get("species_ids", [])]
-    except (TypeError, ValueError):
-        raise HTTPException(400, "species_ids 无效")
+    except (TypeError, ValueError) as e:
+        raise HTTPException(400, "species_ids 无效") from e
     sreader = static_conn()
     game = sreader.execute(
         "SELECT game_id FROM regional_dexes WHERE id=?", (dex_id,)).fetchone()

@@ -21,13 +21,16 @@ import json
 import re
 import sqlite3
 import sys
-import time
 from collections import Counter
-from pathlib import Path
 
-from pokemondb_client import fetch_html as pdb_fetch_html, strip_tags as pdb_strip_tags
+from pokemondb_client import fetch_html as pdb_fetch_html
+from pokemondb_client import strip_tags as pdb_strip_tags
 from wiki_client import (  # 共享 52poke 客户端（缓存/批量 wikitext/别名回退）
-    CACHE, ROOT, fetch_titles, get_wikitext)
+    CACHE,
+    ROOT,
+    fetch_titles,
+    get_wikitext,
+)
 
 DB_PATH = ROOT / "data" / "poketools.db"
 CURATED = ROOT / "data" / "curated"
@@ -110,8 +113,7 @@ def find_template(wt: str, name: str, start: int = 0) -> list[tuple[int, str]]:
                 j += 1
         if depth == 0:
             body = wt[i + 2 + len(name):j - 2]
-            if body.startswith("|"):
-                body = body[1:]
+            body = body.removeprefix("|")
             out.append((i, body))
         i = wt.find(needle, j)
     return out
@@ -164,8 +166,8 @@ def parse_params(body: str) -> tuple[dict[int, str], dict[str, str]]:
     return pos, named
 
 
-_RE_ZH = re.compile(r"-\{\s*zh-hans:([^;{}]*?)\s*;\s*zh-hant:.*?\}-", re.S)
-_RE_ZH2 = re.compile(r"-\{\s*zh-hant:[^;{}]*?\s*;\s*zh-hans:([^;{}]*?)\s*\}-", re.S)
+_RE_ZH = re.compile(r"-\{\s*zh-hans:([^;{}]*?)\s*;\s*zh-hant:.*?\}-", re.DOTALL)
+_RE_ZH2 = re.compile(r"-\{\s*zh-hant:[^;{}]*?\s*;\s*zh-hans:([^;{}]*?)\s*\}-", re.DOTALL)
 _RE_TT = re.compile(r"\{\{tt\|([^|{}]*)(?:\|[^{}]*)?\}\}")
 _RE_SIMPLE = [
     (re.compile(r"\{\{bag\|([^|{}]+)(?:\|[^{}]*)?\}\}"), r"\1"),
@@ -176,8 +178,8 @@ _RE_SIMPLE = [
     (re.compile(r"\{\{E\|([^|{}]+)\}\}"), r"\1"),
     (re.compile(r"\{\{(?:GameIconzh/\d+|game4?|MS\w*|sup[/\d]*)[^{}]*\}\}"), ""),
     (re.compile(r"\[\[File:[^\]]*\]\]"), ""),
-    (re.compile(r"<!--.*?-->", re.S), ""),
-    (re.compile(r"<ref[^>]*>.*?</ref>", re.S), ""),
+    (re.compile(r"<!--.*?-->", re.DOTALL), ""),
+    (re.compile(r"<ref[^>]*>.*?</ref>", re.DOTALL), ""),
     (re.compile(r"<ref[^>]*/>"), ""),
 ]
 _RE_LINK = re.compile(r"\[\[([^\]|]*)\|([^\]]*)\]\]")
@@ -241,7 +243,7 @@ def _parse_table(seg: str) -> list[list[str]]:
     cur = ""
     for line in seg.splitlines():
         ls = line.strip()
-        if ls.startswith("{|") or ls.startswith("|}"):
+        if ls.startswith(("{|", "|}")):
             continue
         if ls.startswith("|-"):
             if cur_cells or cur.strip():
@@ -576,11 +578,11 @@ def parse_za_learnlist_alt(html: str, default_fid: int) -> dict | None:
     out: dict = {"level": {}, "tm": {}}
 
     def _rows(segment: str, key: str, fid: int) -> None:
-        tb = re.search(r"<table[^>]*>.*?</table>", segment, re.S)
+        tb = re.search(r"<table[^>]*>.*?</table>", segment, re.DOTALL)
         if not tb:
             return
-        for row in re.findall(r"<tr.*?</tr>", tb.group(0), re.S):
-            tds = re.findall(r"<td.*?</td>", row, re.S)
+        for row in re.findall(r"<tr.*?</tr>", tb.group(0), re.DOTALL):
+            tds = re.findall(r"<td.*?</td>", row, re.DOTALL)
             if len(tds) < 2:
                 continue
             mv = re.search(r'href="/move/([a-z0-9-]+)"', tds[1])
@@ -603,7 +605,7 @@ def parse_za_learnlist_alt(html: str, default_fid: int) -> dict | None:
         sub = seg[h:]
         fm = re.search(
             r'tabset-moves-game-form sv-tabs-wrapper.*?<div class="sv-tabs-tab-list">(.*?)</div>',
-            sub, re.S)
+            sub, re.DOTALL)
         if not fm:
             _rows(sub, key, default_fid)
             continue
@@ -649,11 +651,11 @@ def parse_sandwiches(wt: str) -> list[dict]:
         return []
     table = seg[j:seg.find("\n|}", j) if seg.find("\n|}", j) > 0 else len(seg)]
     recipes = []
-    for row in re.split(r"^\|-.*$", table, flags=re.M):
+    for row in re.split(r"^\|-.*$", table, flags=re.MULTILINE):
         cells = []
         for line in row.splitlines():
             ls = line.strip()
-            if ls.startswith("!!") or ls.startswith("|}"):
+            if ls.startswith(("!!", "|}")):
                 continue
             if ls.startswith("|"):
                 cells.append(ls[1:].strip())
@@ -746,7 +748,7 @@ def parse_donuts_full(wt: str) -> dict:
     i = wt.find("=== 制作 ===")
     j = wt.find("=== 效果 ===")
     make_seg = wt[i:j] if 0 <= i < j else ""
-    m = re.search(r"在旅馆Ｚ的安馨儿.*?制作甜甜圈。", make_seg, re.S)
+    m = re.search(r"在旅馆Ｚ的安馨儿.*?制作甜甜圈。", make_seg, re.DOTALL)
     if m:
         out["intro"] = clean_wt(m.group(0))
     for tb in wikitables(make_seg):
@@ -815,7 +817,7 @@ def _section(wt: str, title: str) -> str:
     if i < 0:
         return ""
     i = wt.find("\n", i) + 1
-    m = re.search(r"^==[^=].*?==\s*$", wt[i:], re.M)
+    m = re.search(r"^==[^=].*?==\s*$", wt[i:], re.MULTILINE)
     return wt[i:i + m.start()] if m else wt[i:]
 
 
@@ -829,13 +831,13 @@ def parse_ability_page(wt: str) -> dict | None:
     seg = _section(wt, "特性效果")
     if not seg.strip():
         return None
-    m = re.search(r"^===对战中===", seg, re.M)
+    m = re.search(r"^===对战中===", seg, re.MULTILINE)
     if m:
         sub = seg[m.start():]
-        nxt = re.search(r"^===[^=]", sub[3:], re.M)
+        nxt = re.search(r"^===[^=]", sub[3:], re.MULTILINE)
         seg = sub[:m.start()] + (sub[:nxt.start() + 3] if nxt else sub)
     else:
-        top = re.search(r"^===[^=]", seg, re.M)
+        top = re.search(r"^===[^=]", seg, re.MULTILINE)
         if top:
             seg = seg[:top.start()]
     effect, extra = "", []
@@ -975,11 +977,11 @@ def main() -> None:
 
     # ---- 2. TM pages ----
     print("[2/6] TM pages (000-260)")
-    tm_titles = [f"招式学习器{fw(n)}" for n in range(0, 261)]
+    tm_titles = [f"招式学习器{fw(n)}" for n in range(261)]
     fetch_titles(tm_titles)
     tm_rows, bdsp_machines, other_keys = [], [], Counter()
     move_id_by_zh = {z: mid for mid, z in con.execute("SELECT id, name_zh FROM moves")}
-    for n in range(0, 261):
+    for n in range(261):
         wt = get_wikitext(f"招式学习器{fw(n)}")
         if wt is None:
             continue
@@ -1054,7 +1056,7 @@ def main() -> None:
     # machines vg30+vg31：TM 编号 → 招式（游戏数据，52poke Z-A 表偶有编号↔招式错位如 TM091）
     tm_move_by_num: dict[int, int] = {}
     move_zh = dict(con.execute("SELECT id, name_zh FROM moves"))
-    for vg, num, mid in con.execute(
+    for _vg, num, mid in con.execute(
             "SELECT vg, machine_number, move_id FROM machines WHERE vg IN (30,31)"):
         tm_move_by_num.setdefault(num, mid)
     for sid, name in za_species:
@@ -1259,7 +1261,7 @@ def main() -> None:
             n = merge_fn()
             if n < min_rows:
                 print(f"  !! {name} 仅 {n} 行（<{min_rows}），跳过合并并保留原表", file=sys.stderr)
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             print(f"  !! {name} 合并异常：{e}，保留原表", file=sys.stderr)
 
     def _merge_get_methods():

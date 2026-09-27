@@ -45,7 +45,7 @@ def _api(params: dict, retries: int = 5) -> dict | None:
                 r.raise_for_status()
                 return r.json()
             raise RuntimeError("api 5xx 重试上限")
-        except Exception as e:  # noqa: BLE001 —— 单批失败重试后跳过
+        except Exception as e:
             if attempt == retries - 1:
                 print(f"  !! api 批次异常: {type(e).__name__}: {str(e)[:160]}",
                       file=sys.stderr)
@@ -158,7 +158,7 @@ def download(url: str, dest: Path) -> bool:
             dest.write_bytes(r.content)
             return True
         print(f"  http {r.status_code} for {url[:90]}")
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         print(f"  fail {url[:90]}: {e}")
     return False
 
@@ -178,6 +178,6 @@ def download_webp(url: str, dest: Path, width: int = 360, quality: int = 88) -> 
         im = im.resize((width, round(h * width / w)), Image.LANCZOS)
         im.save(dest, "WEBP", quality=quality)
         return True
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         print(f"  fail {url[:90]}: {e}")
         return False

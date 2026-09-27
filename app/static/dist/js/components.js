@@ -266,16 +266,6 @@ const EvoNode = {
   },
 };
 
-/* 种族值条形图 */
-/* 点亮图标开关（伤害计算器机制互斥选择用） */
-const ToggleChip = {
-  props: ["label", "on", "disabled", "small"],
-  emits: ["toggle"],
-  template: `<span class="toggle-chip" :class="{on, off: !on, disabled, small}"
-    @click="!disabled && $emit('toggle')" :title="disabled ? '该宝可梦没有此形态' : ''">
-    <span class="dot"></span>{{ label }}</span>`,
-};
-
 const Empty = { template: `<div class="empty-hint"><slot/></div>` };
 
 function registerGlobalComponents(app) {
@@ -290,7 +280,6 @@ function registerGlobalComponents(app) {
   app.component("get-method-list", GetMethodList);
   app.component("evo-chain", EvoChain);
   app.component("evo-node", EvoNode);
-  app.component("toggle-chip", ToggleChip);
 }
 
 /* 属性相性计算（防守方视角）：需要 store.typeChart 已加载 */

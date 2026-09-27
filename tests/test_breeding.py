@@ -5,8 +5,8 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from app.db import static_conn  # noqa: E402
-from app.services.breeding import breed_chains  # noqa: E402
+from app.db import static_conn
+from app.services.breeding import breed_chains
 
 DB = Path(__file__).resolve().parent.parent / "data" / "poketools.db"
 pytestmark = pytest.mark.skipif(not DB.exists(), reason="先运行数据管线生成 poketools.db")

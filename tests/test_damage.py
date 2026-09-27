@@ -2,10 +2,8 @@
 import sys
 from pathlib import Path
 
-import pytest
-
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from app.services import damage  # noqa: E402
+from app.services import damage
 
 
 def _glaceon_garchomp_vector(crit=False):
@@ -98,7 +96,6 @@ def test_burn_halves_physical():
 
 def test_guts_burn_boost():
     base = _vector()
-    guts = _vector(burn=True)
     guts_a = {"types": "火", "level": 50, "stats": {"atk": 150, "def": 100, "spa": 150, "spd": 100, "spe": 100, "hp": 160},
               "item": "", "ability": "毅力", "boosts": {}}
     d = {"types": "钢", "level": 50, "stats": {"atk": 100, "def": 120, "spa": 100, "spd": 120, "spe": 90, "hp": 190},

@@ -9,7 +9,6 @@ import concurrent.futures as cf
 import io
 import json
 import sqlite3
-
 import sys
 import time
 from pathlib import Path

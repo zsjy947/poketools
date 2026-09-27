@@ -203,21 +203,21 @@ def _evolution_chain(con, species_id: int, form_suffix: str = "") -> dict:
     if branches:
         sel = (species_id, form_suffix or "")
         chosen = None
-        for bi, toks in branches.items():
+        for toks in branches.values():
             if sel in toks:
                 chosen = toks
                 break
         if chosen is None:   # 选中形态不在任何分支（如 mega/gmax）：回退默认分支
-            for bi, toks in branches.items():
+            for toks in branches.values():
                 if toks and toks[0][1] == "":
                     chosen = toks
                     break
         if chosen is not None:
             nodes, children, conds = {}, {}, {}
+            chosen_ids = list(dict.fromkeys(s for s, _ in chosen))
             names = {r["id"]: r["name_zh"] for r in con.execute(
-                "SELECT id, name_zh FROM species WHERE id IN (%s)"
-                % ",".join("?" * len(set(s for s, _ in chosen))),
-                [s for s, _ in dict.fromkeys(chosen)])}
+                f"SELECT id, name_zh FROM species WHERE id IN ({','.join('?' * len(chosen_ids))})",
+                chosen_ids)}
             prev = None
             base_suf = chosen[0][1]
             for sid, suf in chosen:
@@ -341,7 +341,7 @@ def pokemon_detail(species_id: int, game: str = "", form: str = Query("", descri
     # 未映射的罕见标记行一律按形态专属隐藏）。无显式 form 时用图鉴覆盖后缀。
     sel_suffix = (form or "").strip() or dex_default_suffix
     gm = [g for g in gm if not g["form"]
-          or FORM_MARKER_TO_SUFFIX.get(g["form"]) == sel_suffix and g["form"] in FORM_MARKER_TO_SUFFIX]
+          or (FORM_MARKER_TO_SUFFIX.get(g["form"]) == sel_suffix and g["form"] in FORM_MARKER_TO_SUFFIX)]
 
     games_with_gm = {r["game"] for r in gm}
     enc = []
@@ -418,7 +418,7 @@ def pokemon_moves(species_id: int, game: str = Query(...), form_id: int | None =
             (species_id,)).fetchone()
 
     rows = con.execute(
-        f"""SELECT l.method, l.level, l.mastery, m.id AS move_id, m.name_zh, m.type_zh,
+        """SELECT l.method, l.level, l.mastery, m.id AS move_id, m.name_zh, m.type_zh,
                   m.damage_class, m.power, m.accuracy, m.pp, m.priority
            FROM learnsets l JOIN moves m ON m.id = l.move_id
            WHERE l.form_id=? AND l.vg=?

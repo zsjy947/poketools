@@ -10,8 +10,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 
-from app.db import static_conn  # noqa: E402
-from app.services import damage  # noqa: E402
+from app.db import static_conn
+from app.services import damage
 
 SID = {"Garchomp": 445, "Snorlax": 143, "Charizard": 6, "Hariyama": 297,
        "Glaceon": 471, "Gyarados": 130, "Rotom-Wash": 10009, "Gardevoir": 282,
@@ -297,7 +297,8 @@ def assemble(con, side, is_atk):
 
 
 def main():
-    raw = json.load(open(Path(__file__).parent / "smogon_baseline.json", encoding="utf-8"))
+    with open(Path(__file__).parent / "smogon_baseline.json", encoding="utf-8") as f:
+        raw = json.load(f)
     baseline = {c["key"]: c for c in raw["cases"]}
     con = static_conn()
     all_ok = True

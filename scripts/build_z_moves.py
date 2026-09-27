@@ -13,7 +13,6 @@ import json
 import re
 import sqlite3
 import sys
-from pathlib import Path
 
 import wiki_client as wc
 from scrape_52poke import cell_text, wikitables
@@ -79,7 +78,7 @@ def zh_hans_link(raw: str) -> str:
 
     优先 zh-hans 分支的 `link=名`（动画帧文件带 S/T 后缀，File 名不可靠）。
     """
-    m = re.search(r"zh-hans:(.*?);zh-hant:", raw, re.S)
+    m = re.search(r"zh-hans:(.*?);zh-hant:", raw, re.DOTALL)
     seg = m.group(1) if m else raw
     fm = re.search(r"File:([^\]|]+?)\s*(?:S|T)?\s*Sprite\.png", seg)
     if fm:
