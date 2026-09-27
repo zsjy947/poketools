@@ -310,7 +310,8 @@ def parse_get_methods(wt: str) -> list[dict]:
     rows = []
     for _, body in find_template(wt, "获得方式/main"):
         pos, named = parse_params(body)
-        ndex = re.sub(r"[^0-9]", "", pos.get(1, ""))
+        pos1 = (pos.get(1, "") or "").strip()
+        ndex = re.sub(r"[^0-9]", "", pos1)
         if not ndex:
             continue
         try:
@@ -336,10 +337,13 @@ def parse_get_methods(wt: str) -> list[dict]:
             if loc_raw.strip().lower() in ("evo", "baby", "进化", "進化", "培育", "生蛋"):
                 who = clean_wt(method_raw) or named.get("baby2", "")
                 method = f"由{who}{method}" if who else method
+        # 形态标记行（如 0037A=阿罗拉六尾）：保留 marker 供形态可用性/获取方式过滤
+        m = re.match(r"^\d{3,4}[A-Za-z]+$", pos1)
+        marker = re.sub(r"^\d{3,4}", "", pos1) if m else ""
         rows.append({
             "game": game, "version_label": vlabel, "location": loc,
             "method": method, "note": note,
-            "form": bool(re.match(r"^\d{3,4}[A-Za-z]", pos.get(1, "").strip())),
+            "form": marker,
         })
     return rows
 
@@ -803,6 +807,72 @@ def parse_donuts_full(wt: str) -> dict:
     return out
 
 
+# ---------------------------------------------------------------- abilities（特性文案）
+
+def _section(wt: str, title: str) -> str:
+    """取 `==title==` 小节正文（到下一个**同级**标题为止；===子节属于本节）。"""
+    i = wt.find(f"=={title}==")
+    if i < 0:
+        return ""
+    i = wt.find("\n", i) + 1
+    m = re.search(r"^==[^=].*?==\s*$", wt[i:], re.M)
+    return wt[i:i + m.start()] if m else wt[i:]
+
+
+def parse_ability_page(wt: str) -> dict | None:
+    """特性页 → {effect, extra[], intro}。
+
+    ==特性效果==：正文可能在节首或 `===对战中===` 子节（旁支系列子节不取），
+    首段散文=effect，`*` 行=extra（多点补充）
+    ==特性说明==：{{状态说明框|世代|游戏|-{zh-hans:…}-}}，优先第九世代 SV/ZA，无则最后一条
+    """
+    seg = _section(wt, "特性效果")
+    if not seg.strip():
+        return None
+    m = re.search(r"^===对战中===", seg, re.M)
+    if m:
+        sub = seg[m.start():]
+        nxt = re.search(r"^===[^=]", sub[3:], re.M)
+        seg = sub[:m.start()] + (sub[:nxt.start() + 3] if nxt else sub)
+    else:
+        top = re.search(r"^===[^=]", seg, re.M)
+        if top:
+            seg = seg[:top.start()]
+    effect, extra = "", []
+    for line in seg.splitlines():
+        s = line.strip()
+        if not s:
+            continue
+        if s.startswith("*"):
+            t = clean_wt(s.lstrip("*").strip())
+            if t:
+                extra.append(t)
+        elif not effect and not s.startswith(("{{", "|", "}", "{", "=")):
+            effect = clean_wt(s)
+    intro = ""
+    desc = _section(wt, "特性说明")
+    rows: list[tuple[int, str, str]] = []
+    for _, body in find_template(desc, "状态说明框"):
+        pos, _ = parse_params(body)
+        try:
+            gen = int(re.sub(r"[^0-9]", "", pos.get(1, "") or "") or 0)
+        except ValueError:
+            gen = 0
+        game = clean_wt(pos.get(2, ""))
+        text = clean_wt(pos.get(3, ""))
+        if text:
+            rows.append((gen, game, text))
+    if rows:
+        def rank(r):
+            gen, game, _ = r
+            return (gen >= 9 and game.upper() in ("SV", "ZA"), gen >= 9, gen)
+        rows.sort(key=rank, reverse=True)
+        intro = rows[0][2]
+    if not effect and not intro:
+        return None
+    return {"effect": effect, "extra": extra, "intro": intro}
+
+
 # ---------------------------------------------------------------- 咖喱饭
 
 def parse_curries(wt: str) -> list[dict]:
@@ -853,14 +923,17 @@ def main() -> None:
         if wt is None:
             failed.append({"species_id": sid, "name": name, "reason": "page not found"})
             continue
-        gm = [r for r in parse_get_methods(wt) if not r["form"]]
+        # 带形态标记的行保留（marker 写入 form 列，形态可用性/获取方式过滤用）
+        gm = parse_get_methods(wt)
         seen = set()
         for r in gm:
-            key = (r["game"], r["version_label"], r["location"], r["method"], r["note"])
+            key = (r["game"], r["version_label"], r["location"], r["method"],
+                   r["note"], r["form"])
             if key in seen:
                 continue
             seen.add(key)
-            gm_rows.append((sid, r["game"], r["version_label"], r["location"], r["method"], r["note"]))
+            gm_rows.append((sid, r["game"], r["version_label"], r["location"],
+                            r["method"], r["note"], r["form"]))
         fl, fl_forms, fl_unknown = parse_flavor(wt)
         for r in fl:
             flavor_rows.append((sid, r["game"], r["label"], r["text"]))
@@ -874,8 +947,31 @@ def main() -> None:
     print("  get_methods rows per game:", dict(Counter(g for _, g, *_ in gm_rows)))
     print("  flavor rows per game:", dict(Counter(g for _, g, *_ in flavor_rows)))
     print(f"  form flavor rows: {len(form_flavor_rows)}")
+    print(f"  form-marked get_methods rows: {sum(1 for r in gm_rows if r[6])}")
     if failed:
         print(f"  !! {len(failed)} species pages not found -> TODO.json")
+
+    # ---- 1b. 特性页（特性效果/特性说明 → abilities 表文案） ----
+    ability_rows = con.execute(
+        "SELECT ability_id, name_zh FROM abilities ORDER BY ability_id").fetchall()
+    print(f"[1b] ability pages ({len(ability_rows)})")
+    # 页面标题多为「{名}（特性）」；部分名无重定向，两种标题都抓
+    fetch_titles([f"{a[1]}（特性）" for a in ability_rows] + [a[1] for a in ability_rows])
+    ability_data, ability_failed = [], []
+    for aid, name in ability_rows:
+        # 52poke 特性页标题多为「{名}（特性）」（消歧义后缀），两种标题都试
+        wt = get_wikitext(f"{name}（特性）") or get_wikitext(name)
+        if wt is None:
+            ability_failed.append({"ability_id": aid, "name": name, "reason": "page not found"})
+            continue
+        parsed = parse_ability_page(wt)
+        if parsed is None:
+            ability_failed.append({"ability_id": aid, "name": name,
+                                   "reason": "no 特性效果/特性说明 section"})
+            continue
+        ability_data.append({"ability_id": aid, "name": name, **parsed})
+    print(f"  abilities parsed: {len(ability_data)}/{len(ability_rows)}"
+          f" (failed: {len(ability_failed)})")
 
     # ---- 2. TM pages ----
     print("[2/6] TM pages (000-260)")
@@ -1113,10 +1209,13 @@ def main() -> None:
     # ---- 5. write curated JSON ----
     print("[5/6] write curated JSON")
     CURATED.mkdir(parents=True, exist_ok=True)
-    enc_json = [{"species_id": s, "game": g, "version_label": v, "location": l, "method": m, "note": n}
-                for s, g, v, l, m, n in gm_rows]
+    enc_json = [{"species_id": s, "game": g, "version_label": v, "location": l,
+                 "method": m, "note": n, "form": f}
+                for s, g, v, l, m, n, f in gm_rows]
     (CURATED / "encounters_52poke.json").write_text(
         json.dumps(enc_json, ensure_ascii=False, indent=1), encoding="utf-8")
+    (CURATED / "abilities.json").write_text(
+        json.dumps(ability_data, ensure_ascii=False, indent=1), encoding="utf-8")
     (CURATED / "flavor_52poke.json").write_text(
         json.dumps([{"species_id": s, "game": g, "label": lb, "text": t}
                     for s, g, lb, t in flavor_rows], ensure_ascii=False, indent=1),
@@ -1143,6 +1242,7 @@ def main() -> None:
         encoding="utf-8")
 
     todo = {"missing_species_pages": failed,
+            "ability_parse_failed": ability_failed,
             "form_flavor_unparsed_markers": form_marker_unknown,
             "za_learnset_issues": za_missing,
             "za_tm_corrections": za_tm_corrections}
@@ -1164,8 +1264,16 @@ def main() -> None:
 
     def _merge_get_methods():
         cur.execute("DELETE FROM get_methods")
-        cur.executemany("INSERT INTO get_methods VALUES (?,?,?,?,?,?)", gm_rows)
+        cur.executemany("INSERT INTO get_methods VALUES (?,?,?,?,?,?,?)", gm_rows)
         return len(gm_rows)
+
+    def _merge_abilities():
+        for a in ability_data:
+            cur.execute(
+                """UPDATE abilities SET intro=?, effect=?, extra=? WHERE ability_id=?""",
+                (a["intro"], a["effect"], json.dumps(a["extra"], ensure_ascii=False),
+                 a["ability_id"]))
+        return len(ability_data)
 
     def _merge_tm():
         cur.execute("DELETE FROM tm_how")
@@ -1200,6 +1308,7 @@ def main() -> None:
         return len(donuts["types"])
 
     guarded("get_methods", 1000, _merge_get_methods)
+    guarded("abilities", 200, _merge_abilities)
     guarded("tm_how", 100, _merge_tm)
     guarded("sandwiches", 100, _merge_sandwiches)
     guarded("picnic_items", 60, _merge_picnic)

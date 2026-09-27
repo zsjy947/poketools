@@ -74,7 +74,7 @@ DEX_ORDER = ["galar", "isle-of-armor", "crown-tundra", "sinnoh", "hisui",
 
 FORM_SUFFIX_ZH = {
     "mega": "超级进化", "mega-x": "超级进化X", "mega-y": "超级进化Y",
-    "gmax": "极巨化", "primal": "原始回归",
+    "gmax": "超极巨化", "primal": "原始回归",
     "hisui": "洗翠的样子", "paldea": "帕底亚的样子", "galar": "伽勒尔的样子",
     "alola": "阿罗拉的样子", "hoenn": "丰缘的样子", "sinnoh": "神奥的样子",
     "unova": "合众的样子", "kalos": "卡洛斯的样子",
@@ -102,6 +102,17 @@ EGG_GROUP_ZH = {
     "water3": "水中3", "mineral": "矿物", "indeterminate": "不定形", "water2": "水中2",
     "ditto": "百变怪", "dragon": "龙", "no-eggs": "未发现",
 }
+
+# 宝可梦体型（pokemon_species.shape_id 1-14；52poke 信息框 body 参数中文名）
+SHAPE_ZH = {
+    1: "球形", 2: "蛇形", 3: "鱼形", 4: "双手形", 5: "柱形", 6: "双足兽形",
+    7: "双腿形", 8: "四足兽形", 9: "双翅形", 10: "触手形", 11: "组合形",
+    12: "人形", 13: "多翅形", 14: "虫形",
+}
+
+# 招式目标（move_targets.csv）：双打扩散招式标记，双打伤害 ×0.75
+# 9=all-other-pokemon(smogon allAdjacent，如地震/冲浪/大爆炸) / 11=all-opponents / 14=all-pokemon
+SPREAD_TARGET_IDS = (9, 11, 14)
 
 
 def read_csv(name: str) -> list[dict]:
@@ -149,7 +160,8 @@ CREATE TABLE species (
   name_zh TEXT, name_en TEXT, genus_zh TEXT,
   generation INTEGER, egg_groups TEXT, gender_rate INTEGER,
   capture_rate INTEGER, is_legendary INTEGER, is_mythical INTEGER,
-  evolves_from INTEGER
+  evolves_from INTEGER,
+  shape_zh TEXT
 );
 CREATE TABLE forms (
   id INTEGER PRIMARY KEY, species_id INTEGER, identifier TEXT,
@@ -165,7 +177,8 @@ CREATE TABLE moves (
   name_zh TEXT, name_en TEXT,
   type_zh TEXT, damage_class TEXT,
   power INTEGER, accuracy INTEGER, pp INTEGER, priority INTEGER,
-  generation INTEGER, effect_zh TEXT
+  generation INTEGER, effect_zh TEXT,
+  is_spread INTEGER
 );
 CREATE TABLE learnsets (
   form_id INTEGER, move_id INTEGER, method TEXT, vg INTEGER, level INTEGER,
@@ -186,7 +199,38 @@ CREATE TABLE move_flavor (
 -- 以下为 52poke 抓取/人工整理数据（scrape_52poke.py 填充，build_db.py 建空表）
 CREATE TABLE get_methods (
   species_id INTEGER, game TEXT, version_label TEXT,
-  location TEXT, method TEXT, note TEXT
+  location TEXT, method TEXT, note TEXT,
+  form TEXT
+);
+-- 特性（id/名称来自 PokeAPI；intro/effect/extra 由 scrape_52poke 从 52poke 抓取填充）
+CREATE TABLE abilities (
+  ability_id INTEGER PRIMARY KEY, name_zh TEXT,
+  intro TEXT, effect TEXT, extra TEXT
+);
+-- 全量道具（PokeAPI items + 注入的 Z 纯晶；identifier 供图标路径）
+CREATE TABLE items (
+  id INTEGER PRIMARY KEY, identifier TEXT, name_zh TEXT
+);
+-- 地区形态分支进化链（人工 curated：evo_branches.json；family_key = 根物种 id）
+CREATE TABLE evo_branches (
+  family_key TEXT, species_id INTEGER, form_suffix TEXT,
+  branch TEXT
+);
+-- 图鉴默认展示形态覆盖（dex_default_forms.json 人工增补 + 按可用性自动派生）
+CREATE TABLE dex_default_forms (
+  dex_id TEXT, species_id INTEGER, form_id INTEGER,
+  PRIMARY KEY (dex_id, species_id)
+);
+-- 形态 × 游戏可用性（form_game_availability.json；未收录形态默认全游戏可见）
+CREATE TABLE form_game_availability (
+  form_id INTEGER, game_id TEXT,
+  PRIMARY KEY (form_id, game_id)
+);
+-- 专属 Z 招式映射（z_moves.json curated；(species+原始招式) → 专属 Z）
+CREATE TABLE z_exclusive (
+  crystal_identifier TEXT, species_id INTEGER, form_suffix TEXT,
+  base_move_id INTEGER, z_move_name TEXT, power INTEGER, damage_class TEXT,
+  note TEXT
 );
 -- 二期伤害计算器数据
 CREATE TABLE learnsets_all (
@@ -362,8 +406,7 @@ def main() -> None:
             continue
         method = METHOD_IDS.get(to_int(r["pokemon_move_method_id"]))
         level = to_int(r["level"])
-        if method == "level-up" and level in (0, None):
-            level = 1
+        # level=0 保留原语义：朱紫等「进化时学会」（强制改 1 会丢失「进化」标注）
         learn.append((to_int(r["pokemon_id"]), mid, method, vg, level, None))
 
     machine_rows = []
@@ -441,6 +484,7 @@ def main() -> None:
     if DB_PATH.exists():
         DB_PATH.unlink()
     con = sqlite3.connect(DB_PATH)
+    con.row_factory = sqlite3.Row
     con.executescript(SCHEMA)
     con.executemany("INSERT OR IGNORE INTO learnsets_all VALUES (?,?,?,?)", learn_all)
     con.executemany("INSERT OR REPLACE INTO natures VALUES (?,?,?,?,?)", nature_rows)
@@ -471,14 +515,20 @@ def main() -> None:
             to_int(r["gender_rate"]), to_int(r["capture_rate"]),
             to_int(r["is_legendary"]), to_int(r["is_mythical"]),
             to_int(r["evolves_from_species_id"]) if r["evolves_from_species_id"] else None,
+            SHAPE_ZH.get(to_int(r["shape_id"]) or 0, ""),
         ))
-    con.executemany("INSERT INTO species VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", sp_rows)
+    con.executemany("INSERT INTO species VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", sp_rows)
 
     form_rows = []
+    skipped_mega_z = 0
     for pid, r in pokemon_rows.items():
         sid = to_int(r["species_id"])
         meta = form_meta.get(pid, {})
         form_ident = meta.get("form_identifier", "") or ""
+        # 脏数据：*-mega-z 三形态（10307/10309/10310， PokeAPI 建模错误）不入库
+        if "-mega-z" in r["identifier"]:
+            skipped_mega_z += 1
+            continue
         label = FORM_SUFFIX_ZH.get(form_ident, form_ident)
         sp = base_stats.get(pid, {})
         ev = evs.get(pid, {})
@@ -498,6 +548,8 @@ def main() -> None:
         ))
     con.executemany(
         "INSERT INTO forms VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", form_rows)
+    if skipped_mega_z:
+        print(f"  skipped {skipped_mega_z} dirty *-mega-z forms")
 
     mv_rows = []
     for mid, r in move_rows.items():
@@ -508,8 +560,36 @@ def main() -> None:
             type_zh.get(t, type_en.get(t, "")), DAMAGE_CLASS.get(to_int(r["damage_class_id"]), ""),
             to_int(r["power"]), to_int(r["accuracy"]), to_int(r["pp"]), to_int(r["priority"]),
             to_int(r["generation_id"]), flavor_zh.get(mid, ""),
+            1 if to_int(r["target_id"]) in SPREAD_TARGET_IDS else 0,
         ))
-    con.executemany("INSERT INTO moves VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", mv_rows)
+    con.executemany("INSERT INTO moves VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", mv_rows)
+
+    # ---- 全量道具（缺中文名的条目不入库；Z 纯晶由 z_moves.json 注入） ----
+    item_zh_all, _ = name_map("item_names", "item_id")
+    item_rows = [(iid, ident, item_zh_all.get(iid) or "")
+                 for iid, ident in item_ident.items() if item_zh_all.get(iid)]
+    z_file = ROOT / "data" / "curated" / "z_moves.json"
+    if z_file.exists():
+        zdata = json.loads(z_file.read_text(encoding="utf-8"))
+        for g in zdata.get("generic", []):
+            item_rows.append((900000 + g["crystal_id"], g["crystal_identifier"], g["crystal_name"]))
+        for x in zdata.get("exclusive", []):
+            item_rows.append((900100 + x["crystal_id"], x["crystal_identifier"], x["crystal_name"]))
+        con.executemany(
+            "INSERT OR REPLACE INTO z_exclusive VALUES (?,?,?,?,?,?,?,?)",
+            [(x["crystal_identifier"], x["species_id"], x.get("form_suffix", ""),
+              x["base_move_id"], x["z_move_name"], x.get("power"), x.get("damage_class", ""),
+              x.get("note", ""))
+             for x in zdata.get("exclusive", [])])
+    item_rows.sort(key=lambda r: r[0])
+    con.executemany("INSERT OR REPLACE INTO items VALUES (?,?,?)", item_rows)
+
+    # ---- 特性表（名称层；intro/effect/extra 由 scrape_52poke 抓取填充） ----
+    ability_ident = {to_int(r["id"]): r["identifier"] for r in read_csv("abilities")}
+    con.executemany(
+        "INSERT OR IGNORE INTO abilities (ability_id, name_zh) VALUES (?,?)",
+        [(aid, ability_zh.get(aid) or ability_ident.get(aid, str(aid)))
+         for aid in sorted(ability_ident)])
 
     con.executemany("INSERT OR IGNORE INTO learnsets VALUES (?,?,?,?,?,?)", learn)
     con.executemany("INSERT OR IGNORE INTO machines VALUES (?,?,?,?)", machine_rows)
@@ -575,13 +655,182 @@ def main() -> None:
         ))
     con.executemany("INSERT OR REPLACE INTO evolutions VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", evo_rows)
 
+    # ---- 形态 × 游戏可用性（curated 配置：mega/gmax/primal 名单 + 地区形态逐作核实） ----
+    fga_file = ROOT / "data" / "curated" / "form_game_availability.json"
+    fga_rows: list[tuple] = []
+    if fga_file.exists():
+        fga = json.loads(fga_file.read_text(encoding="utf-8"))
+        # 兜底规则：mega→名单+所属游戏（Z-A，含异次元）、gmax→剑盾、primal→Z-A、地区形态→逐作名单
+        rules: list[tuple[str, list[int], list[str]]] = []   # (suffix, species_ids, games)
+        mega_cfg = fga.get("mega", {})
+        if mega_cfg.get("games"):
+            rules.append(("mega", mega_cfg.get("species", []),
+                          mega_cfg["games"] if isinstance(mega_cfg["games"], list)
+                          else [mega_cfg["games"]]))
+        for suffix in ("gmax", "primal"):
+            games = fga.get(suffix, [])
+            if games:
+                all_sp = [r[0] for r in con.execute(
+                    "SELECT DISTINCT species_id FROM forms WHERE identifier LIKE '%-'||?", (suffix,))]
+                rules.append((suffix, all_sp, games))
+        for game, by_suffix in fga.get("regional", {}).items():
+            for suffix, sids in by_suffix.items():
+                rules.append((suffix, sids, [game]))
+        for sid_suffix, games in fga.get("special", {}).items():
+            sid, suffix = sid_suffix.split(":", 1)
+            row = con.execute(
+                "SELECT id FROM forms WHERE species_id=? AND identifier LIKE '%-'||?",
+                (int(sid), suffix)).fetchone()
+            if row:
+                for g in games:
+                    fga_rows.append((row[0], g))
+        for fid_suffix in fga.get("hidden", []):
+            sid, suffix = fid_suffix.split(":", 1)
+            row = con.execute(
+                "SELECT id FROM forms WHERE species_id=? AND identifier LIKE '%-'||?",
+                (int(sid), suffix)).fetchone()
+            if row:
+                # 隐藏形态：哨兵 game='-' 标记受限且无任何游戏可用
+                fga_rows.append((row[0], "-"))
+        for suffix, sids, games in rules:
+            for sid in sids:
+                if suffix == "mega":
+                    q = "SELECT id FROM forms WHERE species_id=? AND (is_mega=1 OR identifier LIKE '%-mega%')"
+                    args = (sid,)
+                else:
+                    q = "SELECT id FROM forms WHERE species_id=? AND identifier LIKE '%-'||?"
+                    args = (sid, suffix)
+                for f in con.execute(q, args).fetchall():
+                    for g in games:
+                        fga_rows.append((f[0], g))
+        con.executemany("INSERT OR REPLACE INTO form_game_availability VALUES (?,?)", fga_rows)
+
+        # ---- 图鉴默认形态：按可用性自动派生（同图鉴成员 + 该游戏可用的形态） ----
+        REGION_PREF = {"sword-shield": ["galar", "alola", "hisui", "paldea"],
+                       "legends-arceus": ["hisui", "alola"],
+                       "scarlet-violet": ["paldea", "galar", "alola", "hisui"],
+                       "legends-za": ["galar", "hisui", "alola", "paldea"]}
+        dex_region = {"galar": "galar", "isle-of-armor": "galar", "crown-tundra": "galar",
+                      "hisui": "hisui", "paldea": "paldea", "kitakami": "paldea",
+                      "blueberry": "paldea"}
+        suffix_of = {}
+        for f in con.execute("SELECT id, species_id, identifier, is_default FROM forms"):
+            if f["is_default"]:
+                continue
+            _, _, suf = f["identifier"].rpartition("-")
+            suffix_of[f["id"]] = (f["species_id"], suf)
+        avail: dict[int, set[str]] = {}
+        for fid, g in con.execute("SELECT form_id, game_id FROM form_game_availability"):
+            avail.setdefault(fid, set()).add(g)
+        ddf_rows: list[tuple] = []
+        for dex, game in con.execute("SELECT id, game_id FROM regional_dexes").fetchall():
+            pref = REGION_PREF.get(game, [])
+            region = dex_region.get(dex, "")
+            for e in con.execute(
+                    "SELECT species_id FROM dex_entries WHERE dex_id=?", (dex,)).fetchall():
+                sid = e["species_id"]
+                cands = [(fid, suf) for fid, (s2, suf) in suffix_of.items() if s2 == sid
+                         and game in avail.get(fid, set())
+                         and suf not in ("gmax", "mega", "primal", "mega-x", "mega-y")]
+                if not cands:
+                    continue
+                pick = None
+                cand_sufs = {s for _, s in cands}
+                if region in cand_sufs:
+                    pick = next(f for f, s in cands if s == region)
+                else:
+                    for p in pref:
+                        if p in cand_sufs:
+                            pick = next(f for f, s in cands if s == p)
+                            break
+                if pick is None and len(cands) == 1:
+                    pick = cands[0][0]
+                if pick is not None:
+                    ddf_rows.append((dex, sid, pick))
+        # 人工增补/覆盖（curated dex_default_forms.json，优先生效）
+        ddf_file = ROOT / "data" / "curated" / "dex_default_forms.json"
+        if ddf_file.exists():
+            manual = json.loads(ddf_file.read_text(encoding="utf-8"))
+            manual_pairs = set()
+            for dex, m in manual.items():
+                for sid_s, suffix in m.items():
+                    sid = int(sid_s)
+                    row = con.execute(
+                        """SELECT id FROM forms WHERE species_id=? AND identifier LIKE '%-'||?
+                           ORDER BY id LIMIT 1""", (sid, suffix)).fetchone()
+                    if row:
+                        ddf_rows.append((dex, sid, row[0]))
+                        manual_pairs.add((dex, sid))
+            ddf_rows = [r for r in ddf_rows if (r[0], r[1]) not in manual_pairs] + \
+                       [r for r in ddf_rows if (r[0], r[1]) in manual_pairs]
+        # 一致性校验：默认形态必须在该游戏可用（hidden/未配置形态不校验）
+        bad = []
+        seen_pk = set()
+        final_ddf = []
+        for dex, sid, fid in ddf_rows:
+            if (dex, sid) in seen_pk:
+                continue
+            seen_pk.add((dex, sid))
+            game = con.execute("SELECT game_id FROM regional_dexes WHERE id=?", (dex,)).fetchone()
+            if fid in avail and game and game[0] not in avail[fid]:
+                bad.append((dex, sid, fid))
+                continue
+            final_ddf.append((dex, sid, fid))
+        if bad:
+            print(f"  !! dex_default_forms 与可用性冲突 {len(bad)} 条（已跳过）：{bad[:6]}")
+        con.executemany("INSERT OR REPLACE INTO dex_default_forms VALUES (?,?,?)", final_ddf)
+
+    # ---- 地区形态分支进化链（curated evo_branches.json） ----
+    eb_file = ROOT / "data" / "curated" / "evo_branches.json"
+    if eb_file.exists():
+        eb = json.loads(eb_file.read_text(encoding="utf-8"))
+        rows = []
+        bad_branch = []
+        for fam, branches in eb.items():
+            if fam.startswith("_"):
+                continue
+            try:
+                root_sid = int(fam)
+            except ValueError:
+                bad_branch.append((fam, fam))
+                continue
+            for bi, branch in enumerate(branches):
+                # branch[0] = 根物种的形态后缀（''=普通形态），后续 token = 'sid[:后缀]'
+                rows.append((fam, root_sid, branch[0], str(bi)))
+                for tok in branch[1:]:
+                    sid_s, _, suf = tok.partition(":")
+                    try:
+                        sid = int(sid_s)
+                    except ValueError:
+                        bad_branch.append((fam, tok))
+                        continue
+                    # 后缀空 = 默认形态；非空兼容复合形态（darmanitan-galar-standard）
+                    if suf:
+                        row = con.execute(
+                            """SELECT id FROM forms WHERE species_id=?
+                               AND (identifier LIKE '%-'||? OR identifier LIKE '%-'||?||'-%')
+                               ORDER BY LENGTH(identifier) LIMIT 1""",
+                            (sid, suf, suf)).fetchone()
+                    else:
+                        row = con.execute(
+                            "SELECT id FROM forms WHERE species_id=? AND is_default=1",
+                            (sid,)).fetchone()
+                    if row is None:
+                        bad_branch.append((fam, tok))
+                    rows.append((fam, sid, suf, str(bi)))
+        con.executemany("INSERT OR REPLACE INTO evo_branches VALUES (?,?,?,?)", rows)
+        if bad_branch:
+            print(f"  !! evo_branches 未匹配形态 {sorted(set(map(str, bad_branch)))[:8]}")
+
     con.commit()
 
     # ---- report ----
     for table in ("games", "regional_dexes", "dex_entries", "species", "forms",
-                  "moves", "learnsets", "machines", "encounters"):
+                  "moves", "learnsets", "machines", "encounters",
+                  "abilities", "items", "form_game_availability", "dex_default_forms",
+                  "evo_branches", "z_exclusive"):
         n = con.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
-        print(f"{table:15s} {n}")
+        print(f"{table:24s} {n}")
     print("\nlearnsets per vg:")
     for vg, n in con.execute("SELECT vg, COUNT(*) FROM learnsets GROUP BY vg ORDER BY vg"):
         print(f"  vg{vg} {GAME_OF_VG[vg]:15s} {n}")

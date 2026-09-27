@@ -1,5 +1,327 @@
 {
  "missing_species_pages": [],
+ "ability_parse_failed": [
+  {
+   "ability_id": 283,
+   "name": "黄金之躯",
+   "reason": "no 特性效果/特性说明 section"
+  },
+  {
+   "ability_id": 312,
+   "name": "eelevate",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 313,
+   "name": "fire-mane",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 314,
+   "name": "aura-guard",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10001,
+   "name": "mountaineer",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10002,
+   "name": "wave-rider",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10003,
+   "name": "skater",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10004,
+   "name": "thrust",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10005,
+   "name": "perception",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10006,
+   "name": "parry",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10007,
+   "name": "instinct",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10008,
+   "name": "dodge",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10009,
+   "name": "jagged-edge",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10010,
+   "name": "frostbite",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10011,
+   "name": "tenacity",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10012,
+   "name": "pride",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10013,
+   "name": "deep-sleep",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10014,
+   "name": "power-nap",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10015,
+   "name": "spirit",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10016,
+   "name": "warm-blanket",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10017,
+   "name": "gulp",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10018,
+   "name": "herbivore",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10019,
+   "name": "sandpit",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10020,
+   "name": "hot-blooded",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10021,
+   "name": "medic",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10022,
+   "name": "life-force",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10023,
+   "name": "lunchbox",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10024,
+   "name": "nurse",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10025,
+   "name": "melee",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10026,
+   "name": "sponge",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10027,
+   "name": "bodyguard",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10028,
+   "name": "hero",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10029,
+   "name": "last-bastion",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10030,
+   "name": "stealth",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10031,
+   "name": "vanguard",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10032,
+   "name": "nomad",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10033,
+   "name": "sequence",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10034,
+   "name": "grass-cloak",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10035,
+   "name": "celebrate",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10036,
+   "name": "lullaby",
+   "reason": "no 特性效果/特性说明 section"
+  },
+  {
+   "ability_id": 10037,
+   "name": "calming",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10038,
+   "name": "daze",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10039,
+   "name": "frighten",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10040,
+   "name": "interference",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10041,
+   "name": "mood-maker",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10042,
+   "name": "confidence",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10043,
+   "name": "fortune",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10044,
+   "name": "bonanza",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10045,
+   "name": "explode",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10046,
+   "name": "omnipotent",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10047,
+   "name": "share",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10048,
+   "name": "black-hole",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10049,
+   "name": "shadow-dash",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10050,
+   "name": "sprint",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10051,
+   "name": "disgust",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10052,
+   "name": "high-rise",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10053,
+   "name": "climber",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10054,
+   "name": "flame-boost",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10055,
+   "name": "aqua-boost",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10056,
+   "name": "run-up",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10057,
+   "name": "conqueror",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10058,
+   "name": "shackle",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10059,
+   "name": "decoy",
+   "reason": "page not found"
+  },
+  {
+   "ability_id": 10060,
+   "name": "shield",
+   "reason": "page not found"
+  }
+ ],
  "form_flavor_unparsed_markers": [
   {
    "species_id": 421,
