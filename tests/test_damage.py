@@ -197,3 +197,173 @@ def test_harsh_weather_alias():
     sand = _vector_with(move_type="火", power=90, weather="sand")
     assert harsh["max"] == sun["max"] > neutral["max"]
     assert sand["max"] == neutral["max"]        # 沙暴不影响伤害数值
+
+
+# ---------------------------------------------------------------- 五期扩展机制
+def _pair(atk_types="冰", atk_stat=123, def_types="龙,地面", def_stat=163):
+    a = {"types": atk_types, "level": 75, "ability": "", "item": "", "boosts": {},
+         "stats": {"atk": atk_stat, "def": 100, "spa": 200, "spd": 150, "spe": 100, "hp": 200}}
+    d = {"types": def_types, "level": 75, "ability": "", "item": "", "boosts": {},
+         "is_dynamax": False,
+         "stats": {"atk": 150, "def": def_stat, "spa": 100, "spd": 110, "spe": 102, "hp": 270}}
+    return a, d
+
+
+def _mv(move_type="冰", power=65, ident="test-move", cls="physical"):
+    return {"name_zh": "测试", "identifier": ident, "type_zh": move_type,
+            "damage_class": cls, "power": power}
+
+
+def test_snow_boosts_ice_def():
+    a, d = _pair()
+    mv = _mv(move_type="地面", power=90, ident="earthquake")
+    d_ice = {**d, "types": "冰"}
+    plain = damage.calc_damage(a, d_ice, mv, {})
+    snowy = damage.calc_damage(a, d_ice, mv, {"weather": "snow"})
+    assert snowy["max"] < plain["max"]      # 雪天冰系防御 ×1.5
+    # 非冰系防守方不受影响
+    snowy2 = damage.calc_damage(a, d, mv, {"weather": "snow"})
+    plain2 = damage.calc_damage(a, d, mv, {})
+    assert snowy2["max"] == plain2["max"]
+
+
+def test_sand_boosts_rock_spd():
+    a, d = _pair()
+    mv = _mv(move_type="火", power=90, cls="special")
+    rock = {**d, "types": "岩石"}
+    plain = damage.calc_damage(a, rock, mv, {})
+    sandy = damage.calc_damage(a, rock, mv, {"weather": "sand"})
+    assert sandy["max"] < plain["max"]      # 沙暴岩石系特防 ×1.5
+
+
+def test_doubles_spread():
+    a, d = _pair()
+    mv = _mv(move_type="地面", power=90, ident="earthquake")
+    mv["is_spread"] = 1
+    singles = damage.calc_damage(a, d, mv, {})
+    doubles = damage.calc_damage(a, d, mv, {"mode": "doubles"})
+    assert doubles["max"] < singles["max"]
+    # 非扩散招式双打不减
+    mv2 = _mv(move_type="冰", power=65)
+    s2 = damage.calc_damage(a, d, mv2, {"mode": "singles"})
+    d2 = damage.calc_damage(a, d, mv2, {"mode": "doubles"})
+    assert s2["max"] == d2["max"]
+
+
+def test_screens_doubles_use_2732():
+    a, d = _pair()
+    mv = _mv(power=65)
+    s1 = damage.calc_damage(a, d, mv, {"screen": "reflect"})
+    s2 = damage.calc_damage(a, d, mv, {"screen": "reflect", "mode": "doubles"})
+    assert s2["max"] > s1["max"]            # 双打屏幕削弱更弱（2732 vs 2048）
+
+
+def test_auras_and_break():
+    a, d = _pair()
+    mv = _mv(move_type="妖精", power=90)
+    plain = damage.calc_damage(a, d, mv, {})
+    aura = damage.calc_damage(a, d, mv, {"auras": {"fairy": True}})
+    broken = damage.calc_damage(a, d, mv, {"auras": {"fairy": True, "break": True}})
+    assert aura["max"] > plain["max"]       # 妖精气场 ×5448/4096
+    assert broken["max"] < plain["max"]     # 气场破坏反转为 ×3072/4096
+
+
+def test_ruin_stats():
+    a, d = _pair()
+    mv = _mv(power=65)
+    plain = damage.calc_damage(a, d, mv, {})
+    sword = damage.calc_damage(a, d, mv, {"ruin": {"sword": True}})
+    tablets = damage.calc_damage(a, d, mv, {"ruin": {"tablets": True}})
+    assert sword["max"] > plain["max"]      # 灾祸之剑降防守方防御 → 伤害提高
+    assert tablets["max"] < plain["max"]    # 灾祸之简降攻击方攻击 → 伤害降低
+    # 特灾兽能力同语义（攻击方特性触发）
+    a2 = {**a, "ability": "灾祸之剑"}
+    by_ab = damage.calc_damage(a2, d, mv, {})
+    assert by_ab["max"] == sword["max"]
+
+
+def test_stellar_and_defense():
+    a, d = _pair()
+    mv = _mv(move_type="冰", power=65)
+    base = damage.calc_damage(a, d, mv, {})
+    # 星晶攻击：本属性 STAB ×2
+    stellar = damage.calc_damage({**a, "tera_type": "星晶"}, d, mv, {})
+    assert stellar["max"] > base["max"]
+    # 星晶防守：保持原属性相性（4 倍弱点仍在）
+    d_stellar = damage.calc_damage(a, {**d, "tera_type": "星晶"}, mv, {})
+    assert d_stellar["effectiveness"] == base["effectiveness"] == 4
+
+
+def test_ko_summary_and_sash():
+    a, d = _pair()
+    mv = _mv(power=65)
+    r = damage.calc_damage(a, d, mv, {})
+    ko = r["ko"]
+    assert set(ko["probs"].keys()) == {1, 2, 3, 4}
+    assert ko["probs"][1] == (100.0 if r["ohko"] else 0.0)
+    assert ko["probs"][2] >= ko["probs"][1]
+    # 气势披带：满血首击致死残留 1 HP → 一回合击倒概率归零
+    r2 = damage.calc_damage(a, d, mv, {"defender_sash": True})
+    assert r2["ko"]["probs"][1] == 0.0
+    assert r2["ko"]["probs"][2] == 100.0
+
+
+def test_hazard_damage():
+    assert damage.hazard_damage(["飞行"], 100, {"rocks": True}, True) == 25    # 飞行弱点 2×25%
+    assert damage.hazard_damage(["一般"], 100, {"rocks": True}, True) == 12    # 12.5%
+    assert damage.hazard_damage(["一般"], 120, {"spikes": 3}, True) == 30      # 1/4
+    assert damage.hazard_damage(["一般"], 120, {"spikes": 3}, False) == 0      # 飞行不吃钉子
+    assert damage.hazard_damage(["水"], 80, {"salt_cure": True}, True) == 20   # 水钢 1/4
+    assert damage.hazard_damage(["草"], 80, {"leech_seed": True}, True) == 10
+
+
+def test_z_multihit_rules():
+    # 2~5 段：Z 取 3 段（岩石爆击 25×3=75→140），极巨同样取 3 段（→130）
+    assert damage.z_power(25, "rock-blast") == 140
+    assert damage.max_power(25, "岩石", "rock-blast") == 130
+    # 固定 2 段：Z 用单段（二连踢 30→100），极巨取 2 倍（60→80 格斗档）
+    assert damage.z_power(30, "double-kick") == 100
+    assert damage.max_power(30, "格斗", "double-kick") == 80
+    # 水手里剑极巨按 40 低档 → 90；三旋击合计 120 → 140；气象球官方 130
+    assert damage.max_power(15, "水", "water-shuriken") == 90
+    assert damage.max_power(20, "冰", "triple-axel") == 140
+    assert damage.max_power(50, "一般", "weather-ball") == 130
+
+
+def test_vest_eviolite_in_engine():
+    a, d = _pair()
+    mv = _mv(move_type="火", power=90, cls="special")
+    plain = damage.calc_damage(a, d, mv, {})
+    vested = damage.calc_damage(a, {**d, "item": "突击背心"}, mv, {})
+    assert vested["max"] < plain["max"]
+    # 进化奇石：仅可进化的宝可梦生效
+    evo = damage.calc_damage(a, {**d, "item": "进化奇石", "can_evolve": True}, mv, {})
+    no_evo = damage.calc_damage(a, {**d, "item": "进化奇石", "can_evolve": False}, mv, {})
+    assert evo["max"] < plain["max"] and no_evo["max"] == plain["max"]
+
+
+def test_magic_room_disables_items():
+    a, d = _pair()
+    mv = _mv(power=65)
+    lo = damage.calc_damage({**a, "item": "生命宝珠"}, d, mv, {})
+    lo_magic = damage.calc_damage({**a, "item": "生命宝珠"}, d, mv, {"magic_room": True})
+    assert lo["max"] > lo_magic["max"]
+
+
+def test_wonder_room_swaps():
+    a, d = _pair()
+    mv = _mv(move_type="火", power=90, cls="special")
+    d2 = {**d, "stats": {**d["stats"], "def": 300, "spd": 100}}
+    plain = damage.calc_damage(a, d2, mv, {})
+    wonder = damage.calc_damage(a, d2, mv, {"wonder_room": True})
+    assert wonder["max"] < plain["max"]     # 奇妙空间：特殊招式改打换入的防御位（300）
+
+
+def test_immune_abilities():
+    a, d = _pair()
+    fire = _mv(move_type="火", power=90, cls="special")
+    r = damage.calc_damage(a, {**d, "ability": "引火"}, fire, {})
+    assert r["max"] == 0 and r.get("immune_by") == "引火"
+    water = _mv(move_type="水", power=90, cls="special")
+    r2 = damage.calc_damage(a, {**d, "ability": "储水"}, water, {})
+    assert r2["max"] == 0
