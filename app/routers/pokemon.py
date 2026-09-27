@@ -22,16 +22,18 @@ GAME_MOVE_CONFIG = {
                                                  ("egg", "蛋招式"), ("tutor", "教授")]},
     "legends-arceus": {"vg": 24, "tm_vgs": [],
                        "tabs": [("level", "升级"), ("tutor", "教授")]},
+    # 朱紫：升级表中 level=0（进化时学会）与教授（=回忆，PokeAPI 标 tutor，52poke 为回忆机）
+    # 单独「进化&回忆」tab
     "scarlet-violet": {"vg": 25, "tm_vgs": [25],
-                       "tabs": [("level", "升级"), ("machine", "招式学习器"),
-                                ("egg", "蛋招式")]},
+                       "tabs": [("level", "升级"), ("evolution-recall", "进化&回忆"),
+                                ("machine", "招式学习器"), ("egg", "蛋招式")]},
     # tm_vgs 含 vg31（异次元 DLC TM108-160），与 vg30 的 TM001-107 连续编号
     "legends-za": {"vg": 30, "tm_vgs": [30, 31],
                    "tabs": [("level", "升级"), ("machine", "招式学习器")]},
 }
 
-# 朱紫的「回忆」招式（PokeAPI 标 tutor，52poke 在升级表内标「回忆」）并入 level 组
-RECALL_AS_LEVEL_GAMES = {"scarlet-violet"}
+# 「进化&回忆」独立 tab 的游戏（level=0 进化招式 + tutor 回忆行）
+EVOLUTION_RECALL_GAMES = {"scarlet-violet"}
 
 GAME_ORDER = ["sword-shield", "brilliant-diamond-shining-pearl", "legends-arceus",
               "scarlet-violet", "legends-za"]
@@ -454,17 +456,26 @@ def pokemon_moves(species_id: int, game: str = Query(...), form_id: int | None =
         d = dict(r)
         d["tm"] = tm_info(r["move_id"]) if r["method"] == "machine" else []
         mkey = method_key.get(r["method"], r["method"])
-        if game in RECALL_AS_LEVEL_GAMES and mkey == "tutor":
-            mkey, d["level"], d["recall"] = "level", None, True
-        key = (mkey, r["move_id"])   # 以分组+招式去重（回忆并入升级后不重复）
+        if game in EVOLUTION_RECALL_GAMES:
+            # 朱紫：tutor（回忆机）与 level=0（进化时学会）→ 「进化&回忆」组
+            if mkey == "tutor":
+                mkey, d["level"], d["recall"] = "evolution-recall", None, True
+            elif mkey == "level" and (d["level"] or 0) == 0:
+                mkey, d["evolution"] = "evolution-recall", True
+        elif mkey == "level" and (d["level"] or 0) == 0:
+            # 其他游戏：level=0 保留在升级组置顶，标「进化」徽章
+            d["evolution"] = True
+        key = (mkey, r["move_id"])   # 以分组+招式去重
         if key in seen or mkey not in groups:
             continue
         seen.add(key)
         groups[mkey].append(d)
-    groups["level"].sort(key=lambda d: (d.get("recall") is True, d["level"] or 0, d["move_id"]))
+    groups["level"].sort(key=lambda d: (d.get("recall") is True,
+                                        0 if (d.get("level") or 0) == 0 else 1,
+                                        d["level"] or 0, d["move_id"]))
     for k in groups:
         if k != "level":
-            groups[k].sort(key=lambda d: d["name_zh"])
+            groups[k].sort(key=lambda d: (0 if d.get("evolution") else 1, d["name_zh"]))
 
     breeding = con.execute(
         "SELECT has_breeding FROM games WHERE id=?", (game,)).fetchone()

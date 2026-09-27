@@ -55,14 +55,23 @@ def test_pokemon_detail_and_moves():
     assert scoped["flavor"] and all(f["game"] == "scarlet-violet" for f in scoped["flavor"])
     assert scoped["get_methods"] and all(g["game"] == "scarlet-violet" for g in scoped["get_methods"])
     mv = client.get("/api/pokemon/906/moves", params={"game": "scarlet-violet"}).json()
-    # 朱紫无教授 tab（P2-3：PokeAPI tutor 数据在 52poke 为「回忆」，并入升级组）
-    assert [t["key"] for t in mv["tabs"]] == ["level", "machine", "egg"]
+    # M6：朱紫「进化&回忆」独立 tab（level=0 进化招式 + tutor 回忆行）
+    assert [t["key"] for t in mv["tabs"]] == ["level", "evolution-recall", "machine", "egg"]
     assert mv["groups"]["level"] and mv["groups"]["machine"] and mv["groups"]["egg"]
     assert "pp" in mv["groups"]["level"][0] and "priority" in mv["groups"]["level"][0]
-    # 「回忆」条目并入升级组（波荡水：大晴天/磨爪）
+    # 「回忆」条目在进化&回忆组（波荡水：大晴天/磨爪）
     ww = client.get("/api/pokemon/1009/moves", params={"game": "scarlet-violet"}).json()
-    recall = [r for r in ww["groups"]["level"] if r.get("recall")]
+    recall = [r for r in ww["groups"]["evolution-recall"] if r.get("recall")]
     assert {r["name_zh"] for r in recall} == {"大晴天", "磨爪"}
+    # 进化时学会（level=0）入进化&回忆组并标「进化」
+    assert any(r.get("evolution") for r in ww["groups"]["evolution-recall"])
+    assert not any((r.get("level") or 0) == 0 and not r.get("evolution")
+                   for r in ww["groups"]["level"])
+    # 其他游戏 level=0 置顶显「进化」徽章（剑盾）
+    sw = client.get("/api/pokemon/445/moves", params={"game": "sword-shield"}).json()
+    lv0 = [r for r in sw["groups"]["level"] if (r.get("level") or 0) == 0]
+    assert lv0 and all(r.get("evolution") for r in lv0)
+    assert sw["groups"]["level"][0].get("evolution")
     # 剑盾保留教授 tab
     sw = client.get("/api/pokemon/25/moves", params={"game": "sword-shield"}).json()
     assert "tutor" in [t["key"] for t in sw["tabs"]]

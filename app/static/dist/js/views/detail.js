@@ -175,9 +175,11 @@ const DetailView = {
             <el-tab-pane v-for="t in moves.tabs" :key="t.key"
               :label="t.label + ' (' + (moves.groups[t.key] || []).length + ')'" :name="t.key">
               <el-table :data="moves.groups[t.key]" size="small" height="420" row-key="move_id">
-                <el-table-column v-if="t.key === 'level'" label="等级" width="96" sortable prop="level">
+                <el-table-column v-if="t.key === 'level' || t.key === 'evolution-recall'"
+                  label="等级" width="96" sortable prop="level">
                   <template #default="{ row }">
                     <span v-if="row.recall" class="mastery">回忆</span>
+                    <span v-else-if="row.evolution" class="mastery">进化</span>
                     <template v-else>Lv.{{ row.level }}<template v-if="row.mastery != null">
                       <span class="mastery">精通+{{ row.mastery }}</span></template>
                     </template>
