@@ -27,9 +27,10 @@ body { margin: 0; font-family: "Segoe UI", "Microsoft YaHei", sans-serif; backgr
 .page-title { font-size: 20px; font-weight: 700; margin: 0 8px 0 0; }
 .spacer { flex: 1; }
 
-/* 属性徽章：等宽胶囊 + 雪碧图图标（type_sprite.webp 每 16px 一格，18 属性 + 3 分类） */
-.type-badge { display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-width: 62px; padding: 2px 8px; border-radius: 5px; font-size: 12px; color: #fff; background: var(--t); margin: 1px 4px 1px 0; text-shadow: 0 1px 1px rgba(0,0,0,.3); box-shadow: inset 0 0 0 1px rgba(255,255,255,.18); }
-.type-badge.plain { background: color-mix(in srgb, var(--t) 82%, #fff); min-width: 54px; font-size: 11.5px; }
+/* 属性徽章：定宽胶囊 + 雪碧图图标（type_sprite.webp 每 16px 一格，18 属性 + 3 分类）
+   定宽容纳三字属性（超能力）+ 图标，相性栏换行永不与倍率块同列 */
+.type-badge { display: inline-flex; align-items: center; justify-content: center; gap: 4px; width: 78px; padding: 2px 4px; border-radius: 5px; font-size: 12px; color: #fff; background: var(--t); margin: 1px 4px 1px 0; text-shadow: 0 1px 1px rgba(0,0,0,.3); box-shadow: inset 0 0 0 1px rgba(255,255,255,.18); flex-shrink: 0; }
+.type-badge.plain { background: color-mix(in srgb, var(--t) 82%, #fff); width: 70px; font-size: 11.5px; }
 .type-badge .ti, .mcls-badge .ti { flex-shrink: 0; width: 16px; height: 16px; background-image: url(../assets/type_sprite.webp); background-repeat: no-repeat; background-size: 16px 336px; background-position: 0 calc(var(--iy, 0) * -16px); filter: drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
 
 /* 招式分类徽章（胶囊底纹 + 同一雪碧图图标） */

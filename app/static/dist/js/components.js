@@ -108,18 +108,30 @@ function formDisplayName(f) {
   if (!f) return "";
   const label = f.form_label || "";
   if (label && /[\u4e00-\u9fff]/.test(label)) return label;
-  return FORM_LABEL_ZH[label] || label || f.identifier || "";
+  return FORM_LABEL_ZH[label] || label;
 }
 
-/* 特性徽章（隐藏特性直接挂「隐藏特性」chip） */
+/* 特性列表（展开卡）：效果首段内联 + 第九世代说明；多点补充折叠在「详细介绍」 */
 const AbilityList = {
   props: ["abilities"],
-  template: `<span>
-    <span v-for="(a, i) in abilities || []" :key="i" class="ab-badge" :class="{hidden: a.hidden}">
-      {{ a.name }}<span v-if="a.hidden" class="ab-hidden-chip">隐藏特性</span>
-    </span>
-    <span v-if="!(abilities && abilities.length)" class="empty-hint">待补充</span>
-  </span>`,
+  template: `<div class="ab-list">
+    <div v-for="(a, i) in abilities || []" :key="i" class="ab-card" :class="{hidden: a.hidden}">
+      <div class="ab-head">
+        <span class="ab-name">{{ a.name }}</span>
+        <span v-if="a.hidden" class="ab-hidden-chip">隐藏特性</span>
+      </div>
+      <div v-if="a.effect" class="ab-effect">{{ a.effect }}</div>
+      <div v-if="a.intro" class="ab-intro">{{ a.intro }}</div>
+      <el-collapse v-if="a.extra && a.extra.length" style="border:none">
+        <el-collapse-item :title="'详细介绍（' + a.extra.length + '）'" :name="i"
+          style="--el-collapse-header-height:32px">
+          <ul class="ab-extra"><li v-for="(e, j) in a.extra" :key="j">{{ e }}</li></ul>
+        </el-collapse-item>
+      </el-collapse>
+      <div v-if="!a.effect && !a.intro && !(a.extra && a.extra.length)" class="empty-hint">待补充</div>
+    </div>
+    <div v-if="!(abilities && abilities.length)" class="empty-hint">待补充</div>
+  </div>`,
 };
 
 /* 精灵球捕捉切换按钮（图鉴卡片交互）：捕捉=红白填充球，未捕捉=灰色描边球 */

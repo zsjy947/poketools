@@ -1,6 +1,8 @@
 """宝可梦详情 / 招式学习表 API（按游戏裁剪）。"""
 from __future__ import annotations
 
+import json
+
 from fastapi import APIRouter, HTTPException, Query
 
 from ..db import static_conn
@@ -47,10 +49,31 @@ def _clean(t: str | None) -> str:
     return (t or "").replace("\r", "").replace("\n", " ").strip()
 
 
-def _abilities_of(form) -> list[dict]:
+def _abilities_of(con, form) -> list[dict]:
+    """特性 + 52poke 文案（intro 第九世代说明 / effect 效果首段 / extra 多点补充）。"""
     abils = [a for a in (form["abilities"] or "").split(",") if a]
     hidden = {a for a in (form["hidden_abilities"] or "").split(",") if a}
-    return [{"name": a, "hidden": a in hidden} for a in abils]
+    prose: dict[str, dict] = {}
+    for r in con.execute("SELECT name_zh, intro, effect, extra FROM abilities"):
+        prose[r["name_zh"]] = {"intro": r["intro"] or "", "effect": r["effect"] or "",
+                               "extra": json.loads(r["extra"] or "[]")}
+    out = []
+    for a in abils:
+        p = prose.get(a) or {}
+        out.append({"name": a, "hidden": a in hidden,
+                    "intro": p.get("intro", ""), "effect": p.get("effect", ""),
+                    "extra": p.get("extra", [])})
+    return out
+
+
+# 52poke 获得方式模板的形态标记字母 → forms.identifier 后缀（M2 3.5 获取方式按形态过滤）
+FORM_MARKER_TO_SUFFIX = {
+    "A": "alola", "G": "galar", "H": "hisui", "P": "paldea",
+    "W": "white-striped", "B": "blue-striped",
+    "D": "dusk", "Mn": "midnight", "N": "midday", "L": "low-key",
+    "F": "female", "M": "male", "GM": "gmax",
+    "PA": "paldea-combat-breed", "PB": "paldea-blaze-breed", "PC": "paldea-aqua-breed",
+}
 
 
 def _evo_condition(row) -> str:
@@ -129,8 +152,28 @@ def _decode_natures(mask: str) -> list[str]:
     return [_NATURE_ZH[i + 1] for i in range(25) if m & (1 << i)]
 
 
-def _evolution_chain(con, species_id: int) -> dict:
-    """进化家族树：{root, nodes:{sid:{...}}, children:{sid:[to]}, conds:{(from,to):text}}"""
+# 地区后缀 → 中文名（分支条件文本前缀）
+SUFFIX_REGION_ZH = {"alola": "阿罗拉", "galar": "伽勒尔", "hisui": "洗翠", "paldea": "帕底亚"}
+
+
+def _form_by_suffix(con, species_id: int, suffix: str):
+    """按后缀找形态（空 = 默认形态；兼容 darmanitan-galar-standard 复合形态）。"""
+    if not suffix:
+        return con.execute(
+            "SELECT id, identifier, types FROM forms WHERE species_id=? AND is_default=1 LIMIT 1",
+            (species_id,)).fetchone()
+    return con.execute(
+        """SELECT id, identifier, types FROM forms WHERE species_id=?
+           AND (identifier LIKE '%-'||? OR identifier LIKE '%-'||?||'-%')
+           ORDER BY LENGTH(identifier) LIMIT 1""",
+        (species_id, suffix, suffix)).fetchone()
+
+
+def _evolution_chain(con, species_id: int, form_suffix: str = "") -> dict:
+    """进化家族树：{root, nodes:{sid:{...}}, children:{sid:[to]}, conds:{(from,to):text}}
+
+    地区形态分支（evo_branches curated）：只渲染选中形态所属分支，
+    节点图/属性按对应 form 行取；无 curated 分支的家族走现状全量渲染。"""
     sp = con.execute("SELECT id, evolves_from FROM species WHERE id=?", (species_id,)).fetchone()
     if sp is None:
         return {"root": None, "nodes": {}, "children": {}, "conds": {}}
@@ -148,7 +191,58 @@ def _evolution_chain(con, species_id: int) -> dict:
         if cur is None:
             break
     root = frontier[-1]
-    # 收集家族全部成员（从根向下 BFS，经 evolutions 表）
+
+    # ---- 地区形态分支家族（curated）：按选中形态挑分支整条渲染 ----
+    branches: dict[str, list] = {}
+    for r in con.execute(
+            "SELECT branch, species_id, form_suffix FROM evo_branches WHERE family_key=?",
+            (str(root),)):
+        branches.setdefault(r["branch"], []).append((r["species_id"], r["form_suffix"]))
+    if branches:
+        sel = (species_id, form_suffix or "")
+        chosen = None
+        for bi, toks in branches.items():
+            if sel in toks:
+                chosen = toks
+                break
+        if chosen is None:   # 选中形态不在任何分支（如 mega/gmax）：回退默认分支
+            for bi, toks in branches.items():
+                if toks and toks[0][1] == "":
+                    chosen = toks
+                    break
+        if chosen is not None:
+            nodes, children, conds = {}, {}, {}
+            names = {r["id"]: r["name_zh"] for r in con.execute(
+                "SELECT id, name_zh FROM species WHERE id IN (%s)"
+                % ",".join("?" * len(set(s for s, _ in chosen))),
+                [s for s, _ in dict.fromkeys(chosen)])}
+            prev = None
+            base_suf = chosen[0][1]
+            for sid, suf in chosen:
+                f = _form_by_suffix(con, sid, suf)
+                nodes[sid] = {"species_id": sid, "name": names.get(sid, str(sid)),
+                              "form_id": f["id"] if f else 0,
+                              "types": (f["types"] or "") if f else "",
+                              "form_suffix": suf}
+                if prev is not None:
+                    children.setdefault(prev[0], []).append(sid)
+                    r = con.execute(
+                        "SELECT * FROM evolutions WHERE from_species=? AND to_species=?",
+                        (prev[0], sid)).fetchone()
+                    cond = _evo_condition(r) if r else "进化"
+                    # 地区分支：目标或分支根带地区后缀且条件未含地区时补「在{地区}地区」
+                    region_suf = suf if suf in SUFFIX_REGION_ZH else (
+                        base_suf if base_suf in SUFFIX_REGION_ZH else "")
+                    if region_suf and (not r or not r["region"]) \
+                            and SUFFIX_REGION_ZH[region_suf] not in cond:
+                        prefix = f"在{SUFFIX_REGION_ZH[region_suf]}地区"
+                        cond = f"{prefix}，{cond}" if cond and cond != "进化" else f"{prefix}进化"
+                    conds[f"{prev[0]}|{sid}"] = cond
+                prev = (sid, suf)
+            return {"root": chosen[0][0], "nodes": nodes, "children": children,
+                    "conds": conds, "branched": True}
+
+    # ---- 常规家族：从根向下 BFS，经 evolutions 表 ----
     family = {root}
     queue = [root]
     while queue:
@@ -177,7 +271,7 @@ def _evolution_chain(con, species_id: int) -> dict:
 
 
 @router.get("/pokemon/{species_id}")
-def pokemon_detail(species_id: int, game: str = ""):
+def pokemon_detail(species_id: int, game: str = "", form: str = Query("", description="选中形态 identifier 后缀，空=默认形态")):
     con = static_conn()
     sp = con.execute("SELECT * FROM species WHERE id=?", (species_id,)).fetchone()
     if sp is None:
@@ -187,6 +281,18 @@ def pokemon_detail(species_id: int, game: str = ""):
     forms = [dict(r) for r in con.execute(
         "SELECT * FROM forms WHERE species_id=? ORDER BY is_default DESC, id", (species_id,))]
     default = next((f for f in forms if f["is_default"]), forms[0] if forms else None)
+
+    # 形态 × 游戏可用性：受限形态只保留当前游戏可用的（未收录形态默认可见）
+    if game:
+        avail: dict[int, set[str]] = {}
+        for r in con.execute("SELECT form_id, game_id FROM form_game_availability"):
+            avail.setdefault(r["form_id"], set()).add(r["game_id"])
+        forms = [f for f in forms if f["id"] not in avail or game in avail[f["id"]]]
+        if not forms:
+            forms = [dict(r) for r in con.execute(
+                "SELECT * FROM forms WHERE species_id=? ORDER BY is_default DESC, id",
+                (species_id,))]
+            default = next((f for f in forms if f["is_default"]), forms[0] if forms else None)
 
     game_order = "CASE game " + " ".join(
         f"WHEN '{g}' THEN {i}" for i, g in enumerate(GAME_ORDER)) + " ELSE 99 END"
@@ -205,7 +311,7 @@ def pokemon_detail(species_id: int, game: str = ""):
         form_flavor.setdefault(r["form_id"], []).append(
             {k: r[k] for k in ("game", "version_label", "text")})
     gm = [dict(r) for r in con.execute(
-        f"""SELECT game, version_label, location, method, note FROM get_methods
+        f"""SELECT game, version_label, location, method, note, form FROM get_methods
             WHERE species_id=? ORDER BY {game_order}, version_label""",
         (species_id,))]
 
@@ -216,6 +322,13 @@ def pokemon_detail(species_id: int, game: str = ""):
                        for fid, rows in form_flavor.items()}
         form_flavor = {fid: rows for fid, rows in form_flavor.items() if rows}
         gm = [g for g in gm if g["game"] == game]
+
+    # 获取方式按所选形态过滤：form 列为空 = 通用行恒显示；
+    # 标记行（A/G/H…）映射后缀与选中形态匹配才显示（默认形态 → 只看通用行；
+    # 未映射的罕见标记行一律按形态专属隐藏）
+    sel_suffix = (form or "").strip()
+    gm = [g for g in gm if not g["form"]
+          or FORM_MARKER_TO_SUFFIX.get(g["form"]) == sel_suffix and g["form"] in FORM_MARKER_TO_SUFFIX]
 
     games_with_gm = {r["game"] for r in gm}
     enc = []
@@ -245,17 +358,18 @@ def pokemon_detail(species_id: int, game: str = ""):
            ORDER BY CASE WHEN d.game_id = ? THEN 0 ELSE 1 END, d.sort""",
         (species_id, game))]
 
-    evolution = _evolution_chain(con, species_id)
+    evolution = _evolution_chain(con, species_id, (form or "").strip())
 
     if default:
         for f in forms:
-            f["ability_list"] = _abilities_of(f)
+            f["ability_list"] = _abilities_of(con, f)
 
     con.close()
     return {
         "species": dict(sp),
         "default_form": default,
         "forms": forms,
+        "selected_suffix": (form or "").strip(),
         "ev": {k: default[f"ev_{k}"] for k in ("hp", "atk", "def", "spa", "spd", "spe")} if default else {},
         "base_stats": ({k: default[k] for k in ("hp", "atk", "def", "spa", "spd", "spe")}
                        if default else {}),

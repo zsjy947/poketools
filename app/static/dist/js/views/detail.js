@@ -13,13 +13,15 @@ const DetailView = {
     </div>
 
     <template v-if="d">
-    <!-- 形态选择：缩略图 tab 条（多形态时） -->
+    <!-- 形态选择：缩略图 tab 条（默认形态不带任何标注；选中非默认形态后可还原） -->
     <div v-if="d.forms.length > 1" class="form-strip">
       <div v-for="f in d.forms" :key="f.id" class="form-chip" :class="{active: f.id === formId}"
         @click="formId = f.id">
         <poke-img :form-id="f.id" :size="52"></poke-img>
-        <span class="fname">{{ formName(f) }}<template v-if="f.is_default">（默认）</template></span>
+        <span class="fname" v-if="!f.is_default">{{ formName(f) }}</span>
       </div>
+      <el-button v-if="curForm && !curForm.is_default && d.default_form" size="small" plain
+        style="align-self:center" @click="formId = d.default_form.id">还原默认形态</el-button>
     </div>
 
     <div class="detail-cols">
@@ -38,9 +40,15 @@ const DetailView = {
             </div>
             <div style="margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
               <type-badge :types="curForm.types"></type-badge>
-              <span class="chip">{{ d.species.genus_zh }}宝可梦</span>
+              <span class="chip">{{ d.species.genus_zh }}</span>
+              <span class="chip" v-if="d.species.shape_zh">{{ d.species.shape_zh }}</span>
               <span class="chip" v-if="d.species.egg_groups && d.species.egg_groups !== '未发现'">
                 {{ d.species.egg_groups }}</span>
+            </div>
+            <div class="kv">
+              <span><b>捕获率：</b>{{ d.species.capture_rate }}</span>
+              <span><b>身高/体重：</b>{{ (curForm.height / 10).toFixed(1) }}m / {{ (curForm.weight / 10).toFixed(1) }}kg</span>
+              <span style="display:inline-flex;align-items:center"><b>击倒努力值：</b><ev-badges :ev="curEv"></ev-badges></span>
             </div>
             <div class="kv" v-if="curDex">
               <span><el-tag size="small" effect="plain" type="success">
@@ -61,17 +69,10 @@ const DetailView = {
           <flavor-list :flavor="curFlavor"></flavor-list>
         </div>
 
-        <!-- 特性与基础数据 -->
-        <div class="block">
+        <!-- 特性（阿尔宙斯与传说 Z-A 无特性机制，整体不渲染） -->
+        <div class="block" v-if="!noAbilities">
           <h3>特性</h3>
-          <div style="margin-bottom:8px"><ability-list :abilities="curForm.ability_list"></ability-list></div>
-          <div class="kv">
-            <span><b>捕获率：</b>{{ d.species.capture_rate }}</span>
-            <span><b>身高/体重：</b>{{ (curForm.height / 10).toFixed(1) }}m / {{ (curForm.weight / 10).toFixed(1) }}kg</span>
-          </div>
-          <div class="kv">
-            <span><b>击倒努力值：</b><ev-badges :ev="curEv"></ev-badges></span>
-          </div>
+          <ability-list :abilities="curForm.ability_list"></ability-list>
         </div>
 
         <!-- 属性相性（防守 / 攻击切换） -->
@@ -87,18 +88,22 @@ const DetailView = {
             <div class="eff-groups" v-if="effGroups">
               <div v-for="g in effGroups" :key="g.m" class="eff-group">
                 <span class="eff-m" :class="effClass(g.m)">×{{ g.m }}</span>
-                <type-badge v-for="t in g.types" :key="t" :types="t"></type-badge>
+                <div class="eff-types">
+                  <type-badge v-for="t in g.types" :key="t" :types="t"></type-badge>
+                </div>
               </div>
             </div>
             <div v-else class="empty-hint">加载中…</div>
           </template>
           <template v-else>
             <div v-for="t in myTypes" :key="t" class="eff-group atk-group">
-              <type-badge :types="t"></type-badge>
+              <span class="eff-m atk-src">⚔ {{ t }}</span>
               <div class="eff-atk-list">
                 <span v-for="g in atkGroupsOf(t)" :key="g.m" class="eff-inline">
                   <span class="eff-m" :class="effClass(g.m)">×{{ g.m }}</span>
-                  <type-badge v-for="t2 in g.types" :key="t2" :types="t2" plain></type-badge>
+                  <div class="eff-types">
+                    <type-badge v-for="t2 in g.types" :key="t2" :types="t2" plain></type-badge>
+                  </div>
                 </span>
               </div>
             </div>
@@ -121,7 +126,7 @@ const DetailView = {
             <div v-for="k in STAT_KEYS" :key="k" class="stat-row">
               <span class="stat-k">{{ STAT_ZH[k] }}</span>
               <span class="stat-base">{{ baseStats[k] ?? "—" }}</span>
-              <div class="stat-track"><div class="stat-fill" :style="{width: pct(baseStats[k]), background: color(baseStats[k])}"></div></div>
+              <div class="stat-track"><div class="stat-fill" :style="{width: pct(baseStats[k]), background: STAT_BAR_COLOR}"></div></div>
               <span class="stat-range">{{ rangeOf(k) }}</span>
               <span v-if="computedStats[k] != null" class="stat-actual">{{ computedStats[k] }}</span>
             </div>
@@ -300,7 +305,7 @@ const DetailView = {
       if (!d.value) return { types: "", ability_list: [], height: 0, weight: 0, id: 0 };
       return d.value.forms.find((f) => f.id === formId.value) || d.value.default_form;
     });
-    const formName = (f) => formDisplayName(f);
+    const formName = (f) => (f && f.is_default) ? "" : formDisplayName(f);
     /* 图鉴介绍随形态切换：形态独立介绍优先，否则沿用默认 */
     const curFlavor = computed(() => {
       if (!d.value) return [];
@@ -370,13 +375,7 @@ const DetailView = {
       return `${lo}~${hi}`;
     }
     function pct(v) { return Math.min(100, ((v || 0) / 255) * 100) + "%"; }
-    function color(v) {
-      if (v >= 130) return "#e05a5a";
-      if (v >= 100) return "#e8834a";
-      if (v >= 80) return "#5a9be0";
-      if (v >= 60) return "#7bc86c";
-      return "#98a1b3";
-    }
+    const STAT_BAR_COLOR = "#5a9be0";   /* 统一单色，不再按阈值配色 */
 
     /* ---- 属性相性 ---- */
     const myTypes = computed(() =>
@@ -420,16 +419,23 @@ const DetailView = {
       const token = ++loadToken;
       if (!silent) loading.value = true;
       try {
-        const key = sid.value + "|" + gameId.value;
+        const suffix = pendingSuffix.value;
+        const key = sid.value + "|" + gameId.value + (suffix ? "|" + suffix : "");
         if (!detailCache.has(key)) {
-          const data = await apiGet("/api/pokemon/" + sid.value, { game: gameId.value });
+          const data = await apiGet("/api/pokemon/" + sid.value,
+            { game: gameId.value, form: suffix || undefined });
           detailCache.set(key, data);
           if (detailCache.size > 40) detailCache.delete(detailCache.keys().next().value);
         }
         if (token !== loadToken) return;
         d.value = detailCache.get(key);
         suppressMoveWatch = true;
-        formId.value = d.value.default_form ? d.value.default_form.id : null;
+        // 默认选中：请求带回的形态 > 默认形态
+        const wantSuffix = d.value.selected_suffix || suffix;
+        const want = wantSuffix
+          ? d.value.forms.find((f) => (f.identifier || "").endsWith("-" + wantSuffix))
+          : null;
+        formId.value = (want || d.value.default_form || d.value.forms[0] || {}).id || null;
         suppressMoveWatch = false;
         try {
           await Promise.all([loadMoves(), loadNatures()]);
@@ -458,6 +464,9 @@ const DetailView = {
     }
     let moveToken = 0;
     let suppressMoveWatch = false;
+    const pendingSuffix = ref("");   // 当前选中形态的 identifier 后缀（空=默认）
+    const noAbilities = computed(() =>
+      gameId.value === "legends-arceus" || gameId.value === "legends-za");
     async function loadMoves() {
       if (!gameId.value) { moves.value = null; return; }
       const token = ++moveToken;
@@ -469,9 +478,18 @@ const DetailView = {
         tab.value = moves.value.tabs[0].key;
       }
     }
-    /* 切换形态时重载该形态的招式表（介绍/特性/种族值随 curForm 响应式联动） */
+    /* 切换形态：招式表重载 + 后缀变化时详情重载（获取方式/进化链按形态过滤） */
     watch(formId, () => {
-      if (formId.value && !suppressMoveWatch) loadMoves().catch(() => {});
+      if (!formId.value || suppressMoveWatch || !d.value) return;
+      const f = (d.value.forms || []).find((x) => x.id === formId.value);
+      const ident = (f && f.identifier) || "";
+      const suffix = f && f.is_default ? "" : ident.split("-").slice(1).join("-");
+      if (suffix !== pendingSuffix.value) {
+        pendingSuffix.value = suffix;
+        load(true);
+      } else {
+        loadMoves().catch(() => {});
+      }
     });
 
     async function showChains(row) {
@@ -533,9 +551,10 @@ const DetailView = {
     load();
     return {
       loading, d, sid, formId, curForm, formName, curFlavor, curEv, curDex, game, gameId,
+      noAbilities,
       moves, tab, chainDlg, chainLoading, chains, chainTitle, showChains, goBack,
       baseStats, statSum, sc, natures, computedStats, evSum, STAT_ZH, STAT_KEYS,
-      rangeOf, pct, color,
+      rangeOf, pct, STAT_BAR_COLOR,
       effMode, effGroups, effClass, myTypes, atkGroupsOf,
       navList, prevId, nextId, goNeighbor,
     };

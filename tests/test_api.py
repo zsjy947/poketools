@@ -266,3 +266,26 @@ def test_state_sync_and_counts():
     for dex in ("galar", "isle-of-armor", "kitakami", "paldea"):
         client.post("/api/state/bulk", json={"profile_id": 1, "dex_id": dex,
                                              "caught": False, "species_ids": [25, 906, 94]})
+
+
+def test_pokemon_form_branch_and_abilities():
+    # 喵喵默认分支不含喵头目；伽勒尔分支含且条件带地区前缀
+    d = client.get("/api/pokemon/52", params={"game": "sword-shield"}).json()
+    assert "863" not in d["evolution"]["nodes"]
+    g = client.get("/api/pokemon/52", params={"game": "sword-shield", "form": "galar"}).json()
+    assert "863" in g["evolution"]["nodes"]
+    assert "伽勒尔地区" in g["evolution"]["conds"]["52|863"]
+    # 获取方式按形态过滤：默认形态只看通用行；伽勒尔形态含 G 行且不含 A 行
+    assert all(not r["form"] for r in d["get_methods"])
+    g_forms = {r["form"] for r in g["get_methods"] if r["form"]}
+    assert g_forms == {"G"}
+    # 特性带文案（52poke 抓取）
+    ab = d["forms"][0]["ability_list"][0]
+    assert set(ab) >= {"name", "hidden", "intro", "effect", "extra"}
+    # 形态按游戏过滤：剑盾无 mega 形态；Z-A 有
+    ss = client.get("/api/pokemon/445", params={"game": "sword-shield"}).json()
+    assert all("mega" not in (f["identifier"] or "") for f in ss["forms"])
+    za = client.get("/api/pokemon/445", params={"game": "legends-za"}).json()
+    assert any(f["identifier"] == "garchomp-mega" for f in za["forms"])
+    # 体型/种族列存在
+    assert d["species"]["shape_zh"]
