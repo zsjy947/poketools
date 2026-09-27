@@ -423,7 +423,8 @@ const DetailView = {
         const key = sid.value + "|" + gameId.value + (suffix ? "|" + suffix : "");
         if (!detailCache.has(key)) {
           const data = await apiGet("/api/pokemon/" + sid.value,
-            { game: gameId.value, form: suffix || undefined });
+            { game: gameId.value, form: suffix || undefined,
+              dex: backParams.get("dex") || undefined });
           detailCache.set(key, data);
           if (detailCache.size > 40) detailCache.delete(detailCache.keys().next().value);
         }

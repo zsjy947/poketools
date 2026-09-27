@@ -58,11 +58,14 @@ def dex_entries(
         con.close()
         raise HTTPException(404, "dex not found")
 
-    form_rows = con.execute(
+    # 图鉴默认展示形态：优先 dex_default_forms 覆盖（如洗翠图鉴显洗翠样子/北上乡月月熊显血月），
+    # 无覆盖回退 is_default=1
+    override_map = {r["species_id"]: r["form_id"] for r in con.execute(
+        "SELECT species_id, form_id FROM dex_default_forms WHERE dex_id=?", (dex_id,))}
+    types_map = {r["species_id"]: (r["form_id"], r["types"] or "") for r in con.execute(
         """SELECT f.species_id, f.id AS form_id, f.types
            FROM forms f JOIN dex_entries e ON e.species_id = f.species_id
-           WHERE e.dex_id = ? AND f.is_default = 1""", (dex_id,)).fetchall()
-    types_map = {r["species_id"]: (r["form_id"], r["types"] or "") for r in form_rows}
+           WHERE e.dex_id = ? AND f.is_default = 1""", (dex_id,)).fetchall()}
     caught_map = {}
     scon = state_conn()
     for r in scon.execute(
@@ -78,6 +81,10 @@ def dex_entries(
                FROM dex_entries e JOIN species s ON s.id = e.species_id
                WHERE e.dex_id = ? ORDER BY e.ndex""", (dex_id,)):
         fid, tp = types_map.get(r["species_id"], (0, ""))
+        ofid = override_map.get(r["species_id"])
+        if ofid:
+            frow = con.execute("SELECT types FROM forms WHERE id=?", (ofid,)).fetchone()
+            fid, tp = ofid, (frow["types"] or "") if frow else ""
         entries.append({"ndex": r["ndex"], "species_id": r["species_id"],
                         "name_zh": r["name_zh"], "name_en": r["name_en"],
                         "types": _type_sort(tp), "form_id": fid,

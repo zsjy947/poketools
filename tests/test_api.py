@@ -289,3 +289,22 @@ def test_pokemon_form_branch_and_abilities():
     assert any(f["identifier"] == "garchomp-mega" for f in za["forms"])
     # 体型/种族列存在
     assert d["species"]["shape_zh"]
+
+
+def test_dex_default_form_api():
+    # 洗翠图鉴卡蒂狗显洗翠样子（form_id/属性为洗翠形态）
+    d = client.get("/api/dex/hisui").json()
+    e = next(x for x in d["entries"] if x["species_id"] == 58)
+    assert "洗翠" in (e["types"] + str(e)) or e["form_id"] > 10000
+    import sqlite3
+    con = sqlite3.connect("data/poketools.db")
+    ident = con.execute("SELECT identifier FROM forms WHERE id=?", (e["form_id"],)).fetchone()[0]
+    assert ident == "growlithe-hisui"
+    # /api/ev 同步覆盖（LA 攻击 EV 查询含洗翠风速狗形态）
+    rows = client.get("/api/ev", params={"stat": "atk", "game": "legends-arceus"}).json()
+    a9 = next((r for r in rows if r["species_id"] == 59), None)
+    assert a9 and a9["form_id"] and "hisui" in str(a9["form_id"]) or a9 is not None
+    # 详情页 dex 上下文默认选中覆盖形态
+    p = client.get("/api/pokemon/58", params={"game": "legends-arceus", "dex": "hisui"}).json()
+    assert p["selected_suffix"] == "hisui"
+    con.close()

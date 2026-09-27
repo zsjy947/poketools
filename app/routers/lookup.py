@@ -48,13 +48,32 @@ def ev_filter(
             ORDER BY s.id""").fetchall()
 
     q_lower = q.strip().lower()
+    # 图鉴默认形态覆盖（如洗翠图鉴的卡蒂狗显洗翠样子，EV/属性同步为该形态）
+    override: dict[int, dict] = {}
+    if game:
+        for r in con.execute(
+                """SELECT ddf.species_id, f.id AS form_id, f.types,
+                          f.ev_hp, f.ev_atk, f.ev_def, f.ev_spa, f.ev_spd, f.ev_spe
+                   FROM dex_default_forms ddf
+                   JOIN regional_dexes d ON d.id = ddf.dex_id
+                   JOIN forms f ON f.id = ddf.form_id
+                   WHERE d.game_id = ?""", (game,)):
+            override[r["species_id"]] = dict(r)
     out = []
     for r in rows:
         if game and r["species_id"] not in _game_dex_species().get(game, frozenset()):
             continue
         if q_lower and q_lower not in r["name_zh"].lower() and q_lower not in (r["name_en"] or "").lower():
             continue
-        out.append({**dict(r), "ev": {k: r[EV_COLS[k]] for k in EV_COLS}})
+        d = {**dict(r), "ev": {k: r[EV_COLS[k]] for k in EV_COLS}}
+        ov = override.get(r["species_id"])
+        if ov:
+            for k in EV_COLS:
+                d[k] = ov[EV_COLS[k]]
+            d["ev"] = {k: ov[EV_COLS[k]] for k in EV_COLS}
+            d["form_id"] = ov["form_id"]
+            d["types"] = ov["types"]
+        out.append(d)
     con.close()
     return out
 

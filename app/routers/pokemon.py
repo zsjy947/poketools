@@ -271,7 +271,8 @@ def _evolution_chain(con, species_id: int, form_suffix: str = "") -> dict:
 
 
 @router.get("/pokemon/{species_id}")
-def pokemon_detail(species_id: int, game: str = "", form: str = Query("", description="选中形态 identifier 后缀，空=默认形态")):
+def pokemon_detail(species_id: int, game: str = "", form: str = Query("", description="选中形态 identifier 后缀，空=默认形态"),
+                   dex: str = Query("", description="来源图鉴 id：默认选中形态按 dex_default_forms 覆盖")):
     con = static_conn()
     sp = con.execute("SELECT * FROM species WHERE id=?", (species_id,)).fetchone()
     if sp is None:
@@ -281,6 +282,16 @@ def pokemon_detail(species_id: int, game: str = "", form: str = Query("", descri
     forms = [dict(r) for r in con.execute(
         "SELECT * FROM forms WHERE species_id=? ORDER BY is_default DESC, id", (species_id,))]
     default = next((f for f in forms if f["is_default"]), forms[0] if forms else None)
+
+    # 图鉴默认形态覆盖（M5）：从图鉴进入时默认选中覆盖形态（如洗翠卡蒂狗）
+    dex_default_suffix = ""
+    if dex:
+        row = con.execute(
+            """SELECT f.identifier FROM dex_default_forms ddf
+               JOIN forms f ON f.id = ddf.form_id
+               WHERE ddf.dex_id=? AND ddf.species_id=?""", (dex, species_id)).fetchone()
+        if row:
+            _, _, dex_default_suffix = (row["identifier"] or "").rpartition("-")
 
     # 形态 × 游戏可用性：受限形态只保留当前游戏可用的（未收录形态默认可见）
     if game:
@@ -325,8 +336,8 @@ def pokemon_detail(species_id: int, game: str = "", form: str = Query("", descri
 
     # 获取方式按所选形态过滤：form 列为空 = 通用行恒显示；
     # 标记行（A/G/H…）映射后缀与选中形态匹配才显示（默认形态 → 只看通用行；
-    # 未映射的罕见标记行一律按形态专属隐藏）
-    sel_suffix = (form or "").strip()
+    # 未映射的罕见标记行一律按形态专属隐藏）。无显式 form 时用图鉴覆盖后缀。
+    sel_suffix = (form or "").strip() or dex_default_suffix
     gm = [g for g in gm if not g["form"]
           or FORM_MARKER_TO_SUFFIX.get(g["form"]) == sel_suffix and g["form"] in FORM_MARKER_TO_SUFFIX]
 
@@ -358,7 +369,7 @@ def pokemon_detail(species_id: int, game: str = "", form: str = Query("", descri
            ORDER BY CASE WHEN d.game_id = ? THEN 0 ELSE 1 END, d.sort""",
         (species_id, game))]
 
-    evolution = _evolution_chain(con, species_id, (form or "").strip())
+    evolution = _evolution_chain(con, species_id, (form or "").strip() or dex_default_suffix)
 
     if default:
         for f in forms:
@@ -369,7 +380,7 @@ def pokemon_detail(species_id: int, game: str = "", form: str = Query("", descri
         "species": dict(sp),
         "default_form": default,
         "forms": forms,
-        "selected_suffix": (form or "").strip(),
+        "selected_suffix": sel_suffix,
         "ev": {k: default[f"ev_{k}"] for k in ("hp", "atk", "def", "spa", "spd", "spe")} if default else {},
         "base_stats": ({k: default[k] for k in ("hp", "atk", "def", "spa", "spd", "spe")}
                        if default else {}),

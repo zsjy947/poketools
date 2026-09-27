@@ -95,3 +95,20 @@ def test_sandwiches(con):
     powers = {e["power"] for e in effects}
     assert "遭遇力" in powers and "捕获力" in powers
     assert all(e["level"] in (1, 2, 3) for e in effects)
+
+
+def test_dex_default_forms(con):
+    # 洗翠图鉴的洗翠形态种全命中（卡蒂狗=洗翠、六尾=阿罗拉）
+    rows = {r["species_id"]: r["form_id"] for r in con.execute(
+        "SELECT species_id, form_id FROM dex_default_forms WHERE dex_id='hisui'")}
+    hisui_forms = {r["species_id"]: r["identifier"] for r in con.execute(
+        "SELECT species_id, identifier FROM forms WHERE identifier LIKE '%-hisui'")}
+    assert all(rows.get(s) for s in hisui_forms)
+    g = con.execute("""SELECT f.identifier FROM dex_default_forms d
+                       JOIN forms f ON f.id=d.form_id
+                       WHERE d.dex_id='galar' AND d.species_id=52""").fetchone()
+    assert g["identifier"] == "meowth-galar"
+    k = con.execute("""SELECT f.identifier FROM dex_default_forms d
+                       JOIN forms f ON f.id=d.form_id
+                       WHERE d.dex_id='kitakami' AND d.species_id=901""").fetchone()
+    assert k["identifier"] == "ursaluna-bloodmoon"
