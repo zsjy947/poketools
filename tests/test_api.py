@@ -308,3 +308,16 @@ def test_dex_default_form_api():
     p = client.get("/api/pokemon/58", params={"game": "legends-arceus", "dex": "hisui"}).json()
     assert p["selected_suffix"] == "hisui"
     con.close()
+
+
+def test_ev_locations():
+    rows = client.get("/api/ev", params={"stat": "atk", "game": "legends-arceus"}).json()
+    r = next(x for x in rows if x["species_id"] == 58)
+    assert r["locations"] and any("迎风林" in l["location"] for l in r["locations"])
+    # 白名单排除团体战/定点：剑盾烈咬陆鲨野生地点不含极巨团体战方法
+    rows2 = client.get("/api/ev", params={"stat": "atk", "game": "sword-shield"}).json()
+    g = next(x for x in rows2 if x["species_id"] == 445)
+    assert all("团体战" not in l["method"] for l in g["locations"])
+    # 版本标签保留（扩展票/零之秘宝行可标注）
+    rows3 = client.get("/api/ev", params={"stat": "atk", "game": "scarlet-violet"}).json()
+    assert any(l["version_label"] for x in rows3 for l in x["locations"])

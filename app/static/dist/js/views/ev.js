@@ -1,10 +1,10 @@
-/* 努力值查询（游戏上下文内：仅当前版本图鉴宝可梦） */
+/* 努力值查询（游戏上下文内：仅当前版本图鉴宝可梦 + 野外地点列） */
 const EvView = {
   template: `
-  <div>
+  <div class="ev-page">
     <div class="page-head">
       <span class="page-title">{{ game ? game.name_zh : "" }} · 努力值查询</span>
-      <span style="color:#888;font-size:13px">击倒该宝可梦可获得的努力值点数（仅当前游戏图鉴）</span>
+      <span style="color:#888;font-size:13px">击倒该宝可梦可获得的努力值点数（仅当前游戏图鉴，含野外自然出现地点）</span>
     </div>
     <div class="page-head">
       <el-select v-model="stat" style="width:110px">
@@ -19,22 +19,37 @@ const EvView = {
       <span style="font-size:13px;color:#888">{{ list.length }} 只</span>
     </div>
 
-    <el-table :data="list" size="small" height="calc(100vh - 220px)" v-loading="loading"
+    <el-table :data="list" size="small" class="ev-table" v-loading="loading"
       @row-click="openDetail" style="cursor:pointer">
       <el-table-column width="80">
         <template #default="{ row }"><poke-img :form-id="row.form_id" :size="56"></poke-img></template>
       </el-table-column>
-      <el-table-column label="宝可梦" min-width="150">
+      <el-table-column label="宝可梦" width="150">
         <template #default="{ row }">
           <div style="font-weight:600">{{ row.name_zh }}</div>
           <div style="font-size:11px;color:#98a1b3">{{ row.name_en }}</div>
         </template>
       </el-table-column>
-      <el-table-column label="属性" width="130">
+      <el-table-column label="属性" width="140">
         <template #default="{ row }"><type-badge :types="row.types"></type-badge></template>
       </el-table-column>
-      <el-table-column label="努力值" width="260">
+      <el-table-column label="努力值" width="230">
         <template #default="{ row }"><ev-badges :ev="row.ev"></ev-badges></template>
+      </el-table-column>
+      <el-table-column label="野外地点" min-width="260">
+        <template #default="{ row }">
+          <template v-if="row.locations && row.locations.length">
+            <span v-for="(l, i) in shownLocations(row)" :key="i" class="ev-loc">
+              <span v-if="versionChip(l.version_label)" class="ev-ver-chip"
+                :class="chipClass(l.version_label)">{{ versionChip(l.version_label) }}</span>{{ l.location }}
+            </span>
+            <el-tooltip v-if="row.locations.length > 3" :content="allLocationsText(row)"
+              placement="top" :show-after="300">
+              <span class="ev-loc more">+{{ row.locations.length - 3 }}</span>
+            </el-tooltip>
+          </template>
+          <span v-else class="empty-hint">本作无自然出现</span>
+        </template>
       </el-table-column>
     </el-table>
   </div>
@@ -61,10 +76,32 @@ const EvView = {
     function openDetail(row) {
       location.hash = "#/pokemon/" + row.species_id + "?game=" + store.gameId;
     }
+    function shownLocations(row) { return row.locations.slice(0, 3); }
+    function allLocationsText(row) {
+      return row.locations.map((l) => l.location).join("、");
+    }
+    /* 版本 chip：单版本独占标「剑/盾/朱/紫」，DLC 行标「扩展票/零之秘宝/异次元」 */
+    function versionChip(label) {
+      if (!label) return "";
+      if (label.includes("扩展票")) return "扩展票";
+      if (label.includes("零之秘宝")) return "零之秘宝";
+      if (label.includes("异次元")) return "异次元";
+      if (label === "剑") return "剑";
+      if (label === "盾") return "盾";
+      if (label === "朱") return "朱";
+      if (label === "紫") return "紫";
+      return "";
+    }
+    function chipClass(label) {
+      if (label.includes("扩展票") || label.includes("零之秘宝") || label.includes("异次元")) return "dlc";
+      return "ver";
+    }
     watch([stat, value], load);
+    watch(() => store.gameId, load);
     let qt;
     watch(q, () => { clearTimeout(qt); qt = setTimeout(load, 300); });
     load();
-    return { store, stat, value, q, list, loading, game, EV_NAMES, openDetail };
+    return { store, stat, value, q, list, loading, game, EV_NAMES, openDetail,
+             shownLocations, allLocationsText, versionChip, chipClass };
   },
 };

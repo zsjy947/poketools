@@ -41,3 +41,15 @@
 .donut-img-wrap.small .donut-img { width: 84px; height: 84px; }
 .donut-img { width: 110px; height: 110px; object-fit: contain; }
 .curry-img { width: 100%; border-radius: 8px; margin-bottom: 6px; display: block; }
+
+/* 努力值页：表格 flex 撑满主区 + 野外地点列 */
+.ev-page { display: flex; flex-direction: column; min-height: calc(100vh - 96px); }
+.ev-page .el-table { flex: 1; }
+
+.ev-loc { display: inline-block; font-size: 12.5px; color: #444; background: #f4f6fa;
+  border-radius: 4px; padding: 1px 7px; margin: 1px 4px 1px 0; max-width: 100%; }
+.ev-loc.more { color: #2a7be4; font-weight: 700; cursor: pointer; }
+.ev-ver-chip { display: inline-block; border-radius: 3px; padding: 0 5px; font-size: 10.5px;
+  margin-right: 4px; color: #fff; font-weight: 600; vertical-align: 1px; }
+.ev-ver-chip.ver { background: #4a5b82; }
+.ev-ver-chip.dlc { background: #c99a1e; }

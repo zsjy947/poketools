@@ -16,6 +16,17 @@ router = APIRouter(prefix="/api")
 EV_COLS = {"hp": "ev_hp", "atk": "ev_atk", "def": "ev_def",
            "spa": "ev_spa", "spd": "ev_spd", "spe": "ev_spe"}
 
+# 野外自然出现类 method 白名单（M3 核定：含可见/随机等捕获词；排除 团体战/定点/交换/赠送/活动/化石/不存在）
+WILD_METHOD_KEYWORDS = ("可见", "隨機", "随机", "垂钓", "沖浪", "冲浪", "大量出现",
+                        "时空歪曲", "宝可追踪", "涂甜甜蜜", "野生", "摇动", "四处游走")
+
+
+def _is_wild_method(method: str) -> bool:
+    m = method or ""
+    if not m or "团体战" in m or "不存在" in m or "交换" in m or "赠送" in m or "化石" in m:
+        return False
+    return any(k in m for k in WILD_METHOD_KEYWORDS)
+
 
 @lru_cache(maxsize=8)
 def _game_dex_species() -> dict[str, frozenset[int]]:
@@ -59,6 +70,26 @@ def ev_filter(
                    JOIN forms f ON f.id = ddf.form_id
                    WHERE d.game_id = ?""", (game,)):
             override[r["species_id"]] = dict(r)
+    # 野外地点（get_methods 野生白名单行；52poke 标记行与该物种的默认覆盖形态匹配才计）
+    wild: dict[int, list] = {}
+    if game:
+        ov_suffix: dict[int, str] = {}
+        for sid, ov in override.items():
+            ident = con.execute("SELECT identifier FROM forms WHERE id=?",
+                                (ov["form_id"],)).fetchone()
+            s = (ident[0] or "").rpartition("-")[2] if ident and "-" in (ident[0] or "") else ""
+            ov_suffix[sid] = s
+        from ..routers.pokemon import FORM_MARKER_TO_SUFFIX
+        for r in con.execute(
+                """SELECT species_id, location, method, version_label, form
+                   FROM get_methods WHERE game=? AND location != ''""", (game,)):
+            if not _is_wild_method(r["method"]):
+                continue
+            if r["form"] and FORM_MARKER_TO_SUFFIX.get(r["form"]) != ov_suffix.get(r["species_id"], ""):
+                continue
+            wild.setdefault(r["species_id"], []).append(
+                {"location": r["location"], "method": r["method"],
+                 "version_label": r["version_label"]})
     out = []
     for r in rows:
         if game and r["species_id"] not in _game_dex_species().get(game, frozenset()):
@@ -73,6 +104,18 @@ def ev_filter(
             d["ev"] = {k: ov[EV_COLS[k]] for k in EV_COLS}
             d["form_id"] = ov["form_id"]
             d["types"] = ov["types"]
+        # 地点去重（同地点多版本行合并标签）
+        locs = wild.get(r["species_id"]) or []
+        merged: dict[str, dict] = {}
+        for item in locs:
+            m = merged.setdefault(item["location"], {"location": item["location"],
+                                                     "methods": set(), "labels": set()})
+            m["methods"].add(item["method"])
+            m["labels"].add(item["version_label"])
+        d["locations"] = [{"location": m["location"],
+                           "method": "、".join(sorted(m["methods"])),
+                           "version_label": "、".join(sorted(m["labels"]))}
+                          for m in merged.values()]
         out.append(d)
     con.close()
     return out
