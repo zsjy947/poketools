@@ -106,7 +106,7 @@ const DonutView = {
                 {{ e.power }}<template v-if="e.type">：{{ e.type }}</template> Lv.{{ e.level }}
               </span>
             </div>
-            <div class="ing"><b>树果：</b>{{ Array.isArray(r.ingredients) ? r.ingredients.join("、") : r.ingredients }}</div>
+            <div class="ing"><b>树果：</b>{{ fmtList(r.ingredients) }}</div>
           </div>
         </div>
         <div v-else class="empty-hint" style="padding:30px">还没有自定义配方</div>
@@ -136,12 +136,18 @@ const DonutView = {
         </el-form-item>
         <el-form-item label="树果" required>
           <div style="width:100%">
-            <el-select v-model="editor.ingredients" multiple filterable
-              placeholder="搜索并选择树果（3~8 个）" style="width:100%">
+            <el-select :model-value="null" filterable
+              placeholder="搜索并添加树果（同种可多个）" style="width:100%"
+              @change="addBerry">
               <el-option v-for="b in d.berries" :key="b.name" :value="b.name" :label="b.name" />
             </el-select>
-            <div class="berry-count" :class="{bad: editor.ingredients.length > 0 && (editor.ingredients.length < 3 || editor.ingredients.length > 8)}">
-              已选 {{ editor.ingredients.length }} / 8 个（最少 3 个；黄油随剧情固定，无需选择）
+            <div v-for="(it, i) in editor.ingredients" :key="it.name" class="qty-row">
+              <span class="qty-name">{{ it.name }}</span>
+              <el-input-number v-model="it.count" :min="1" :max="8" size="small" style="width:96px" />
+              <el-button size="small" text type="danger" @click="editor.ingredients.splice(i, 1)">删</el-button>
+            </div>
+            <div class="berry-count" :class="{bad: berryTotal > 0 && (berryTotal < 3 || berryTotal > 8)}">
+              合计 {{ berryTotal }} / 8 个（最少 3 个；黄油随剧情固定，无需选择）
             </div>
             <!-- 风味预览 -->
             <div v-if="flavorPreview" class="flavor-preview">
@@ -206,8 +212,21 @@ const DonutView = {
     function openEditor() {
       editor.name = "";
       editor.effects = [{ power: "", type: "", level: 1 }];
-      editor.ingredients = [];
+      editor.ingredients = [];   // [{name, count}]
       editorDlg.value = true;
+    }
+    function addBerry(name) {
+      if (name && !editor.ingredients.some((x) => x.name === name)) {
+        editor.ingredients.push({ name, count: 1 });
+      }
+    }
+    const berryTotal = Vue.computed(() =>
+      editor.ingredients.reduce((a, b) => a + b.count, 0));
+    function fmtList(v) {
+      if (Array.isArray(v)) {
+        return v.map((x) => (typeof x === "object" ? `${x.name} ×${x.count}` : x)).join("、");
+      }
+      return v || "—";
     }
 
     /* 风味预览：五维求和 → 最大风味对照阈值定★（0/120/240/350/700/960）→
@@ -216,9 +235,9 @@ const DonutView = {
     const flavorPreview = computed(() => {
       if (!d.value || !editor.ingredients.length) return null;
       const sums = { sweet: 0, spicy: 0, sour: 0, bitter: 0, fresh: 0 };
-      for (const name of editor.ingredients) {
-        const b = d.value.berries.find((x) => x.name === name);
-        if (b) for (const k of Object.keys(sums)) sums[k] += b[k] || 0;
+      for (const it of editor.ingredients) {
+        const b = d.value.berries.find((x) => x.name === it.name);
+        if (b) for (const k of Object.keys(sums)) sums[k] += (b[k] || 0) * (it.count || 1);
       }
       const entries = Object.entries(sums).sort((a, b) => b[1] - a[1]);
       const star = STAR_THRESHOLDS.filter((th) => entries[0][1] >= th).length;
@@ -235,8 +254,9 @@ const DonutView = {
     async function saveCustom() {
       const effects = editor.effects.filter((e) => e.power);
       if (!effects.length) { store.toast("风味力量为必填", "warning"); return; }
-      if (editor.ingredients.length < 3 || editor.ingredients.length > 8) {
-        store.toast("树果需要 3~8 个", "warning");
+      const total = editor.ingredients.reduce((a, b) => a + b.count, 0);
+      if (total < 3 || total > 8) {
+        store.toast("树果合计需要 3~8 个（同种可多个）", "warning");
         return;
       }
       saving.value = true;
@@ -268,7 +288,7 @@ const DonutView = {
     return {
       loading, d, tabName, berryQ, filteredBerries, customList,
       editorDlg, editor, saving, openEditor, saveCustom, removeCustom, flavorPreview,
-      powerNames, flClass, FLAVOR_NAMES, TYPE_LIST, POWER_COLORS,
+      powerNames, flClass, FLAVOR_NAMES, TYPE_LIST, POWER_COLORS, addBerry, berryTotal, fmtList,
     };
   },
 };

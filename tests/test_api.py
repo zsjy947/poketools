@@ -330,3 +330,39 @@ def test_ev_locations():
     # 版本标签保留（扩展票/零之秘宝行可标注）
     rows3 = client.get("/api/ev", params={"stat": "atk", "game": "scarlet-violet"}).json()
     assert any(l["version_label"] for x in rows3 for l in x["locations"])
+
+
+def test_custom_recipes_quantity():
+    # 数量版写入：[{name, count}]
+    r = client.post("/api/custom-recipes", json={
+        "profile_id": 1, "game": "scarlet-violet", "name": "数量测试",
+        "effects": [{"power": "蛋蛋力", "level": 2}],
+        "ingredients": [{"name": "生菜", "count": 2}, {"name": "番茄片", "count": 1}],
+        "seasonings": [{"name": "盐", "count": 1}]})
+    assert r.status_code == 200
+    rid = r.json()["id"]
+    lst = client.get("/api/custom-recipes", params={"profile": 1, "game": "scarlet-violet"}).json()
+    row = next(x for x in lst if x["id"] == rid)
+    assert row["ingredients"][0] == {"name": "生菜", "count": 2}
+    # 旧格式读取兼容（字符串数组 / 顿号文本 count=1）
+    con_in = row["ingredients"]
+    assert all(set(x) == {"name", "count"} for x in con_in)
+    # Z-A 总数校验：3~8 按数量合计（2 个树果各×2 = 4 通过；×1×1 = 2 拒绝）
+    r2 = client.post("/api/custom-recipes", json={
+        "profile_id": 1, "game": "legends-za", "name": "树果数量",
+        "effects": [{"power": "蛋蛋力", "level": 1}],
+        "ingredients": [{"name": "橙橙果", "count": 2}, {"name": "莓莓果", "count": 2}]})
+    assert r2.status_code == 200
+    r3 = client.post("/api/custom-recipes", json={
+        "profile_id": 1, "game": "legends-za", "name": "树果不足",
+        "effects": [{"power": "蛋蛋力", "level": 1}],
+        "ingredients": [{"name": "橙橙果", "count": 1}, {"name": "莓莓果", "count": 1}]})
+    assert r3.status_code == 400
+    # 旧文本格式仍可写入（count=1）
+    r4 = client.post("/api/custom-recipes", json={
+        "profile_id": 1, "game": "legends-za", "name": "旧格式",
+        "effects": [{"power": "蛋蛋力", "level": 1}],
+        "ingredients": "橙橙果、莓莓果、桃桃果"})
+    assert r4.status_code == 200 and r4.json()["ingredients"][0]["count"] == 1
+    for x in (rid, r2.json()["id"], r4.json()["id"]):
+        client.delete(f"/api/custom-recipes/{x}")

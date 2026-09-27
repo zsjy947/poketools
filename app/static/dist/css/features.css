@@ -53,3 +53,7 @@
   margin-right: 4px; color: #fff; font-weight: 600; vertical-align: 1px; }
 .ev-ver-chip.ver { background: #4a5b82; }
 .ev-ver-chip.dlc { background: #c99a1e; }
+
+/* 食谱编辑器数量行 */
+.qty-row { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+.qty-row .qty-name { flex: 1; font-size: 13px; color: #333; }

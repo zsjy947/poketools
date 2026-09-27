@@ -129,14 +129,32 @@ const SandwichView = {
           <el-button size="small" text type="primary" @click="editor.effects.push({power: '', type: '', level: 1})">＋ 添加效果</el-button>
         </el-form-item>
         <el-form-item label="食材" required>
-          <el-select v-model="editor.ingredients" multiple filterable placeholder="搜索并选择食材（可多选）" style="width:100%">
-            <el-option v-for="i in itemOptions('食材')" :key="i" :value="i" :label="i" />
-          </el-select>
+          <div style="width:100%">
+            <el-select :model-value="null" filterable placeholder="搜索并添加食材" style="width:100%"
+              @change="addItem(editor.ingredients, $event)">
+              <el-option v-for="i in itemOptions('食材')" :key="i" :value="i" :label="i"
+                :disabled="editor.ingredients.some(x => x.name === i)" />
+            </el-select>
+            <div v-for="(it, i) in editor.ingredients" :key="it.name" class="qty-row">
+              <span class="qty-name">{{ it.name }}</span>
+              <el-input-number v-model="it.count" :min="1" :max="99" size="small" style="width:96px" />
+              <el-button size="small" text type="danger" @click="editor.ingredients.splice(i, 1)">删除</el-button>
+            </div>
+          </div>
         </el-form-item>
         <el-form-item label="调味料" required>
-          <el-select v-model="editor.seasonings" multiple filterable placeholder="搜索并选择调味料（可多选）" style="width:100%">
-            <el-option v-for="i in itemOptions('调味料')" :key="i" :value="i" :label="i" />
-          </el-select>
+          <div style="width:100%">
+            <el-select :model-value="null" filterable placeholder="搜索并添加调味料" style="width:100%"
+              @change="addItem(editor.seasonings, $event)">
+              <el-option v-for="i in itemOptions('调味料')" :key="i" :value="i" :label="i"
+                :disabled="editor.seasonings.some(x => x.name === i)" />
+            </el-select>
+            <div v-for="(it, i) in editor.seasonings" :key="it.name" class="qty-row">
+              <span class="qty-name">{{ it.name }}</span>
+              <el-input-number v-model="it.count" :min="1" :max="99" size="small" style="width:96px" />
+              <el-button size="small" text type="danger" @click="editor.seasonings.splice(i, 1)">删除</el-button>
+            </div>
+          </div>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -188,12 +206,15 @@ const SandwichView = {
     function openEditor() {
       editor.name = "";
       editor.effects = [{ power: "", type: "", level: 1 }];
-      editor.ingredients = [];
+      editor.ingredients = [];   // [{name, count}]
       editor.seasonings = [];
       editorDlg.value = true;
     }
     function itemOptions(kind) {
       return items.value.filter((p) => p.kind === kind).map((p) => p.name);
+    }
+    function addItem(list, name) {
+      if (name && !list.some((x) => x.name === name)) list.push({ name, count: 1 });
     }
     async function saveCustom() {
       const effects = editor.effects.filter((e) => e.power);
@@ -201,6 +222,8 @@ const SandwichView = {
         store.toast("效果、食材、调味料均为必填", "warning");
         return;
       }
+      const totalIng = editor.ingredients.reduce((a, b) => a + b.count, 0);
+      if (totalIng > 30) { store.toast("食材总数过多", "warning"); return; }
       saving.value = true;
       try {
         await apiSend("POST", "/api/custom-recipes", {
@@ -228,7 +251,10 @@ const SandwichView = {
     loadCustom();
 
     function fmtList(v) {
-      return Array.isArray(v) ? v.join("、") : (v || "—");
+      if (Array.isArray(v)) {
+        return v.map((x) => (typeof x === "object" ? `${x.name} ×${x.count}` : x)).join("、");
+      }
+      return v || "—";
     }
 
     return {

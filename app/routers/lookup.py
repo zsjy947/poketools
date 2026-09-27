@@ -241,8 +241,29 @@ def _recipe_items(v) -> list[str]:
     return [x.strip()[:40] for x in re.split("[、,，\n]", s) if x.strip()][:20]
 
 
+def _recipe_items_counted(v) -> list[dict]:
+    """数量版：[{name, count}]（M7）。兼容三种输入：
+    新 [{name,count}] 数组 / 旧字符串数组 / 旧顿号文本（后两者 count=1）。"""
+    out: list[dict] = []
+    if isinstance(v, list):
+        for x in v:
+            if isinstance(x, dict):
+                name = str(x.get("name", "")).strip()[:40]
+                if not name:
+                    continue
+                try:
+                    count = max(1, min(99, int(x.get("count", 1) or 1)))
+                except (TypeError, ValueError):
+                    count = 1
+                out.append({"name": name, "count": count})
+            elif str(x).strip():
+                out.append({"name": str(x).strip()[:40], "count": 1})
+        return out[:20]
+    return [{"name": n, "count": 1} for n in _recipe_items(v)]
+
+
 def _parse_items(s: str):
-    """读取：JSON 数组（新格式）→ list；否则按原文返回（旧文本）。"""
+    """读取：JSON 数组（新格式，含 {name,count}）→ list；否则按原文返回（旧文本）。"""
     s = s or ""
     try:
         v = json.loads(s)
@@ -296,13 +317,16 @@ def add_custom_recipe(body: dict = Body(...)):
                               "type": str(e.get("type", ""))[:8],
                               "level": level})
     effects = clean_effects
-    ingredients = _recipe_items(body.get("ingredients"))
-    seasonings = _recipe_items(body.get("seasonings"))
-    # 朱紫三明治：食材/调味料必填；Z-A 甜甜圈：树果 3~8 个（黄油固定无输入）
+    ingredients = _recipe_items_counted(body.get("ingredients"))
+    seasonings = _recipe_items_counted(body.get("seasonings"))
+    # 朱紫三明治：食材/调味料必填；Z-A 甜甜圈：树果总数 3~8 个（黄油固定无输入）
+    ing_names = [i["name"] for i in ingredients]
+    sea_names = [i["name"] for i in seasonings]
     if game == "legends-za":
-        if not 3 <= len(ingredients) <= 8:
-            raise HTTPException(400, "树果数量需为 3~8 个")
-    elif not ingredients or not seasonings:
+        total = sum(i["count"] for i in ingredients)
+        if not 3 <= total <= 8:
+            raise HTTPException(400, "树果总数需为 3~8 个（可同种多个）")
+    elif not ing_names or not sea_names:
         raise HTTPException(400, "效果、食材、调味料均为必填")
     if not effects:
         raise HTTPException(400, "效果为必填")
