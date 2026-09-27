@@ -110,6 +110,19 @@ def _int_or_400(v, name: str) -> int:
         raise HTTPException(400, f"{name} 无效")
 
 
+def _same_game_dex_ids(species_id: int, game_id: str) -> list[str]:
+    """同游戏内含该物种的全部图鉴（本体↔DLC 双向同步；跨游戏不同步）。
+
+    图鉴成员在静态库，userstate 只存 caught_state。"""
+    con = static_conn()
+    rows = [r["dex_id"] for r in con.execute(
+        """SELECT DISTINCT e.dex_id AS dex_id
+           FROM dex_entries e JOIN regional_dexes d ON d.id = e.dex_id
+           WHERE e.species_id = ? AND d.game_id = ?""", (species_id, game_id))]
+    con.close()
+    return rows
+
+
 @router.put("/state")
 def set_state(body: dict = Body(...)):
     pid = _int_or_400(body.get("profile_id"), "profile_id")
@@ -121,16 +134,26 @@ def set_state(body: dict = Body(...)):
     if not dex_id:
         raise HTTPException(400, "dex_id 必填")
     caught = 1 if body.get("caught") else 0
-    con = state_conn()
-    con.execute(
+    sreader = static_conn()
+    game = sreader.execute(
+        "SELECT game_id FROM regional_dexes WHERE id=?", (dex_id,)).fetchone()
+    sreader.close()
+    if game is None:
+        raise HTTPException(400, "dex_id 无效")
+    scon = state_conn()
+    # 同游戏双向同步：本体 / DLC 图鉴随标记操作一并对齐
+    dex_ids = _same_game_dex_ids(species_id, game["game_id"]) or [dex_id]
+    if dex_id not in dex_ids:
+        dex_ids.append(dex_id)
+    scon.executemany(
         """INSERT INTO caught_state (profile_id, dex_id, species_id, caught)
            VALUES (?,?,?,?)
            ON CONFLICT(profile_id, dex_id, species_id)
            DO UPDATE SET caught=excluded.caught, updated_at=datetime('now','localtime')""",
-        (pid, dex_id, species_id, caught))
-    con.commit()
-    con.close()
-    return {"ok": True}
+        [(pid, d, species_id, caught) for d in dex_ids])
+    scon.commit()
+    scon.close()
+    return {"ok": True, "synced_dexes": dex_ids}
 
 
 @router.post("/state/bulk")
@@ -144,13 +167,36 @@ def set_state_bulk(body: dict = Body(...)):
         ids = [int(s) for s in body.get("species_ids", [])]
     except (TypeError, ValueError):
         raise HTTPException(400, "species_ids 无效")
-    con = state_conn()
-    con.executemany(
+    sreader = static_conn()
+    game = sreader.execute(
+        "SELECT game_id FROM regional_dexes WHERE id=?", (dex_id,)).fetchone()
+    sreader.close()
+    if game is None:
+        raise HTTPException(400, "dex_id 无效")
+    scon = state_conn()
+    # 逐物种同步：同游戏内所有含该物种的图鉴一并 UPSERT（本体↔DLC 双向）
+    rows = []
+    for sid in ids:
+        for d in _same_game_dex_ids(sid, game["game_id"]):
+            rows.append((pid, d, sid, caught))
+    scon.executemany(
         """INSERT INTO caught_state (profile_id, dex_id, species_id, caught)
            VALUES (?,?,?,?)
            ON CONFLICT(profile_id, dex_id, species_id)
            DO UPDATE SET caught=excluded.caught, updated_at=datetime('now','localtime')""",
-        [(pid, dex_id, s, caught) for s in ids])
-    con.commit()
-    con.close()
+        rows)
+    scon.commit()
+    scon.close()
     return {"ok": True, "count": len(ids)}
+
+
+@router.get("/state/counts")
+def state_counts(profile: int = 1):
+    """全部图鉴的已捕捉计数（一次返回，修复未访问 tab 计数恒 0）。"""
+    scon = state_conn()
+    rows = scon.execute(
+        """SELECT c.dex_id, COUNT(*) AS caught
+           FROM caught_state c WHERE c.profile_id=? AND c.caught=1
+           GROUP BY c.dex_id""", (profile,)).fetchall()
+    scon.close()
+    return {r["dex_id"]: r["caught"] for r in rows}

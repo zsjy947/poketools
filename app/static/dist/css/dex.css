@@ -17,21 +17,22 @@
 .dex-progress { display: flex; align-items: center; gap: 10px; }
 .dex-progress-txt { font-size: 13px; line-height: 1.35; }
 
-/* 图鉴卡片：精灵球捕捉交互 */
+/* 图鉴卡片：捕捉状态只由右上角精灵球表达，卡片本身不变色 */
 .dex-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
 .dex-card { background: #fff; border-radius: 12px; border: 1.5px solid #e4e8f0; padding: 8px 10px 10px; cursor: pointer; position: relative; transition: box-shadow .15s; text-align: center; }
 .dex-card:hover { box-shadow: 0 4px 14px rgba(31,42,68,.14); }
-.dex-card.caught { border-color: #8fd06a; background: #f6fcf1; }
-.dex-card.caught::before { content: "●"; position: absolute; left: 8px; top: 4px; color: #67c23a; font-size: 10px; }
+.dex-card.markable { border-style: dashed; }
 .dex-card .card-top { display: flex; justify-content: space-between; align-items: center; }
 .dex-card .ndex { color: #9aa3b5; font-size: 12px; }
 .dex-card .pname { font-weight: 600; font-size: 14px; margin-top: 2px; }
 .dex-card .en { color: #a8b0c0; font-size: 11px; min-height: 14px; }
 .dex-card img.poke-img { display: block; margin: 2px auto; object-fit: contain; }
 .dex-card img.img-missing { visibility: hidden; }
-.poke-toggle { display: inline-flex; cursor: pointer; color: #b6bdc9; transition: transform .12s; }
+.poke-toggle { display: inline-flex; cursor: pointer; color: #b6bdc9; transition: transform .12s;
+  padding: 4px; margin: -4px; }   /* 加大点击热区 */
 .poke-toggle:hover { transform: scale(1.18); }
 .poke-toggle.caught { color: #e5484d; }
+.mark-mode { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #667; }
 
 /* 详情页：形态 tab 条 + PC 两栏 */
 .form-strip { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }

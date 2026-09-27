@@ -233,3 +233,36 @@ def test_calc_batch_and_meta():
         "move_id": 85, "z_move": True})
     assert r3.status_code == 200
     assert r3.json()["z_info"]["name"] == "驾雷驭电戏冲浪"
+
+
+def test_state_sync_and_counts():
+    # 同游戏同步：皮卡丘在 galar+isle-of-armor（不在 crown-tundra）
+    r = client.put("/api/state", json={"profile_id": 1, "dex_id": "galar",
+                                       "species_id": 25, "caught": True})
+    assert r.json()["ok"] and set(r.json()["synced_dexes"]) == {"galar", "isle-of-armor"}
+    for dex in ("galar", "isle-of-armor"):
+        d = client.get(f"/api/dex/{dex}", params={"filter": "caught"}).json()
+        assert any(e["species_id"] == 25 for e in d["entries"]), dex
+    d = client.get("/api/dex/crown-tundra", params={"filter": "caught"}).json()
+    assert not any(e["species_id"] == 25 for e in d["entries"])   # 未收录不同步
+    # 取消标记同样传播
+    client.put("/api/state", json={"profile_id": 1, "dex_id": "isle-of-armor",
+                                   "species_id": 25, "caught": False})
+    for dex in ("galar", "isle-of-armor"):
+        d = client.get(f"/api/dex/{dex}", params={"filter": "caught"}).json()
+        assert not any(e["species_id"] == 25 for e in d["entries"]), dex
+    # counts：一次返回全部图鉴计数
+    client.put("/api/state", json={"profile_id": 1, "dex_id": "paldea",
+                                   "species_id": 906, "caught": True})
+    counts = client.get("/api/state/counts", params={"profile": 1}).json()
+    assert counts.get("paldea") == 1
+    # bulk 同步传播（耿鬼 94 在 kitakami+paldea 同游戏）
+    r = client.post("/api/state/bulk", json={"profile_id": 1, "dex_id": "kitakami",
+                                             "caught": True, "species_ids": [94]})
+    assert r.json()["ok"]
+    d = client.get("/api/dex/paldea", params={"filter": "caught"}).json()
+    assert any(e["species_id"] == 94 for e in d["entries"])
+    # 清理
+    for dex in ("galar", "isle-of-armor", "kitakami", "paldea"):
+        client.post("/api/state/bulk", json={"profile_id": 1, "dex_id": dex,
+                                             "caught": False, "species_ids": [25, 906, 94]})

@@ -1,4 +1,6 @@
-/* 地区图鉴页（游戏上下文内）：卡片 + 精灵球捕捉交互 */
+/* 地区图鉴页（游戏上下文内）：卡片 + 精灵球捕捉交互。
+   M1：卡片不再变色（捕捉状态只看右上角精灵球）；批量操作带确认；
+   标记模式点卡片直接切换；同游戏图鉴自动双向同步。 */
 const DexView = {
   template: `
   <div>
@@ -18,8 +20,23 @@ const DexView = {
         </div>
       </div>
       <div class="spacer"></div>
-      <el-button size="small" @click="markAll(true)">本筛选全标记</el-button>
-      <el-button size="small" @click="invert()">反选未捕捉</el-button>
+      <span class="mark-mode">
+        <span class="lbl">标记模式</span>
+        <el-switch v-model="markMode" size="small"></el-switch>
+      </span>
+      <el-dropdown @command="onBatch">
+        <el-button size="small" type="primary" plain>
+          批量操作<el-icon style="margin-left:4px"><arrow-down /></el-icon>
+        </el-button>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item command="mark-filter">标记当前筛选（{{ entries.length }} 只）</el-dropdown-item>
+            <el-dropdown-item command="clear-filter">清除当前筛选标记（{{ entries.length }} 只）</el-dropdown-item>
+            <el-dropdown-item divided command="mark-all">标记整本图鉴（{{ curDex ? curDex.total : 0 }} 只）</el-dropdown-item>
+            <el-dropdown-item command="clear-all">清空整本图鉴</el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
     </div>
 
     <div class="dex-tabs" v-if="game">
@@ -45,7 +62,7 @@ const DexView = {
 
     <div class="dex-grid" v-loading="loading">
       <div v-for="e in entries" :key="e.species_id" class="dex-card"
-        :class="{caught: e.caught}" @click="openDetail(e)">
+        :class="{markable: markMode}" @click="onCardClick(e)">
         <div class="card-top">
           <span class="ndex">#{{ String(e.ndex).padStart(4, "0") }}</span>
           <poke-toggle :caught="e.caught" @toggle="toggle(e)"></poke-toggle>
@@ -72,6 +89,7 @@ const DexView = {
     const loading = ref(false);
     const raw = ref([]);
     const counts = ref({});
+    const markMode = ref(false);
 
     const game = computed(() => store.games.find((g) => g.id === store.gameId));
     const entries = computed(() => {
@@ -96,49 +114,70 @@ const DexView = {
       return t ? Math.round(((counts.value[dexId.value] || 0) / t) * 100) : 0;
     });
 
+    async function refreshCounts() {
+      try {
+        counts.value = await apiGet("/api/state/counts", { profile: store.profileId });
+      } catch (_) { /* 计数失败不阻塞 */ }
+    }
     async function loadDex() {
       if (!dexId.value) return;
       loading.value = true;
       try {
         const data = await apiGet("/api/dex/" + dexId.value, { profile: store.profileId });
         raw.value = data.entries;
-        recount();
+        await refreshCounts();
       } finally { loading.value = false; }
-    }
-    function recount() {
-      counts.value[dexId.value] = raw.value.filter((e) => e.caught).length;
     }
     function countOf(dex) {
       return counts.value[dex] || 0;
     }
     async function toggle(e) {
-      e.caught = !e.caught;
-      await apiSend("PUT", "/api/state", {
-        profile_id: store.profileId, dex_id: dexId.value,
-        species_id: e.species_id, caught: e.caught,
-      });
-      recount();
+      const prev = e.caught;
+      e.caught = !prev;                       // 乐观更新
+      try {
+        await apiSend("PUT", "/api/state", {
+          profile_id: store.profileId, dex_id: dexId.value,
+          species_id: e.species_id, caught: e.caught,
+        });
+        refreshCounts();
+      } catch (err) {
+        e.caught = prev;                      // 失败回滚
+        store.toast("标记失败：" + (err.message || err), "error");
+      }
     }
-    async function markAll(caught) {
-      const ids = entries.value.map((e) => e.species_id);
-      if (!ids.length) return;
-      await apiSend("POST", "/api/state/bulk", {
-        profile_id: store.profileId, dex_id: dexId.value, caught, species_ids: ids,
-      });
-      entries.value.forEach((e) => (e.caught = caught));
-      recount();
-      store.toast(caught ? "已标记" : "已清除", "success");
+    async function bulkSet(ids, caught, label) {
+      try {
+        await ElMessageBox.confirm(
+          `${label}：将影响 ${ids.length} 只宝可梦（同游戏各图鉴将自动同步）`, "确认操作",
+          { confirmButtonText: "确定", cancelButtonText: "取消", type: "warning" });
+      } catch (_) { return; }
+      try {
+        await apiSend("POST", "/api/state/bulk", {
+          profile_id: store.profileId, dex_id: dexId.value, caught, species_ids: ids,
+        });
+        await loadDex();
+        store.toast(caught ? `已标记 ${ids.length} 只` : `已清除 ${ids.length} 只标记`, "success");
+      } catch (err) {
+        store.toast("批量操作失败：" + (err.message || err), "error");
+      }
     }
-    async function invert() {
-      const list = entries.value;
-      const ids = list.filter((e) => !e.caught).map((e) => e.species_id);
-      if (!ids.length) { store.toast("当前筛选下没有未捕捉的宝可梦"); return; }
-      await apiSend("POST", "/api/state/bulk", {
-        profile_id: store.profileId, dex_id: dexId.value, caught: true, species_ids: ids,
-      });
-      list.forEach((e) => { if (!e.caught) e.caught = true; });
-      recount();
-      store.toast("已将未捕捉的 " + ids.length + " 只标记为捕捉", "success");
+    async function onBatch(cmd) {
+      if (cmd === "mark-filter") return bulkSet(entries.value.map((e) => e.species_id), true, "标记当前筛选");
+      if (cmd === "clear-filter") return bulkSet(entries.value.map((e) => e.species_id), false, "清除当前筛选标记");
+      if (cmd === "mark-all") {
+        return bulkSet(raw.value.map((e) => e.species_id), true, "标记整本图鉴");
+      }
+      if (cmd === "clear-all") {
+        const total = curDex.value ? curDex.value.total : 0;
+        const n = (counts.value[dexId.value] || 0);
+        if (!n) { store.toast("当前图鉴没有已标记的宝可梦"); return; }
+        return bulkSet(raw.value.filter((e) => e.caught).map((e) => e.species_id),
+                       false, `清空整本图鉴（已捕捉 ${n}/${total}）`);
+      }
+    }
+    function onCardClick(e) {
+      if (markMode.value) { toggle(e); return; }
+      openDetail(e);
     }
     function openDetail(e) {
       location.hash = "#/pokemon/" + e.species_id + "?game=" + store.gameId + "&dex=" + dexId.value;
@@ -159,11 +198,12 @@ const DexView = {
       dexId.value = valid(fromHash) ? fromHash : (valid(saved) ? saved : game.value.dexes[0].id);
     }
     initDex();
+    refreshCounts();
 
     return {
-      store, dexId, filter, typeFilter, q, loading, entries,
+      store, dexId, filter, typeFilter, q, loading, entries, markMode,
       game, progressText, progressPct, counts, TYPE_LIST, countOf,
-      toggle, markAll, invert, openDetail,
+      toggle, onBatch, onCardClick,
     };
   },
 };

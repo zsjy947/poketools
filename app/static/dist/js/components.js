@@ -122,17 +122,19 @@ const AbilityList = {
   </span>`,
 };
 
-/* 精灵球捕捉切换按钮（图鉴卡片交互） */
+/* 精灵球捕捉切换按钮（图鉴卡片交互）：捕捉=红白填充球，未捕捉=灰色描边球 */
 const PokeToggle = {
   props: ["caught"],
+  emits: ["toggle"],
   template: `<span class="poke-toggle" :class="{caught: caught}" @click.stop="$emit('toggle')"
-    :title="caught ? '已捕捉（点击取消）' : '标记为已捕捉'">
-    <svg viewBox="0 0 24 24" width="18" height="18">
-      <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.12"/>
-      <path d="M2 12a10 10 0 0 1 20 0z" fill="#e5484d"/>
-      <path d="M2 12a10 10 0 0 0 20 0z" fill="#f5f6f8"/>
-      <rect x="2" y="11" width="20" height="2" fill="#24292f"/>
-      <circle cx="12" cy="12" r="3.6" fill="#f5f6f8" stroke="#24292f" stroke-width="1.6"/>
+    :title="caught ? '已捕捉（点击取消标记）' : '标记为已捕捉'">
+    <svg viewBox="0 0 24 24" width="24" height="24">
+      <circle cx="12" cy="12" r="10" :fill="caught ? '#f5f6f8' : 'none'" opacity="0.95"/>
+      <path v-if="caught" d="M2.6 12a10 10 0 0 1 20 0z" fill="#e5484d"/>
+      <path v-else d="M2.6 12a10 10 0 0 1 20 0z" fill="#f5f6f8" opacity=".35"/>
+      <path v-if="caught" d="M2.6 12a10 10 0 0 0 20 0z" fill="#f5f6f8"/>
+      <rect x="2.6" y="11" width="20" height="2" fill="#24292f"/>
+      <circle cx="12" cy="12" r="3.6" :fill="caught ? '#f5f6f8' : 'rgba(0,0,0,0)'" stroke="#24292f" stroke-width="1.6"/>
       <circle cx="12" cy="12" r="1.4" :fill="caught ? '#e5484d' : '#c0c6d0'"/>
     </svg>
   </span>`,
