@@ -40,7 +40,7 @@ python scripts/make_icon.py           # 精灵球应用图标
   | 游戏 | vg | 备注 |
   |---|---|---|
   | 剑盾 | 20/21/22 | 图鉴/学习集取 20；TR（100-199）在 machines vg20 |
-  | 晶灿钻石·明亮珍珠 | 23 | 图鉴用 extended-sinnoh 白金 210 编号；PokeAPI machines 仅 17 条，TM001-100 由 52poke 补全 |
+  | 晶灿钻石·明亮珍珠 | 23 | 图鉴同 DP 神奥图鉴 151 只（original-sinnoh）；PokeAPI machines 仅 17 条，TM001-100 由 52poke 补全 |
   | 传说 阿尔宙斯 | 24 | 无 TM/生蛋 |
   | 朱紫 | 25/26/27 | **machines 只导 vg25**（26/27 同号重复）；tutor 数据以 52poke「进化&回忆」为准修正 |
   | 传说 Z-A | 30/31 | 学习集：52poke 主源 + PokemonDB 兜底（`parse_za_learnlist_alt`），写入 vg30；machines 导 vg30+vg31（31=异次元 DLC TM108-160）。**vg32 是 Pokémon Champions 的 train 数据，与 Z-A 无关，勿导入** |

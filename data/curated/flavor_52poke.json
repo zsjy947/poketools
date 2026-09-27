@@ -558,6 +558,18 @@
   "text": "脸颊两边有着小小的电力袋。遇到危险时就会放电。"
  },
  {
+  "species_id": 25,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "在森林里和同伴们一起生活。会把电力储存在两颊的电囊里。"
+ },
+ {
+  "species_id": 25,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "当它从脸颊上的电囊噼里啪啦地放出电流时，表示它正在警戒对手。"
+ },
+ {
   "species_id": 26,
   "game": "sword-shield",
   "label": "剑",
@@ -592,6 +604,18 @@
   "game": "legends-za",
   "label": "Z-A",
   "text": "如果储存的电力过多，肌肉就会受到刺激，它也会变得比平时更具攻击性。"
+ },
+ {
+  "species_id": 26,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "如果身体里积蓄的电力过多，情绪就会变得具有攻击性。会从尾巴处放电。"
+ },
+ {
+  "species_id": 26,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "电击的威力高达十万伏特。能一击击晕比自己大好几倍的对手。"
  },
  {
   "species_id": 27,
@@ -798,6 +822,18 @@
   "text": "它好像能通过将月光聚集在后背的翅膀上来浮在空中。"
  },
  {
+  "species_id": 35,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "因可爱的举止而深受欢迎。被认为和伙伴们一起生活在安静的深山里。"
+ },
+ {
+  "species_id": 35,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "将月光聚集在背后的翅膀上后能够浮在空中。是种很难找到的宝可梦。"
+ },
+ {
   "species_id": 36,
   "game": "sword-shield",
   "label": "剑",
@@ -832,6 +868,18 @@
   "game": "legends-za",
   "label": "Z-A",
   "text": "妖精的一种，极少出现在人前。察觉到有人存在后，好像就会立刻逃走。"
+ },
+ {
+  "species_id": 36,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "极少在人类面前现身。据说会被满月所吸引，来到杳无人影的湖上玩耍。"
+ },
+ {
+  "species_id": 36,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "有着连１公里外针落地的声音都能听见的优秀耳朵。住在宁静的深山里。"
  },
  {
   "species_id": 37,
@@ -1002,6 +1050,18 @@
   "text": "白天在洞穴里睡觉。因为没有眼睛，所以用超音波一边探测周围，一边飞行。"
  },
  {
+  "species_id": 41,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "即使没有双眼，也能靠嘴里发出的超音波探察周围的障碍物。"
+ },
+ {
+  "species_id": 41,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "讨厌太阳光，会在洞窟里或森林深处一直睡到太阳下山。"
+ },
+ {
   "species_id": 42,
   "game": "sword-shield",
   "label": "剑",
@@ -1024,6 +1084,18 @@
   "game": "legends-za",
   "label": "Z-A",
   "text": "无论多硬的皮肤都能用尖牙刺穿，并大口将血吸饱。"
+ },
+ {
+  "species_id": 42,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "非常喜欢人和宝可梦的血液。会以猎物脖子处的血管为目标，在夜空中飞来飞去。"
+ },
+ {
+  "species_id": 42,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "一旦开始吸血，在吸饱之前是不会停下来的。会在黑暗中飞着寻找猎物。"
  },
  {
   "species_id": 43,
@@ -1132,6 +1204,18 @@
   "game": "legends-arceus",
   "label": "洗翠",
   "text": "森林中存在着背上蘑菇脱落后丝毫不动的个体，此样本足可用以证明大大的蘑菇才是真身的学说。"
+ },
+ {
+  "species_id": 47,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "操纵派拉斯特的是比身体还大的蘑菇。会播撒有毒的孢子。"
+ },
+ {
+  "species_id": 47,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "以长得比虫子身体还大的蘑菇的意志来行动。喜欢潮湿的地方。"
  },
  {
   "species_id": 48,
@@ -1332,6 +1416,18 @@
   "text": "总是会在头痛欲裂时发挥出神奇的力量，但似乎没有当时的记忆。"
  },
  {
+  "species_id": 54,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "在头痛欲裂时会使出神奇的力量。但它并不会记得使用过力量。"
+ },
+ {
+  "species_id": 54,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "虽然拥有神奇的力量，但由于没有使用时的记忆，因此经常会不明所以地歪着脖子。"
+ },
+ {
   "species_id": 55,
   "game": "sword-shield",
   "label": "剑",
@@ -1360,6 +1456,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "喜欢水流平稳的河川与湖泊。它游泳的姿态非常优雅。"
+ },
+ {
+  "species_id": 55,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "栖息在湖里的宝可梦。游泳速度快过世界级的游泳运动员。"
+ },
+ {
+  "species_id": 55,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "手脚上发达的蹼赐予了它惊人的速度。是最擅长游泳的宝可梦。"
  },
  {
   "species_id": 56,
@@ -1584,6 +1692,18 @@
   "text": "１天有１８个小时都在睡觉。就算在睡着的时候，也会使用各种各样的超能力。"
  },
  {
+  "species_id": 63,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "每天要睡上１８个小时。即使醒着的时候也会保持坐姿，用瞬间移动来移动身体。"
+ },
+ {
+  "species_id": 63,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "在睡觉时也会用心灵感应侦测周围的情况。遇到危险就会使用瞬间移动。"
+ },
+ {
   "species_id": 64,
   "game": "sword-shield",
   "label": "剑",
@@ -1606,6 +1726,18 @@
   "game": "legends-za",
   "label": "Z-A",
   "text": "每次使用能力时，从体内发出的特殊阿尔法波会让机械失灵。"
+ },
+ {
+  "species_id": 64,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "勇基拉在身边时，电视上会映出不可思议的影子。据说看到这影子的人会变得不幸。"
+ },
+ {
+  "species_id": 64,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "发挥超能力时发出的强烈阿尔法波会损坏精密器械。"
  },
  {
   "species_id": 65,
@@ -1632,6 +1764,18 @@
   "text": "因为脑细胞会不断分裂，并且其数量至死都在增加，所以它能记住任何事情。"
  },
  {
+  "species_id": 65,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "记忆力超群，据说它能记住自出生起经历过的每一件事。其智商超过了５０００。"
+ },
+ {
+  "species_id": 65,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "其头脑堪比超级计算机。发达的头脑使它能够自在使用各种超能力。"
+ },
+ {
   "species_id": 66,
   "game": "sword-shield",
   "label": "剑",
@@ -1654,6 +1798,18 @@
   "game": "legends-za",
   "label": "Z-A",
   "text": "全身都是肌肉，虽然只有小孩那么大，却可以扔飞１００个成年人。"
+ },
+ {
+  "species_id": 66,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "通过多次反复上下举动隆隆石来锻炼全身的肌肉。会使用所有的格斗技。"
+ },
+ {
+  "species_id": 66,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "不管怎么锻炼身体都不会感到肌肉酸痛的宝可梦。生活在远离人烟的山里。"
  },
  {
   "species_id": 67,
@@ -1680,6 +1836,18 @@
   "text": "会活用自己那单手举翻斗车的力量，代替并帮助人们做些力气活的宝可梦。"
  },
  {
+  "species_id": 67,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "豪力那深不可测的力量非常危险，所以它戴着能够限制力量的腰带。"
+ },
+ {
+  "species_id": 67,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "会活用自己那单手举翻斗车的力量，代替并帮助人们做些力气活的宝可梦。"
+ },
+ {
   "species_id": 68,
   "game": "sword-shield",
   "label": "剑",
@@ -1702,6 +1870,18 @@
   "game": "legends-za",
   "label": "Z-A",
   "text": "用４条手臂摁住对手的手脚，并剥夺对方的自由后，就会将其扔飞到地平线的另一端。"
+ },
+ {
+  "species_id": 68,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "能用快到看不清的速度挥动４条手臂，在２秒内打出１０００拳。"
+ },
+ {
+  "species_id": 68,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "虽然它能使出只要一击就能打飞电车的拳击，但却很不擅长需要用到手指的工作。"
  },
  {
   "species_id": 69,
@@ -1806,6 +1986,18 @@
   "text": "会从水晶般晶莹剔透的眼珠里发射带有神奇光芒的光束。"
  },
  {
+  "species_id": 72,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "身体的绝大部分都是水。会从水晶般的眼珠里发射神奇的光束。"
+ },
+ {
+  "species_id": 72,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "随着海潮四处漂荡。垂钓者被玛瑙水母的毒针刺到的情形屡见不鲜。"
+ },
+ {
   "species_id": 73,
   "game": "sword-shield",
   "label": "剑",
@@ -1836,6 +2028,18 @@
   "text": "战斗时会将８０根触手全部伸出，制成有毒的包围网。"
  },
  {
+  "species_id": 73,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "用８０只触手缠住猎物，在对方因中毒而衰弱之前，它绝不会放开猎物。"
+ },
+ {
+  "species_id": 73,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "通过快速闪烁头上的红色珠子来向伙伴传递危险信号。"
+ },
+ {
   "species_id": 74,
   "game": "legends-arceus",
   "label": "洗翠",
@@ -1852,6 +2056,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "很多人只是没注意到，其实只要细心观察周围，就能发现有很多小拳石。"
+ },
+ {
+  "species_id": 74,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "多数栖息在山路上。会把一半身体埋入地下，观察过往登山者的样子。"
+ },
+ {
+  "species_id": 74,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "无法区分它和小石头有什么不同。会用结实的身体和伙伴互撞，以此来比比谁更坚硬。"
  },
  {
   "species_id": 75,
@@ -1872,6 +2088,18 @@
   "text": "非常喜欢吃长有苔藓的岩石。发着嘎吱嘎吱的声音，１天吃１吨以上。"
  },
  {
+  "species_id": 75,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "在险峻悬崖的半山腰有时可以找到几处横洞，这些洞就是隆隆石的住处。"
+ },
+ {
+  "species_id": 75,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "从高处滚下来时，就算滚得身体到处缺损也毫不在意。１天要吃１吨重的岩石。"
+ },
+ {
   "species_id": 76,
   "game": "legends-arceus",
   "label": "洗翠",
@@ -1888,6 +2116,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "会故意让自己的身体爆炸，再借助爆炸的力量来飞跃于山与山之间。"
+ },
+ {
+  "species_id": 76,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "１年蜕１次皮。它的身体像岩石一样坚硬，即使是炸药也无法伤其分毫。"
+ },
+ {
+  "species_id": 76,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "请注意，从山顶延续到山脚的沟槽是隆隆岩滚下来时的通道。"
  },
  {
   "species_id": 77,
@@ -1908,6 +2148,18 @@
   "text": "在草原上群居生活。刚诞生的幼崽身上没有火焰鬃毛，而是会在出生后一小时左右长出来。"
  },
  {
+  "species_id": 77,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "出生后只需经过１个小时就能长齐火焰的鬃毛和尾巴，看上去已经十分像样了。"
+ },
+ {
+  "species_id": 77,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "在追赶双亲的同时，练就了强韧的腰腿。整天都在山野里到处乱跑。"
+ },
+ {
   "species_id": 78,
   "game": "sword-shield",
   "label": "剑",
@@ -1924,6 +2176,18 @@
   "game": "legends-arceus",
   "label": "洗翠",
   "text": "闪耀着火焰鬃毛向前奔驰的模样如同离弦的飞箭般迅疾。神骏无比的它只需一天半的功夫就能横越整个洗翠大地。"
+ },
+ {
+  "species_id": 78,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "奔跑时速为２４０公里。鬃毛上的火焰会剧烈燃烧，能像箭一样地飞驰而去。"
+ },
+ {
+  "species_id": 78,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "拥有非凡的加速能力，一旦开始奔跑，只需１０步就能达到最高速度。"
  },
  {
   "species_id": 79,
@@ -2298,6 +2562,18 @@
   "text": "从气体中诞生的生命体。如果被含毒的气体状身体裹住的话，不管是谁都会昏迷过去。"
  },
  {
+  "species_id": 92,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "身体成分的９５％是由瓦斯组成的宝可梦。一旦强风吹过，就会被吹飞。"
+ },
+ {
+  "species_id": 92,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "从毒瓦斯中诞生的宝可梦。即使对手体型庞大，也能用瓦斯将其裹住后打倒。"
+ },
+ {
   "species_id": 93,
   "game": "sword-shield",
   "label": "剑",
@@ -2331,6 +2607,18 @@
   "species_id": 93,
   "game": "legends-za",
   "label": "Z-A",
+  "text": "如果被它气体状的舌头舔到，灵魂就会被抓走。会躲在暗处寻找猎物。"
+ },
+ {
+  "species_id": 93,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "能够穿透任何物体。会潜藏在墙壁里观察对手的情况。"
+ },
+ {
+  "species_id": 93,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
   "text": "如果被它气体状的舌头舔到，灵魂就会被抓走。会躲在暗处寻找猎物。"
  },
  {
@@ -2370,6 +2658,18 @@
   "text": "会隐藏在物体的阴影里。据说躲着耿鬼的房间温度会下降５度。"
  },
  {
+  "species_id": 94,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "会隐藏在物体的阴影里。据说躲着耿鬼的房间温度会下降５度。"
+ },
+ {
+  "species_id": 94,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "它会潜藏在房屋角落的阴暗处，悄悄地窥探着夺取性命的时机。"
+ },
+ {
   "species_id": 95,
   "game": "sword-shield",
   "label": "剑",
@@ -2392,6 +2692,18 @@
   "game": "legends-za",
   "label": "Z-A",
   "text": "平时住在地里。会以８０公里的时速在地下一边挖掘一边寻找食物。"
+ },
+ {
+  "species_id": 95,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "大岩蛇在地下挖洞前进时，大地会不停晃动并能听到轰鸣声。其移动速度高达时速８０公里。"
+ },
+ {
+  "species_id": 95,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "扭动又长又结实的身体在地下前进。会一边挖掘一边进食。"
  },
  {
   "species_id": 96,
@@ -2856,6 +3168,18 @@
   "text": "不想让自己带着的蛋被打破，走起路来小心谨慎。然而逃跑时却是极为快速。"
  },
  {
+  "species_id": 113,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "据说能够带来幸福。性格温柔的宝可梦，会把蛋分给受伤的人。"
+ },
+ {
+  "species_id": 113,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "１天能生好几颗蛋。不会把蛋分给内心邪恶的坏蛋。"
+ },
+ {
   "species_id": 114,
   "game": "sword-shield",
   "label": "剑",
@@ -2976,6 +3300,18 @@
   "text": "背鳍和尾鳍像肌肉那样发达。能够以５节的速度在水中游泳。"
  },
  {
+  "species_id": 118,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "像裙子一样摇摆着尾鳍优雅游动的样子，简直就像水中的女王。"
+ },
+ {
+  "species_id": 118,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "能以５节的速度游动。感到自身有危险的话，就会用尖锐的角反击。"
+ },
+ {
   "species_id": 119,
   "game": "sword-shield",
   "label": "剑",
@@ -2986,6 +3322,18 @@
   "game": "sword-shield",
   "label": "盾",
   "text": "金鱼王之所以会用角挖穿河底的岩石来筑巢，是为了防止产下的卵被水流冲走。"
+ },
+ {
+  "species_id": 119,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "会用头上的角在河底的岩石上钻孔筑巢。为了保护蛋它会不惜性命。"
+ },
+ {
+  "species_id": 119,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "为了保护家人，它会用钻头般锐利的角战斗。栖息在河底的岩洞里。"
  },
  {
   "species_id": 120,
@@ -3058,6 +3406,18 @@
   "game": "legends-za",
   "label": "Z-A",
   "text": "从手指发出的神秘力量可以硬化周围的空气，制造出看不见的墙壁。"
+ },
+ {
+  "species_id": 122,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "默剧大师，通过肢体动作展现出的墙壁会渐渐变成一面真正的墙壁。"
+ },
+ {
+  "species_id": 122,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "从指尖发出的波动可以硬化空气制造墙壁。即便是强烈的攻击也能弹开。"
  },
  {
   "species_id": 123,
@@ -3282,6 +3642,18 @@
   "text": "力量和速度几乎都不行。是世界上最弱最可怜的宝可梦。"
  },
  {
+  "species_id": 129,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "谁也说不清为什么被称为世界最弱的鲤鱼王能够存活至今。"
+ },
+ {
+  "species_id": 129,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "在水流很缓的河川也无法逆流而上，只能被水冲走。不知为何总是跳个不停。"
+ },
+ {
   "species_id": 130,
   "game": "sword-shield",
   "label": "剑",
@@ -3315,6 +3687,18 @@
   "species_id": 130,
   "game": "legends-za",
   "label": "Z-A",
+  "text": "在古书里留有它将发生纷争的村庄整个烧光的记录。"
+ },
+ {
+  "species_id": 130,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "暴鲤龙一旦现身，不把山野的一切都燃烧殆尽，它的怒火就不会平息。"
+ },
+ {
+  "species_id": 130,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
   "text": "在古书里留有它将发生纷争的村庄整个烧光的记录。"
  },
  {
@@ -3712,6 +4096,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "胃里的消化液能消化掉任何毒。即使吃了掉在地上的东西也没有问题。"
+ },
+ {
+  "species_id": 143,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "就算发霉腐烂了也没关系。卡比兽的胃能消化任何东西。"
+ },
+ {
+  "species_id": 143,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "睡觉之外的时间都在吃个不停。１天不吃够４００公斤的食物，它的肚子就不会饱。"
  },
  {
   "species_id": 144,
@@ -4188,6 +4584,18 @@
   "text": "因为它能够准确报时，所以在某些国家它被当成通晓世界真理的智慧之神。"
  },
  {
+  "species_id": 163,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "一直用单脚站立。即使受到攻击也不会用两只脚来稳住身体。"
+ },
+ {
+  "species_id": 163,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "由于换脚的速度太快了，谁也没有见过那个瞬间。每天会在同一时间鸣叫。"
+ },
+ {
   "species_id": 164,
   "game": "sword-shield",
   "label": "剑",
@@ -4210,6 +4618,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "极为柔软的羽毛让它在飞行时不会发出声音，因此能够悄悄接近猎物。"
+ },
+ {
+  "species_id": 164,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "它的眼睛构造特殊，只要有一丝光线，就能在黑暗中分辨物体。"
+ },
+ {
+  "species_id": 164,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "头倒转过来时，就表示它在思考非常难懂的事情。"
  },
  {
   "species_id": 165,
@@ -4294,6 +4714,18 @@
   "game": "legends-za",
   "label": "Z-A",
   "text": "牙齿锋利，就算在黑暗中被它咬住吸血也不会感到疼痛，所以无法立刻发觉。"
+ },
+ {
+  "species_id": 169,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "４只翅膀能让它飞得更快更静。夜幕降临后就会开始活动。"
+ },
+ {
+  "species_id": 169,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "因为双脚也变成了翅膀，所以飞行能力有了飞跃性的提升。"
  },
  {
   "species_id": 170,
@@ -4392,6 +4824,18 @@
   "text": "仍然不擅长蓄电。惊讶或者发笑时，就会立刻进行放电。"
  },
  {
+  "species_id": 172,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "因为脸颊上的电囊还很小，所以还无法积蓄太多的电力。"
+ },
+ {
+  "species_id": 172,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "会和伙伴将尾巴前端排成一排玩射火花的游戏。好像是在比试胆量。"
+ },
+ {
   "species_id": 173,
   "game": "sword-shield",
   "label": "剑",
@@ -4426,6 +4870,18 @@
   "game": "legends-za",
   "label": "Z-A",
   "text": "根据当地的传说，皮宝宝经常出没的地方就是流星陨落之处。"
+ },
+ {
+  "species_id": 173,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "轮廓像夜空的星星。人们相信皮宝宝是乘着流星而来的。"
+ },
+ {
+  "species_id": 173,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "在流星很多的夜晚能看到众多皮宝宝的身影。早晨太阳升起后，它们就不见了。"
  },
  {
   "species_id": 174,
@@ -4674,6 +5130,18 @@
   "text": "存满了油脂的尾巴能用来代替浮囊，因此面对湍急的河流也不成问题。"
  },
  {
+  "species_id": 183,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "尾巴可以当作潜入水中时所需的浮囊来用。喜欢吃河底的水草。"
+ },
+ {
+  "species_id": 183,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "尾巴前端贮满了比水还轻的油，因此能用它来代替浮囊。"
+ },
+ {
   "species_id": 184,
   "game": "sword-shield",
   "label": "剑",
@@ -4696,6 +5164,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "只要静静地聆听，就能分辨出湍急的河流中有些什么。"
+ },
+ {
+  "species_id": 184,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "栖息在河川或湖泊里。在水中可以凭借身上的花纹和体色骗过敌人的眼睛。"
+ },
+ {
+  "species_id": 184,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "长长的耳朵是灵敏的感应器。能够听出生物在河底移动的声音。"
  },
  {
   "species_id": 185,
@@ -4726,6 +5206,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "为了不受到攻击而一直模仿成树的样子。但因为怕水，所以只要下雨就会逃得无影无踪。"
+ },
+ {
+  "species_id": 185,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "虽然身体看上去像树木，但其实更接近石头或岩石。对水完全没有抵抗力。"
+ },
+ {
+  "species_id": 185,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "会伪装成树的样子站在路边，如果天上开始下雨，就会在不知不觉间消失不见。"
  },
  {
   "species_id": 186,
@@ -4830,6 +5322,18 @@
   "text": "会巧妙地控制比手活动得还随心所欲的尾巴，并在高高的树上生活。"
  },
  {
+  "species_id": 190,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "会用尾巴摘取伸长了手也够不着的树枝上的水果。它的尾巴比手还要灵活。"
+ },
+ {
+  "species_id": 190,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "栖息在大树上。在睡觉时为了不从树上掉下来，会用尾巴卷住树干。"
+ },
+ {
   "species_id": 191,
   "game": "scarlet-violet",
   "label": "朱",
@@ -4914,6 +5418,18 @@
   "text": "在地面上四处走动时，会用滑溜溜的毒粘膜覆盖着身体的表面。"
  },
  {
+  "species_id": 194,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "栖息在冰冷的水中。睡觉时会把一半身体埋进水底的泥里面。"
+ },
+ {
+  "species_id": 194,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "傍晚天气变凉之后，乌波们就会从水里上来，走在水边觅食。"
+ },
+ {
   "species_id": 195,
   "game": "sword-shield",
   "label": "剑",
@@ -4936,6 +5452,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "性格悠闲自得。游动时头总会撞到河底的岩石或船底。"
+ },
+ {
+  "species_id": 195,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "性格悠闲自得。会在河底张开嘴巴静静地等着食物自己跳进来。"
+ },
+ {
+  "species_id": 195,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "感觉迟钝的宝可梦。就算在游泳时头撞到了岩石或船底也毫不在意。"
  },
  {
   "species_id": 196,
@@ -5040,6 +5568,18 @@
   "text": "遇见黑暗鸦时，若是毫无提防地跟随其后就会受到迷惑，并被丢在山路上。"
  },
  {
+  "species_id": 198,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "人们相信如果在晚上看到它的身影，就会发生不吉利的事。"
+ },
+ {
+  "species_id": 198,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "为将旅人诱入森林深处而聚集在其附近。据传会带来不幸。"
+ },
+ {
   "species_id": 199,
   "game": "sword-shield",
   "label": "剑",
@@ -5094,10 +5634,34 @@
   "text": "会突然咬住或是拉扯人的头发，然后看着对方大吃一惊的样子来取乐。"
  },
  {
+  "species_id": 200,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "深更半夜从背后接近，发出彷佛哭喊般的声音来吓唬人们，并以此为乐的宝可梦。"
+ },
+ {
+  "species_id": 200,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "会用红色的珠子吸收恐惧之心，并将其作为自己的养料。白天会在黑暗处睡觉。"
+ },
+ {
   "species_id": 201,
   "game": "legends-arceus",
   "label": "洗翠",
   "text": "奇形怪状不似生物，且个体之间形状各异，本人指出其身姿与异国文字的共通之处，但未获重视。"
+ },
+ {
+  "species_id": 201,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "很像古代文明的文字。是先有文字还是先有未知图腾，这是世界七大不可思议之一。"
+ },
+ {
+  "species_id": 201,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "据说它们会用心灵感应与伙伴互通想法。平时总是贴在墙上。"
  },
  {
   "species_id": 202,
@@ -5128,6 +5692,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "尾巴上有小小的头。如果有敌人从背后靠近，就会受本能驱使地咬过去。"
+ },
+ {
+  "species_id": 203,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "尾巴上也有小小的大脑。如果有谁从身后悄悄接近的话，它会张嘴咬退对手。"
+ },
+ {
+  "species_id": 203,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "睡觉时尾巴上的脑袋会监视周围的情况。尾巴不睡觉也没关系。"
  },
  {
   "species_id": 204,
@@ -5241,6 +5817,18 @@
   "species_id": 208,
   "game": "legends-za",
   "label": "Z-A",
+  "text": "会用结实的颚咬碎岩石前进。有着即使是在漆黑的地下也能看清东西的眼睛。"
+ },
+ {
+  "species_id": 208,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "由地下高压和高热锻炼出来的身体比任何金属都要坚硬。"
+ },
+ {
+  "species_id": 208,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
   "text": "会用结实的颚咬碎岩石前进。有着即使是在漆黑的地下也能看清东西的眼睛。"
  },
  {
@@ -5412,6 +6000,18 @@
   "text": "能将引以为豪的角强行顶入对手的腹部下方，然后将其一口气举起并扔出去的大力士。"
  },
  {
+  "species_id": 214,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "为了吃喜欢的树液而聚集到森林里。力大无比，强壮的角能将对手扔飞。"
+ },
+ {
+  "species_id": 214,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "强健的下盘与锐利的爪子使它拥有能将对手扔至天边的力量。"
+ },
+ {
   "species_id": 215,
   "game": "sword-shield",
   "label": "剑",
@@ -5440,6 +6040,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "会施展团队合作，一只负责引开双亲，另一只负责偷走蛋。是非常狡猾的宝可梦。"
+ },
+ {
+  "species_id": 215,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "会从巢穴里抢走蛋并吃掉。锋利的钩爪能割开对手的要害。"
+ },
+ {
+  "species_id": 215,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "直到对手无法动弹为止，都不会停止攻击。是种极其凶猛的宝可梦。"
  },
  {
   "species_id": 216,
@@ -5634,6 +6246,18 @@
   "text": "从口中喷射出的水流能够极为精确地命中所瞄准的目标。会击落并猎捕吊在树枝上的结草儿。"
  },
  {
+  "species_id": 223,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "从口中射出的水能够击落空中飞行的猎物。它的名字正是由此而来。"
+ },
+ {
+  "species_id": 223,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "会吸附在巨翅飞鱼身上，吃它平常吃剩下的东西。这是种避开敌人袭击的生存智慧。"
+ },
+ {
   "species_id": 224,
   "game": "sword-shield",
   "label": "剑",
@@ -5650,6 +6274,18 @@
   "game": "legends-arceus",
   "label": "洗翠",
   "text": "虽然同样能从口中喷射水流，但由于外貌实在天差地远，长久以来人们一直不相信它是由铁炮鱼进化而来。"
+ },
+ {
+  "species_id": 224,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "栖息在海底岩石的背后或洞穴里。会用吸盘吸住猎物使其无法逃脱。"
+ },
+ {
+  "species_id": 224,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "会从嘴里喷出漆黑的墨汁以蒙蔽对手的视觉。在岩石的背后筑巢。"
  },
  {
   "species_id": 225,
@@ -5704,6 +6340,18 @@
   "game": "legends-arceus",
   "label": "洗翠",
   "text": "性情温和，悠游于大海之中。游泳速度增快时会跃出海面，人们常将其误认为鸟宝可梦。"
+ },
+ {
+  "species_id": 226,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "风平浪静的时候，你可能会遭遇到在大海里游得飞快的巨翅飞鱼群。"
+ },
+ {
+  "species_id": 226,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "并不在意大大的鳍上吸附着铁炮鱼，在水中优雅地游泳。是种性格温顺的宝可梦。"
  },
  {
   "species_id": 227,
@@ -6136,6 +6784,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "幸福蛋生的蛋里饱含幸福，只要吃上一口，不管是谁都会笑逐颜开。"
+ },
+ {
+  "species_id": 242,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "温柔的宝可梦，会照顾虚弱的宝可梦并直到对方痊愈。能够捕捉悲伤的情绪。"
+ },
+ {
+  "species_id": 242,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "据说只要吃了幸福蛋的蛋，就会变得对任何人都温柔和善。它是能带来幸福的宝可梦。"
  },
  {
   "species_id": 243,
@@ -6588,10 +7248,34 @@
   "text": "嗜食树液，大量生息于山野之中。进化成不同形态的理由不明，且无法从外观判断其进化方式。"
  },
  {
+  "species_id": 265,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "非常喜欢吃叶子。受到姆克儿的袭击时，会用尾部的刺击退对方。"
+ },
+ {
+  "species_id": 265,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "从嘴里吐出的白丝只要接触到空气就会变得黏糊糊的，以此来封住对手的行动。"
+ },
+ {
   "species_id": 266,
   "game": "legends-arceus",
   "label": "洗翠",
   "text": "以细丝包裹全身，积蓄进化所需的活力。虽然无手脚且动作迟缓，但双眼射出的凌厉视线不会放过四周的风吹草动。"
+ },
+ {
+  "species_id": 266,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "为了不掉下来，它将身上伸出的丝线缠在树枝上以固定自身。然后一动不动地等待进化。"
+ },
+ {
+  "species_id": 266,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "会喝丝线上挂着的朝露，持续等待进化的那一刻。坚硬的茧能够防御攻击。"
  },
  {
   "species_id": 267,
@@ -6600,16 +7284,52 @@
   "text": "拥有色彩鲜艳的美丽外貌，然而性情贪婪，会驱赶正在采集花蜜的三蜜蜂，以便独占自己爱吃的花蜜。"
  },
  {
+  "species_id": 267,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "会用细长的嘴巴刺向对手，并吸取对手的体液。生性好斗。"
+ },
+ {
+  "species_id": 267,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "当花圃中满开鲜花时就会飞来飞去收集花粉。有着与外表不符的凶暴性格。"
+ },
+ {
   "species_id": 268,
   "game": "legends-arceus",
   "label": "洗翠",
   "text": "包裹全身的丝虽细，但强度十足，且色泽更胜甲壳茧的丝，以此织成的衣物被人们视为上品。"
  },
  {
+  "species_id": 268,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "茧内温度非常高，浑身细胞都在里面制造进化所需的能量。"
+ },
+ {
+  "species_id": 268,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "身体被坚硬的茧包裹着，一动不动地忍受对手的攻击。不会忘记对手长什么样子。"
+ },
+ {
   "species_id": 269,
   "game": "legends-arceus",
   "label": "洗翠",
   "text": "有着被黑暗中的篝火吸引的习性。会散布毒性猛烈的鳞粉，令人们为了将它们驱离村落而煞费苦心。"
+ },
+ {
+  "species_id": 269,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "夜行性宝可梦。被灯光引诱的毒粉蛾会把行道树上的叶子吃得一塌糊涂。"
+ },
+ {
+  "species_id": 269,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "受到袭击时会猛烈地扇动翅膀撒出剧毒的粉末。太阳下山后就会开始活动。"
  },
  {
   "species_id": 270,
@@ -6828,6 +7548,18 @@
   "text": "迎着海风，像滑翔机一般地翱翔。到了冬天就会把食物藏在巢的周围。"
  },
  {
+  "species_id": 278,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "会在海边的悬崖峭壁上筑巢。能借助上升气流飞向高空。"
+ },
+ {
+  "species_id": 278,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "会用长长的翅膀迎着海风，像滑翔机一样滑翔。休息的时候会收拢翅膀。"
+ },
+ {
   "species_id": 279,
   "game": "sword-shield",
   "label": "剑",
@@ -6850,6 +7582,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "把孩子放进鸟嘴里保护。风平浪静的日子会浮在海面上小憩。"
+ },
+ {
+  "species_id": 279,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "大嘴鸥将大大的鸟嘴伸进海里再抬起来后，嘴里就会装着满满的食物。"
+ },
+ {
+  "species_id": 279,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "鸟嘴里放着小型宝可梦的飞天快递员。累了就会浮在海上休息。"
  },
  {
   "species_id": 280,
@@ -7272,6 +8016,18 @@
   "text": "又圆又大的尾巴里贮满了它在成长时所需要的营养。"
  },
  {
+  "species_id": 298,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "坐在大尾巴上跳动的话，就可以在地上快速移动。是生活在水边的宝可梦。"
+ },
+ {
+  "species_id": 298,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "尾巴里贮满了成长所需的各种营养。会坐在尾巴上玩耍。"
+ },
+ {
   "species_id": 299,
   "game": "legends-arceus",
   "label": "洗翠",
@@ -7458,6 +8214,18 @@
   "text": "１天只吃１个树果。会通过忍饥挨饿来磨砺己心。"
  },
  {
+  "species_id": 307,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "１天只吃１个树果。会通过忍饥挨饿来磨砺己心。"
+ },
+ {
+  "species_id": 307,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "瑜伽修行对它来说是每天都不可或缺的。会通过冥想来提高精神力。"
+ },
+ {
   "species_id": 308,
   "game": "scarlet-violet",
   "label": "朱",
@@ -7474,6 +8242,18 @@
   "game": "legends-za",
   "label": "Z-A",
   "text": "能够使用通过瑜伽修行锻炼出来的精神力量来预测对手的行动。"
+ },
+ {
+  "species_id": 308,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "因修行瑜伽而提高了第６感。它的动作十分优雅，就像是在舞蹈一般。"
+ },
+ {
+  "species_id": 308,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "天天冥想使它锻炼出了异常敏锐的精神力，能够读取对方的想法。"
  },
  {
   "species_id": 309,
@@ -7618,6 +8398,18 @@
   "game": "legends-za",
   "label": "Z-A",
   "text": "会用右手和左手分别放出２种不同的毒来进行攻击。香气越浓越有精神。"
+ },
+ {
+  "species_id": 315,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "喝着清净的水长大的毒蔷薇因开出色彩鲜艳的花朵而闻名。"
+ },
+ {
+  "species_id": 315,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "双臂上美丽的花朵带有剧毒的尖刺。千万别想要摘下它的花朵。"
  },
  {
   "species_id": 316,
@@ -8196,6 +8988,18 @@
   "text": "会用２根长长的胡须探索浑浊的河底。用湿滑的粘膜保护着身体。"
  },
  {
+  "species_id": 339,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "全身覆盖着黏糊糊的体液，所以就算被捉住也可以哧溜一下挣脱出来。"
+ },
+ {
+  "species_id": 339,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "胡子是灵敏的雷达。即使是在浑水中也能靠胡子来找出食物。"
+ },
+ {
   "species_id": 340,
   "game": "sword-shield",
   "label": "剑",
@@ -8224,6 +9028,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "成群的鲶鱼王在水面上跳跃的景象被认为是地震的前兆。"
+ },
+ {
+  "species_id": 340,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "领地意识非常强烈。能引发周围５公里范围内的地震以击退对手。"
+ },
+ {
+  "species_id": 340,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "会疯狂大闹并引发大地震。日子一久，它变得能够预知出真正的地震到来。"
  },
  {
   "species_id": 341,
@@ -8424,6 +9240,18 @@
   "text": "以样子寒酸而闻名。尽管数量非常多，但还是会聚居在一处。"
  },
  {
+  "species_id": 349,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "以样子寒酸而闻名。尽管数量非常多，但还是会聚居在一处。"
+ },
+ {
+  "species_id": 349,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "什么都吃，所以可以在肮脏的河流或湖泊中生存。是谁也不会去关注的宝可梦。"
+ },
+ {
   "species_id": 350,
   "game": "sword-shield",
   "label": "剑",
@@ -8452,6 +9280,18 @@
   "game": "legends-za",
   "label": "Z-A",
   "text": "栖息在很大的湖底。听说，只要看见它那美丽的样子，心里的污秽就会被清除。"
+ },
+ {
+  "species_id": 350,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "据说当人们开始争斗时，会现身自湖底，并治愈人们躁动的心。"
+ },
+ {
+  "species_id": 350,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "世上最美的宝可梦。有着很多以美纳斯为原型的绘画和雕刻。"
  },
  {
   "species_id": 351,
@@ -8632,6 +9472,18 @@
   "game": "legends-za",
   "label": "Z-A",
   "text": "会用叫声振动空气，来轰飞对手。使用７种不同的声音和同伴说话。"
+ },
+ {
+  "species_id": 358,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "会用叫声振动空气，来轰飞对手。使用７种不同的声音和同伴说话。"
+ },
+ {
+  "species_id": 358,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "拥有超音波的叫声。轻飘飘地浮起来，乘着风去远方旅行。"
  },
  {
   "species_id": 359,
@@ -9258,6 +10110,18 @@
   "text": "沐浴着阳光，用全身进行光合作用。甲壳是泥土变硬后形成的。"
  },
  {
+  "species_id": 387,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "背上的甲壳是由泥土形成的，喝水之后会变得更硬。栖息在湖泊边。"
+ },
+ {
+  "species_id": 387,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "用全身进行光合作用，制造氧气。如果口渴，头上的叶子就会枯萎。"
+ },
+ {
   "species_id": 388,
   "game": "legends-arceus",
   "label": "洗翠",
@@ -9274,6 +10138,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "知道哪里会涌出清澈的水，会让伙伴宝可梦骑在它背上，将其运到那个地方。"
+ },
+ {
+  "species_id": 388,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "生活在森林中的水边。白天会去森林的外面，让甲壳上的树木晒晒阳光。"
+ },
+ {
+  "species_id": 388,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "它的甲壳是泥土变硬后形成的。有些宝可梦会来啄食甲壳上树木所结的果子。"
  },
  {
   "species_id": 389,
@@ -9294,6 +10170,18 @@
   "text": "有的宝可梦会在土台龟背上出生，并在此度过一生。"
  },
  {
+  "species_id": 389,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "有时候小小的宝可梦们会聚集起来，在一动不动的土台龟的背上建造巢穴。"
+ },
+ {
+  "species_id": 389,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "会移动的森林其实就是为了寻找水源而迁徙的土台龟群。"
+ },
+ {
   "species_id": 390,
   "game": "legends-arceus",
   "label": "洗翠",
@@ -9310,6 +10198,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "腹部产生的瓦斯在屁屁燃烧着。身体状况不好的话，火焰会变弱。"
+ },
+ {
+  "species_id": 390,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "在悬崖峭壁间也能穿梭自如。生活在岩山之上。睡觉时会将火焰熄灭。"
+ },
+ {
+  "species_id": 390,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "屁屁的火焰以腹部产生的瓦斯为燃料。即使被雨淋到也不会熄灭。"
  },
  {
   "species_id": 391,
@@ -9330,6 +10230,18 @@
   "text": "尾巴上的火焰越大，蓝色脸谱的色泽越鲜艳，在群体中的地位就越高。"
  },
  {
+  "species_id": 391,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "通过拉长尾部的火焰使自己看起来更加高大，以此威吓来袭的敌人。"
+ },
+ {
+  "species_id": 391,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "利用天花板和墙壁使出空中攻击。尾部的火焰也是武器之一。"
+ },
+ {
   "species_id": 392,
   "game": "legends-arceus",
   "label": "洗翠",
@@ -9346,6 +10258,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "会使用手脚缠绕着火焰的独特格斗技，无论什么样的对手都会勇敢对抗。"
+ },
+ {
+  "species_id": 392,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "会使出手脚并用的特殊格斗招式。身上的火焰一生都不会熄灭。"
+ },
+ {
+  "species_id": 392,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "性格像头上燃烧的火焰一样激烈。在速度方面无可匹敌。"
  },
  {
   "species_id": 393,
@@ -9366,6 +10290,18 @@
   "text": "讨厌被别人照顾。因为不听训练家的指示，所以要和它关系变好是很困难的。"
  },
  {
+  "species_id": 393,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "自尊心很强，讨厌从人那里接受食物。长长的绒毛能抵御寒冷。"
+ },
+ {
+  "species_id": 393,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "栖息于北国的海岸线。很擅长游泳。为寻找食物会在海里潜水超过１０分钟。"
+ },
+ {
   "species_id": 394,
   "game": "legends-arceus",
   "label": "洗翠",
@@ -9384,6 +10320,18 @@
   "text": "每一只波皇子都认为自己是最了不起的，因此它们无法形成群体。"
  },
  {
+  "species_id": 394,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "不集结成群，独来独往。似乎所有波皇子都认为自己是最了不起的。"
+ },
+ {
+  "species_id": 394,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "翅膀的一击非常强烈，连大树也能轻易折断。会在冰海里寻找猎物。"
+ },
+ {
   "species_id": 395,
   "game": "legends-arceus",
   "label": "洗翠",
@@ -9400,6 +10348,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "虽然不会挑起无谓的争斗，但对于威胁到群体安全的敌人，会毫不留情地将其击垮。"
+ },
+ {
+  "species_id": 395,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "从嘴部延伸出的３只角是实力的象征。领袖的角是最大的。"
+ },
+ {
+  "species_id": 395,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "能以不输水上摩托的速度游泳。翅膀的边缘很锐利，能将浮冰切断。"
  },
  {
   "species_id": 396,
@@ -9426,6 +10386,18 @@
   "text": "会很多只一起群体行动。虽然身体很小，但拍打翅膀的力量非常强。"
  },
  {
+  "species_id": 396,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "会很多只一起群体行动。虽然身体很小，但拍打翅膀的力量非常强。"
+ },
+ {
+  "species_id": 396,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "平时过着群体生活，当仅有１只在的时候就会变得很不起眼。叫声非常吵闹。"
+ },
+ {
   "species_id": 397,
   "game": "legends-arceus",
   "label": "洗翠",
@@ -9447,6 +10419,18 @@
   "species_id": 397,
   "game": "legends-za",
   "label": "Z-A",
+  "text": "栖息在森林和草原。如果遇到同类的团队，就会开始争夺领地。"
+ },
+ {
+  "species_id": 397,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "在森林和草原上空飞来飞去，追捕虫宝可梦。会聚集成大群一起行动。"
+ },
+ {
+  "species_id": 397,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
   "text": "栖息在森林和草原。如果遇到同类的团队，就会开始争夺领地。"
  },
  {
@@ -9474,16 +10458,52 @@
   "text": "翅膀和脚的肌肉很发达，能抓着小的宝可梦轻轻松松地飞行。"
  },
  {
+  "species_id": 398,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "性格凶猛的宝可梦。即使遇到体型比自己大的对手，也会果敢地上前挑战。"
+ },
+ {
+  "species_id": 398,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "翅膀和脚的肌肉很发达，能抓着小的宝可梦轻轻松松地飞行。"
+ },
+ {
   "species_id": 399,
   "game": "legends-arceus",
   "label": "洗翠",
   "text": "表情木讷，遇到何事都能处之泰然。过去曾发生大牙狸光明正大地跑进村里，还光明正大地把房屋啃了一番的离奇事件。"
  },
  {
+  "species_id": 399,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "遇到任何事都不慌不忙，神经很大条的家伙。能做出与外表不符的灵敏动作。"
+ },
+ {
+  "species_id": 399,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "总是啃大树和石头来磨结实的门牙。在水边筑巢生活。"
+ },
+ {
   "species_id": 400,
   "game": "legends-arceus",
   "label": "洗翠",
   "text": "体毛有着极佳的防水效果，且保温性十足，性能十分优秀。会在河中筑起堤坝当作巢穴。"
+ },
+ {
+  "species_id": 400,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "用树干和泥巴筑坝堵住河流，建造住所。以勤劳而闻名。"
+ },
+ {
+  "species_id": 400,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "虽然在陆地上行动迟缓，但游起泳来却快得和丑丑鱼不相上下。"
  },
  {
   "species_id": 401,
@@ -9504,6 +10524,18 @@
   "text": "触角之间互相碰撞的话，就会奏出叮叮咚咚如同木琴一般的音色。"
  },
  {
+  "species_id": 401,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "前后摇晃头部让触角相互碰撞的话，就会奏出木琴一般的声响。"
+ },
+ {
+  "species_id": 401,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "用互相撞击触角发出的声音和伙伴对话。那音色是秋夜的风景诗。"
+ },
+ {
   "species_id": 402,
   "game": "legends-arceus",
   "label": "洗翠",
@@ -9520,6 +10552,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "有村子会让它们互相比拼变化多端的叫声，当成娱乐活动。"
+ },
+ {
+  "species_id": 402,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "鸣叫的时候会将刀子般的前臂交叉在胸前。即兴创作出旋律。"
+ },
+ {
+  "species_id": 402,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "用旋律表达感情。学者们正在研究旋律的规律性。"
  },
  {
   "species_id": 403,
@@ -9552,6 +10596,18 @@
   "text": "通过伸缩肌肉来产生电流。当它陷入危机时，体毛会发出刺眼的亮光。"
  },
  {
+  "species_id": 403,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "一旦感知到危险，全身的体毛都会发光。趁对手眼睛被闪到时逃之夭夭。"
+ },
+ {
+  "species_id": 403,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "前脚有着通过肌肉运动来制造电力的构造。遇上危机时全身会发光。"
+ },
+ {
   "species_id": 404,
   "game": "sword-shield",
   "label": "剑",
@@ -9580,6 +10636,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "当把尾巴和伙伴连接在一起时，就能从爪子释放出更为强大的电击。"
+ },
+ {
+  "species_id": 404,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "从爪子释放出一击就能令人晕厥的电流。由数只组成团队生活。"
+ },
+ {
+  "species_id": 404,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "会用前脚碰触伙伴的身体。通过从爪子流出的电流节奏来传递自己的心情。"
  },
  {
   "species_id": 405,
@@ -9612,6 +10680,18 @@
   "text": "伦琴猫的透视能力对于发现危险的事物非常有帮助。"
  },
  {
+  "species_id": 405,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "有着一双能够透视任何物体的眼睛。能够找出藏在暗处的猎物并将其捕获。"
+ },
+ {
+  "species_id": 405,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "瞳孔闪着金色时，能发现躲藏在墙壁另一侧的猎物。"
+ },
+ {
   "species_id": 406,
   "game": "sword-shield",
   "label": "剑",
@@ -9634,6 +10714,18 @@
   "game": "legends-za",
   "label": "Z-A",
   "text": "如果沐浴到温暖的阳光，花苞就会打开，飞散出花粉。住在清澈的水边。"
+ },
+ {
+  "species_id": 406,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "冬季会合上花苞忍受严寒。春天到来时就会打开花苞，飞散出花粉。"
+ },
+ {
+  "species_id": 406,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "栖息在清澈的池塘边。它散播的花粉能够引发喷嚏不停、鼻涕不止的症状。"
  },
  {
   "species_id": 407,
@@ -9660,6 +10752,18 @@
   "text": "用甜甜的香气引诱猎物，并用双臂的毒刺鞭刺入或勒紧，以了结对方。"
  },
  {
+  "species_id": 407,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "会用甜甜的香气吸引猎物，然后用双臂上花朵里的毒刺鞭了结对方。"
+ },
+ {
+  "species_id": 407,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "用舞者般的身体动作挥动毒刺密布的鞭子进行攻击。"
+ },
+ {
   "species_id": 408,
   "game": "legends-arceus",
   "label": "洗翠",
@@ -9676,6 +10780,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "头盖龙之间会通过用头对撞来让坚硬的头部得到进一步的锻炼。"
+ },
+ {
+  "species_id": 408,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "栖息在大约１亿年前的古代密林中。头盖骨像铁一样坚硬。"
+ },
+ {
+  "species_id": 408,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "从铁球一样的化石中复活出来的古代的宝可梦。用头锤来了结猎物。"
  },
  {
   "species_id": 409,
@@ -9696,6 +10812,18 @@
   "text": "因为头盖骨厚达３０厘米，所以即使用头激烈对撞也绝对不会晕倒。"
  },
  {
+  "species_id": 409,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "头锤攻击的威力巨大，不管多坚固的东西也只要一击就能粉碎。"
+ },
+ {
+  "species_id": 409,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "头盖骨像铁一样坚硬。会一路撞倒丛林里的树木捕捉猎物，是个粗暴的家伙。"
+ },
+ {
   "species_id": 410,
   "game": "legends-arceus",
   "label": "洗翠",
@@ -9712,6 +10840,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "看来多亏了那张结实的脸，敌人也少了。栖息在太古时代的丛林里。"
+ },
+ {
+  "species_id": 410,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "栖息在约１亿年前的密林里的宝可梦。脸上的皮肤异常坚硬。"
+ },
+ {
+  "species_id": 410,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "有着摩擦大树的树干，打磨坚硬脸孔的习性。不擅长对付来自后方的攻击。"
  },
  {
   "species_id": 411,
@@ -9732,10 +10872,58 @@
   "text": "群居的护城龙们在遭到敌人袭击时，会排成横排，用坚硬的脸来抵挡攻击。"
  },
  {
+  "species_id": 411,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "会反弹掉来自正面的全部攻击。性格温顺，吃草和树果。"
+ },
+ {
+  "species_id": 411,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "受到敌人袭击时，会用脸上的盾来形成防护墙，以保护群里的孩子们。"
+ },
+ {
+  "species_id": 412,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "为了抵御寒冷的秋风，会用小树枝和落叶当材料，做成蓑衣裹在身上。"
+ },
+ {
+  "species_id": 412,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "如果蓑衣在战斗中坏掉了，就会用附近的材料立刻重新做一件蓑衣。"
+ },
+ {
+  "species_id": 413,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "从结草儿进化过来时，蓑衣成为了身体的一部分。一辈子都不会脱下蓑衣。"
+ },
+ {
+  "species_id": 413,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "根据进化地点的不同，样子会发生变化。身边的材料会成为身体的一部分。"
+ },
+ {
   "species_id": 414,
   "game": "legends-arceus",
   "label": "洗翠",
   "text": "拍动翅膀时会洒下银灰色的鳞粉。虽然观察结果显示其主食是花蜜，但却很少在花田看见它们。"
+ },
+ {
+  "species_id": 414,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "非常喜欢吃花蜜。会抢夺三蜜蜂采集到的蜜，然后自己吃掉。"
+ },
+ {
+  "species_id": 414,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "没有固定的住处。为了寻找爱吃的花蜜，它会不停地飞过山野。"
  },
  {
   "species_id": 415,
@@ -9768,6 +10956,18 @@
   "text": "从出生时起就是３只一起。为了取悦蜂女王，一直都在采集着花蜜。"
  },
  {
+  "species_id": 415,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "３只合为一只的宝可梦。一直在为蜂女王辛勤搬运甜甜的花蜜。"
+ },
+ {
+  "species_id": 415,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "会把采集到的花蜜搬运到住处。在夜里，许多三蜜蜂会重重叠叠形成蜂巢后睡觉。"
+ },
+ {
   "species_id": 416,
   "game": "sword-shield",
   "label": "剑",
@@ -9798,6 +10998,18 @@
   "text": "平常总是在身体的洞里养育孩子。会分泌出用来操控三蜜蜂的费洛蒙。"
  },
  {
+  "species_id": 416,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "躯体成为了孩子们的巢穴。用三蜜蜂采集到的花蜜养育孩子们。"
+ },
+ {
+  "species_id": 416,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "遇到危机时孩子们会从６个巢穴里飞出并进行反击。一个蜂群里只有一只蜂女王。"
+ },
+ {
   "species_id": 417,
   "game": "legends-arceus",
   "label": "洗翠",
@@ -9814,6 +11026,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "有时候也会发现为了将储存的电分给同伴而互相摩擦颊囊的帕奇利兹。"
+ },
+ {
+  "species_id": 417,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "把储存了静电帕奇作响的毛球和最喜欢吃的树果一起藏在树干的洞穴里。"
+ },
+ {
+  "species_id": 417,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "脸颊上的电囊生成的电力会通过尾巴放射出去。生活在树木上面。"
  },
  {
   "species_id": 418,
@@ -9834,6 +11058,18 @@
   "text": "使脖子上的浮囊膨胀，来让脸部露出水面，以此探查岸上猎物的动静。"
  },
  {
+  "species_id": 418,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "脖子上的浮囊充满空气后会像泳圈一样膨胀。它浮在水上时会从水面露出脸。"
+ },
+ {
+  "species_id": 418,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "会像螺旋桨一样旋转２条尾巴来游泳。潜水的时候浮囊会瘪掉。"
+ },
+ {
   "species_id": 419,
   "game": "legends-arceus",
   "label": "洗翠",
@@ -9850,6 +11086,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "大量栖息在渔村，不仅会去帮助溺水的人，还会帮忙搬运捕获的猎物。"
+ },
+ {
+  "species_id": 419,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "用发达的浮囊浮在水面。是会帮忙拯救溺水者的宝可梦。"
+ },
+ {
+  "species_id": 419,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "在追逐水中猎物的过程中，浮囊变得发达了。可以像橡皮船一样让人乘坐。"
  },
  {
   "species_id": 420,
@@ -9870,6 +11118,54 @@
   "text": "会在真身旁的果实长大成熟后，使用果实的营养来进化。之后果实会自己掉落，成为其他生物的食粮。"
  },
  {
+  "species_id": 420,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "进化所需的养分都积蓄在小球里。据说很甜很好吃。"
+ },
+ {
+  "species_id": 420,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "在阳光下会渐渐变红。吸收养分，小球瘪掉的话，就是说快要进化了。"
+ },
+ {
+  "species_id": 421,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "如果阳光变得强烈就会开花。花苞形态的时候忍受的积愤会一下子发泄出来。"
+ },
+ {
+  "species_id": 421,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "花苞形态的时候性格稳重，开花后则一直笑容满面。天如果阴下来就会变回花苞。"
+ },
+ {
+  "species_id": 422,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "颜色和样子会因栖息地不同而有所不同。在神奥地区确认到有２种不同的样子。"
+ },
+ {
+  "species_id": 422,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "栖息在水边。身体形状会随着栖息地的环境不同而发生变化。"
+ },
+ {
+  "species_id": 423,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "没有骨头，身体软瘫瘫的。即使身体的一部分断掉，也很快就会再生并恢复原状。"
+ },
+ {
+  "species_id": 423,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "在遥远的过去，好像会用结实的壳保护身体。栖息在海边的浅滩。"
+ },
+ {
   "species_id": 424,
   "game": "legends-arceus",
   "label": "洗翠",
@@ -9886,6 +11182,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "因为分成２条的尾巴能灵巧地处理各种事情，所以变得几乎不会使用手。"
+ },
+ {
+  "species_id": 424,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "能用２根尾巴灵活地剥掉树果的壳来进食。真正的手臂几乎不怎么用了。"
+ },
+ {
+  "species_id": 424,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "以庞大的群体进行行动。把尾巴紧紧连在一起做成环。就像是友情的证明。"
  },
  {
   "species_id": 425,
@@ -9918,6 +11226,18 @@
   "text": "漫无目的地浮在空中的样子，使它在某些民间故事里被相传为迷途灵魂的路标。"
  },
  {
+  "species_id": 425,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "人或宝可梦的魂魄聚集在一起后生成的宝可梦。非常喜欢湿哒哒的季节。"
+ },
+ {
+  "species_id": 425,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "它会去拉小孩的手，想将其带到另一个世界去，但却反被抓着甩来甩去。"
+ },
+ {
   "species_id": 426,
   "game": "sword-shield",
   "label": "剑",
@@ -9948,6 +11268,18 @@
   "text": "会搬运人和宝可梦。但因为只能跟着风飘动，因此无法自行决定目的地。"
  },
  {
+  "species_id": 426,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "白天就这么迷迷糊糊地飘浮着，到了傍晚就会整群飞走。谁也不知道要飞去哪儿。"
+ },
+ {
+  "species_id": 426,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "能让人或宝可梦乘着飞行，但因为只能跟着风向飘，所以不知道会飞到哪里去。"
+ },
+ {
   "species_id": 427,
   "game": "sword-shield",
   "label": "剑",
@@ -9970,6 +11302,18 @@
   "game": "legends-za",
   "label": "Z-A",
   "text": "如果猛地伸直总是卷成团的耳朵，连很大的岩石也能轻易破坏。"
+ },
+ {
+  "species_id": 427,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "会猛地将卷成团的耳朵伸直来捶打对手。连大人也会痛得跳起来。"
+ },
+ {
+  "species_id": 427,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "如果感觉到有危险，就会竖起双耳保持警觉。在寒冷的夜里把脸埋在毛皮里睡觉。"
  },
  {
   "species_id": 428,
@@ -9996,6 +11340,18 @@
   "text": "耳朵似乎非常敏感，触摸时要温柔小心，否则会被它用柔软的脚狠踹。"
  },
  {
+  "species_id": 428,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "警戒心很强的宝可梦。一旦感知到危险，就会用耳朵尖上蓬松柔软的毛包住身体。"
+ },
+ {
+  "species_id": 428,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "很爱干净，常常会梳理耳朵尖的毛，从不疏于保养自己。会轻盈地蹦跳着奔跑。"
+ },
+ {
   "species_id": 429,
   "game": "legends-arceus",
   "label": "洗翠",
@@ -10012,6 +11368,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "用咒语般的怪异叫声折磨对手。是神出鬼没的宝可梦。"
+ },
+ {
+  "species_id": 429,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "发出咒语般的叫声，用头痛和幻觉折磨听到叫声的对象。"
+ },
+ {
+  "species_id": 429,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "吟唱咒语的宝可梦。不是只会折磨对手，也有会带来幸福的咒语。"
  },
  {
   "species_id": 430,
@@ -10032,16 +11400,52 @@
   "text": "夜行性。只要鸣叫一声，就会有超过１００只的黑暗鸦跟班聚集起来。"
  },
  {
+  "species_id": 430,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "到了晚上就开始活动。以带领着许多黑暗鸦集结成群而闻名。"
+ },
+ {
+  "species_id": 430,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "让跟班的黑暗鸦去搬运食物。自己则在巢穴里花大把的时间梳理羽毛。"
+ },
+ {
   "species_id": 431,
   "game": "legends-arceus",
   "label": "洗翠",
   "text": "以漩涡状的尾巴及眼力迷惑人心。暗藏的爪子也十分锐利，一旦与之为敌将会非常棘手。"
  },
  {
+  "species_id": 431,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "一不称心，就会竖起爪子。但偶尔会从喉咙里发出声响来撒娇，这样的性格很受部分人喜爱。"
+ },
+ {
+  "species_id": 431,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "锐利的目光会让对手陷入轻度的催眠状态。是种非常随性的宝可梦。"
+ },
+ {
   "species_id": 432,
   "game": "legends-arceus",
   "label": "洗翠",
   "text": "性情厚颜无耻且极难驯服，但由于拥有更胜棉花绒的美丽皮毛，因此很受人欢迎。"
+ },
+ {
+  "species_id": 432,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "脸皮极厚，即使是其他宝可梦的住处，也会大摇大摆地进去睡起觉来。"
+ },
+ {
+  "species_id": 432,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "为了让自己的身体看起来大些，以此威吓对手，会把分叉的尾巴紧紧缠在腰上。"
  },
  {
   "species_id": 433,
@@ -10066,6 +11470,18 @@
   "game": "legends-za",
   "label": "Z-A",
   "text": "通过振动喉咙里的圆珠子发出叫声。用轻快的弹跳来移动身体。"
+ },
+ {
+  "species_id": 433,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "通过振动喉咙里的圆珠子发出叫声。用轻快的弹跳来移动身体。"
+ },
+ {
+  "species_id": 433,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "每次跳跃都会发出铃铃声。用高频率的叫声让对手失聪。"
  },
  {
   "species_id": 434,
@@ -10098,6 +11514,18 @@
   "text": "从屁屁喷出的液体臭到连２公里外的人都会感到不舒服。"
  },
  {
+  "species_id": 434,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "从屁屁喷出具有强烈臭味的液体保护自己。气味２４小时内都不会消散。"
+ },
+ {
+  "species_id": 434,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "从屁股喷射出恶臭扑鼻的液体，以此击退来袭的敌人。"
+ },
+ {
   "species_id": 435,
   "game": "sword-shield",
   "label": "剑",
@@ -10126,6 +11554,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "从尾巴尖端喷出散发臭味的液体进行攻击。连发时臭味会减轻。"
+ },
+ {
+  "species_id": 435,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "从尾巴尖端喷出带有恶臭的液体进行攻击。喷射距离能达到５０米以上。"
+ },
+ {
+  "species_id": 435,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "从尾部喷出臭液。液体在肚子里发酵的时间越长，气味就会变得越臭。"
  },
  {
   "species_id": 436,
@@ -10158,6 +11598,18 @@
   "text": "能在古墓找到它。据说它背上的花纹蕴藏着神秘的力量。"
  },
  {
+  "species_id": 436,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "从古墓里挖掘出了与铜镜怪一模一样的道具，但两者之间的关系还未知。"
+ },
+ {
+  "species_id": 436,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "为了调查它的身体构造而用Ｘ光拍摄了照片，但照片上却空无一物。"
+ },
+ {
   "species_id": 437,
   "game": "sword-shield",
   "label": "剑",
@@ -10186,6 +11638,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "打开通往其他世界的洞，然后就会从那里降下雨来。因此被叫做丰收之神。"
+ },
+ {
+  "species_id": 437,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "沉睡了２０００多年的青铜钟在工地被挖掘出来，成为了一件大新闻。"
+ },
+ {
+  "species_id": 437,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "能够召唤雨云，降下大雨。从前人们把它当作丰收之神供奉着。"
  },
  {
   "species_id": 438,
@@ -10218,6 +11682,18 @@
   "text": "会从眼睛排出体内多余的水分。该成分接近人类的汗液。"
  },
  {
+  "species_id": 438,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "虽然它看上去一直在哭，但其实是在排出多余的水分，以调节体内水分平衡。"
+ },
+ {
+  "species_id": 438,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "喜欢干燥的地方。从眼睛里流出水来调节体内的水分。"
+ },
+ {
   "species_id": 439,
   "game": "sword-shield",
   "label": "剑",
@@ -10240,6 +11716,18 @@
   "game": "legends-za",
   "label": "Z-A",
   "text": "擅长模仿。如果对方因此大吃一惊，它就会很开心，甚至不知不觉忘记了自己正在模仿这件事。"
+ },
+ {
+  "species_id": 439,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "有着模仿对手动作的习性。据说被模仿的对手会目不转睛。"
+ },
+ {
+  "species_id": 439,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "喜欢人群聚集的地方。会完美地模仿对手的动作来迷惑对手，然后乘机逃跑。"
  },
  {
   "species_id": 440,
@@ -10272,10 +11760,34 @@
   "text": "深信白白圆圆的石头是蛋，很小心翼翼地拿着。很在意自己卷毛的形状。"
  },
  {
+  "species_id": 440,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "非常喜欢又白又圆的东西。它学吉利蛋的样子，抱着一块很像蛋的石头。"
+ },
+ {
+  "species_id": 440,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "把很像蛋的浑圆石头放入腹部的袋子中。会把石头交给喜爱的那位。"
+ },
+ {
   "species_id": 441,
   "game": "legends-arceus",
   "label": "洗翠",
   "text": "能将人类话语模仿得惟妙惟肖的表演家。当随着年龄增长而累积众多经验后，甚至能够理解话语中的含义。"
+ },
+ {
+  "species_id": 441,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "学习人类的语言来鸣叫。当伙伴们聚集在同一个地方时，大家就会学习到同样的词汇。"
+ },
+ {
+  "species_id": 441,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "会像节拍器一样左右摆动尾羽来打拍子。还会模仿人类说话。"
  },
  {
   "species_id": 442,
@@ -10306,6 +11818,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "由１０８个魂魄构成。为了防止再度作恶，而被绑缚在了楔石上。"
+ },
+ {
+  "species_id": 442,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "１０８个魂魄聚集在一起生成的宝可梦。被绑缚在楔石的裂缝里。"
+ },
+ {
+  "species_id": 442,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "因为５００年前作恶多端，而导致身体被绑缚在楔石的裂缝里。"
  },
  {
   "species_id": 443,
@@ -10344,6 +11868,18 @@
   "text": "把洞窟里的小横洞作为住所。如果有猎物靠近，就会迅速扑出来捕捉。"
  },
  {
+  "species_id": 443,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "把洞窟里的小横洞作为住所。如果有猎物靠近，就会迅速扑出来捕捉。"
+ },
+ {
+  "species_id": 443,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "曾经居住在热带地区。为了躲避寒冷而在有地热的温暖洞窟里生活。"
+ },
+ {
   "species_id": 444,
   "game": "sword-shield",
   "label": "剑",
@@ -10378,6 +11914,18 @@
   "game": "legends-za",
   "label": "Z-A",
   "text": "有着在扩大巢穴时，把地里挖出的宝石原石积存到自己巢穴的习性。"
+ },
+ {
+  "species_id": 444,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "自古以来人们就相信用尖牙陆鲨的鳞片做成的药可以治愈不治之症。"
+ },
+ {
+  "species_id": 444,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "有着把挖到的宝石收集到巢穴里的习性。因此觊觎宝石而来的小偷络绎不绝。"
  },
  {
   "species_id": 445,
@@ -10416,6 +11964,18 @@
   "text": "以不逊色于喷气式战斗机的速度在天空中飞行。被盯上的猎物根本无处可逃。"
  },
  {
+  "species_id": 445,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "如果收拢身体，伸展翅膀，简直就是一架喷气式飞机。能以音速飞行。"
+ },
+ {
+  "species_id": 445,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "以不逊色于喷气式战斗机的速度在天空中飞行。被盯上的猎物根本无处可逃。"
+ },
+ {
   "species_id": 446,
   "game": "sword-shield",
   "label": "剑",
@@ -10444,6 +12004,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "会在拼命进食的途中忘记藏到体毛下的食物。"
+ },
+ {
+  "species_id": 446,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "每天都要一口气吞下一次与体重相当的食物。基本上不怎么咀嚼，直接吞下去。"
+ },
+ {
+  "species_id": 446,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "有着把食物藏在长长体毛下的习性。不过又会将藏了食物的事忘得一干二净。"
  },
  {
   "species_id": 447,
@@ -10482,6 +12054,18 @@
   "text": "从体内发出的波导会在害怕或悲伤时变强，并向伙伴传递危险的信号。"
  },
  {
+  "species_id": 447,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "从体内发出的波导会在害怕或悲伤时变强，并向伙伴传递危险的信号。"
+ },
+ {
+  "species_id": 447,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "身体既柔韧又强健。只要一个晚上就能翻过３座山头，越过２条峡谷。"
+ },
+ {
   "species_id": 448,
   "game": "sword-shield",
   "label": "剑",
@@ -10518,6 +12102,18 @@
   "text": "通过读取所有东西发出的波导，远在１公里以外的对手的情绪也能掌握。"
  },
  {
+  "species_id": 448,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "拥有侦测所有东西发出的波导的能力。能够理解人类的语言。"
+ },
+ {
+  "species_id": 448,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "通过侦测对方发出的波导，就能读取其想法和行动。"
+ },
+ {
   "species_id": 449,
   "game": "sword-shield",
   "label": "剑",
@@ -10551,6 +12147,18 @@
   "species_id": 449,
   "game": "legends-za",
   "label": "Z-A",
+  "text": "通过用沙子包裹全身来防止身体受细菌的侵害。不太适应被水弄湿。"
+ },
+ {
+  "species_id": 449,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "在干燥的土地生活。是身体会分泌出沙粒而不是汗水的宝可梦。"
+ },
+ {
+  "species_id": 449,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
   "text": "通过用沙子包裹全身来防止身体受细菌的侵害。不太适应被水弄湿。"
  },
  {
@@ -10590,6 +12198,18 @@
   "text": "会从身体的孔洞里向上喷出体内储存的沙子，制造出巨大龙卷风进行攻击。"
  },
  {
+  "species_id": 450,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "会从身体的孔洞里向上喷出体内储存的沙子，制造出巨大龙卷风进行攻击。"
+ },
+ {
+  "species_id": 450,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "巨大的嘴巴直径可达２米。其威力之强足以把一辆汽车咬成破铜烂铁。"
+ },
+ {
   "species_id": 451,
   "game": "sword-shield",
   "label": "剑",
@@ -10608,6 +12228,18 @@
   "text": "钳子不但锐利而且带毒，毫无疑问是种危险的宝可梦。但对于寒冷似乎缺乏抵抗力。"
  },
  {
+  "species_id": 451,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "用尾巴上的钩爪夹住猎物并注入毒素。很执着，毒不发作就绝不松开。"
+ },
+ {
+  "species_id": 451,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "栖息在干燥的土地上。会在沙地里挖洞，然后潜藏在里面等待猎物上门。"
+ },
+ {
   "species_id": 452,
   "game": "sword-shield",
   "label": "剑",
@@ -10624,6 +12256,18 @@
   "game": "legends-arceus",
   "label": "洗翠",
   "text": "性情凶猛残暴。靠着能够弹开刀剑的坚固甲壳与强劲的力量四处大闹，为祸一方。"
+ },
+ {
+  "species_id": 452,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "双臂的钩爪有着能把汽车扯成废铁的破坏力。会从钩爪的前端放出毒素。"
+ },
+ {
+  "species_id": 452,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "全身都覆盖有坚硬的甲壳。头部可以旋转１８０度，在它面前不存在死角。"
  },
  {
   "species_id": 453,
@@ -10656,6 +12300,18 @@
   "text": "很少会堂堂正正地战斗，但那都是为了生存。作为吉祥物非常受欢迎。"
  },
  {
+  "species_id": 453,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "脸颊上带有毒囊。会抓住对手的空当，用渗透了剧毒的手指猛戳。"
+ },
+ {
+  "species_id": 453,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "会将毒囊鼓得非常大，发出咕嘟咕嘟的诡异声音，起到威吓对手的作用。"
+ },
+ {
   "species_id": 454,
   "game": "sword-shield",
   "label": "剑",
@@ -10686,10 +12342,34 @@
   "text": "喉咙里带有毒囊。如果从喉咙发出声响，储存的毒素会被炼制得更强劲。"
  },
  {
+  "species_id": 454,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "从拳头的尖刺里分泌出的剧毒，即使只是擦伤也足以致命。"
+ },
+ {
+  "species_id": 454,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "从毒囊生成的剧毒会通过手臂上的管道，进到拳头上的尖刺里。"
+ },
+ {
   "species_id": 455,
   "game": "legends-arceus",
   "label": "洗翠",
   "text": "虽是草木形态的宝可梦，但性情却是贪婪粗暴，会张开大口袭击猎物。"
+ },
+ {
+  "species_id": 455,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "先用甜香的唾液引诱猎物，然后用大颚大口地嚼。要花１整天吃掉猎物。"
+ },
+ {
+  "species_id": 455,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "将触手缠绕上树枝后一动不动的样子像极了植物。会张开大嘴等待猎物上钩。"
  },
  {
   "species_id": 456,
@@ -10710,6 +12390,18 @@
   "text": "粉红色的那部分皮肤会储存太阳光并发光。听说是用来做保护色的。"
  },
  {
+  "species_id": 456,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "充分沐浴了阳光的尾鳍花纹到了天暗的时候，就会发出颜色鲜艳的光来。"
+ },
+ {
+  "species_id": 456,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "张开２片尾鳍游泳的样子使它获得了海中狩猎凤蝶这个别称。"
+ },
+ {
   "species_id": 457,
   "game": "legends-arceus",
   "label": "洗翠",
@@ -10728,6 +12420,18 @@
   "text": "在深海海底发光的霓虹鱼看起来就像是夜空中闪闪发光的星星。"
  },
  {
+  "species_id": 457,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "生活在深深的海底。让４片鳍的花纹发光，以此引诱猎物。"
+ },
+ {
+  "species_id": 457,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "为了不被天敌发现，会用胸部的２片鳍在海底爬行。"
+ },
+ {
   "species_id": 458,
   "game": "sword-shield",
   "label": "剑",
@@ -10744,6 +12448,18 @@
   "game": "legends-arceus",
   "label": "洗翠",
   "text": "姿态浑圆如球，却是个游泳高手。目前已知与铁炮鱼群体交流较多的个体最终得以进化。"
+ },
+ {
+  "species_id": 458,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "２根触角能够感受到海水细微的流动。是种很亲近人的宝可梦。"
+ },
+ {
+  "species_id": 458,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "学者们通过研究发现，它们背上独特的花纹会因栖息的地域而有所不同。"
  },
  {
   "species_id": 459,
@@ -10779,6 +12495,18 @@
   "species_id": 459,
   "game": "legends-za",
   "label": "Z-A",
+  "text": "到了春天，肚子的周围会生长出口感好似冰棍的树果。"
+ },
+ {
+  "species_id": 459,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "生活在雪山之上。很少见到人类，会因好奇而靠近过来。"
+ },
+ {
+  "species_id": 459,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
   "text": "到了春天，肚子的周围会生长出口感好似冰棍的树果。"
  },
  {
@@ -10818,6 +12546,18 @@
   "text": "会引发暴风雪，让周围变得一片雪白。别名叫冰雪怪物。"
  },
  {
+  "species_id": 460,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "生活在万年积雪的山上，会引发暴风雪。雪男的正身就是它。"
+ },
+ {
+  "species_id": 460,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "会引发暴风雪，让周围变得一片雪白。别名叫冰雪怪物。"
+ },
+ {
   "species_id": 461,
   "game": "sword-shield",
   "label": "剑",
@@ -10846,6 +12586,18 @@
   "game": "scarlet-violet",
   "label": "紫",
   "text": "４～５只一组进行行动。在岩石和树木上留下记号，以团队合作捕杀猎物。"
+ },
+ {
+  "species_id": 461,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "生活在寒冷地方的宝可梦。４到５只组成一个团队，以出色的合作来追捕猎物。"
+ },
+ {
+  "species_id": 461,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "会用锐利的爪子在树木和冰块表面刻下不可思议的图形，以此向伙伴传递暗号。"
  },
  {
   "species_id": 462,
@@ -11448,10 +13200,34 @@
   "text": "会夺去恶人的记忆，因而受到人们敬畏的宝可梦。本人曾发现提及此宝可梦司掌知识的记录。"
  },
  {
+  "species_id": 480,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "被称为知识之神。据说拥有消除与之目光交会者的记忆的力量。"
+ },
+ {
+  "species_id": 480,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "据说，由克希的诞生给人类带来了令生活变得丰富多彩的智慧。"
+ },
+ {
   "species_id": 481,
   "game": "legends-arceus",
   "label": "洗翠",
   "text": "有着感情之神别名的宝可梦。传说它会令对其不敬之人的感情失控，因而受到人们畏惧。"
+ },
+ {
+  "species_id": 481,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "教会了人们悲伤的痛苦和快乐的宝贵。被称为感情之神。"
+ },
+ {
+  "species_id": 481,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "沉睡在湖底，但据说会灵魂出窍，在水面上飞来飞去。"
  },
  {
   "species_id": 482,
@@ -11460,16 +13236,52 @@
   "text": "以意志之神的身份受人畏惧的宝可梦。传说它能操纵与自己敌对者的意志，使其化为傀儡。"
  },
  {
+  "species_id": 482,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "被称为意志之神。一直沉睡在湖底，维持着世界的平衡。"
+ },
+ {
+  "species_id": 482,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "人们认为，由克希、艾姆利多和亚克诺姆是从同一个蛋里出生的宝可梦。"
+ },
+ {
   "species_id": 483,
   "game": "legends-arceus",
   "label": "洗翠",
   "text": "洗翠地区流传着这样的神话传说：当此神诞生，现世的时间便如滔滔大河般开始流动。"
  },
  {
+  "species_id": 483,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "拥有操纵时间的力量，在神奥地区的神话里被描述成神。"
+ },
+ {
+  "species_id": 483,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "由于帝牙卢卡的诞生，时间才开始流动。是有着这样传说的宝可梦。"
+ },
+ {
   "species_id": 484,
   "game": "legends-arceus",
   "label": "洗翠",
   "text": "洗翠地区流传着这样的神话传说：当此神诞生，阻隔现世的屏障消失，出现了无边无际的空间。"
+ },
+ {
+  "species_id": 484,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "拥有扭曲空间的能力，在神奥地区的神话里被描述成神。"
+ },
+ {
+  "species_id": 484,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "据说居住在平行排列的空间狭缝中，是出现在神话中的宝可梦。"
  },
  {
   "species_id": 485,
@@ -11550,6 +13362,18 @@
   "text": "洄游在大洋中，有传闻说它在极少数情况下会来到洗翠近海。外形与霏欧纳相似，但有许多不同之处，两者之间关系不明。"
  },
  {
+  "species_id": 490,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "出生于冰冷的海底。为了回到自己出生的海底，它会游上非常长的距离。"
+ },
+ {
+  "species_id": 490,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "身体的８０％由水组成。是种体质容易受周围环境影响的宝可梦。"
+ },
+ {
   "species_id": 491,
   "game": "legends-arceus",
   "label": "洗翠",
@@ -11562,10 +13386,46 @@
   "text": "拥有诱使人们进入深度睡眠并做梦的能力。在朔月的夜晚活动。"
  },
  {
+  "species_id": 491,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "拥有诱使人们进入深度睡眠并做梦的能力。在朔月的夜晚活动。"
+ },
+ {
+  "species_id": 491,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "流传着这样一种说法，达克莱伊会在没有月亮的夜晚带来恐怖的噩梦。"
+ },
+ {
+  "species_id": 492,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "生活在花圃中，只要把身体蜷成团，看起来就像花一样，任谁都察觉不到。"
+ },
+ {
+  "species_id": 492,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "拥有分解大气中的毒素，让荒芜大地瞬间变成花圃的力量。"
+ },
+ {
   "species_id": 493,
   "game": "legends-arceus",
   "label": "洗翠",
   "text": "以自身为光源，从天照耀洗翠大地。凭借其光明引导并守护宝可梦。洗翠神话视其为万物的创造主。"
+ },
+ {
+  "species_id": 493,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "晶钻",
+  "text": "神话里将它描述为用１０００只手创造了宇宙的宝可梦。"
+ },
+ {
+  "species_id": 493,
+  "game": "brilliant-diamond-shining-pearl",
+  "label": "明珍",
+  "text": "在神话里，它被描述为宇宙尚未存在时，就诞生的最早的宝可梦。"
  },
  {
   "species_id": 495,

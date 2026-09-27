@@ -65,9 +65,9 @@ DEX_ZH = {
     "lumiose-city": "密阿雷市图鉴", "hyperspace": "超空间图鉴",
 }
 
-# pokedex identifier -> our dex id（extended-sinnoh=白金系 210 只，即 BDSP 神奥图鉴）
-DEX_ID_MAP = {"extended-sinnoh": "sinnoh"}
-# 手工指定图鉴归属游戏（覆盖 vg 推断）：BDSP 图鉴编号同白金（extended-sinnoh, pokedex 6）
+# pokedex identifier -> our dex id（original-sinnoh=DP/BDSP 神奥图鉴 151 只）
+DEX_ID_MAP = {"original-sinnoh": "sinnoh"}
+# 手工指定图鉴归属游戏（覆盖 vg 推断）：BDSP 图鉴同 DP 的 151 只（白金 extended-sinnoh=210 不属于 BDSP，勿用）
 DEX_GAME_OVERRIDE = {"sinnoh": "brilliant-diamond-shining-pearl"}
 DEX_ORDER = ["galar", "isle-of-armor", "crown-tundra", "sinnoh", "hisui",
              "paldea", "kitakami", "blueberry", "lumiose-city", "hyperspace"]

@@ -28,7 +28,7 @@ def test_games_and_dexes(con):
            LEFT JOIN dex_entries e ON e.dex_id = d.id GROUP BY d.id""")}
     assert dexes["galar"] == 400 and dexes["paldea"] == 400
     assert dexes["hisui"] == 242
-    assert dexes["sinnoh"] == 210  # BDSP 神奥图鉴（白金编号）
+    assert dexes["sinnoh"] == 151  # BDSP 神奥图鉴（同 DP 的 151 只，非白金 210）
     assert len(dexes) == 10
 
 

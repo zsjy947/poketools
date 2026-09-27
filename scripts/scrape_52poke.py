@@ -68,7 +68,9 @@ FLAVOR_FIELDS = {
     "ladex": ("legends-arceus", "洗翠"),
     "scdex": ("scarlet-violet", "朱"), "videx": ("scarlet-violet", "紫"),
     "zadex": ("legends-za", "Z-A"),
+    # BDSP 文本有两种写法：白金新增种用合并的 bdspdex，DP 原生种分 bddex/spdex 两字段
     "bdspdex": (BDSP, "晶钻/明珍"),
+    "bddex": (BDSP, "晶钻"), "spdex": (BDSP, "明珍"),
 }
 
 SPECIAL_LOC = {
