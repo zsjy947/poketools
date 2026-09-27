@@ -299,13 +299,13 @@ def test_ko_summary_and_sash():
     mv = _mv(power=65)
     r = damage.calc_damage(a, d, mv, {})
     ko = r["ko"]
-    assert set(ko["probs"].keys()) == {1, 2, 3, 4}
-    assert ko["probs"][1] == (100.0 if r["ohko"] else 0.0)
-    assert ko["probs"][2] >= ko["probs"][1]
+    assert set(ko["probs"].keys()) == {"1", "2", "3", "4"}
+    assert ko["probs"]["1"] == (100.0 if r["ohko"] else 0.0)
+    assert ko["probs"]["2"] >= ko["probs"]["1"]
     # 气势披带：满血首击致死残留 1 HP → 一回合击倒概率归零
     r2 = damage.calc_damage(a, d, mv, {"defender_sash": True})
-    assert r2["ko"]["probs"][1] == 0.0
-    assert r2["ko"]["probs"][2] == 100.0
+    assert r2["ko"]["probs"]["1"] == 0.0
+    assert r2["ko"]["probs"]["2"] == 100.0
 
 
 def test_hazard_damage():

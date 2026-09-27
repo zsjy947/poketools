@@ -77,15 +77,15 @@ def meta_abilities():
 def meta_z_moves():
     """Z 纯晶表：泛用（属性→纯晶）+ 专属（species+招式→Z 招式）。"""
     con = static_conn()
-    generic = []
-    for r in con.execute(
-            """SELECT i.identifier, i.name_zh FROM items i
-               WHERE i.id >= 900000 AND i.id < 900100 ORDER BY i.id"""):
-        generic.append({"crystal_identifier": r["identifier"], "crystal_name": r["name_zh"]})
+    generic = [dict(r) for r in con.execute(
+        """SELECT i.identifier AS crystal_identifier, i.name_zh AS crystal_name
+           FROM items i WHERE i.id >= 900000 AND i.id < 900100 ORDER BY i.id""")]
     exclusive = [dict(r) for r in con.execute(
-        """SELECT z.crystal_identifier, z.crystal_name, z.species_id, z.form_suffix,
-                  z.base_move_id, z.z_move_name, z.power, z.damage_class, z.note
-           FROM z_exclusive z ORDER BY z.crystal_id""")]
+        """SELECT z.crystal_identifier, i.name_zh AS crystal_name, z.species_id,
+                  z.form_suffix, z.base_move_id, z.z_move_name, z.power,
+                  z.damage_class, z.note
+           FROM z_exclusive z LEFT JOIN items i ON i.identifier = z.crystal_identifier
+           ORDER BY z.crystal_identifier, z.species_id""")]
     con.close()
     return {"generic": generic, "exclusive": exclusive}
 
@@ -329,15 +329,20 @@ def calc_batch(body: dict = Body(...)):
                      move_ids: list, z_marks: list, dfd_hazard: int):
             out = []
             opts0 = _opts(att, dfd_side, att_flags, dfd_flags)
-            for i, mid in enumerate(move_ids or []):
-                if not mid:
+            for i, mobj in enumerate(move_ids or []):
+                if not mobj:
                     out.append(None)
                     continue
+                # 招式项可为 id 或 {id, power}（变动威力招手动输入）
+                mid = mobj.get("id") if isinstance(mobj, dict) else mobj
+                power_override = (mobj.get("power") if isinstance(mobj, dict) else None)
                 mv = con.execute("SELECT * FROM moves WHERE id=?", (mid,)).fetchone()
                 if mv is None:
                     out.append({"error": "move not found"})
                     continue
                 opt = dict(opts0)
+                if power_override:
+                    opt["move_power_override"] = power_override
                 zi = None
                 if z_marks and z_marks[i]:
                     zi = _z_of(con, att, mid)

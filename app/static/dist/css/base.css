@@ -4,7 +4,7 @@
   --type-草: #3fa129; --type-冰: #3dcef3; --type-格斗: #ff8000; --type-毒: #9141cb;
   --type-地面: #915121; --type-飞行: #81b9ef; --type-超能力: #ef4179; --type-虫: #91a119;
   --type-岩石: #afa981; --type-幽灵: #704170; --type-龙: #5060e1; --type-恶: #624d4e;
-  --type-钢: #60a1b8; --type-妖精: #ef70ef;
+  --type-钢: #60a1b8; --type-妖精: #ef70ef; --type-星晶: #40b5a5;
   --accent: #f6c344;
 }
 * { box-sizing: border-box; }

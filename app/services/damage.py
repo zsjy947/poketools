@@ -523,7 +523,7 @@ def _ko_summary(rolls: list[int], hp: int, opt: dict) -> dict:
     气势披带/气势头带：满血首击致死时残留 1 HP → 一回合击倒概率归零。
     """
     sash = opt.get("defender_sash")
-    # 预计算分布：n 回合总伤害 ≥ hp 的概率
+    # 预计算分布：n 回合总伤害 ≥ hp 的概率（键为字符串，与 JSON 序列化一致）
     dist = {0: 1.0}
     probs = {}
     for n in range(1, 5):
@@ -532,14 +532,14 @@ def _ko_summary(rolls: list[int], hp: int, opt: dict) -> dict:
             for r in rolls:
                 nxt[s + r] = nxt.get(s + r, 0) + p / 16
         dist = nxt
-        probs[n] = round(sum(p for s, p in dist.items() if s >= hp) * 100, 2)
+        probs[str(n)] = round(sum(p for s, p in dist.items() if s >= hp) * 100, 2)
     if sash:
         # 首击致死改残留 1 HP：只要任意伤害>0，2 回合必击倒；1 回合归零
-        probs[1] = 0.0
+        probs["1"] = 0.0
         for n in range(2, 5):
-            probs[n] = 100.0 if any(r > 0 for r in rolls) else probs[n]
-    guaranteed = next((n for n in (1, 2, 3, 4) if probs[n] >= 100.0), None)
-    if guaranteed is None and probs[4] > 0:
+            probs[str(n)] = 100.0 if any(r > 0 for r in rolls) else probs[str(n)]
+    guaranteed = next((n for n in (1, 2, 3, 4) if probs[str(n)] >= 100.0), None)
+    if guaranteed is None and probs["4"] > 0:
         guaranteed = -1   # 4 回合内不保证
     return {"guaranteed_turns": guaranteed, "probs": probs}
 

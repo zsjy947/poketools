@@ -181,3 +181,55 @@ def test_calc_mechanism_exclusive():
         "defender": {"species_id": 143, "level": 50},
         "move_id": 89, "helping_hand": True})
     assert r2.status_code == 200 and r2.json()["result"]["max"] > r.json()["result"]["max"]
+
+
+def test_calc_batch_and_meta():
+    # 全量道具/特性/Z 纯晶
+    items = client.get("/api/meta/items").json()
+    assert len(items) > 2000
+    assert any(i["identifier"] == "choice-band" for i in items)
+    abilities = client.get("/api/meta/abilities").json()
+    assert len(abilities) > 300 and "威吓" in abilities
+    z = client.get("/api/meta/z-moves").json()
+    assert len(z["generic"]) == 18
+    ex = next(x for x in z["exclusive"] if x["crystal_identifier"] == "snorlium-z")
+    assert ex["species_id"] == 143 and ex["z_move_name"] == "认真起来大爆击"
+    # forms 带种族值（修复恒「—」）
+    forms = client.get("/api/calc/forms", params={"species_id": 445}).json()
+    base = forms[0]
+    assert (base["hp"], base["atk"]) == (108, 130)
+    # moves 含变化招式 + is_spread 标注
+    moves = client.get("/api/calc/moves", params={"species_id": 445}).json()
+    assert any(m["damage_class"] == "status" for m in moves)
+    assert any(m["is_spread"] == 1 for m in moves if m["name_zh"] == "地震")
+    # batch：一次 8 招；Z 专属映射生效
+    r = client.post("/api/calc/batch", json={
+        "attacker": {"species_id": 143, "level": 50},
+        "defender": {"species_id": 143, "level": 50},
+        "moves": {"atk": [{"id": 416}, None, None, None], "dfd": [None, None, None, None]},
+        "field": {},
+        "sides": {"atk": {"z_moves": [True, False, False, False]}, "dfd": {}},
+    })
+    assert r.status_code == 200
+    res = r.json()["atk"]["results"][0]
+    zi = res["z_info"]
+    assert zi["source"] == "exclusive" and zi["name"] == "认真起来大爆击"
+    assert res["ko"] and set(res["ko"]["probs"]) == {"1", "2", "3", "4"}
+    # 双方 Z 同时点亮 → 400（一场一次 Z 力量）
+    r2 = client.post("/api/calc/batch", json={
+        "attacker": {"species_id": 143, "level": 50},
+        "defender": {"species_id": 143, "level": 50},
+        "moves": {"atk": [{"id": 416}, {"id": 416}, None, None], "dfd": [None] * 4},
+        "field": {},
+        "sides": {"atk": {"z_moves": [True, True, False, False]}, "dfd": {}},
+    })
+    assert r2.status_code == 400
+    # compare-forms 已删除
+    assert client.post("/api/calc/compare-forms", json={}).status_code in (404, 405)
+    # 阿罗拉雷丘 + 十万伏特 → 专属 Z（威力 175）；普通雷丘 → 泛用
+    r3 = client.post("/api/calc", json={
+        "attacker": {"species_id": 26, "form_id": 10100, "level": 50},
+        "defender": {"species_id": 143, "level": 50},
+        "move_id": 85, "z_move": True})
+    assert r3.status_code == 200
+    assert r3.json()["z_info"]["name"] == "驾雷驭电戏冲浪"
