@@ -246,6 +246,10 @@ def calc(body: dict = Body(...)):
         atk["form_identifier"] = _form_ident(con, atk)
         dfd["form_identifier"] = _form_ident(con, dfd)
         _validate_mechanisms(atk, dfd, body)
+        if body.get("power_trick"):
+            _swap_atk_def(atk["stats"])
+        if body.get("defender_power_trick"):
+            _swap_atk_def(dfd["stats"])
         mv = con.execute("SELECT * FROM moves WHERE id=?", (body["move_id"],)).fetchone()
         if mv is None:
             raise HTTPException(404, "move not found")
@@ -279,6 +283,13 @@ def _form_ident(con, side: dict) -> str:
     return (row["identifier"] if row else "") or ""
 
 
+def _swap_atk_def(stats: dict) -> None:
+    """力量戏法：该侧攻击与防御实际值互换（静态标记语义；能力升降仍按能力名生效）。
+
+    只动 router 装配后的 stats，不触碰 damage.py 公式与取整链。"""
+    stats["atk"], stats["def"] = stats["def"], stats["atk"]
+
+
 @router.post("/calc/batch")
 def calc_batch(body: dict = Body(...)):
     """一次算双方 × 4 招（替代前端串行 8 次 POST）。
@@ -286,7 +297,8 @@ def calc_batch(body: dict = Body(...)):
     请求：{attacker, defender, moves: {atk: [id×4], dfd: [id×4]},
            field: {mode, weather, terrain, auras, ruin, gravity, magic_room, wonder_room},
            sides: {atk: {burn,crit,helping,z_moves[4],screen,sash,friend_guard,
-                         flower_gift,steely_spirit,battery,power_spot,foresight,hazards},
+                         flower_gift,steely_spirit,battery,power_spot,foresight,hazards,
+                         power_trick},
                    dfd: {…同结构}}}
     响应：{atk: {stats, results[4]}, dfd: {stats, results[4]}, hazard_hp: {atk, dfd}}
     """
@@ -299,6 +311,11 @@ def calc_batch(body: dict = Body(...)):
         sides = body.get("sides") or {}
         sa, sb = sides.get("atk") or {}, sides.get("dfd") or {}
         field = body.get("field") or {}
+        # 力量戏法：攻防实际值互换（hazard 只依赖 max HP 与属性相性，先后无关）
+        if sa.get("power_trick"):
+            _swap_atk_def(atk["stats"])
+        if sb.get("power_trick"):
+            _swap_atk_def(dfd["stats"])
         _validate_mechanisms(
             atk, dfd, {"z_moves": sa.get("z_moves"),
                        "max_move": atk.get("is_dynamax")})

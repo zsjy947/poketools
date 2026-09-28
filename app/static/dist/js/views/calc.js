@@ -3,7 +3,8 @@
    结果条：伤害区间 + 16 rolls + KO 回合表述
    编辑面板：宝可梦/形态（超级进化·超极巨化在此选择）→ 特性（全量）→ 太晶属性 → 道具（全量+图标）
      → 4 招式（威力自动带出）→ 种族值（只读）→ 努力值 → 性格 → 能力升降 → 等级
-   场地区：单双打 / 天气 / 场地 / 气场 / 四灾兽 / 空间重力（全局）+ 状态/壁/辅助/钉子（两侧）
+   场地区：左/右宝可梦对称状态列（状态异常/壁与守护/攻方加成/钉子/其他，SIDE_GROUPS 单源渲染）
+     + 中间场地·全局（单双打/天气/场地/气场/四灾兽/空间重力）
    机制互斥：形态派生（超进化/超极巨化）与太晶/极巨/Z 标记互斥；Z 一场战斗仅一次。 */
 
 const MECH_LABELS = { z: "Z招式", max: "极巨化", tera: "太晶化" };
@@ -56,10 +57,6 @@ const CalcView = {
     <div class="page-head">
       <span class="page-title">伤害计算器</span>
       <div class="spacer"></div>
-      <el-radio-group :model-value="field.mode" size="small" @update:model-value="setMode">
-        <el-radio-button value="doubles">双打</el-radio-button>
-        <el-radio-button value="singles">单打</el-radio-button>
-      </el-radio-group>
     </div>
 
     <!-- 对战场 -->
@@ -150,7 +147,7 @@ const CalcView = {
         statuses: [],                    // 中毒/剧毒/冰冻/睡眠/麻痹（仅展示）
         screen: "", sash: false, friendGuard: false,
         flowerGift: false, steely: false, battery: false, powerSpot: false,
-        foresight: false, tailwind: false,
+        foresight: false, tailwind: false, powerTrick: false,
         hazards: { rocks: false, spikes: 0, saltCure: false, leechSeed: false },
       });
     }
@@ -251,7 +248,6 @@ const CalcView = {
     function currentMove(side, idx) {
       return side.moveOptions.find(m => m.move_id === side.moves[idx]) || null;
     }
-    function setMode(v) { field.mode = v; }
 
     function sidePayload(s) {
       return {
@@ -268,7 +264,7 @@ const CalcView = {
         z_moves: s.zMarks.map(Boolean),
         screen: s.screen, sash: s.sash, friend_guard: s.friendGuard,
         flower_gift: s.flowerGift, steely: s.steely, battery: s.battery,
-        power_spot: s.powerSpot, foresight: s.foresight,
+        power_spot: s.powerSpot, foresight: s.foresight, power_trick: s.powerTrick,
         hazards: {
           rocks: s.hazards.rocks, spikes: s.hazards.spikes || 0,
           salt_cure: s.hazards.saltCure, leech_seed: s.hazards.leechSeed,
@@ -333,7 +329,7 @@ const CalcView = {
       A, D, field, speciesList, items, allAbilities, zMeta,
       atkSide, activeMoveIdx, activeResult, activeZName, activeZNote, zOnForActive,
       resultDesc, koText, koTagType, activeHpText,
-      pickMove, onSideChanged, onMechChange, setMode, MECH_LABELS,
+      pickMove, onSideChanged, onMechChange, MECH_LABELS,
       toggleMechMark, onZ: (s, idx) => { toggleZMark(s, idx, items.value, zMeta.value); scheduleRecalc(); },
     };
   },
@@ -730,7 +726,72 @@ const SideEditor = {
   },
 };
 
-/* ---- 场地与状态区（按钮网格） ---- */
+/* ---- 场地与状态区（左状态列 / 场地·全局 / 右状态列） ---- */
+
+/* 双侧状态配置：左右列共用同一份渲染，保证逐项一字不差（伤害计算相互，两侧均需完整列表）。
+   灼伤参与计算（burn）；中毒/剧毒/冰冻/睡眠/麻痹与顺风为前端展示态（速度序不在伤害模型内）；
+   壁与撒菱为单选语义，其余多选；力量戏法 = 攻防实际值互换（后端 per-side flag）。 */
+const SCREENS = [
+  { v: "reflect", t: "反射壁" }, { v: "light_screen", t: "光墙" }, { v: "aurora", t: "极光幕" }];
+const SHOW_STATUSES = ["中毒", "剧毒", "冰冻", "睡眠", "麻痹"];
+function toggleStatus(s, st) {
+  const i = s.statuses.indexOf(st);
+  if (i >= 0) s.statuses.splice(i, 1);
+  else s.statuses.push(st);
+}
+const SIDE_GROUPS = [
+  { name: "状态异常", items: [
+    { label: "灼伤", get: s => s.burn, set: s => { s.burn = !s.burn; } },
+    ...SHOW_STATUSES.map(st => ({
+      label: st, get: s => s.statuses.includes(st), set: s => toggleStatus(s, st) })),
+  ]},
+  { name: "壁与守护", items: [
+    ...SCREENS.map(x => ({ label: x.t, get: s => s.screen === x.v,
+      set: s => { s.screen = s.screen === x.v ? "" : x.v; } })),
+    { label: "友情防守", get: s => s.friendGuard, set: s => { s.friendGuard = !s.friendGuard; } },
+    { label: "气势披带", get: s => s.sash, set: s => { s.sash = !s.sash; } },
+  ]},
+  { name: "攻方加成", items: [
+    { label: "击中要害", get: s => s.crit, set: s => { s.crit = !s.crit; } },
+    { label: "帮助", get: s => s.helping, set: s => { s.helping = !s.helping; } },
+    { label: "钢之意志", get: s => s.steely, set: s => { s.steely = !s.steely; } },
+    { label: "蓄电池", get: s => s.battery, set: s => { s.battery = !s.battery; } },
+    { label: "能量点", get: s => s.powerSpot, set: s => { s.powerSpot = !s.powerSpot; } },
+  ]},
+  { name: "钉子", items: [
+    { label: "隐形岩", get: s => s.hazards.rocks, set: s => { s.hazards.rocks = !s.hazards.rocks; } },
+    ...[1, 2, 3].map(n => ({ label: "撒菱×" + n, get: s => s.hazards.spikes === n,
+      set: s => { s.hazards.spikes = s.hazards.spikes === n ? 0 : n; } })),
+    { label: "盐淹", get: s => s.hazards.saltCure, set: s => { s.hazards.saltCure = !s.hazards.saltCure; } },
+    { label: "寄生种子", get: s => s.hazards.leechSeed, set: s => { s.hazards.leechSeed = !s.hazards.leechSeed; } },
+  ]},
+  { name: "其他", items: [
+    { label: "被识破", get: s => s.foresight, set: s => { s.foresight = !s.foresight; } },
+    { label: "花之礼", get: s => s.flowerGift, set: s => { s.flowerGift = !s.flowerGift; } },
+    { label: "顺风", get: s => s.tailwind, set: s => { s.tailwind = !s.tailwind; } },
+    { label: "力量戏法", get: s => s.powerTrick, set: s => { s.powerTrick = !s.powerTrick; } },
+  ]},
+];
+
+/* 单侧状态列（左右共用 SIDE_GROUPS 渲染） */
+const SideStatusCol = {
+  props: ["side", "title", "mark"],
+  emits: ["changed"],
+  template: `
+  <div class="fp-col">
+    <div class="fp-title">{{ mark ? "▶ " : "" }}{{ title }}</div>
+    <div v-for="g in SIDE_GROUPS" :key="g.name" class="fp-group">
+      <div class="fp-group-name">{{ g.name }}</div>
+      <div class="fp-tags">
+        <el-check-tag v-for="it in g.items" :key="it.label" :checked="it.get(side)"
+          @change="it.set(side); $emit('changed')">{{ it.label }}</el-check-tag>
+      </div>
+    </div>
+  </div>
+  `,
+  setup() { return { SIDE_GROUPS }; },
+};
+
 const FieldPanel = {
   props: ["field", "sides", "atkSide"],
   emits: ["changed"],
@@ -738,8 +799,16 @@ const FieldPanel = {
   <div class="block field-panel">
     <h3>场地与状态</h3>
     <div class="fp-grid5">
+      <side-status-col :side="sides.atk" :mark="isAtk(sides.atk)"
+        :title="labelOf(sides.atk)" @changed="$emit('changed')"></side-status-col>
       <div class="fp-col">
-        <div class="fp-title">全局</div>
+        <div class="fp-title">场地 · 全局</div>
+        <div class="fp-tags fp-mode">
+          <el-radio-group v-model="field.mode" size="small">
+            <el-radio-button value="doubles">双打</el-radio-button>
+            <el-radio-button value="singles">单打</el-radio-button>
+          </el-radio-group>
+        </div>
         <div class="fp-tags">
           <el-check-tag v-for="w in WEATHERS" :key="w.v" :checked="field.weather === w.v"
             @change="field.weather = field.weather === w.v ? '' : w.v">{{ w.t }}</el-check-tag>
@@ -763,49 +832,11 @@ const FieldPanel = {
           <el-check-tag :checked="field.wonder_room" @change="field.wonder_room = !field.wonder_room">奇妙空间</el-check-tag>
         </div>
       </div>
-      <div class="fp-col">
-        <div class="fp-title">{{ isAtk(sides.atk) ? "▶ " : "" }}{{ labelOf(sides.atk) }} · 状态</div>
-        <div class="fp-tags">
-          <el-check-tag :checked="sides.atk.burn" @change="sides.atk.burn = !sides.atk.burn">灼伤</el-check-tag>
-          <el-check-tag v-for="st in SHOW_STATUSES" :key="st" :checked="sides.atk.statuses.includes(st)"
-            @change="toggleStatus(sides.atk, st)">{{ st }}</el-check-tag>
-        </div>
-        <div class="fp-tags">
-          <el-check-tag :checked="sides.atk.crit" @change="sides.atk.crit = !sides.atk.crit">击中要害</el-check-tag>
-          <el-check-tag :checked="sides.atk.helping" @change="sides.atk.helping = !sides.atk.helping">帮助</el-check-tag>
-          <el-check-tag :checked="sides.atk.steely" @change="sides.atk.steely = !sides.atk.steely">钢之意志</el-check-tag>
-          <el-check-tag :checked="sides.atk.battery" @change="sides.atk.battery = !sides.atk.battery">蓄电池</el-check-tag>
-          <el-check-tag :checked="sides.atk.powerSpot" @change="sides.atk.powerSpot = !sides.atk.powerSpot">能量点</el-check-tag>
-        </div>
-        <div class="fp-tags">
-          <el-check-tag :checked="sides.atk.flowerGift" @change="sides.atk.flowerGift = !sides.atk.flowerGift">花之礼</el-check-tag>
-          <el-check-tag :checked="sides.atk.tailwind" @change="sides.atk.tailwind = !sides.atk.tailwind">顺风</el-check-tag>
-        </div>
-      </div>
-      <div class="fp-col">
-        <div class="fp-title">{{ isAtk(sides.dfd) ? "▶ " : "" }}{{ labelOf(sides.dfd) }} · 状态</div>
-        <div class="fp-tags">
-          <el-check-tag v-for="s in SCREENS" :key="s.v" :checked="sides.dfd.screen === s.v"
-            @change="sides.dfd.screen = sides.dfd.screen === s.v ? '' : s.v">{{ s.t }}</el-check-tag>
-          <el-check-tag :checked="sides.dfd.friendGuard" @change="sides.dfd.friendGuard = !sides.dfd.friendGuard">友情防守</el-check-tag>
-        </div>
-        <div class="fp-tags">
-          <el-check-tag :checked="sides.dfd.sash" @change="sides.dfd.sash = !sides.dfd.sash">气势披带</el-check-tag>
-          <el-check-tag :checked="sides.dfd.foresight" @change="sides.dfd.foresight = !sides.dfd.foresight">被识破</el-check-tag>
-          <el-check-tag :checked="sides.dfd.flowerGift" @change="sides.dfd.flowerGift = !sides.dfd.flowerGift">花之礼</el-check-tag>
-        </div>
-        <div class="fp-tags">
-          <el-check-tag :checked="sides.dfd.hazards.rocks" @change="sides.dfd.hazards.rocks = !sides.dfd.hazards.rocks">隐形岩</el-check-tag>
-          <el-check-tag v-for="n in 3" :key="n" :checked="sides.dfd.hazards.spikes === n"
-            @change="sides.dfd.hazards.spikes = sides.dfd.hazards.spikes === n ? 0 : n">撒菱×{{ n }}</el-check-tag>
-        </div>
-        <div class="fp-tags">
-          <el-check-tag :checked="sides.dfd.hazards.saltCure" @change="sides.dfd.hazards.saltCure = !sides.dfd.hazards.saltCure">盐淹</el-check-tag>
-          <el-check-tag :checked="sides.dfd.hazards.leechSeed" @change="sides.dfd.hazards.leechSeed = !sides.dfd.hazards.leechSeed">寄生种子</el-check-tag>
-        </div>
-        <div class="fp-note">点击任一侧招式按钮即以该侧为攻击方计算；灼伤减半物理（毅力除外）、会心无视壁与能力升降</div>
-      </div>
+      <side-status-col :side="sides.dfd" :mark="isAtk(sides.dfd)"
+        :title="labelOf(sides.dfd)" @changed="$emit('changed')"></side-status-col>
     </div>
+    <div class="fp-note">点击任一侧招式按钮即以该侧为攻击方计算；灼伤减半物理（毅力除外）、会心无视壁与能力升降；
+      中毒/剧毒/冰冻/睡眠/麻痹与顺风为标记展示（速度序不在伤害模型内）；力量戏法＝该侧攻击与防御实际值互换。</div>
   </div>
   `,
   setup(props) {
@@ -819,17 +850,9 @@ const FieldPanel = {
     const RUINS = [
       { v: "sword", t: "灾祸之剑-防" }, { v: "beads", t: "灾祸之玉-特防" },
       { v: "tablets", t: "灾祸之简-攻" }, { v: "vessel", t: "灾祸之鼎-特攻" }];
-    const SCREENS = [
-      { v: "reflect", t: "反射壁" }, { v: "light_screen", t: "光墙" }, { v: "aurora", t: "极光幕" }];
-    const SHOW_STATUSES = ["中毒", "剧毒", "冰冻", "睡眠", "麻痹"];
     function isAtk(s) { return props.atkSide === s; }
-    function labelOf(s) { return s.nameZh || "未选择"; }
-    function toggleStatus(s, st) {
-      const i = s.statuses.indexOf(st);
-      if (i >= 0) s.statuses.splice(i, 1);
-      else s.statuses.push(st);
-    }
-    return { WEATHERS, TERRAINS, RUINS, SCREENS, SHOW_STATUSES, isAtk, labelOf, toggleStatus };
+    function labelOf(s) { return (s.nameZh || "未选择") + " · 状态"; }
+    return { WEATHERS, TERRAINS, RUINS, isAtk, labelOf };
   },
 };
 
@@ -901,3 +924,4 @@ CalcView.components = {
   "side-editor": SideEditor, "field-panel": FieldPanel,
 };
 SummaryCard.components = { "move-chip": MoveChip };
+FieldPanel.components = { "side-status-col": SideStatusCol };

@@ -112,8 +112,8 @@ python scripts/make_icon.py           # 精灵球应用图标
 | `GET/POST/DELETE /api/custom-recipes` | 自定义食谱（数量版校验：Z-A 树果总数 3~8） |
 | `GET /api/calc/forms?species_id=` | 计算器形态（含六项种族值，修复恒「—」） |
 | `GET /api/calc/moves?species_id=` | 全世代招式并集（**含变化招式**，含 is_spread） |
-| `POST /api/calc` | 单次伤害计算（支持 z_move 专属映射解析） |
-| `POST /api/calc/batch` | **一次算双方×4招**（替代串行 8 POST；招式项可为 `{id, power}` 带威力覆盖） |
+| `POST /api/calc` | 单次伤害计算（支持 z_move 专属映射解析；`power_trick`/`defender_power_trick` 攻防实际值互换） |
+| `POST /api/calc/batch` | **一次算双方×4招**（替代串行 8 POST；招式项可为 `{id, power}` 带威力覆盖；sides 支持 per-side `power_trick`） |
 
 已删除：`/api/calc/compare-forms`（五期随 UI 移除）、`/api/profiles`（四期 P3-1 下线）。
 
@@ -153,6 +153,13 @@ python scripts/make_icon.py           # 精灵球应用图标
   专属映射命中→专属纯晶+固定威力/分类，否则泛用属性纯晶+z_power 换算；手动改道具即解除）；
 - **超级进化/超极巨化/原始回归** = 编辑面板**形态选择**派生（与三种标记互斥；mega 形态自动锁进化石道具，
   烈空座例外——校验携带画龙点睛；超极巨化形态自动点亮极巨化标记，HP 显示 ×2）。
+- **力量戏法** = 场地区两侧「其他」组标记（静态语义：至切换者下次下场）：router 装配后
+  `_swap_atk_def` 互换该侧 `stats.atk/def` 实际值（能力升降仍按能力名生效），**不触碰 damage.py
+  公式与取整链**，calib 基准不受影响；batch 为 sides per-side flag，单招端点为
+  `power_trick`/`defender_power_trick`。
+- **场地区双侧对称**：左右状态列由同一份 `SIDE_GROUPS` 配置渲染（`views/calc.js`），逐项一字不差；
+  中栏为单双打切换+天气/场地/气场/四灾兽/空间重力；壁与撒菱为单选语义，其余多选；
+  中毒/剧毒/冰冻/睡眠/麻痹/顺风为展示态（速度序不在伤害模型内）。
 
 ### 校准流程（改公式后必须重跑，AGENTS 铁律）
 
@@ -209,6 +216,8 @@ app/static/dist/
 | 全量展示哲学：无影响的道具/特性照常列出，不加「不参与计算」小字 | 用户拍板 | CALC |
 | 树果/食材存 `[{name,count}]`，读取兼容旧格式 | Z-A 树果可同种多个（3≤Σcount≤8） | M7 |
 | 测试样板收敛 conftest；ruff 零告警基线 | 五期 M8 审查要求 | M8 |
+| 场地区改版为「左状态/场地全局/右状态」三栏，两侧状态 `SIDE_GROUPS` 单源配置 | 伤害计算相互，两侧均需完整对称列表（对齐参考站）；单源保证左右永不漂移 | 计算器改版 |
+| 力量戏法在 router 层互换 stats，不动 damage.py | 钉子/盐淹/寄生种子只依赖 max HP 与属性相性，与互换先后无关；取整链与 calib 基准零影响 | 计算器改版 |
 
 ## §8 代码与测试规范
 
@@ -239,6 +248,9 @@ app/static/dist/
 - 道具图标缺 ~1300（TM 系列与 GO/Let's Go 杂项，前端隐藏图标兜底）。
 - Z-A 新超进化（姆克鹰等）无进化石道具数据（PokeAPI 未收录，无锁定不阻塞）。
 - 彩粉蝶花纹/霜奶仙糖饰等未建模变体（单形态种）——如需支持须扩 PokeAPI 形态映射。
+- **模拟对战（pkmn-solo-battle）**：独立 `battle` 分支开发（Tauri 2 + React + TS monorepo 子目录，
+  与主仓 Python 栈零耦合），M0-M8 里程碑与并入可行性评估按该分支 `battle/docs/` 规划推进；
+  并入决议与 APK（竖屏 UI）路线待 battle M0-M4 后评估，届时更新本表。
 
 ## §10 变更历史
 
@@ -251,3 +263,4 @@ app/static/dist/
 | 四期 P1-P5 | 文档合并/资产/详情两栏/档案移除/计算器重建（删阿尔宙斯·Z-A 公式）/release 打包 | 交付；38 测试绿 |
 | 五期 M0-M7 | 特性文案/形态分支/图鉴默认形态/体型/进化招式语义/全量道具·特性·Z 纯晶/双引擎全量扩展/计算器 UI 对齐参考站/捕捉标记重制+同游戏同步/详情重设计/EV 地点/咖喱全图/进化&回忆/食谱数量 | 交付；本文档即产物 |
 | 五期 M8 | 全量审查（ruff 零告警+node check）/conftest 收敛/四文档合并为本文档/DATA-GAPS 重写/AGENTS 同步 | 交付 |
+| 计算器改版 | 场地区三栏对称（SIDE_GROUPS 单源）/力量戏法（router 层攻防互换）/按钮文字居中修复/单双打切换移入中栏 | 交付；60 测试绿 |

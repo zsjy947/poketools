@@ -66,13 +66,18 @@
 .ev-left { font-size: 12px; color: #98a1b3; text-align: right; margin-top: 4px; }
 
 .field-panel { grid-column: 1 / -1; }
-/* 场地区三列（全局 / 攻方状态 / 守方状态） */
-.fp-grid5 { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 16px; }
+/* 场地区三列（左宝可梦状态 / 场地·全局 / 右宝可梦状态），两侧状态列对称等宽 */
+.fp-grid5 { display: grid; grid-template-columns: 1fr 1.1fr 1fr; gap: 16px; }
 @media (max-width: 1080px) { .fp-grid5 { grid-template-columns: 1fr; } }
 .fp-col { min-width: 0; }
 .fp-title { font-size: 13px; font-weight: 700; color: #555; margin-bottom: 8px; }
+.fp-group { margin-bottom: 4px; }
+.fp-group-name { font-size: 11.5px; color: #98a1b3; margin: 2px 0 6px; }
 .fp-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
-.fp-tags .el-check-tag { height: 26px; padding: 0 10px; font-size: 12.5px; }
+/* inline-flex + align-items 居中：Element Plus 默认行盒(14px)与固定 26px 高不匹配会使文字偏上 */
+.fp-tags .el-check-tag { height: 26px; padding: 0 10px; font-size: 12.5px;
+  display: inline-flex; align-items: center; }
+.fp-mode { margin-bottom: 10px; }
 .fp-note { font-size: 11.5px; color: #a8b0c0; margin-top: 6px; line-height: 1.5; }
 
 .sum-art img.img-missing { visibility: hidden; }

@@ -244,6 +244,39 @@ def test_calc_batch_and_meta():
     assert r3.json()["z_info"]["name"] == "驾雷驭电戏冲浪"
 
 
+def test_calc_power_trick():
+    # 力量戏法：该侧攻击/防御实际值互换（batch per-side flag 与单招端点对等字段）
+    body = {
+        "attacker": {"species_id": 445, "level": 50},   # 烈咬陆鲨 攻130>防95
+        "defender": {"species_id": 143, "level": 50},   # 卡比兽 攻110>防65
+        "moves": {"atk": [89, None, None, None], "dfd": [None] * 4},
+        "field": {},
+    }
+    base = client.post("/api/calc/batch", json={**body, "sides": {"atk": {}, "dfd": {}}}).json()
+    swap_a = client.post("/api/calc/batch",
+                         json={**body, "sides": {"atk": {"power_trick": True}, "dfd": {}}}).json()
+    assert swap_a["atk"]["stats"]["atk"] == base["atk"]["stats"]["def"]
+    assert swap_a["atk"]["stats"]["def"] == base["atk"]["stats"]["atk"]
+    assert swap_a["dfd"]["stats"] == base["dfd"]["stats"]           # 只影响所标一侧
+    assert swap_a["atk"]["results"][0]["max"] < base["atk"]["results"][0]["max"]
+    # 防守方互换（攻110>防65 → 防变高）→ 受到伤害下降
+    swap_d = client.post("/api/calc/batch",
+                         json={**body, "sides": {"atk": {}, "dfd": {"power_trick": True}}}).json()
+    assert swap_d["dfd"]["stats"]["def"] == base["dfd"]["stats"]["atk"]
+    assert swap_d["atk"]["results"][0]["max"] < base["atk"]["results"][0]["max"]
+    # 单招端点对等字段：power_trick / defender_power_trick
+    r0 = client.post("/api/calc", json={
+        "attacker": {"species_id": 445, "level": 50},
+        "defender": {"species_id": 143, "level": 50}, "move_id": 89})
+    r1 = client.post("/api/calc", json={
+        "attacker": {"species_id": 445, "level": 50},
+        "defender": {"species_id": 143, "level": 50}, "move_id": 89,
+        "power_trick": True, "defender_power_trick": True})
+    assert r1.json()["attacker"]["stats"]["atk"] == r0.json()["attacker"]["stats"]["def"]
+    assert r1.json()["defender"]["stats"]["def"] == r0.json()["defender"]["stats"]["atk"]
+    assert r1.json()["result"]["max"] < r0.json()["result"]["max"]
+
+
 def test_state_sync_and_counts():
     # 同游戏同步：皮卡丘在 galar+isle-of-armor（不在 crown-tundra）
     r = client.put("/api/state", json={"profile_id": 1, "dex_id": "galar",
