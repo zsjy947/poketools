@@ -31,6 +31,17 @@ app.include_router(pokemon.router)
 app.include_router(lookup.router)
 app.include_router(calc.router)
 
+
+@app.middleware("http")
+async def no_cache_static(request, call_next):
+    """静态资源响应不缓存（P0-4：index.html 手动 ?v= 版本号忘 bump 时，曾向用户分发旧前端）。
+
+    本地服务无带宽成本，前端资源每次回源校验；API 不受限。"""
+    resp = await call_next(request)
+    if not request.url.path.startswith("/api/"):
+        resp.headers["Cache-Control"] = "no-cache"
+    return resp
+
 if SPRITES.exists():
     app.mount("/sprites", StaticFiles(directory=SPRITES), name="sprites")
 

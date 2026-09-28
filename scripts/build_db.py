@@ -25,6 +25,15 @@ ROOT = Path(__file__).resolve().parent.parent
 CSV_DIR = ROOT / "data" / "raw" / "pokeapi" / "data" / "v2" / "csv"
 DB_PATH = ROOT / "data" / "poketools.db"
 
+
+def require_rows(con: sqlite3.Connection, table: str, min_rows: int, source: str) -> None:
+    """curated 装载护栏（P0-5）：curated 损坏/缺字段时 executemany 会静默写入
+    少量/零行 → 应用读不到数据且构建无告警；低于下限即中止构建（fail fast）。"""
+    n = con.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
+    if n < min_rows:
+        raise SystemExit(
+            f"  !! {table} 装载后仅 {n} 行（<{min_rows}）：{source} 数据异常，中止构建")
+
 ZH, EN = 12, 9
 
 STAT_IDS = {1: "hp", 2: "atk", 3: "def", 4: "spa", 5: "spd", 6: "spe"}
@@ -580,6 +589,7 @@ def main() -> None:
               x["base_move_id"], x["z_move_name"], x.get("power"), x.get("damage_class", ""),
               x.get("note", ""))
              for x in zdata.get("exclusive", [])])
+        require_rows(con, "z_exclusive", 20, z_file.name)
     item_rows.sort(key=lambda r: r[0])
     con.executemany("INSERT OR REPLACE INTO items VALUES (?,?,?)", item_rows)
 
@@ -703,6 +713,7 @@ def main() -> None:
                     for g in games:
                         fga_rows.append((f[0], g))
         con.executemany("INSERT OR REPLACE INTO form_game_availability VALUES (?,?)", fga_rows)
+        require_rows(con, "form_game_availability", 150, fga_file.name)
 
         # ---- 图鉴默认形态：按可用性自动派生（同图鉴成员 + 该游戏可用的形态） ----
         REGION_PREF = {"sword-shield": ["galar", "alola", "hisui", "paldea"],
@@ -818,6 +829,7 @@ def main() -> None:
                         bad_branch.append((fam, tok))
                     rows.append((fam, sid, suf, str(bi)))
         con.executemany("INSERT OR REPLACE INTO evo_branches VALUES (?,?,?,?)", rows)
+        require_rows(con, "evo_branches", 20, eb_file.name)
         if bad_branch:
             print(f"  !! evo_branches 未匹配形态 {sorted(set(map(str, bad_branch)))[:8]}")
 

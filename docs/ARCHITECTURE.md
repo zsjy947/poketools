@@ -218,6 +218,7 @@ app/static/dist/
 | 测试样板收敛 conftest；ruff 零告警基线 | 五期 M8 审查要求 | M8 |
 | 场地区改版为「左状态/场地全局/右状态」三栏，两侧状态 `SIDE_GROUPS` 单源配置 | 伤害计算相互，两侧均需完整对称列表（对齐参考站）；单源保证左右永不漂移 | 计算器改版 |
 | 力量戏法在 router 层互换 stats，不动 damage.py | 钉子/盐淹/寄生种子只依赖 max HP 与属性相性，与互换先后无关；取整链与 calib 基准零影响 | 计算器改版 |
+| 跨路由共享常量收编 `services/constants.py`；路由连接 Depends 注入；静态资源 no-cache | 全量审查 R1（P0-1/3/4）：消除 routers 隐式耦合、异常路径连接泄漏、忘 bump 版本号分发旧前端三类正确性隐患 | R1 |
 
 ## §8 代码与测试规范
 
@@ -225,7 +226,10 @@ app/static/dist/
 - UI 文案一律简体中文；界面缺失数据一律标注「待补充」，禁止编造数据。
 - 52poke 解析失败条目必须落 `data/curated/TODO.json`，不静默丢弃。
 - 前端构建产物提交仓库；`data/raw|*.db|sprites/`、`node_modules/` 不提交。
-- SQL 全参数化；`static_conn` 只读 URI；curated 合并走 `guarded()` 行数护栏。
+- SQL 全参数化；`static_conn` 只读 URI；**路由连接一律经 `db.get_static_db/get_state_db` Depends 注入
+  （请求结束自动关闭，异常路径不泄漏）**，确需自管的（如 lru_cache 缓存函数）自行 try/finally；
+  curated 合并走 `guarded()`/`require_rows()` 行数护栏。
+- 静态资源响应带 `Cache-Control: no-cache`（main.py 中间件）：手动 `?v=` 版本号忘 bump 不会再分发旧前端。
 - 事件监听（hashchange 等）卸载时解绑；异步回填带 token 防竞态。
 
 测试分层（`tests/conftest.py` 统一 sys.path 注入与 DB skipif）：
@@ -264,3 +268,4 @@ app/static/dist/
 | 五期 M0-M7 | 特性文案/形态分支/图鉴默认形态/体型/进化招式语义/全量道具·特性·Z 纯晶/双引擎全量扩展/计算器 UI 对齐参考站/捕捉标记重制+同游戏同步/详情重设计/EV 地点/咖喱全图/进化&回忆/食谱数量 | 交付；本文档即产物 |
 | 五期 M8 | 全量审查（ruff 零告警+node check）/conftest 收敛/四文档合并为本文档/DATA-GAPS 重写/AGENTS 同步 | 交付 |
 | 计算器改版 | 场地区三栏对称（SIDE_GROUPS 单源）/力量戏法（router 层攻防互换）/按钮文字居中修复/单双打切换移入中栏 | 交付；60 测试绿 |
+| 审查 R1 | 全量审查 P0 五项修复：常量收编 services/constants.py / damage.ko_summary 公开化 / 连接管理 Depends 注入（四路由全覆盖）/ 静态资源 no-cache 中间件 / build_db curated 装载护栏 require_rows；独立安全扫描无新增高危项 | 交付；60 测试绿 + ruff 零告警 + 冒烟通过 |

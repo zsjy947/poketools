@@ -513,7 +513,7 @@ def hazard_damage(def_types: list[str], hp: int, hazards: dict, grounded: bool) 
     return min(hp - 1 if hp > 1 else 0, total)
 
 
-def _ko_summary(rolls: list[int], hp: int, opt: dict) -> dict:
+def ko_summary(rolls: list[int], hp: int, opt: dict) -> dict:
     """KO 回合分布：n=1..4 内击倒概率（16 rolls 独立同分布精确枚举）。
 
     气势披带/气势头带：满血首击致死时残留 1 HP → 一回合击倒概率归零。
@@ -538,6 +538,10 @@ def _ko_summary(rolls: list[int], hp: int, opt: dict) -> dict:
     if guaranteed is None and probs["4"] > 0:
         guaranteed = -1   # 4 回合内不保证
     return {"guaranteed_turns": guaranteed, "probs": probs}
+
+
+# 兼容别名（P0-2 公开化前路由曾跨层调用私有名；下一版删除）
+_ko_summary = ko_summary
 
 
 def calc_damage(a: dict, d: dict, move: dict, opt: dict) -> dict:

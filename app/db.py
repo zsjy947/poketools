@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import sqlite3
 import sys
+from collections.abc import Iterator
 from pathlib import Path
 
 
@@ -71,3 +72,22 @@ def state_conn() -> sqlite3.Connection:
         con.executescript(STATE_SCHEMA)
         _state_init_done = True
     return con
+
+
+# ---- 请求级连接管理（P0-3：此前各端点手动 close 且多数无 try/finally，异常路径泄漏）----
+# 路由一律经 Depends 注入，请求结束自动关闭；确需自管的（如 lru_cache 缓存函数）自行 try/finally。
+
+def get_static_db() -> Iterator[sqlite3.Connection]:
+    con = static_conn()
+    try:
+        yield con
+    finally:
+        con.close()
+
+
+def get_state_db() -> Iterator[sqlite3.Connection]:
+    con = state_conn()
+    try:
+        yield con
+    finally:
+        con.close()

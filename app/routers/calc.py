@@ -9,9 +9,11 @@
 """
 from __future__ import annotations
 
-from fastapi import APIRouter, Body, HTTPException, Query
+import sqlite3
 
-from ..db import static_conn
+from fastapi import APIRouter, Body, Depends, HTTPException, Query
+
+from ..db import get_static_db
 from ..services import damage
 
 router = APIRouter(prefix="/api")
@@ -27,17 +29,14 @@ FIELD_OPTS = ("mode", "weather", "terrain", "gravity", "magic_room", "wonder_roo
 
 
 @router.get("/meta/species")
-def meta_species():
-    con = static_conn()
-    rows = [dict(r) for r in con.execute(
+def meta_species(con: sqlite3.Connection = Depends(get_static_db)):
+    return [dict(r) for r in con.execute(
         "SELECT id, name_zh, name_en FROM species ORDER BY id")]
-    con.close()
-    return rows
 
 
 @router.get("/calc/forms")
-def calc_forms(species_id: int = Query(...)):
-    con = static_conn()
+def calc_forms(species_id: int = Query(...),
+               con: sqlite3.Connection = Depends(get_static_db)):
     rows = [dict(r) for r in con.execute(
         """SELECT id,
                   COALESCE(NULLIF(form_label, ''),
@@ -45,7 +44,6 @@ def calc_forms(species_id: int = Query(...)):
                   identifier, types, abilities, hidden_abilities, is_mega,
                   hp, atk, def, spa, spd, spe
            FROM forms WHERE species_id=? ORDER BY is_default DESC, id""", (species_id,))]
-    con.close()
     for f in rows:
         hidden = {a for a in (f.pop("hidden_abilities") or "").split(",") if a}
         f["ability_list"] = [
@@ -54,29 +52,23 @@ def calc_forms(species_id: int = Query(...)):
 
 
 @router.get("/meta/items")
-def meta_items():
+def meta_items(con: sqlite3.Connection = Depends(get_static_db)):
     """全量道具（DB items 表；identifier 供图标路径 /sprites/items/{identifier}.png）。"""
-    con = static_conn()
-    rows = [dict(r) for r in con.execute(
+    return [dict(r) for r in con.execute(
         "SELECT identifier, name_zh FROM items WHERE name_zh != '' ORDER BY id")]
-    con.close()
-    return rows
 
 
 @router.get("/meta/abilities")
-def meta_abilities():
+def meta_abilities(con: sqlite3.Connection = Depends(get_static_db)):
     """全量特性列表（计算器无游戏上下文，不按游戏隐藏）。"""
-    con = static_conn()
     rows = [dict(r) for r in con.execute(
         "SELECT name_zh FROM abilities WHERE name_zh != '' ORDER BY ability_id")]
-    con.close()
     return [r["name_zh"] for r in rows]
 
 
 @router.get("/meta/z-moves")
-def meta_z_moves():
+def meta_z_moves(con: sqlite3.Connection = Depends(get_static_db)):
     """Z 纯晶表：泛用（属性→纯晶）+ 专属（species+招式→Z 招式）。"""
-    con = static_conn()
     generic = [dict(r) for r in con.execute(
         """SELECT i.identifier AS crystal_identifier, i.name_zh AS crystal_name
            FROM items i WHERE i.id >= 900000 AND i.id < 900100 ORDER BY i.id""")]
@@ -86,22 +78,18 @@ def meta_z_moves():
                   z.damage_class, z.note
            FROM z_exclusive z LEFT JOIN items i ON i.identifier = z.crystal_identifier
            ORDER BY z.crystal_identifier, z.species_id""")]
-    con.close()
     return {"generic": generic, "exclusive": exclusive}
 
 
 @router.get("/meta/natures")
-def natures():
-    con = static_conn()
-    rows = [dict(r) for r in con.execute("SELECT * FROM natures ORDER BY id")]
-    con.close()
-    return rows
+def natures(con: sqlite3.Connection = Depends(get_static_db)):
+    return [dict(r) for r in con.execute("SELECT * FROM natures ORDER BY id")]
 
 
 @router.get("/calc/moves")
-def calc_moves(species_id: int = Query(...)):
+def calc_moves(species_id: int = Query(...),
+               con: sqlite3.Connection = Depends(get_static_db)):
     """全世代招式并集（含变化招式；标注可学会的世代）。"""
-    con = static_conn()
     rows = con.execute(
         """SELECT m.id AS move_id, m.name_zh, m.type_zh, m.damage_class,
                   m.power, m.accuracy, m.is_spread, MIN(v.gen) AS first_gen,
@@ -118,7 +106,6 @@ def calc_moves(species_id: int = Query(...)):
         d = dict(r)
         d["gens"] = sorted({int(x) for x in (r["gens"] or "").split(",") if x})
         out.append(d)
-    con.close()
     return out
 
 
@@ -238,44 +225,40 @@ def _hazard_hp(con, dfd: dict, opt: dict) -> int:
 
 
 @router.post("/calc")
-def calc(body: dict = Body(...)):
-    con = static_conn()
-    try:
-        atk = _assemble(con, body["attacker"], True)
-        dfd = _assemble(con, body["defender"], False)
-        atk["form_identifier"] = _form_ident(con, atk)
-        dfd["form_identifier"] = _form_ident(con, dfd)
-        _validate_mechanisms(atk, dfd, body)
-        if body.get("power_trick"):
-            _swap_atk_def(atk["stats"])
-        if body.get("defender_power_trick"):
-            _swap_atk_def(dfd["stats"])
-        mv = con.execute("SELECT * FROM moves WHERE id=?", (body["move_id"],)).fetchone()
-        if mv is None:
-            raise HTTPException(404, "move not found")
-        opt = {k: body.get(k) for k in FIELD_OPTS}
-        opt.update({k: body.get(k) for k in ("burn", "screen", "defender_full_hp",
-                                             "move_power_override", "z_move", "max_move")})
-        z_info = None
-        if opt.get("z_move"):
-            z_info = _z_of(con, atk, body["move_id"])
-            if z_info["source"] == "exclusive" and not z_info.get("no_damage"):
-                opt["z_exclusive"] = {"name": z_info["name"], "power": z_info["power"]}
-        result = damage.calc_damage(atk, dfd, dict(mv), opt)
-        hazard = _hazard_hp(con, dfd, opt)
-        if hazard < dfd["stats"]["hp"] and "ko" in result:
-            result["ko"] = damage._ko_summary(
-                result["rolls"], hazard, {**opt, "defender_full_hp": False})
-        resp = {"attacker": {k: atk[k] for k in ("name", "types", "level", "stats", "tera_type")},
-                "defender": {k: dfd[k] for k in ("name", "types", "level", "stats", "is_dynamax", "tera_type")},
-                "move": {"name": mv["name_zh"], "type": mv["type_zh"],
-                         "damage_class": mv["damage_class"], "power": mv["power"]},
-                "result": result, "hazard_hp": hazard}
-        if z_info:
-            resp["z_info"] = z_info
-        return resp
-    finally:
-        con.close()
+def calc(body: dict = Body(...), con: sqlite3.Connection = Depends(get_static_db)):
+    atk = _assemble(con, body["attacker"], True)
+    dfd = _assemble(con, body["defender"], False)
+    atk["form_identifier"] = _form_ident(con, atk)
+    dfd["form_identifier"] = _form_ident(con, dfd)
+    _validate_mechanisms(atk, dfd, body)
+    if body.get("power_trick"):
+        _swap_atk_def(atk["stats"])
+    if body.get("defender_power_trick"):
+        _swap_atk_def(dfd["stats"])
+    mv = con.execute("SELECT * FROM moves WHERE id=?", (body["move_id"],)).fetchone()
+    if mv is None:
+        raise HTTPException(404, "move not found")
+    opt = {k: body.get(k) for k in FIELD_OPTS}
+    opt.update({k: body.get(k) for k in ("burn", "screen", "defender_full_hp",
+                                         "move_power_override", "z_move", "max_move")})
+    z_info = None
+    if opt.get("z_move"):
+        z_info = _z_of(con, atk, body["move_id"])
+        if z_info["source"] == "exclusive" and not z_info.get("no_damage"):
+            opt["z_exclusive"] = {"name": z_info["name"], "power": z_info["power"]}
+    result = damage.calc_damage(atk, dfd, dict(mv), opt)
+    hazard = _hazard_hp(con, dfd, opt)
+    if hazard < dfd["stats"]["hp"] and "ko" in result:
+        result["ko"] = damage.ko_summary(
+            result["rolls"], hazard, {**opt, "defender_full_hp": False})
+    resp = {"attacker": {k: atk[k] for k in ("name", "types", "level", "stats", "tera_type")},
+            "defender": {k: dfd[k] for k in ("name", "types", "level", "stats", "is_dynamax", "tera_type")},
+            "move": {"name": mv["name_zh"], "type": mv["type_zh"],
+                     "damage_class": mv["damage_class"], "power": mv["power"]},
+            "result": result, "hazard_hp": hazard}
+    if z_info:
+        resp["z_info"] = z_info
+    return resp
 
 
 def _form_ident(con, side: dict) -> str:
@@ -291,7 +274,7 @@ def _swap_atk_def(stats: dict) -> None:
 
 
 @router.post("/calc/batch")
-def calc_batch(body: dict = Body(...)):
+def calc_batch(body: dict = Body(...), con: sqlite3.Connection = Depends(get_static_db)):
     """一次算双方 × 4 招（替代前端串行 8 次 POST）。
 
     请求：{attacker, defender, moves: {atk: [id×4], dfd: [id×4]},
@@ -302,88 +285,84 @@ def calc_batch(body: dict = Body(...)):
                    dfd: {…同结构}}}
     响应：{atk: {stats, results[4]}, dfd: {stats, results[4]}, hazard_hp: {atk, dfd}}
     """
-    con = static_conn()
-    try:
-        atk = _assemble(con, body["attacker"], True)
-        dfd = _assemble(con, body["defender"], False)
-        atk["form_identifier"] = _form_ident(con, atk)
-        dfd["form_identifier"] = _form_ident(con, dfd)
-        sides = body.get("sides") or {}
-        sa, sb = sides.get("atk") or {}, sides.get("dfd") or {}
-        field = body.get("field") or {}
-        # 力量戏法：攻防实际值互换（hazard 只依赖 max HP 与属性相性，先后无关）
-        if sa.get("power_trick"):
-            _swap_atk_def(atk["stats"])
-        if sb.get("power_trick"):
-            _swap_atk_def(dfd["stats"])
-        _validate_mechanisms(
-            atk, dfd, {"z_moves": sa.get("z_moves"),
-                       "max_move": atk.get("is_dynamax")})
-        hazard = {
-            "atk": _hazard_hp(con, atk, {**field, "hazards": sa.get("hazards")}),
-            "dfd": _hazard_hp(con, dfd, {**field, "hazards": sb.get("hazards")}),
-        }
+    atk = _assemble(con, body["attacker"], True)
+    dfd = _assemble(con, body["defender"], False)
+    atk["form_identifier"] = _form_ident(con, atk)
+    dfd["form_identifier"] = _form_ident(con, dfd)
+    sides = body.get("sides") or {}
+    sa, sb = sides.get("atk") or {}, sides.get("dfd") or {}
+    field = body.get("field") or {}
+    # 力量戏法：攻防实际值互换（hazard 只依赖 max HP 与属性相性，先后无关）
+    if sa.get("power_trick"):
+        _swap_atk_def(atk["stats"])
+    if sb.get("power_trick"):
+        _swap_atk_def(dfd["stats"])
+    _validate_mechanisms(
+        atk, dfd, {"z_moves": sa.get("z_moves"),
+                   "max_move": atk.get("is_dynamax")})
+    hazard = {
+        "atk": _hazard_hp(con, atk, {**field, "hazards": sa.get("hazards")}),
+        "dfd": _hazard_hp(con, dfd, {**field, "hazards": sb.get("hazards")}),
+    }
 
-        def _opts(att: dict, dfd_side: dict, att_flags: dict, dfd_flags: dict) -> dict:
-            o = {k: field.get(k) for k in FIELD_OPTS}
-            o.update({
-                "burn": att_flags.get("burn"), "crit": att_flags.get("crit"),
-                "helping_hand": att_flags.get("helping"),
-                "steely_spirit": att_flags.get("steely"),
-                "battery": att_flags.get("battery"), "power_spot": att_flags.get("power_spot"),
-                "flower_gift": att_flags.get("flower_gift"),
-                "screen": dfd_flags.get("screen"),
-                "friend_guard": dfd_flags.get("friend_guard"),
-                "foresight": dfd_flags.get("foresight"),
-                "flower_gift_d": dfd_flags.get("flower_gift"),
-                "defender_sash": dfd_flags.get("sash"),
-                "defender_full_hp": True,
-                "max_move": bool(att.get("is_dynamax")),
-            })
-            return o
+    def _opts(att: dict, dfd_side: dict, att_flags: dict, dfd_flags: dict) -> dict:
+        o = {k: field.get(k) for k in FIELD_OPTS}
+        o.update({
+            "burn": att_flags.get("burn"), "crit": att_flags.get("crit"),
+            "helping_hand": att_flags.get("helping"),
+            "steely_spirit": att_flags.get("steely"),
+            "battery": att_flags.get("battery"), "power_spot": att_flags.get("power_spot"),
+            "flower_gift": att_flags.get("flower_gift"),
+            "screen": dfd_flags.get("screen"),
+            "friend_guard": dfd_flags.get("friend_guard"),
+            "foresight": dfd_flags.get("foresight"),
+            "flower_gift_d": dfd_flags.get("flower_gift"),
+            "defender_sash": dfd_flags.get("sash"),
+            "defender_full_hp": True,
+            "max_move": bool(att.get("is_dynamax")),
+        })
+        return o
 
-        def _results(att: dict, dfd_side: dict, att_flags: dict, dfd_flags: dict,
-                     move_ids: list, z_marks: list, dfd_hazard: int):
-            out = []
-            opts0 = _opts(att, dfd_side, att_flags, dfd_flags)
-            for i, mobj in enumerate(move_ids or []):
-                if not mobj:
-                    out.append(None)
-                    continue
-                # 招式项可为 id 或 {id, power}（变动威力招手动输入）
-                mid = mobj.get("id") if isinstance(mobj, dict) else mobj
-                power_override = (mobj.get("power") if isinstance(mobj, dict) else None)
-                mv = con.execute("SELECT * FROM moves WHERE id=?", (mid,)).fetchone()
-                if mv is None:
-                    out.append({"error": "move not found"})
-                    continue
-                opt = dict(opts0)
-                if power_override:
-                    opt["move_power_override"] = power_override
-                zi = None
-                if z_marks and z_marks[i]:
-                    zi = _z_of(con, att, mid)
-                    opt["z_move"] = True
-                    if zi["source"] == "exclusive" and not zi.get("no_damage"):
-                        opt["z_exclusive"] = {"name": zi["name"], "power": zi["power"]}
-                r = damage.calc_damage(att, dfd_side, dict(mv), opt)
-                eff_hp = min(dfd_hazard, dfd_side["stats"]["hp"])
-                if eff_hp < dfd_side["stats"]["hp"] and "ko" in r:
-                    r["ko"] = damage._ko_summary(
-                        r["rolls"], eff_hp, {**opt, "defender_full_hp": False})
-                if zi:
-                    r["z_info"] = zi
-                out.append(r)
-            return out
+    def _results(att: dict, dfd_side: dict, att_flags: dict, dfd_flags: dict,
+                 move_ids: list, z_marks: list, dfd_hazard: int):
+        out = []
+        opts0 = _opts(att, dfd_side, att_flags, dfd_flags)
+        for i, mobj in enumerate(move_ids or []):
+            if not mobj:
+                out.append(None)
+                continue
+            # 招式项可为 id 或 {id, power}（变动威力招手动输入）
+            mid = mobj.get("id") if isinstance(mobj, dict) else mobj
+            power_override = (mobj.get("power") if isinstance(mobj, dict) else None)
+            mv = con.execute("SELECT * FROM moves WHERE id=?", (mid,)).fetchone()
+            if mv is None:
+                out.append({"error": "move not found"})
+                continue
+            opt = dict(opts0)
+            if power_override:
+                opt["move_power_override"] = power_override
+            zi = None
+            if z_marks and z_marks[i]:
+                zi = _z_of(con, att, mid)
+                opt["z_move"] = True
+                if zi["source"] == "exclusive" and not zi.get("no_damage"):
+                    opt["z_exclusive"] = {"name": zi["name"], "power": zi["power"]}
+            r = damage.calc_damage(att, dfd_side, dict(mv), opt)
+            eff_hp = min(dfd_hazard, dfd_side["stats"]["hp"])
+            if eff_hp < dfd_side["stats"]["hp"] and "ko" in r:
+                r["ko"] = damage.ko_summary(
+                    r["rolls"], eff_hp, {**opt, "defender_full_hp": False})
+            if zi:
+                r["z_info"] = zi
+            out.append(r)
+        return out
 
-        atk_results = _results(atk, dfd, sa, sb, (body.get("moves") or {}).get("atk"),
-                               sa.get("z_moves") or [], hazard["dfd"])
-        dfd_results = _results(dfd, atk, sb, sa, (body.get("moves") or {}).get("dfd"),
-                               sb.get("z_moves") or [], hazard["atk"])
-        return {
-            "atk": {"name": atk["name"], "stats": atk["stats"], "results": atk_results},
-            "dfd": {"name": dfd["name"], "stats": dfd["stats"], "results": dfd_results},
-            "hazard_hp": hazard,
-        }
-    finally:
-        con.close()
+    atk_results = _results(atk, dfd, sa, sb, (body.get("moves") or {}).get("atk"),
+                           sa.get("z_moves") or [], hazard["dfd"])
+    dfd_results = _results(dfd, atk, sb, sa, (body.get("moves") or {}).get("dfd"),
+                           sb.get("z_moves") or [], hazard["atk"])
+    return {
+        "atk": {"name": atk["name"], "stats": atk["stats"], "results": atk_results},
+        "dfd": {"name": dfd["name"], "stats": dfd["stats"], "results": dfd_results},
+        "hazard_hp": hazard,
+    }

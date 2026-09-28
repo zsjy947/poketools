@@ -1,7 +1,8 @@
 # REFACTOR-PLAN —— 代码库架构重构与全量审查计划
 
-> 状态：待实施。基于五期交付后（M0-M8 全绿：pytest 59 / calib 51 案例 + 41 威力表 / ruff 零告警 /
-> 打包冒烟通过）对**全量代码库**的逐文件审查得出。文档命名遵循「内容描述 + 全大写」规范。
+> 状态：**R1 已实施（2026-09-29，P0 五项全部修复）**；R2-R5 待实施。基于五期交付后（M0-M8 全绿：
+> pytest 59 / calib 51 案例 + 41 威力表 / ruff 零告警 / 打包冒烟通过）对**全量代码库**的逐文件审查得出。
+> 文档命名遵循「内容描述 + 全大写」规范。
 > 原则：**行为零变更**——每步重构必须 pytest + calib + 浏览器冒烟三绿后才 commit；
 > 涉及公式/取整的文件（damage.py）只做命名与结构搬移，逻辑字节不动。
 
@@ -30,13 +31,13 @@
 
 ### P0 —— 正确性隐患（先修）
 
-| # | 位置 | 问题 | 方案 |
-|---|---|---|---|
-| P0-1 | `lookup.py` `from ..routers.pokemon import FORM_MARKER_TO_SUFFIX` | 路由层跨文件导入常量，形成 routers 内隐式耦合；pokemon.py 后续重构会破坏 | 新建 `app/services/constants.py`（或 `app/consts.py`）收编 FORM_MARKER_TO_SUFFIX / SUFFIX_REGION_ZH / GAME_MOVE_CONFIG / EVOLUTION_RECALL_GAMES，两路由与 lookup 统一引用 |
-| P0-2 | `calc.py` 调 `damage._ko_summary`（私有函数跨层） | 私有约定被打破；damage 内部改名即断 | damage.py 公开 `ko_summary()`（去掉下划线并导出），`_ko_summary` 保留别名一版后删 |
-| P0-3 | `db.py` `static_conn()` 每请求新建连接 + 多数端点手动 close（部分 try/finally 部分没有） | 异常路径连接泄漏；sqlite 新建连接虽廉价但 WAL 模式下每次 reopen 有页缓存损失 | 统一 `get_db()` 上下文管理器（`contextlib.closing` 或 FastAPI Depends），routers 全部改造；可选 thread-local 复用 |
-| P0-4 | `index.html` 手动 `?v=18` 缓存击穿 | 五期已实际踩坑（改 JS 忘 bump 导致冒烟误报）；忘 bump 会向用户分发旧前端 | 开发模式给 StaticFiles 响应加 `Cache-Control: no-cache`（中间件 12 行），去掉手动版本号；打包版不受影响（本地无缓存问题） |
-| P0-5 | `build_db.py` `guarded()` 只覆盖 scrape 侧合并 | build_db 自身的 curated 装载（evo_branches/form_game_availability）无行数护栏，curated 损坏时静默空表 | 三个 curated 装载各加 min 行数校验（evo_branches≥20 / availability≥150 / z_exclusive≥20） |
+| # | 位置 | 问题 | 方案 | 状态 |
+|---|---|---|---|---|
+| P0-1 | `lookup.py` `from ..routers.pokemon import FORM_MARKER_TO_SUFFIX` | 路由层跨文件导入常量，形成 routers 内隐式耦合；pokemon.py 后续重构会破坏 | 新建 `app/services/constants.py`（或 `app/consts.py`）收编 FORM_MARKER_TO_SUFFIX / SUFFIX_REGION_ZH / GAME_MOVE_CONFIG / EVOLUTION_RECALL_GAMES，两路由与 lookup 统一引用 | ✅ R1 已修（四常量全部收编 `app/services/constants.py`） |
+| P0-2 | `calc.py` 调 `damage._ko_summary`（私有函数跨层） | 私有约定被打破；damage 内部改名即断 | damage.py 公开 `ko_summary()`（去掉下划线并导出），`_ko_summary` 保留别名一版后删 | ✅ R1 已修（公开 `ko_summary` + 兼容别名，calc.py 两处改公开名） |
+| P0-3 | `db.py` `static_conn()` 每请求新建连接 + 多数端点手动 close（部分 try/finally 部分没有） | 异常路径连接泄漏；sqlite 新建连接虽廉价但 WAL 模式下每次 reopen 有页缓存损失 | 统一 `get_db()` 上下文管理器（`contextlib.closing` 或 FastAPI Depends），routers 全部改造；可选 thread-local 复用 | ✅ R1 已修（`db.get_static_db/get_state_db` Depends 注入，四路由全部端点改造；`_game_dex_species` 缓存函数按注释例外自管） |
+| P0-4 | `index.html` 手动 `?v=18` 缓存击穿 | 五期已实际踩坑（改 JS 忘 bump 导致冒烟误报）；忘 bump 会向用户分发旧前端 | 开发模式给 StaticFiles 响应加 `Cache-Control: no-cache`（中间件 12 行），去掉手动版本号；打包版不受影响（本地无缓存问题） | ✅ R1 已修（main.py no-cache 中间件，静态响应不再缓存；手动版本号暂保留为惰性装饰——UPDATE-PLAN §1.5 验收仍要求 bump，两者不冲突） |
+| P0-5 | `build_db.py` `guarded()` 只覆盖 scrape 侧合并 | build_db 自身的 curated 装载（evo_branches/form_game_availability）无行数护栏，curated 损坏时静默空表 | 三个 curated 装载各加 min 行数校验（evo_branches≥20 / availability≥150 / z_exclusive≥20） | ✅ R1 已修（`require_rows` 护栏三处：z_exclusive/form_game_availability/evo_branches） |
 
 ### P1 —— 架构分层重构（主体工程）
 
@@ -80,7 +81,7 @@
 
 | 里程碑 | 内容 | 回归门槛 | commit |
 |---|---|---|---|
-| R1（P0） | P0-1..P0-5 | pytest 59 绿 + calib 全绿 + 浏览器冒烟 | `refactor(P0): 常量收编/连接管理/缓存击穿/装载护栏` |
+| R1（P0）✅ | P0-1..P0-5（2026-09-29 完成；同轮独立安全扫描：SQL 全参数化、静态挂载无穿越、仅绑定 127.0.0.1、写端点校验齐全，无新增高危项） | pytest 60 绿 + ruff 零告警 + node check + 冒烟（中间件头/端点抽查/状态写入回滚） | `fix: 全量审查P0五项修复…` |
 | R2（后端分层） | P1-1..P1-5 | 同上 + API 响应逐端点 diff（改造前后用 httpx 录制回放对比） | `refactor(services): routers 瘦身，业务下沉 services` |
 | R3（管线） | P1-6..P1-7 | 管线全量重跑，DB 行数报表 diff 一致 | `refactor(scripts): build_db/scrape 函数化，curated 派生外移` |
 | R4（前端） | P2-1..P2-3、P2-7 | 浏览器冒烟脚本（新增）全绿 | `refactor(frontend): utils 抽取/内联样式收敛/错误去重/冒烟脚本` |
