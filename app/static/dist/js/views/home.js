@@ -1,27 +1,31 @@
-/* 游戏中心首页：按游戏入口 */
+/* 首页·功能宫格（批次三）：游戏中心 / 伤害计算器 / 模拟对战（预留置灰） */
 const HomeView = {
   template: `
   <div>
     <div class="home-hero">
       <h1>宝可梦工具助手</h1>
     </div>
-    <div class="game-grid">
-      <div v-for="g in games" :key="g.id" class="game-card" @click="enter(g)">
-        <game-icons :gid="g.id" :h="46" class="game-icon-imgs"></game-icons>
-        <div class="game-name">{{ g.name_zh }}</div>
-        <div class="game-sub">{{ g.generation === 9 ? "第九世代" : "第八世代" }} ·
-          {{ g.dexes.length }} 个图鉴 / {{ g.dexes.reduce((a, d) => a + d.total, 0) }} 只</div>
+    <div class="feature-grid">
+      <div class="feature-card" @click="enter('#/games')">
+        <mono-icon name="games" :size="48"></mono-icon>
+        <div class="feature-name">游戏中心</div>
+        <div class="feature-desc">五作图鉴 · 努力值 · 特化功能</div>
+      </div>
+      <div class="feature-card" @click="enter('#/calc')">
+        <mono-icon name="calc" :size="48"></mono-icon>
+        <div class="feature-name">伤害计算器</div>
+        <div class="feature-desc">现代公式 · 双向对算 · 场地状态</div>
+      </div>
+      <div class="feature-card disabled" title="建设中">
+        <mono-icon name="battle" :size="48"></mono-icon>
+        <div class="feature-name">模拟对战</div>
+        <div class="feature-desc">建设中</div>
       </div>
     </div>
   </div>
   `,
   setup() {
-    const { computed } = Vue;
-    const games = computed(() => store.games);
-    function enter(g) {
-      store.gameId = g.id;
-      location.hash = "#/game/" + g.id + "/dex";
-    }
-    return { games, enter };
+    function enter(hash) { location.hash = hash; }
+    return { enter };
   },
 };

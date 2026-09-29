@@ -2,38 +2,19 @@
 from __future__ import annotations
 
 import json
+import sqlite3
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 
-from ..db import static_conn
+from ..db import get_static_db
+from ..services.constants import (
+    EVOLUTION_RECALL_GAMES,
+    FORM_MARKER_TO_SUFFIX,
+    GAME_MOVE_CONFIG,
+    SUFFIX_REGION_ZH,
+)
 
 router = APIRouter(prefix="/api")
-
-# 每个游戏的招式表结构：学习集 vg、TM 机器 vg、分组 tab（key→中文标签）
-# （逐游戏核对过 52poke 各作招式表列：剑盾教授=铠岛/雪原，BDSP 有教授列（tutor8 模板），
-#   阿尔宙斯=训练场佐思，朱紫无教授——4 条 PokeAPI tutor 数据在 52poke 为「回忆」，
-#   并入升级表以「回忆」标注；Z-A 仅 升级/学习器 两列，无回忆列）
-GAME_MOVE_CONFIG = {
-    "sword-shield": {"vg": 20, "tm_vgs": [20],
-                     "tabs": [("level", "升级"), ("machine", "招式学习器"),
-                              ("egg", "蛋招式"), ("tutor", "教授")]},
-    "brilliant-diamond-shining-pearl": {"vg": 23, "tm_vgs": [23],
-                                        "tabs": [("level", "升级"), ("machine", "招式学习器"),
-                                                 ("egg", "蛋招式"), ("tutor", "教授")]},
-    "legends-arceus": {"vg": 24, "tm_vgs": [],
-                       "tabs": [("level", "升级"), ("tutor", "教授")]},
-    # 朱紫：升级表中 level=0（进化时学会）与教授（=回忆，PokeAPI 标 tutor，52poke 为回忆机）
-    # 单独「进化&回忆」tab
-    "scarlet-violet": {"vg": 25, "tm_vgs": [25],
-                       "tabs": [("level", "升级"), ("evolution-recall", "进化&回忆"),
-                                ("machine", "招式学习器"), ("egg", "蛋招式")]},
-    # tm_vgs 含 vg31（异次元 DLC TM108-160），与 vg30 的 TM001-107 连续编号
-    "legends-za": {"vg": 30, "tm_vgs": [30, 31],
-                   "tabs": [("level", "升级"), ("machine", "招式学习器")]},
-}
-
-# 「进化&回忆」独立 tab 的游戏（level=0 进化招式 + tutor 回忆行）
-EVOLUTION_RECALL_GAMES = {"scarlet-violet"}
 
 GAME_ORDER = ["sword-shield", "brilliant-diamond-shining-pearl", "legends-arceus",
               "scarlet-violet", "legends-za"]
@@ -66,16 +47,6 @@ def _abilities_of(con, form) -> list[dict]:
                     "intro": p.get("intro", ""), "effect": p.get("effect", ""),
                     "extra": p.get("extra", [])})
     return out
-
-
-# 52poke 获得方式模板的形态标记字母 → forms.identifier 后缀（M2 3.5 获取方式按形态过滤）
-FORM_MARKER_TO_SUFFIX = {
-    "A": "alola", "G": "galar", "H": "hisui", "P": "paldea",
-    "W": "white-striped", "B": "blue-striped",
-    "D": "dusk", "Mn": "midnight", "N": "midday", "L": "low-key",
-    "F": "female", "M": "male", "GM": "gmax",
-    "PA": "paldea-combat-breed", "PB": "paldea-blaze-breed", "PC": "paldea-aqua-breed",
-}
 
 
 def _evo_condition(row) -> str:
@@ -152,10 +123,6 @@ def _decode_natures(mask: str) -> list[str]:
     except ValueError:
         return []
     return [_NATURE_ZH[i + 1] for i in range(25) if m & (1 << i)]
-
-
-# 地区后缀 → 中文名（分支条件文本前缀）
-SUFFIX_REGION_ZH = {"alola": "阿罗拉", "galar": "伽勒尔", "hisui": "洗翠", "paldea": "帕底亚"}
 
 
 def _form_by_suffix(con, species_id: int, suffix: str):
@@ -274,11 +241,10 @@ def _evolution_chain(con, species_id: int, form_suffix: str = "") -> dict:
 
 @router.get("/pokemon/{species_id}")
 def pokemon_detail(species_id: int, game: str = "", form: str = Query("", description="选中形态 identifier 后缀，空=默认形态"),
-                   dex: str = Query("", description="来源图鉴 id：默认选中形态按 dex_default_forms 覆盖")):
-    con = static_conn()
+                   dex: str = Query("", description="来源图鉴 id：默认选中形态按 dex_default_forms 覆盖"),
+                   con: sqlite3.Connection = Depends(get_static_db)):
     sp = con.execute("SELECT * FROM species WHERE id=?", (species_id,)).fetchone()
     if sp is None:
-        con.close()
         raise HTTPException(404, "species not found")
 
     forms = [dict(r) for r in con.execute(
@@ -377,7 +343,6 @@ def pokemon_detail(species_id: int, game: str = "", form: str = Query("", descri
         for f in forms:
             f["ability_list"] = _abilities_of(con, f)
 
-    con.close()
     return {
         "species": dict(sp),
         "default_form": default,
@@ -397,14 +362,13 @@ def pokemon_detail(species_id: int, game: str = "", form: str = Query("", descri
 
 
 @router.get("/pokemon/{species_id}/moves")
-def pokemon_moves(species_id: int, game: str = Query(...), form_id: int | None = None):
+def pokemon_moves(species_id: int, game: str = Query(...), form_id: int | None = None,
+                  con: sqlite3.Connection = Depends(get_static_db)):
     cfg = GAME_MOVE_CONFIG.get(game)
     if cfg is None:
         raise HTTPException(400, "unknown game")
-    con = static_conn()
     sp = con.execute("SELECT id, name_zh FROM species WHERE id=?", (species_id,)).fetchone()
     if sp is None:
-        con.close()
         raise HTTPException(404, "species not found")
     vg = cfg["vg"]
 
@@ -479,7 +443,6 @@ def pokemon_moves(species_id: int, game: str = Query(...), form_id: int | None =
 
     breeding = con.execute(
         "SELECT has_breeding FROM games WHERE id=?", (game,)).fetchone()
-    con.close()
     return {
         "species": dict(sp), "form": dict(form), "game": game, "vg": vg,
         "has_breeding": bool(breeding["has_breeding"]) if breeding else False,

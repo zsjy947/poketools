@@ -12,13 +12,92 @@ const store = Vue.reactive({
   },
 });
 
-/* 功能注册表：games.features 中的 key -> 入口定义 */
+/* 功能注册表：games.features 中的 key -> 入口定义（icon = Monoline 图标名） */
 const FEATURES = {
-  dex: { key: "dex", label: "地区图鉴", icon: "📖", desc: "图鉴进度追踪与捕捉方式" },
-  ev: { key: "ev", label: "努力值查询", icon: "⚡", desc: "按努力值筛选当前游戏宝可梦" },
-  sandwich: { key: "sandwich", label: "三明治食谱", icon: "🥪", desc: "食力筛选 · 食材调味料 · 自由录入" },
-  donut: { key: "donut", label: "甜甜圈工房", icon: "🍩", desc: "特殊配方 · 树果效果 · 风味力量" },
-  curry: { key: "curry", label: "咖喱图鉴", icon: "🍛", desc: "咖喱品种图鉴与介绍" },
+  dex: { key: "dex", label: "地区图鉴", icon: "dex", desc: "图鉴进度追踪与捕捉方式" },
+  ev: { key: "ev", label: "努力值查询", icon: "ev", desc: "按努力值筛选当前游戏宝可梦" },
+  sandwich: { key: "sandwich", label: "三明治食谱", icon: "sandwich", desc: "食力筛选 · 食材调味料 · 自由录入" },
+  donut: { key: "donut", label: "甜甜圈工房", icon: "donut", desc: "特殊配方 · 树果效果 · 风味力量" },
+  curry: { key: "curry", label: "咖喱图鉴", icon: "curry", desc: "咖喱品种图鉴与介绍" },
+};
+
+/* ---- Monoline 图标体系（批次三）：手写 SVG，viewBox 24、stroke 2、round、fill none ----
+   几何基元优先（rect/circle/line/path A 段）；currentColor 随父级着色。
+   预览审查页：tools/icon-preview.html。 */
+const MONO_ICONS = {
+  /* 打开的书本 + 中缝精灵球圆点（地区图鉴） */
+  dex: '<path d="M12 7C10 5.4 7.2 4.8 4 4.8v13.4c3.2 0 6 .6 8 2.2 2-1.6 4.8-2.2 8-2.2V4.8c-3.2 0-6 .6-8 2.2z"/>' +
+       '<path d="M12 7v13.4"/><circle cx="12" cy="12.6" r="1.6"/>',
+  /* 三根渐高柱状条（努力值培育） */
+  ev: '<path d="M4 20.2h16"/><rect x="5" y="13.6" width="3.6" height="6.6" rx="1"/>' +
+      '<rect x="10.2" y="9.6" width="3.6" height="10.6" rx="1"/>' +
+      '<rect x="15.4" y="5.6" width="3.6" height="14.6" rx="1"/>',
+  /* 三层堆叠：面包/夹层/面包（三明治） */
+  sandwich: '<rect x="4" y="4.8" width="16" height="4.6" rx="2.3"/>' +
+            '<rect x="5.6" y="10.8" width="12.8" height="2.8" rx="1.4"/>' +
+            '<rect x="4" y="15" width="16" height="4.6" rx="2.3"/>',
+  /* 圆环 + 中心孔 + 顶部糖霜弧（甜甜圈） */
+  donut: '<circle cx="12" cy="12.6" r="8.4"/><circle cx="12" cy="12.6" r="3.2"/>' +
+         '<path d="M6.6 8.4a6.6 6.6 0 0 1 10.8 0"/>',
+  /* 锅体 + 双耳 + 蒸汽（咖喱） */
+  curry: '<path d="M4 10.2h16v2.8a7 7 0 0 1-7 7h-2a7 7 0 0 1-7-7z"/>' +
+         '<path d="M1.8 10.2h2.8M19.4 10.2h2.8"/><path d="M9.4 4.2c.7.7.7 1.6 0 2.3M13.6 4.2c.7.7.7 1.6 0 2.3M11.5 2.6v1.2"/>',
+  /* 计算器外框 + 显示窗 + 2×2 按键点 */
+  calc: '<rect x="5" y="3" width="14" height="18" rx="2"/>' +
+        '<rect x="7.6" y="5.6" width="8.8" height="3.4" rx="0.8"/>' +
+        '<path d="M8.8 13.2v.01M15.2 13.2v.01M8.8 17.4v.01M15.2 17.4v.01"/>',
+  /* 交叉双剑（模拟对战） */
+  battle: '<path d="M4.6 4.6l11.8 11.8M19.4 4.6L7.6 16.4"/>' +
+          '<path d="M13.6 17.8l3.8-3.8M16.4 19.6l2.4-2.4M4 15.2l2.2 2.2"/>',
+  /* 游戏手柄：圆角横体 + 十字键 + 双钮（游戏中心） */
+  games: '<rect x="2.6" y="7.2" width="18.8" height="10.4" rx="5.2"/>' +
+         '<path d="M7.2 10.2v4.2M5.1 12.3h4.2"/><path d="M15.4 10.8v.01M17.6 13.6v.01"/>',
+  /* 小屋：屋顶三角 + 门（首页） */
+  home: '<path d="M3.8 11.2L12 4l8.2 7.2"/><path d="M5.8 9.6V20h12.4V9.6"/><path d="M10 20v-5.4h4V20"/>',
+  /* 左向箭头（返回） */
+  back: '<path d="M19 12H5"/><path d="M11 5.4L4.4 12l6.6 6.6"/>',
+};
+
+const MonoIcon = {
+  props: { name: String, size: { type: [Number, String], default: 22 } },
+  template: `<svg class="mono-icon" :width="size" :height="size" viewBox="0 0 24 24"
+    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+    stroke-linejoin="round" v-html="path"></svg>`,
+  computed: { path() { return MONO_ICONS[this.name] || ""; } },
+};
+
+/* 64px 图标窄栏（进入游戏后出现）：顶部大游戏商标 + 下方功能 Monoline 图标，无文字 */
+const RailNav = {
+  props: ["game", "features", "activeFeature"],
+  emits: ["go-feature"],
+  template: `
+  <nav class="rail">
+    <div class="rail-game" :title="game ? game.name_zh : ''" @click="$emit('go-feature', 'dex')">
+      <game-icons v-if="game" :gid="game.id" :h="isDual ? 26 : 40"></game-icons>
+    </div>
+    <div class="rail-sep"></div>
+    <div v-for="f in features" :key="f.key" class="rail-item"
+      :class="{active: activeFeature === f.key}" :title="f.label"
+      @click="$emit('go-feature', f.key)">
+      <mono-icon :name="f.icon" :size="22"></mono-icon>
+    </div>
+  </nav>`,
+  setup(props) {
+    const { computed } = Vue;
+    const isDual = computed(() =>
+      props.game && (props.game.id === "sword-shield"
+        || props.game.id === "brilliant-diamond-shining-pearl"
+        || props.game.id === "scarlet-violet"));
+    return { isDual };
+  },
+};
+
+/* 左上角返回上一级（按路由层级静态映射，不依赖 history） */
+const BackBtn = {
+  props: ["target", "label"],
+  emits: ["click"],
+  template: `<button class="back-btn" @click="$emit('click')">
+    <mono-icon name="back" :size="15"></mono-icon><span>{{ label }}</span></button>`,
 };
 
 const GAME_ICONS = {
@@ -280,6 +359,9 @@ function registerGlobalComponents(app) {
   app.component("get-method-list", GetMethodList);
   app.component("evo-chain", EvoChain);
   app.component("evo-node", EvoNode);
+  app.component("mono-icon", MonoIcon);
+  app.component("rail-nav", RailNav);
+  app.component("back-btn", BackBtn);
 }
 
 /* 属性相性计算（防守方视角）：需要 store.typeChart 已加载 */

@@ -399,3 +399,174 @@ def test_custom_recipes_quantity():
     assert r4.status_code == 200 and r4.json()["ingredients"][0]["count"] == 1
     for x in (rid, r2.json()["id"], r4.json()["id"]):
         client.delete(f"/api/custom-recipes/{x}")
+
+
+# ---- CALC-FIX 批次一/二：跨线程连接 / Z·极巨·超极巨官方名 / 追打换人 / 披带道具派生 ----
+
+def test_db_threading_cross_thread():
+    """真实 uvicorn（anyio 线程池）下连接会被另一线程使用：check_same_thread=False 护栏。"""
+    import threading
+
+    from app.db import state_conn, static_conn
+
+    results = {}
+
+    def worker_static():
+        try:
+            con = static_conn()
+            results["static"] = con.execute("SELECT COUNT(*) FROM games").fetchone()[0]
+            con.close()
+        except Exception as e:  # noqa: BLE001
+            results["static_err"] = repr(e)
+
+    def worker_state():
+        try:
+            con = state_conn()
+            con.execute("SELECT COUNT(*) FROM profiles").fetchone()
+            con.close()
+            results["state"] = "ok"
+        except Exception as e:  # noqa: BLE001
+            results["state_err"] = repr(e)
+
+    t1 = threading.Thread(target=worker_static)
+    t2 = threading.Thread(target=worker_state)
+    t1.start(); t2.start(); t1.join(); t2.join()
+    assert results.get("static") == 5 and "static_err" not in results
+    assert results.get("state") == "ok" and "state_err" not in results
+
+
+def test_meta_z_moves_generic_names():
+    z = client.get("/api/meta/z-moves").json()
+    assert len(z["generic"]) == 18
+    dragon = next(x for x in z["generic"] if x["type"] == "龙")
+    assert dragon["z_move_name"] == "究极巨龙震天地"
+    assert all(x.get("type") and x.get("z_move_name") for x in z["generic"])
+
+
+def test_meta_max_moves():
+    mx = client.get("/api/meta/max-moves").json()
+    assert len(mx) == 19
+    guard = next(m for m in mx if m["identifier"] == "max-guard")
+    assert guard["name_zh"] == "极巨防壁" and guard["damage_class"] == "status"
+    wyrm = next(m for m in mx if m["identifier"] == "max-wyrmwind")
+    assert (wyrm["name_zh"], wyrm["type_zh"], wyrm["damage_class"]) == ("极巨龙骑", "龙", "physical")
+    gmax = client.get("/api/meta/gmax-moves").json()
+    assert len(gmax) == 34
+    cz = next(g for g in gmax if g["form_identifier"] == "charizard-gmax")
+    assert cz["gmax_move_name"] == "超极巨地狱灭焰" and cz["type_zh"] == "火"
+
+
+def test_batch_generic_z_name():
+    # 泛用 Z：龙属性伤害招 + z_marks → z_info.name 官方名（烈咬陆鲨无专属 Z）
+    r = client.post("/api/calc/batch", json={
+        "attacker": {"species_id": 445, "level": 50},
+        "defender": {"species_id": 143, "level": 50},
+        "moves": {"atk": [{"id": 337}, None, None, None], "dfd": [None] * 4},
+        "field": {},
+        "sides": {"atk": {"z_moves": [True, False, False, False]}, "dfd": {}},
+    })
+    assert r.status_code == 200
+    zi = r.json()["atk"]["results"][0]["z_info"]
+    assert zi["source"] == "generic" and zi["name"] == "究极巨龙震天地"
+
+
+def test_pikashunium_z_caps():
+    # 千万伏特：普通皮卡丘 + 十万伏特点 Z → 后缀不匹配回退泛用
+    plain = client.post("/api/calc", json={
+        "attacker": {"species_id": 25, "level": 50},
+        "defender": {"species_id": 143, "level": 50},
+        "move_id": 85, "z_move": True})
+    zi = plain.json()["z_info"]
+    assert zi["source"] == "generic" and zi["name"] == "终极伏特狂雷闪"
+    # 帽子皮卡丘（original-cap）→ 命中千万伏特（195 威力）
+    cap = client.post("/api/calc", json={
+        "attacker": {"species_id": 25, "form_id": 10094, "level": 50},
+        "defender": {"species_id": 143, "level": 50},
+        "move_id": 85, "z_move": True})
+    zi2 = cap.json()["z_info"]
+    assert zi2["source"] == "exclusive" and zi2["name"] == "千万伏特"
+    assert zi2["power"] == 195
+
+
+def test_gmax_move_power():
+    # 超极巨狂擂乱打（草属性命中）= 固定 160：高于同招式普通极巨档位（木槌 120 → 140）
+    body = {
+        "attacker": {"species_id": 812, "form_id": 10209, "level": 50, "is_dynamax": True},
+        "defender": {"species_id": 143, "level": 50},
+        "moves": {"atk": [{"id": 452}, None, None, None], "dfd": [None] * 4},
+        "field": {},
+        "sides": {"atk": {}, "dfd": {}},
+    }
+    gmax = client.post("/api/calc/batch", json=body).json()
+    plain = client.post("/api/calc/batch", json={
+        **body, "attacker": {"species_id": 812, "level": 50, "is_dynamax": True}}).json()
+    assert gmax["atk"]["results"][0]["max"] > plain["atk"]["results"][0]["max"]
+    # charizard-gmax + 火招（超极巨地狱灭焰，无固定威力）→ 与普通极巨同档位（90 → 130）
+    cz_gmax = client.post("/api/calc/batch", json={
+        "attacker": {"species_id": 6, "form_id": 10196, "level": 50, "is_dynamax": True},
+        "defender": {"species_id": 143, "level": 50},
+        "moves": {"atk": [{"id": 53}, None, None, None], "dfd": [None] * 4},
+        "field": {},
+        "sides": {"atk": {}, "dfd": {}}}).json()
+    cz_plain = client.post("/api/calc/batch", json={
+        "attacker": {"species_id": 6, "level": 50, "is_dynamax": True},
+        "defender": {"species_id": 143, "level": 50},
+        "moves": {"atk": [{"id": 53}, None, None, None], "dfd": [None] * 4},
+        "field": {},
+        "sides": {"atk": {}, "dfd": {}}}).json()
+    assert cz_gmax["atk"]["results"][0]["rolls"] == cz_plain["atk"]["results"][0]["rolls"]
+    # 非命中属性（飞行招）→ 不注入 gmax 威力，走普通档位
+    cz_air = client.post("/api/calc/batch", json={
+        "attacker": {"species_id": 6, "form_id": 10196, "level": 50, "is_dynamax": True},
+        "defender": {"species_id": 143, "level": 50},
+        "moves": {"atk": [{"id": 403}, None, None, None], "dfd": [None] * 4},
+        "field": {},
+        "sides": {"atk": {}, "dfd": {}}}).json()
+    assert cz_air["atk"]["results"][0]["rolls"] == client.post("/api/calc/batch", json={
+        "attacker": {"species_id": 6, "level": 50, "is_dynamax": True},
+        "defender": {"species_id": 143, "level": 50},
+        "moves": {"atk": [{"id": 403}, None, None, None], "dfd": [None] * 4},
+        "field": {},
+        "sides": {"atk": {}, "dfd": {}}}).json()["atk"]["results"][0]["rolls"]
+
+
+def test_pursuit_switching_out():
+    # 追打 × 换下场：防守方 switching → 威力 ×2；非追打招式不受影响
+    body = {
+        "attacker": {"species_id": 445, "level": 50},
+        "defender": {"species_id": 143, "level": 50},
+        "moves": {"atk": [{"id": 228}, {"id": 337}, None, None], "dfd": [None] * 4},
+        "field": {},
+    }
+    base = client.post("/api/calc/batch", json={**body, "sides": {"atk": {}, "dfd": {}}}).json()
+    sw = client.post("/api/calc/batch",
+                     json={**body, "sides": {"atk": {}, "dfd": {"switching": True}}}).json()
+    assert sw["atk"]["results"][0]["max"] > base["atk"]["results"][0]["max"]   # 追打增强
+    assert sw["atk"]["results"][1]["rolls"] == base["atk"]["results"][1]["rolls"]  # 龙爪不变
+    # 单招端点对等字段 defender_switching_out
+    r0 = client.post("/api/calc", json={
+        "attacker": {"species_id": 445, "level": 50},
+        "defender": {"species_id": 143, "level": 50}, "move_id": 228})
+    r1 = client.post("/api/calc", json={
+        "attacker": {"species_id": 445, "level": 50},
+        "defender": {"species_id": 143, "level": 50}, "move_id": 228,
+        "defender_switching_out": True})
+    assert r1.json()["result"]["max"] > r0.json()["result"]["max"]
+
+
+def test_sash_item_derivation():
+    # 气势披带 = 道具派生：defender 侧 sash flag 等价于装备「气势披带」
+    body = {
+        "attacker": {"species_id": 445, "level": 50},
+        "defender": {"species_id": 143, "level": 50},
+        "moves": {"atk": [89, None, None, None], "dfd": [None] * 4},
+        "field": {},
+    }
+    by_flag = client.post("/api/calc/batch",
+                          json={**body, "sides": {"atk": {}, "dfd": {"sash": True}}}).json()
+    by_item = client.post("/api/calc/batch", json={
+        **body,
+        "defender": {"species_id": 143, "level": 50, "item": "气势披带"},
+        "sides": {"atk": {}, "dfd": {}}}).json()
+    assert by_flag["atk"]["results"][0]["ko"]["probs"]["1"] == 0.0
+    assert by_item["atk"]["results"][0]["ko"]["probs"]["1"] == 0.0

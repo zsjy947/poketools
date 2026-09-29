@@ -1,30 +1,18 @@
-/* 应用根组件 + 哈希路由（按游戏入口） */
+/* 应用根组件 + 哈希路由（批次三导航重构）：
+   首页=功能宫格（游戏中心/伤害计算器/模拟对战预留）；游戏中心=五作宫格；
+   进入游戏后出现 64px 图标窄栏（无文字）；详情与计算器全画面；左上角返回上一级。
+   calc 视图首次进入后 v-show 常驻（CALC-FIX §2）。 */
 const App = {
   template: `
   <div class="layout">
-    <div class="sidebar">
-      <div class="logo" @click="go('#/home')">Poké<span>Tools</span></div>
-      <div class="menu">
-        <div class="menu-item" :class="{active: route.page === 'home'}" @click="go('#/home')">
-          <span>🏠</span><span>游戏中心</span>
-        </div>
-        <template v-if="game">
-          <div class="menu-sep"></div>
-          <div class="menu-game"><game-icons :gid="game.id" :h="20"></game-icons> {{ game.name_zh }}</div>
-          <div v-for="f in gameFeatures" :key="f.key" class="menu-item sub"
-            :class="{active: route.page === 'game' && route.feature === f.key}"
-            @click="go('#/game/' + game.id + '/' + f.key)">
-            <span>{{ f.icon }}</span><span>{{ f.label }}</span>
-          </div>
-        </template>
-        <div class="menu-sep"></div>
-        <div class="menu-item" :class="{active: route.page === 'calc'}" @click="go('#/calc')">
-          <span>🧮</span><span>伤害计算器</span>
-        </div>
-      </div>
-    </div>
+    <rail-nav v-if="route.page === 'game'" :game="game" :features="gameFeatures"
+      :active-feature="route.feature"
+      @go-feature="goFeature"></rail-nav>
     <div class="main">
+      <back-btn v-if="backTarget" :label="backTarget.label"
+        @click="go(backTarget.hash)"></back-btn>
       <home-view v-if="route.page === 'home'"></home-view>
+      <games-view v-else-if="route.page === 'games'"></games-view>
       <template v-else-if="route.page === 'game'">
         <dex-view v-if="route.feature === 'dex'" :key="'dex-' + route.gameId"></dex-view>
         <ev-view v-else-if="route.feature === 'ev'" :key="'ev-' + route.gameId"></ev-view>
@@ -33,24 +21,36 @@ const App = {
         <curry-view v-else-if="route.feature === 'curry'"></curry-view>
       </template>
       <detail-view v-else-if="route.page === 'pokemon'"></detail-view>
-      <calc-view v-else-if="route.page === 'calc'"></calc-view>
+      <!-- 计算器视图首次进入后常驻（v-show 隐藏）：状态保留、零请求、图片不回源 -->
+      <calc-view v-if="visited.calc" v-show="route.page === 'calc'"></calc-view>
     </div>
   </div>
   `,
   setup() {
     const { reactive, computed, onMounted, provide } = Vue;
     const route = reactive({ page: "home", gameId: "", feature: "", hash: "" });
+    const visited = reactive({ calc: false });
 
     const game = computed(() => store.games.find((g) => g.id === route.gameId) || null);
     const gameFeatures = computed(() =>
       (game.value ? game.value.features : [])
         .map((k) => FEATURES[k]).filter(Boolean));
 
+    /* 返回层级（静态映射，不依赖 history；详情页返回由 detail.js 自带逻辑处理） */
+    const backTarget = computed(() => {
+      if (route.page === "games") return { hash: "#/home", label: "返回首页" };
+      if (route.page === "game") return { hash: "#/games", label: "返回游戏中心" };
+      if (route.page === "calc") return { hash: "#/home", label: "返回首页" };
+      return null;
+    });
+
     function parseHash() {
       const hsh = location.hash || "#/home";
       const parts = hsh.replace(/^#\//, "").split("?")[0].split("/");
       route.hash = hsh;
-      if (parts[0] === "game" && parts.length >= 3) {
+      if (parts[0] === "games") {
+        route.page = "games";
+      } else if (parts[0] === "game" && parts.length >= 3) {
         route.page = "game";
         route.gameId = parts[1];
         route.feature = parts[2] || "dex";
@@ -61,11 +61,13 @@ const App = {
         store.gameId = q.get("game") || store.gameId;
       } else if (parts[0] === "calc") {
         route.page = "calc";
+        visited.calc = true;
       } else {
         route.page = "home";
       }
     }
     function go(hash) { location.hash = hash; }
+    function goFeature(key) { go("#/game/" + route.gameId + "/" + key); }
 
     provide("store", store);
     window.addEventListener("hashchange", parseHash);
@@ -76,7 +78,7 @@ const App = {
       parseHash();
     });
 
-    return { store, route, game, gameFeatures, go };
+    return { store, route, visited, game, gameFeatures, backTarget, go, goFeature };
   },
 };
 
@@ -87,6 +89,7 @@ for (const [name, comp] of Object.entries(ElementPlusIconsVue)) {
 }
 registerGlobalComponents(app);
 app.component("home-view", HomeView);
+app.component("games-view", GamesView);
 app.component("dex-view", DexView);
 app.component("detail-view", DetailView);
 app.component("ev-view", EvView);

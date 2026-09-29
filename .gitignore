@@ -35,6 +35,9 @@ data/*.db-wal
 .zcode/
 .zcodeignore
 
+# --- 计划文档（规划/执行计划一律不入 git，本地维护；已实现功能沉淀进 docs/ 说明文档）---
+/plans/
+
 # --- release build output (exe + data, copy-to-run) ---
 /release/
 

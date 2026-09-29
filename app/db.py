@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import sqlite3
 import sys
+from collections.abc import Iterator
 from pathlib import Path
 
 
@@ -54,7 +55,10 @@ INSERT OR IGNORE INTO profiles (id, name) VALUES (1, '默认档案');
 
 
 def static_conn() -> sqlite3.Connection:
-    con = sqlite3.connect(f"file:{STATIC_DB.as_posix()}?mode=ro", uri=True)
+    # check_same_thread=False：真实 uvicorn（anyio 线程池）下依赖 setup / 端点体 / teardown
+    # 可能落在不同线程（CALC-FIX §1 跨线程 500 回归）；连接为请求级短生命周期不跨请求共享，安全。
+    con = sqlite3.connect(f"file:{STATIC_DB.as_posix()}?mode=ro", uri=True,
+                          check_same_thread=False)
     con.row_factory = sqlite3.Row
     con.execute("PRAGMA query_only=1")
     return con
@@ -65,9 +69,28 @@ _state_init_done = False
 
 def state_conn() -> sqlite3.Connection:
     global _state_init_done
-    con = sqlite3.connect(STATE_DB)
+    con = sqlite3.connect(STATE_DB, check_same_thread=False)
     con.row_factory = sqlite3.Row
     if not _state_init_done:
         con.executescript(STATE_SCHEMA)
         _state_init_done = True
     return con
+
+
+# ---- 请求级连接管理（P0-3：此前各端点手动 close 且多数无 try/finally，异常路径泄漏）----
+# 路由一律经 Depends 注入，请求结束自动关闭；确需自管的（如 lru_cache 缓存函数）自行 try/finally。
+
+def get_static_db() -> Iterator[sqlite3.Connection]:
+    con = static_conn()
+    try:
+        yield con
+    finally:
+        con.close()
+
+
+def get_state_db() -> Iterator[sqlite3.Connection]:
+    con = state_conn()
+    try:
+        yield con
+    finally:
+        con.close()

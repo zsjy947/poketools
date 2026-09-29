@@ -61,6 +61,10 @@ pythonw launcher.pyw               # 桌面窗口启动
 - **设计总纲：`docs/ARCHITECTURE.md`**（技术栈/数据管线/Schema/API/伤害计算器/前端架构/设计决策记录/规范/Roadmap/变更历史）；
   数据缺口清单 `docs/DATA-GAPS.md`（三档：无源待补/curated 已知账/明确取舍）；操作手册 `docs/USER-MANUAL.md`。
   **文档命名规范：内容描述 + 全大写**。
+- **文档分层（2026-09-29 起）**：`docs/` = 说明文档（入库），只沉淀**已实现**的功能结论
+  （架构/操作/设计决策；模拟对战功能说明 = `docs/BATTLE.md` 单文档）；`plans/` = 计划文档
+  （**gitignore 不入 git**，本地维护：MASTER-PLAN 总执行计划 + 各专项计划 00/CALC-FIX-PLAN/UPDATE-PLAN/REFACTOR-PLAN）。
+  计划实现后按序把有效结论并入 docs/ 对应文档并随代码提交；执行状态与断点记录写在 plans/ 对应计划的执行日志节。
 - 伤害计算器：`app/services/damage.py`（仅现代公式，对齐 @smogon/calc gen9 修正链）+
   `app/routers/calc.py`（机制 mega/Z/极巨/太晶互斥校验；`POST /api/calc/batch` 一次算双方×4招）+
   前端 `views/calc.js`（太晶/极巨顶部标记、每招 Z 纯晶标记单选自动装备、场地区按钮网格）。

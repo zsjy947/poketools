@@ -89,7 +89,7 @@ const SandwichView = {
         </div>
         <div class="sand-grid" v-if="customList.length">
           <div v-for="r in customList" :key="r.id" class="sand-card custom">
-            <h4>🥪 {{ r.name }}
+            <h4><mono-icon name="sandwich" :size="18" style="vertical-align:-3px"></mono-icon> {{ r.name }}
               <el-button size="small" text type="danger" style="float:right"
                 @click="removeCustom(r)">删除</el-button>
             </h4>

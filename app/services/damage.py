@@ -307,7 +307,15 @@ def calc_damage_modern(a: dict, d: dict, move: dict, opt: dict) -> dict:
     elif opt.get("z_move"):
         power = z_power(move.get("power") or power, move_ident)
     elif opt.get("max_move"):
-        power = max_power(move.get("power") or power, move["type_zh"], move_ident)
+        gmax = opt.get("gmax_move")
+        # 超极巨专属招式固定威力特判（狂擂乱打/破阵火球/狙击神射=160）；其余按属性档位换算
+        power = (gmax["power"] if gmax and gmax.get("power")
+                 else max_power(move.get("power") or power, move["type_zh"], move_ident))
+    # 追打 × 换下场目标：威力 ×2（对齐 smogon gen789 isSwitching 分支；Z/极巨换算后招式名
+    # 已替换、该分支不生效，故仅在未换算路径生效）
+    if (move_ident == "pursuit" and opt.get("is_switching_out")
+            and not (opt.get("z_move") or z_ex or opt.get("max_move"))):
+        power = power * 2
 
     # ---- 威力阶段修正（bpMods 4096 分数链，顺序对齐 smogon） ----
     bp_mods: list[int] = []
@@ -513,7 +521,7 @@ def hazard_damage(def_types: list[str], hp: int, hazards: dict, grounded: bool) 
     return min(hp - 1 if hp > 1 else 0, total)
 
 
-def _ko_summary(rolls: list[int], hp: int, opt: dict) -> dict:
+def ko_summary(rolls: list[int], hp: int, opt: dict) -> dict:
     """KO 回合分布：n=1..4 内击倒概率（16 rolls 独立同分布精确枚举）。
 
     气势披带/气势头带：满血首击致死时残留 1 HP → 一回合击倒概率归零。
@@ -538,6 +546,10 @@ def _ko_summary(rolls: list[int], hp: int, opt: dict) -> dict:
     if guaranteed is None and probs["4"] > 0:
         guaranteed = -1   # 4 回合内不保证
     return {"guaranteed_turns": guaranteed, "probs": probs}
+
+
+# 兼容别名（P0-2 公开化前路由曾跨层调用私有名；下一版删除）
+_ko_summary = ko_summary
 
 
 def calc_damage(a: dict, d: dict, move: dict, opt: dict) -> dict:

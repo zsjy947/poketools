@@ -1,16 +1,66 @@
-/* 伤害计算器（五期重构，对齐 pokestats.top/calc 布局）：
+/* 伤害计算器（对齐 pokestats.top/calc 布局）：
    对战场：左右摘要卡（顶部太晶/极巨图标标记 + 特性 + EVs 概览 + 实际值）+ 竖列 4 招式按钮
    结果条：伤害区间 + 16 rolls + KO 回合表述
    编辑面板：宝可梦/形态（超级进化·超极巨化在此选择）→ 特性（全量）→ 太晶属性 → 道具（全量+图标）
      → 4 招式（威力自动带出）→ 种族值（只读）→ 努力值 → 性格 → 能力升降 → 等级
-   场地区：左/右宝可梦对称状态列（状态异常/壁与守护/攻方加成/钉子/其他，SIDE_GROUPS 单源渲染）
-     + 中间场地·全局（单双打/天气/场地/气场/四灾兽/空间重力）
-   机制互斥：形态派生（超进化/超极巨化）与太晶/极巨/Z 标记互斥；Z 一场战斗仅一次。 */
+   招式显示名：极巨/Z/超极巨按官方名查表替换（属性→极巨名、泛用 Z 名、gmax 专属名、专属 Z 名）；
+   场地区：完全复刻参考站（左右宝可梦对称状态列 8 行 × 中间场地 7 行，无列标题/组名/说明文字，
+   左右列固定绑定左右宝可梦，攻守由上方招式选择决定）；「切换」= 换下场状态（被追打威力 ×2）；
+   气势披带为道具（场地区不出现，由道具选择自动派生 defender_sash）。
+   机制互斥：形态派生（超进化/超极巨化）与太晶/极巨/Z 标记互斥；Z 一场战斗仅一次。
+   常驻性能：模块级 meta/species 缓存 + 启动预热（app 启动即发请求）+ 两侧并行初始化。 */
 
 const MECH_LABELS = { z: "Z招式", max: "极巨化", tera: "太晶化" };
-const MAX_MOVE_LABEL = "超极巨招式";
 
-/* 物种装载（编辑面板与初始对局共用） */
+/* ---- 模块级 meta 缓存 + 启动预热（index.html 启动即加载本脚本 → 顶层立即发起，共享同一 Promise） ---- */
+const _metaCache = {
+  species: null, items: null, abilities: null, zMoves: null,
+  maxMoves: null, gmaxMoves: null, natures: null,
+};
+const _metaPromises = {};
+function warmMeta(key, url) {
+  if (_metaCache[key]) return Promise.resolve(_metaCache[key]);
+  if (!_metaPromises[key]) {
+    _metaPromises[key] = apiGet(url).then((r) => {
+      _metaCache[key] = r;
+      delete _metaPromises[key];
+      return r;
+    });
+  }
+  return _metaPromises[key];
+}
+warmMeta("species", "/api/meta/species").then((r) => {
+  window.__speciesNames = Object.fromEntries(r.map((x) => [x.id, x.name_zh]));
+});
+warmMeta("items", "/api/meta/items");
+warmMeta("abilities", "/api/meta/abilities");
+warmMeta("zMoves", "/api/meta/z-moves");
+warmMeta("maxMoves", "/api/meta/max-moves");
+warmMeta("gmaxMoves", "/api/meta/gmax-moves");
+warmMeta("natures", "/api/meta/natures").then((r) => { window.__naturesCache = r; });
+
+/* 机制图标预热（dynamax + 18 属性 + 星晶 = 20 张小图）：首次进入即现，不回源 */
+for (const src of ["/assets/mechanism/dynamax.png",
+  ...TYPE_LIST.map((t) => "/assets/mechanism/tera_" + t + ".png"),
+  "/assets/mechanism/tera_星晶.png"]) {
+  new Image().src = src;
+}
+
+/* forms/moves 每物种缓存（FIFO 上限 24；切换物种不重复回源） */
+const _speciesCache = new Map();
+async function fetchSpeciesData(sid) {
+  if (_speciesCache.has(sid)) return _speciesCache.get(sid);
+  const [forms, moves] = await Promise.all([
+    apiGet("/api/calc/forms", { species_id: sid }),
+    apiGet("/api/calc/moves", { species_id: sid }),
+  ]);
+  const data = { forms, moves };
+  _speciesCache.set(sid, data);
+  if (_speciesCache.size > 24) _speciesCache.delete(_speciesCache.keys().next().value);
+  return data;
+}
+
+/* 物种装载（编辑面板与初始对局共用；两侧并行调用） */
 async function loadSpeciesInto(s, sid) {
   s.speciesId = sid;
   s.nameZh = (window.__speciesNames || {})[sid] || "";
@@ -20,11 +70,12 @@ async function loadSpeciesInto(s, sid) {
   s.zLocked = null;                 // 道具锁定来源："z" | "mega" | null
   s.teraOn = false;
   s.maxOn = false;
-  s.forms = await apiGet("/api/calc/forms", { species_id: sid });
+  const data = await fetchSpeciesData(sid);
+  s.forms = data.forms;
   s.formId = s.forms.length ? s.forms[0].id : null;
   const f = s.forms.find(x => x.id === s.formId);
   pickDefaultAbility(s, f);
-  s.moveOptions = await apiGet("/api/calc/moves", { species_id: sid });
+  s.moveOptions = data.moves;
   // 默认四招：优先本属性（STAB）高威力，不足补其他高威力
   const types = new Set(((f && f.types) || "").split(",").filter(Boolean));
   const damaging = s.moveOptions.filter(m => m.power).sort((a, b) => b.power - a.power);
@@ -51,6 +102,24 @@ function pickDefaultAbility(s, f) {
   s.ability = (own || f.ability_list[0]).name;
 }
 
+/* 专属 Z 命中（含形态后缀校验，与后端 _z_of 同语义：后缀不匹配回退泛用） */
+function exclusiveZHit(s, move, zMeta) {
+  const ex = ((zMeta && zMeta.exclusive) || []).find(x =>
+    x.species_id === s.speciesId && x.base_move_id === move.move_id);
+  if (!ex) return null;
+  const suf = ex.form_suffix || "";
+  if (suf) {
+    const f = s.forms.find(x => x.id === s.formId);
+    const ident = (f && f.identifier) || "";
+    const ok = suf.split(",").some(p => {
+      const q = p.trim();
+      return q && (ident.endsWith("-" + q) || ident.includes("-" + q + "-"));
+    });
+    if (!ok) return null;
+  }
+  return ex;
+}
+
 const CalcView = {
   template: `
   <div>
@@ -62,6 +131,7 @@ const CalcView = {
     <!-- 对战场 -->
     <div class="battlefield">
       <summary-card :side="A" :is-defender="atkSide === D" :z-meta="zMeta" :items="items"
+        :max-meta="maxMeta" :gmax-meta="gmaxMeta"
         :dmg="atkSide === D ? activeResult : null"
         :active-move-idx="atkSide === A ? activeMoveIdx : -1"
         @pick-move="pickMove(A, $event)"
@@ -69,6 +139,7 @@ const CalcView = {
         @toggle-z="onZ(A, $event)"></summary-card>
       <div class="vs-badge">VS</div>
       <summary-card :side="D" :is-defender="atkSide === A" :z-meta="zMeta" :items="items"
+        :max-meta="maxMeta" :gmax-meta="gmaxMeta"
         :dmg="atkSide === A ? activeResult : null"
         :active-move-idx="atkSide === D ? activeMoveIdx : -1"
         @pick-move="pickMove(D, $event)"
@@ -102,13 +173,13 @@ const CalcView = {
 
     <!-- 编辑面板（每侧）+ 场地与状态区（下部） -->
     <div class="calc-editors">
-      <side-editor :side="A" label="攻击方编辑" :species-list="speciesList"
+      <side-editor :side="A" :label="'左侧编辑 · ' + (A.nameZh || '未选择')" :species-list="speciesList"
         :items="items" :abilities="allAbilities" :z-meta="zMeta"
         @changed="onSideChanged" @mech="onMechChange"></side-editor>
-      <side-editor :side="D" label="防守方编辑" :species-list="speciesList"
+      <side-editor :side="D" :label="'右侧编辑 · ' + (D.nameZh || '未选择')" :species-list="speciesList"
         :items="items" :abilities="allAbilities" :z-meta="zMeta"
         @changed="onSideChanged" @mech="onMechChange"></side-editor>
-      <field-panel :field="field" :sides="{atk: A, dfd: D}" :atk-side="atkSide"
+      <field-panel :field="field" :sides="{atk: A, dfd: D}"
         @changed="onSideChanged"></field-panel>
     </div>
   </div>
@@ -119,6 +190,8 @@ const CalcView = {
     const items = ref([]);              // [{identifier, name_zh}]
     const allAbilities = ref([]);
     const zMeta = ref({ generic: [], exclusive: [] });
+    const maxMeta = ref([]);            // 极巨招式官方名 [{identifier,name_zh,type_zh,damage_class}]
+    const gmaxMeta = ref([]);           // 超极巨专属 [{species_id,form_identifier,gmax_move_name,type_zh,power}]
     const atkSide = ref(null);
     const activeMoveIdx = ref(0);
     const field = reactive({ mode: "doubles", weather: "", terrain: "",
@@ -142,31 +215,30 @@ const CalcView = {
         moveOptions: [],
         moveResults: [null, null, null, null],
         lastStats: null,
-        /* 场地两侧状态 */
+        /* 场地两侧状态（气势披带 = 道具派生，不在场地区） */
         burn: false, crit: false, helping: false,
         statuses: [],                    // 中毒/剧毒/冰冻/睡眠/麻痹（仅展示）
-        screen: "", sash: false, friendGuard: false,
+        screen: "", friendGuard: false,
         flowerGift: false, steely: false, battery: false, powerSpot: false,
-        foresight: false, tailwind: false, powerTrick: false,
+        foresight: false, tailwind: false, powerTrick: false, switching: false,
         hazards: { rocks: false, spikes: 0, saltCure: false, leechSeed: false },
       });
     }
     const A = blankSide();
     const D = blankSide();
 
-    apiGet("/api/meta/species").then((r) => {
-      speciesList.value = r;
-      window.__speciesNames = Object.fromEntries(r.map(x => [x.id, x.name_zh]));
-      A.nameZh = A.nameZh || window.__speciesNames[A.speciesId] || "";
-      D.nameZh = D.nameZh || window.__speciesNames[D.speciesId] || "";
-    });
-    apiGet("/api/meta/items").then((r) => { items.value = r; });
-    apiGet("/api/meta/abilities").then((r) => { allAbilities.value = r; });
-    apiGet("/api/meta/z-moves").then((r) => { zMeta.value = r; });
+    warmMeta("species").then((r) => { speciesList.value = r; });
+    warmMeta("items").then((r) => { items.value = r; });
+    warmMeta("abilities").then((r) => { allAbilities.value = r; });
+    warmMeta("zMoves").then((r) => { zMeta.value = r; });
+    warmMeta("maxMoves").then((r) => { maxMeta.value = r; });
+    warmMeta("gmaxMoves").then((r) => { gmaxMeta.value = r; });
     const { onMounted } = Vue;
-    onMounted(async () => {
-      await loadSpeciesInto(A, 445);   // 烈咬陆鲨（深 watch 自动触发首次计算）
-      await loadSpeciesInto(D, 143);   // 卡比兽
+    onMounted(() => Promise.all([loadSpeciesInto(A, 445), loadSpeciesInto(D, 143)]));
+    // 两侧名字兜底（species 名表预热晚于装载完成时）
+    warmMeta("species").then(() => {
+      A.nameZh = A.nameZh || (window.__speciesNames || {})[A.speciesId] || "";
+      D.nameZh = D.nameZh || (window.__speciesNames || {})[D.speciesId] || "";
     });
 
     const activeResult = computed(() => {
@@ -262,9 +334,12 @@ const CalcView = {
       return {
         burn: s.burn, crit: s.crit, helping: s.helping,
         z_moves: s.zMarks.map(Boolean),
-        screen: s.screen, sash: s.sash, friend_guard: s.friendGuard,
+        screen: s.screen,
+        sash: s.item === "气势披带",          // 披带为道具：由装备自动派生
+        friend_guard: s.friendGuard,
         flower_gift: s.flowerGift, steely: s.steely, battery: s.battery,
         power_spot: s.powerSpot, foresight: s.foresight, power_trick: s.powerTrick,
+        switching: s.switching,               // 换下场状态：被追打威力 ×2
         hazards: {
           rocks: s.hazards.rocks, spikes: s.hazards.spikes || 0,
           salt_cure: s.hazards.saltCure, leech_seed: s.hazards.leechSeed,
@@ -321,12 +396,12 @@ const CalcView = {
     function onSideChanged() { scheduleRecalc(); }
     function onMechChange(s) { scheduleRecalc(); }
 
-    watch(field, scheduleRecalc);
-    watch(A, scheduleRecalc);
-    watch(D, scheduleRecalc);
+    watch(field, scheduleRecalc, { deep: true });
+    watch(A, scheduleRecalc, { deep: true });
+    watch(D, scheduleRecalc, { deep: true });
 
     return {
-      A, D, field, speciesList, items, allAbilities, zMeta,
+      A, D, field, speciesList, items, allAbilities, zMeta, maxMeta, gmaxMeta,
       atkSide, activeMoveIdx, activeResult, activeZName, activeZNote, zOnForActive,
       resultDesc, koText, koTagType, activeHpText,
       pickMove, onSideChanged, onMechChange, MECH_LABELS,
@@ -337,7 +412,7 @@ const CalcView = {
 
 /* ---- 对战场摘要卡 ---- */
 const SummaryCard = {
-  props: ["side", "isDefender", "dmg", "activeMoveIdx", "zMeta", "items"],
+  props: ["side", "isDefender", "dmg", "activeMoveIdx", "zMeta", "items", "maxMeta", "gmaxMeta"],
   emits: ["pick-move", "toggle-mech", "toggle-z"],
   template: `
   <div class="sum-card" :class="{defending: isDefender}">
@@ -378,6 +453,7 @@ const SummaryCard = {
       <div v-for="(m, i) in 4" :key="i" class="move-btn" :class="{active: activeMoveIdx === i}"
         @click="$emit('pick-move', i)">
         <move-chip :side="side" :idx="i" :z-meta="zMeta" :items="items"
+          :max-meta="maxMeta" :gmax-meta="gmaxMeta"
           @toggle-z="$emit('toggle-z', $event)"></move-chip>
       </div>
     </div>
@@ -420,9 +496,11 @@ const SummaryCard = {
   },
 };
 
-/* 招式槽（名称 + Z 标记纯晶图标 + 伤害百分比区间） */
+/* 招式槽（名称 + Z 标记纯晶图标 + 伤害百分比区间）
+   显示名规则（对齐 @smogon/calc 查表替换）：极巨=属性→极巨官方名（变化招=极巨防壁），
+   gmax 形态属性命中→超极巨官方名；Z（伤害招）=专属命中→专属名，否则泛用属性名。 */
 const MoveChip = {
-  props: ["side", "idx", "zMeta", "items"],
+  props: ["side", "idx", "zMeta", "items", "maxMeta", "gmaxMeta"],
   template: `
   <div class="move-chip" :class="{empty: !move}">
     <template v-if="move">
@@ -444,30 +522,66 @@ const MoveChip = {
       props.side.moveOptions.find(m => m.move_id === props.side.moves[props.idx]) || null);
     const zOn = computed(() => !!props.side.zMarks[props.idx]);
     const res = computed(() => props.side.moveResults[props.idx]);
+    /* 极巨名映射：type_zh → 官方名（max-guard status/极巨攻击 一般共用「一般」键，status 单判） */
+    const maxNameMap = computed(() => {
+      const map = {};
+      for (const m of (props.maxMeta || [])) map[m.type_zh] = m.name_zh;
+      return map;
+    });
+    /* 本侧 gmax 专属（形态 identifier 命中） */
+    const gmaxInfo = computed(() => {
+      const s = props.side;
+      const f = s.forms.find(x => x.id === s.formId);
+      const ident = (f && f.identifier) || "";
+      if (!ident.endsWith("-gmax")) return null;
+      return (props.gmaxMeta || []).find(g => g.form_identifier === ident) || null;
+    });
+    const exclusiveZ = computed(() => {
+      const m = move.value;
+      return m ? exclusiveZHit(props.side, m, props.zMeta) : null;
+    });
     const displayName = computed(() => {
-      if (!move.value) return "";
-      if (props.side.maxOn) return move.value.power ? MAX_MOVE_LABEL + "·" + move.value.type_zh : move.value.name_zh;
-      return move.value.name_zh;
+      const m = move.value;
+      const s = props.side;
+      if (!m) return "";
+      if (s.maxOn) {
+        if (m.damage_class === "status") return "极巨防壁";
+        const g = gmaxInfo.value;
+        if (g && g.type_zh === m.type_zh) return g.gmax_move_name;
+        return maxNameMap.value[m.type_zh] || m.name_zh;
+      }
+      if (s.zMarks[props.idx] && m.power) {
+        const ex = exclusiveZ.value;
+        if (ex) return ex.z_move_name;
+        const gz = ((props.zMeta && props.zMeta.generic) || []).find(x => x.type === m.type_zh);
+        if (gz) return gz.z_move_name;
+      }
+      return m.name_zh;
     });
     const powerLabel = computed(() => {
-      if (!move.value) return "";
-      if (!move.value.power) return move.value.damage_class === "status" ? "变化" : "—";
-      if (props.side.maxOn) return "威力自动";
-      return move.value.power;
+      const m = move.value;
+      const s = props.side;
+      if (!m) return "";
+      if (!m.power) return m.damage_class === "status" ? "变化" : "—";
+      if (s.maxOn) return "威力自动";
+      if (s.zMarks[props.idx]) {
+        const ex = exclusiveZ.value;
+        if (ex && ex.power) return ex.power;
+        return "威力自动";
+      }
+      return m.power;
     });
-    /* Z 纯晶图标：专属命中 → 专属纯晶；否则按招式属性的泛用纯晶 */
+    /* Z 纯晶图标：专属命中（含后缀校验）→ 专属纯晶；否则按招式属性的泛用纯晶 */
     const zIcon = computed(() => {
       const meta = props.zMeta || { generic: [], exclusive: [] };
       const m = move.value;
       if (!m) return "";
-      const ex = meta.exclusive.find(x =>
-        x.species_id === props.side.speciesId && x.base_move_id === m.move_id);
-      if (ex && iconOf(meta, ex.crystal_identifier)) return iconOf(meta, ex.crystal_identifier);
-      const g = meta.generic.find(x => (x.crystal_name || "").replace("Ｚ", "") === m.type_zh
-        || (x.crystal_name || "").replace("Z", "") === m.type_zh);
-      return iconOf(meta, g ? g.crystal_identifier : "");
+      const ex = exclusiveZ.value;
+      if (ex && iconOf(ex.crystal_identifier)) return iconOf(ex.crystal_identifier);
+      const g = (meta.generic || []).find(x => x.type === m.type_zh);
+      return iconOf(g ? g.crystal_identifier : "");
     });
-    function iconOf(meta, ident) {
+    function iconOf(ident) {
       return ident ? "/sprites/items/" + ident + ".png" : "";
     }
     const zTitle = computed(() => zOn.value ? "Z 招式已点亮（点击熄灭）" : "点亮 Z 招式（自动装备对应 Z 纯晶）");
@@ -476,8 +590,6 @@ const MoveChip = {
 };
 
 /* ---- 编辑面板 ---- */
-const _metaCache = { natures: null };   // 性格跨组件缓存（items/abilities/zMeta 由 CalcView 统一拉取）
-
 const SideEditor = {
   props: ["side", "label", "speciesList", "items", "abilities", "zMeta"],
   emits: ["changed", "mech"],
@@ -599,14 +711,9 @@ const SideEditor = {
   `,
   setup(props, { emit }) {
     const { ref, computed } = Vue;
-    const natures = ref(_metaCache.natures || []);
+    const natures = ref([]);
+    warmMeta("natures").then((r) => { natures.value = r; });
     const itemQuery = ref("");
-    if (!_metaCache.natures) {
-      apiGet("/api/meta/natures").then((r) => {
-        natures.value = r; _metaCache.natures = r;
-        window.__naturesCache = r;
-      });
-    }
     const shownItems = ref([]);   // 过滤后渲染的子集（2127 全量渲染会卡）
     function resetItems() {
       shownItems.value = (props.items || []).slice(0, 80);
@@ -651,7 +758,8 @@ const SideEditor = {
         ensureDragonAscent(s);
       }
       syncFormDerived(s);
-      loadMoveOptions(s).then(() => { pruneMoves(s); emit("changed"); });
+      pruneMoves(s);
+      emit("changed");
       if (s.maxOn) emit("mech", s);
     }
     /* 进化石按「{种族名}进化石(Ｘ/Ｙ)」匹配；Z-A 新超进化无石数据不锁定 */
@@ -685,12 +793,12 @@ const SideEditor = {
     function pruneMoves(s) {
       s.moves = s.moves.map(id => (id != null && s.moveOptions.some(m => m.move_id === id)) ? id : null);
     }
-    async function loadMoveOptions(s) {
-      if (!s.speciesId) return;
-      s.moveOptions = await apiGet("/api/calc/moves", { species_id: s.speciesId });
-    }
     function ensureMoves() {
-      if (!props.side.moveOptions.length && props.side.speciesId) loadMoveOptions(props.side);
+      if (!props.side.moveOptions.length && props.side.speciesId) {
+        fetchSpeciesData(props.side.speciesId).then((d) => {
+          if (!props.side.moveOptions.length) props.side.moveOptions = d.moves;
+        });
+      }
     }
     function setMove(idx, mid) {
       props.side.moves[idx] = mid;
@@ -726,11 +834,12 @@ const SideEditor = {
   },
 };
 
-/* ---- 场地与状态区（左状态列 / 场地·全局 / 右状态列） ---- */
-
-/* 双侧状态配置：左右列共用同一份渲染，保证逐项一字不差（伤害计算相互，两侧均需完整列表）。
+/* ---- 场地与状态区（完全复刻参考站：左状态列 8 行 / 场地 7 行 / 右状态列 8 行） ----
+   左右列固定绑定左右宝可梦（不随攻守换边、无任何角色文字）；攻守由上方招式选择决定。
    灼伤参与计算（burn）；中毒/剧毒/冰冻/睡眠/麻痹与顺风为前端展示态（速度序不在伤害模型内）；
-   壁与撒菱为单选语义，其余多选；力量戏法 = 攻防实际值互换（后端 per-side flag）。 */
+   壁与撒菱为单选语义，其余多选；「切换」= 换下场状态（被追打威力 ×2）；
+   气势披带不在场地区（道具派生，见 sideFlags）。 */
+
 const SCREENS = [
   { v: "reflect", t: "反射壁" }, { v: "light_screen", t: "光墙" }, { v: "aurora", t: "极光幕" }];
 const SHOW_STATUSES = ["中毒", "剧毒", "冰冻", "睡眠", "麻痹"];
@@ -739,120 +848,138 @@ function toggleStatus(s, st) {
   if (i >= 0) s.statuses.splice(i, 1);
   else s.statuses.push(st);
 }
-const SIDE_GROUPS = [
-  { name: "状态异常", items: [
-    { label: "灼伤", get: s => s.burn, set: s => { s.burn = !s.burn; } },
+
+/* 双侧状态行配置（左右列共用同一份，逐行逐键与参考站一致） */
+const SIDE_ROWS = [
+  { items: [
+    { t: "灼伤", get: s => s.burn, set: s => { s.burn = !s.burn; } },
     ...SHOW_STATUSES.map(st => ({
-      label: st, get: s => s.statuses.includes(st), set: s => toggleStatus(s, st) })),
+      t: st, get: s => s.statuses.includes(st), set: s => toggleStatus(s, st) })),
   ]},
-  { name: "壁与守护", items: [
-    ...SCREENS.map(x => ({ label: x.t, get: s => s.screen === x.v,
+  { items: [
+    ...SCREENS.map(x => ({ t: x.t, get: s => s.screen === x.v,
       set: s => { s.screen = s.screen === x.v ? "" : x.v; } })),
-    { label: "友情防守", get: s => s.friendGuard, set: s => { s.friendGuard = !s.friendGuard; } },
-    { label: "气势披带", get: s => s.sash, set: s => { s.sash = !s.sash; } },
+    { t: "友情防守", get: s => s.friendGuard, set: s => { s.friendGuard = !s.friendGuard; } },
   ]},
-  { name: "攻方加成", items: [
-    { label: "击中要害", get: s => s.crit, set: s => { s.crit = !s.crit; } },
-    { label: "帮助", get: s => s.helping, set: s => { s.helping = !s.helping; } },
-    { label: "钢之意志", get: s => s.steely, set: s => { s.steely = !s.steely; } },
-    { label: "蓄电池", get: s => s.battery, set: s => { s.battery = !s.battery; } },
-    { label: "能量点", get: s => s.powerSpot, set: s => { s.powerSpot = !s.powerSpot; } },
+  { items: [
+    { t: "击中要害", get: s => s.crit, set: s => { s.crit = !s.crit; } },
+  ], grow: true },
+  { items: [
+    { t: "帮助", get: s => s.helping, set: s => { s.helping = !s.helping; } },
+    { t: "钢之意志", get: s => s.steely, set: s => { s.steely = !s.steely; } },
+    { t: "蓄电池", get: s => s.battery, set: s => { s.battery = !s.battery; } },
+    { t: "能量点", get: s => s.powerSpot, set: s => { s.powerSpot = !s.powerSpot; } },
   ]},
-  { name: "钉子", items: [
-    { label: "隐形岩", get: s => s.hazards.rocks, set: s => { s.hazards.rocks = !s.hazards.rocks; } },
-    ...[1, 2, 3].map(n => ({ label: "撒菱×" + n, get: s => s.hazards.spikes === n,
-      set: s => { s.hazards.spikes = s.hazards.spikes === n ? 0 : n; } })),
-    { label: "盐淹", get: s => s.hazards.saltCure, set: s => { s.hazards.saltCure = !s.hazards.saltCure; } },
-    { label: "寄生种子", get: s => s.hazards.leechSeed, set: s => { s.hazards.leechSeed = !s.hazards.leechSeed; } },
+  { hazard: true },   // 隐形岩宽按钮 + 撒菱 1|2|3 连体分段
+  { items: [
+    { t: "寄生种子", get: s => s.hazards.leechSeed, set: s => { s.hazards.leechSeed = !s.hazards.leechSeed; } },
+    { t: "盐淹", get: s => s.hazards.saltCure, set: s => { s.hazards.saltCure = !s.hazards.saltCure; } },
   ]},
-  { name: "其他", items: [
-    { label: "被识破", get: s => s.foresight, set: s => { s.foresight = !s.foresight; } },
-    { label: "花之礼", get: s => s.flowerGift, set: s => { s.flowerGift = !s.flowerGift; } },
-    { label: "顺风", get: s => s.tailwind, set: s => { s.tailwind = !s.tailwind; } },
-    { label: "力量戏法", get: s => s.powerTrick, set: s => { s.powerTrick = !s.powerTrick; } },
+  { items: [
+    { t: "力量戏法", get: s => s.powerTrick, set: s => { s.powerTrick = !s.powerTrick; } },
+    { t: "被识破", get: s => s.foresight, set: s => { s.foresight = !s.foresight; } },
+  ]},
+  { items: [
+    { t: "花之礼", get: s => s.flowerGift, set: s => { s.flowerGift = !s.flowerGift; } },
+    { t: "顺风", get: s => s.tailwind, set: s => { s.tailwind = !s.tailwind; } },
+    { t: "切换", get: s => s.switching, set: s => { s.switching = !s.switching; } },
   ]},
 ];
 
-/* 单侧状态列（左右共用 SIDE_GROUPS 渲染） */
+/* 单侧状态列（左右共用 SIDE_ROWS 渲染，8 行） */
 const SideStatusCol = {
-  props: ["side", "title", "mark"],
+  props: ["side"],
   emits: ["changed"],
   template: `
   <div class="fp-col">
-    <div class="fp-title">{{ mark ? "▶ " : "" }}{{ title }}</div>
-    <div v-for="g in SIDE_GROUPS" :key="g.name" class="fp-group">
-      <div class="fp-group-name">{{ g.name }}</div>
-      <div class="fp-tags">
-        <el-check-tag v-for="it in g.items" :key="it.label" :checked="it.get(side)"
-          @change="it.set(side); $emit('changed')">{{ it.label }}</el-check-tag>
-      </div>
+    <div v-for="(row, ri) in SIDE_ROWS" :key="ri" class="fp-row" :class="{grow: row.grow}">
+      <template v-if="row.hazard">
+        <button class="fp-btn fp-w55" :class="{on: side.hazards.rocks}"
+          @click="side.hazards.rocks = !side.hazards.rocks; $emit('changed')">隐形岩</button>
+        <div class="fp-seg fp-grow">
+          <span class="fp-seg-label">撒菱</span>
+          <button v-for="n in 3" :key="n" class="fp-btn seg" :class="{on: side.hazards.spikes === n}"
+            @click="side.hazards.spikes = side.hazards.spikes === n ? 0 : n; $emit('changed')">{{ n }}</button>
+        </div>
+      </template>
+      <template v-else>
+        <button v-for="it in row.items" :key="it.t" class="fp-btn" :class="{on: it.get(side)}"
+          @click="it.set(side); $emit('changed')">{{ it.t }}</button>
+      </template>
     </div>
   </div>
   `,
-  setup() { return { SIDE_GROUPS }; },
+  setup() { return { SIDE_ROWS }; },
 };
 
 const FieldPanel = {
-  props: ["field", "sides", "atkSide"],
+  props: ["field", "sides"],
   emits: ["changed"],
   template: `
   <div class="block field-panel">
-    <h3>场地与状态</h3>
     <div class="fp-grid5">
-      <side-status-col :side="sides.atk" :mark="isAtk(sides.atk)"
-        :title="labelOf(sides.atk)" @changed="$emit('changed')"></side-status-col>
-      <div class="fp-col">
-        <div class="fp-title">场地 · 全局</div>
-        <div class="fp-tags fp-mode">
-          <el-radio-group v-model="field.mode" size="small">
-            <el-radio-button value="doubles">双打</el-radio-button>
-            <el-radio-button value="singles">单打</el-radio-button>
-          </el-radio-group>
+      <side-status-col :side="sides.atk" @changed="$emit('changed')"></side-status-col>
+      <div class="fp-col fp-center">
+        <div class="fp-row">
+          <div class="fp-seg fp-grow">
+            <button class="fp-btn seg" :class="{on: field.mode === 'singles'}"
+              @click="field.mode = 'singles'; $emit('changed')">单打</button>
+            <button class="fp-btn seg" :class="{on: field.mode === 'doubles'}"
+              @click="field.mode = 'doubles'; $emit('changed')">双打</button>
+          </div>
         </div>
-        <div class="fp-tags">
-          <el-check-tag v-for="w in WEATHERS" :key="w.v" :checked="field.weather === w.v"
-            @change="field.weather = field.weather === w.v ? '' : w.v">{{ w.t }}</el-check-tag>
+        <div class="fp-row">
+          <button v-for="w in WEATHER4" :key="w.v" class="fp-btn" :class="{on: field.weather === w.v}"
+            @click="field.weather = field.weather === w.v ? '' : w.v; $emit('changed')">{{ w.t }}</button>
         </div>
-        <div class="fp-tags">
-          <el-check-tag v-for="t in TERRAINS" :key="t.v" :checked="field.terrain === t.v"
-            @change="field.terrain = field.terrain === t.v ? '' : t.v">{{ t.t }}</el-check-tag>
+        <div class="fp-row fp-inset">
+          <button v-for="w in WEATHER3" :key="w.v" class="fp-btn" :class="{on: field.weather === w.v}"
+            @click="field.weather = field.weather === w.v ? '' : w.v; $emit('changed')">{{ w.t }}</button>
         </div>
-        <div class="fp-tags">
-          <el-check-tag :checked="field.auras.fairy" @change="field.auras.fairy = !field.auras.fairy">妖精气场</el-check-tag>
-          <el-check-tag :checked="field.auras.dark" @change="field.auras.dark = !field.auras.dark">暗黑气场</el-check-tag>
-          <el-check-tag :checked="field.auras.break" @change="field.auras.break = !field.auras.break">气场破坏</el-check-tag>
+        <div class="fp-row">
+          <button v-for="t in TERRAINS" :key="t.v" class="fp-btn" :class="{on: field.terrain === t.v}"
+            @click="field.terrain = field.terrain === t.v ? '' : t.v; $emit('changed')">{{ t.t }}</button>
         </div>
-        <div class="fp-tags">
-          <el-check-tag v-for="r in RUINS" :key="r.v" :checked="field.ruin[r.v]"
-            @change="field.ruin[r.v] = !field.ruin[r.v]">{{ r.t }}</el-check-tag>
+        <div class="fp-row">
+          <button v-for="a in AURAS" :key="a.v" class="fp-btn" :class="{on: field.auras[a.v]}"
+            @click="field.auras[a.v] = !field.auras[a.v]; $emit('changed')">{{ a.t }}</button>
         </div>
-        <div class="fp-tags">
-          <el-check-tag :checked="field.gravity" @change="field.gravity = !field.gravity">重力</el-check-tag>
-          <el-check-tag :checked="field.magic_room" @change="field.magic_room = !field.magic_room">魔法空间</el-check-tag>
-          <el-check-tag :checked="field.wonder_room" @change="field.wonder_room = !field.wonder_room">奇妙空间</el-check-tag>
+        <div class="fp-row">
+          <button v-for="r in RUINS" :key="r.v" class="fp-btn fp-btn-2l" :class="{on: field.ruin[r.v]}"
+            @click="field.ruin[r.v] = !field.ruin[r.v]; $emit('changed')">
+            <span class="l1">{{ r.t }}</span><span class="l2">{{ r.eff }}</span>
+          </button>
+        </div>
+        <div class="fp-row">
+          <button class="fp-btn" :class="{on: field.gravity}"
+            @click="field.gravity = !field.gravity; $emit('changed')">重力</button>
+          <button class="fp-btn" :class="{on: field.magic_room}"
+            @click="field.magic_room = !field.magic_room; $emit('changed')">魔法空间</button>
+          <button class="fp-btn" :class="{on: field.wonder_room}"
+            @click="field.wonder_room = !field.wonder_room; $emit('changed')">奇妙空间</button>
         </div>
       </div>
-      <side-status-col :side="sides.dfd" :mark="isAtk(sides.dfd)"
-        :title="labelOf(sides.dfd)" @changed="$emit('changed')"></side-status-col>
+      <side-status-col :side="sides.dfd" @changed="$emit('changed')"></side-status-col>
     </div>
-    <div class="fp-note">点击任一侧招式按钮即以该侧为攻击方计算；灼伤减半物理（毅力除外）、会心无视壁与能力升降；
-      中毒/剧毒/冰冻/睡眠/麻痹与顺风为标记展示（速度序不在伤害模型内）；力量戏法＝该侧攻击与防御实际值互换。</div>
   </div>
   `,
-  setup(props) {
-    const WEATHERS = [
-      { v: "sun", t: "晴天" }, { v: "rain", t: "下雨" }, { v: "sand", t: "沙暴" },
-      { v: "snow", t: "雪" }, { v: "harsh_sun", t: "大晴天" }, { v: "harsh_rain", t: "大雨" },
-      { v: "air", t: "乱流" }];
+  setup() {
+    const WEATHER4 = [
+      { v: "sun", t: "晴天" }, { v: "rain", t: "雨天" },
+      { v: "sand", t: "沙暴" }, { v: "snow", t: "雪天" }];
+    const WEATHER3 = [
+      { v: "harsh_sun", t: "大日照" }, { v: "harsh_rain", t: "大雨" }, { v: "air", t: "乱流" }];
     const TERRAINS = [
       { v: "electric", t: "电气场地" }, { v: "grassy", t: "青草场地" },
       { v: "psychic", t: "精神场地" }, { v: "mist", t: "薄雾场地" }];
+    const AURAS = [
+      { v: "break", t: "气场破坏" }, { v: "fairy", t: "妖精气场" }, { v: "dark", t: "暗黑气场" }];
     const RUINS = [
-      { v: "sword", t: "灾祸之剑-防" }, { v: "beads", t: "灾祸之玉-特防" },
-      { v: "tablets", t: "灾祸之简-攻" }, { v: "vessel", t: "灾祸之鼎-特攻" }];
-    function isAtk(s) { return props.atkSide === s; }
-    function labelOf(s) { return (s.nameZh || "未选择") + " · 状态"; }
-    return { WEATHERS, TERRAINS, RUINS, isAtk, labelOf };
+      { v: "sword", t: "灾祸之剑", eff: "(-防御)" },
+      { v: "beads", t: "灾祸之玉", eff: "(-特防)" },
+      { v: "tablets", t: "灾祸之简", eff: "(-攻击)" },
+      { v: "vessel", t: "灾祸之鼎", eff: "(-特攻)" }];
+    return { WEATHER4, WEATHER3, TERRAINS, AURAS, RUINS };
   },
 };
 
@@ -884,11 +1011,9 @@ function toggleZMark(s, idx, items, zMeta) {
 
 function zCrystalFor(s, move, items, zMeta) {
   if (!items || !zMeta) return "";
-  const ex = (zMeta.exclusive || []).find(x =>
-    x.species_id === s.speciesId && x.base_move_id === move.move_id);
+  const ex = exclusiveZHit(s, move, zMeta);
   const ident = ex ? ex.crystal_identifier : (() => {
-    const g = (zMeta.generic || []).find(x =>
-      (x.crystal_name || "").replace("Ｚ", "").replace("Z", "") === move.type_zh);
+    const g = (zMeta.generic || []).find(x => x.type === move.type_zh);
     return g ? g.crystal_identifier : "";
   })();
   if (!ident) return "";

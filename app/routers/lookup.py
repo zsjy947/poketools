@@ -3,13 +3,15 @@ from __future__ import annotations
 
 import json
 import re
+import sqlite3
 from functools import lru_cache
 
-from fastapi import APIRouter, Body, HTTPException, Query
+from fastapi import APIRouter, Body, Depends, HTTPException, Query
 
-from ..db import state_conn, static_conn
+from ..db import get_state_db, get_static_db, static_conn
 from ..services import damage
 from ..services.breeding import GAME_LEARNSET_VG, breed_chains
+from ..services.constants import FORM_MARKER_TO_SUFFIX
 
 router = APIRouter(prefix="/api")
 
@@ -46,8 +48,8 @@ def ev_filter(
     value: int = Query(0, ge=0, le=3),
     game: str = "",
     q: str = "",
+    con: sqlite3.Connection = Depends(get_static_db),
 ):
-    con = static_conn()
     col = EV_COLS[stat]
     cond = f"f.{col} > 0" if value == 0 else f"f.{col} = {int(value)}"
     rows = con.execute(
@@ -79,7 +81,6 @@ def ev_filter(
                                 (ov["form_id"],)).fetchone()
             s = (ident[0] or "").rpartition("-")[2] if ident and "-" in (ident[0] or "") else ""
             ov_suffix[sid] = s
-        from ..routers.pokemon import FORM_MARKER_TO_SUFFIX
         for r in con.execute(
                 """SELECT species_id, location, method, version_label, form
                    FROM get_methods WHERE game=? AND location != ''""", (game,)):
@@ -117,7 +118,6 @@ def ev_filter(
                            "version_label": "、".join(sorted(m["labels"]))}
                           for m in merged.values()]
         out.append(d)
-    con.close()
     return out
 
 
@@ -128,10 +128,9 @@ def sandwiches(
     level: int = 0,
     sort: str = Query("no", pattern="^(no|power|level)$"),
     q: str = "",
+    con: sqlite3.Connection = Depends(get_static_db),
 ):
-    con = static_conn()
     rows = [dict(r) for r in con.execute("SELECT * FROM sandwiches ORDER BY no")]
-    con.close()
     for r in rows:
         r["effects"] = json.loads(r["effects"] or "[]")
     out = []
@@ -160,14 +159,11 @@ def sandwiches(
 
 @router.get("/breed-chains")
 def api_breed_chains(species_id: int = Query(...), move_id: int = Query(...),
-                     game: str = Query(...)):
+                     game: str = Query(...),
+                     con: sqlite3.Connection = Depends(get_static_db)):
     if game not in GAME_LEARNSET_VG:
         raise HTTPException(400, "unknown game")
-    con = static_conn()
-    try:
-        return breed_chains(con, species_id, move_id, game)
-    finally:
-        con.close()
+    return breed_chains(con, species_id, move_id, game)
 
 
 # ---------------------------------------------------------------- 三期：属性相性 / 特化功能
@@ -180,36 +176,31 @@ def typechart():
 
 
 @router.get("/picnic-items")
-def picnic_items(kind: str = Query("", pattern="^(|食材|调味料|咖喱食材)$")):
-    con = static_conn()
+def picnic_items(kind: str = Query("", pattern="^(|食材|调味料|咖喱食材)$"),
+                 con: sqlite3.Connection = Depends(get_static_db)):
     if kind:
         rows = con.execute(
             "SELECT rowid AS no_rowid, * FROM picnic_items WHERE kind=? ORDER BY kind, name",
             (kind,))
     else:
         rows = con.execute("SELECT rowid AS no_rowid, * FROM picnic_items ORDER BY kind, name")
-    out = [dict(r) for r in rows]
-    con.close()
-    return out
+    return [dict(r) for r in rows]
 
 
 @router.get("/donuts")
-def donuts():
-    con = static_conn()
-    out = {
+def donuts(con: sqlite3.Connection = Depends(get_static_db)):
+    return {
         "types": [dict(r) for r in con.execute("SELECT * FROM donut_types")],
         "special": [dict(r) for r in con.execute("SELECT * FROM special_donuts")],
         "berries": [dict(r) for r in con.execute(
             "SELECT * FROM berries ORDER BY energy, name")],
         "flavor_powers": [dict(r) for r in con.execute("SELECT * FROM flavor_powers")],
     }
-    con.close()
-    return out
 
 
 @router.get("/curries")
-def curries(q: str = "", key_ingredient: str = ""):
-    con = static_conn()
+def curries(q: str = "", key_ingredient: str = "",
+            con: sqlite3.Connection = Depends(get_static_db)):
     sql = "SELECT * FROM curries WHERE 1=1"
     args: list = []
     if q:
@@ -220,9 +211,7 @@ def curries(q: str = "", key_ingredient: str = ""):
         sql += " AND key_ingredient=?"
         args.append(key_ingredient)
     sql += " ORDER BY no"
-    out = [dict(r) for r in con.execute(sql, args)]
-    con.close()
-    return out
+    return [dict(r) for r in con.execute(sql, args)]
 
 
 # ---------------------------------------------------------------- 自定义食谱（userstate.db）
@@ -274,8 +263,8 @@ def _parse_items(s: str):
 
 
 @router.get("/custom-recipes")
-def list_custom_recipes(profile: int = 1, game: str = ""):
-    con = state_conn()
+def list_custom_recipes(profile: int = 1, game: str = "",
+                        con: sqlite3.Connection = Depends(get_state_db)):
     sql = "SELECT id, game, name, effects, ingredients, seasonings, created_at " \
           "FROM custom_recipes WHERE profile_id=?"
     args: list = [profile]
@@ -283,7 +272,6 @@ def list_custom_recipes(profile: int = 1, game: str = ""):
         sql += " AND game=?"
         args.append(game)
     out = [dict(r) for r in con.execute(sql + " ORDER BY id DESC", args)]
-    con.close()
     for r in out:
         r["effects"] = json.loads(r["effects"] or "[]")
         r["ingredients"] = _parse_items(r["ingredients"])
@@ -292,7 +280,8 @@ def list_custom_recipes(profile: int = 1, game: str = ""):
 
 
 @router.post("/custom-recipes")
-def add_custom_recipe(body: dict = Body(...)):
+def add_custom_recipe(body: dict = Body(...),
+                      con: sqlite3.Connection = Depends(get_state_db)):
     try:
         pid = int(body.get("profile_id") or 1)
     except (TypeError, ValueError) as e:
@@ -330,7 +319,6 @@ def add_custom_recipe(body: dict = Body(...)):
     if not effects:
         raise HTTPException(400, "效果为必填")
     name = str(body.get("name") or "")[:40].strip() or "我的食谱"
-    con = state_conn()
     cur = con.execute(
         """INSERT INTO custom_recipes (profile_id, game, name, effects, ingredients, seasonings)
            VALUES (?,?,?,?,?,?)""",
@@ -340,7 +328,6 @@ def add_custom_recipe(body: dict = Body(...)):
     con.commit()
     rid = cur.lastrowid
     row = con.execute("SELECT * FROM custom_recipes WHERE id=?", (rid,)).fetchone()
-    con.close()
     d = dict(row)
     d["effects"] = json.loads(d["effects"] or "[]")
     d["ingredients"] = _parse_items(d["ingredients"])
@@ -349,9 +336,8 @@ def add_custom_recipe(body: dict = Body(...)):
 
 
 @router.delete("/custom-recipes/{recipe_id}")
-def del_custom_recipe(recipe_id: int, profile: int = 1):
-    con = state_conn()
+def del_custom_recipe(recipe_id: int, profile: int = 1,
+                      con: sqlite3.Connection = Depends(get_state_db)):
     con.execute("DELETE FROM custom_recipes WHERE id=? AND profile_id=?", (recipe_id, profile))
     con.commit()
-    con.close()
     return {"ok": True}

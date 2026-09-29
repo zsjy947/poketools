@@ -79,7 +79,9 @@ python scripts/make_icon.py           # 精灵球应用图标
 |---|---|
 | `abilities(ability_id, name_zh, intro, effect, extra)` | 特性文案（名称层来自 PokeAPI，文案由 scrape 抓 52poke 填充，310/374） |
 | `items(id, identifier, name_zh)` | 全量道具 2127 + 注入 Z 纯晶 35（identifier 供图标路径） |
-| `z_exclusive` | 专属 Z 映射（(species+原始招式)→专属 Z 招式/纯晶，22 行） |
+| `z_exclusive` | 专属 Z 映射（(species+原始招式)→专属 Z 招式/纯晶，22 行；form_suffix 支持逗号分隔多后缀——帽子皮卡丘 7 形态） |
+| `z_generic(type, z_move_name, crystal_identifier, crystal_id)` | 泛用 Z 官方名（属性→Z 招式名+纯晶，18 行，CALC-FIX 起 z_move_name 入库下发） |
+| `gmax_moves(species_id, form_identifier, gmax_move_name, type_zh, power)` | 超极巨专属招式（34 个 `*-gmax` 形态一一对应；power 仅存 160 特判三条，null=属性档位换算；52poke「极巨招式」页 curated） |
 | `evo_branches(family_key, species_id, form_suffix, branch)` | 地区形态分支进化链（29 族 curated `evo_branches.json`） |
 | `dex_default_forms(dex_id, species_id, form_id)` | 图鉴默认展示形态（curated 增补 + 按可用性自动派生 125 行） |
 | `form_game_availability(form_id, game_id)` | 形态×游戏可用性（curated `form_game_availability.json`；`game='-'` 哨兵=全游戏隐藏；未收录形态默认全游戏可见） |
@@ -107,13 +109,15 @@ python scripts/make_icon.py           # 精灵球应用图标
 | `GET /api/ev?stat&value&game&q` | 努力值反筛（含图鉴默认形态覆盖 + locations 野外地点） |
 | `GET /api/meta/typechart` · `natures` · `species` | 元数据 |
 | `GET /api/meta/items` · `GET /api/meta/abilities` | **全量**道具（2127）/ 特性列表（计算器无游戏上下文） |
-| `GET /api/meta/z-moves` | Z 纯晶表：泛用 18 + 专属 22（含 species/招式映射） |
+| `GET /api/meta/z-moves` | Z 纯晶表：泛用 18（**含 type 与 z_move_name 官方名**）+ 专属 22（含 species/招式映射） |
+| `GET /api/meta/max-moves` | 极巨招式官方名 19 行（18 属性 + 极巨防壁，供前端 属性→极巨名 映射） |
+| `GET /api/meta/gmax-moves` | 超极巨专属招式 34 行（form_identifier→官方名/属性/威力特判） |
 | `GET /api/sandwiches` · `picnic-items` · `donuts` · `curries` | 特化功能数据 |
 | `GET/POST/DELETE /api/custom-recipes` | 自定义食谱（数量版校验：Z-A 树果总数 3~8） |
 | `GET /api/calc/forms?species_id=` | 计算器形态（含六项种族值，修复恒「—」） |
 | `GET /api/calc/moves?species_id=` | 全世代招式并集（**含变化招式**，含 is_spread） |
-| `POST /api/calc` | 单次伤害计算（支持 z_move 专属映射解析；`power_trick`/`defender_power_trick` 攻防实际值互换） |
-| `POST /api/calc/batch` | **一次算双方×4招**（替代串行 8 POST；招式项可为 `{id, power}` 带威力覆盖；sides 支持 per-side `power_trick`） |
+| `POST /api/calc` | 单次伤害计算（支持 z_move 专属映射解析；`power_trick`/`defender_power_trick` 攻防实际值互换；`defender_switching_out` 防守方换下场=追打×2） |
+| `POST /api/calc/batch` | **一次算双方×4招**（替代串行 8 POST；招式项可为 `{id, power}` 带威力覆盖；sides 支持 per-side `power_trick`/`switching`；gmax 形态+极巨自动装配专属招式威力） |
 
 已删除：`/api/calc/compare-forms`（五期随 UI 移除）、`/api/profiles`（四期 P3-1 下线）。
 
@@ -127,7 +131,8 @@ python scripts/make_icon.py           # 精灵球应用图标
 ```
 威力阶段 bpMods(帮助6144/场地5325·2048/气场5448·3072/蓄电池·能量点5325)
   → Z/极巨换算（以原始威力为输入；多段：2-5段取3段·Z固定2段用单段·极巨固定2段取2倍·
-    水手里剑40档·三旋击120·气象球极巨130）
+    水手里剑40档·三旋击120·气象球极巨130；gmax 专属固定威力特判三条=160）
+  → 追打×换下场目标 威力×2（仅未换算路径；Z/极巨换名后该分支不生效，对齐 smogon）
   → base = floor(floor(floor(floor(2L/5+2)×P)×A/D)/50+2)
   → 双打扩散 3072 pokeRound → 天气 6144/2048 pokeRound → 会心 floor(×1.5)
   → random floor(base×(85+i)/100) → STAB 4096 分数 → pokeRound×相性 floor
@@ -151,15 +156,29 @@ python scripts/make_icon.py           # 精灵球应用图标
 - **太晶化/极巨化** = 摘要卡顶部点亮标记（太晶图标随所选太晶属性切换，含星晶）；
 - **Z 招式** = 每招一个纯晶图标标记（单选——一场一次 Z 力量；点亮自动装备对应纯晶：
   专属映射命中→专属纯晶+固定威力/分类，否则泛用属性纯晶+z_power 换算；手动改道具即解除）；
-- **超级进化/超极巨化/原始回归** = 编辑面板**形态选择**派生（与三种标记互斥；mega 形态自动锁进化石道具，
-  烈空座例外——校验携带画龙点睛；超极巨化形态自动点亮极巨化标记，HP 显示 ×2）。
-- **力量戏法** = 场地区两侧「其他」组标记（静态语义：至切换者下次下场）：router 装配后
+- **超级进化/超极巨化/原始回归** = 编辑面板**形态选择**派生（与 Z/太晶标记互斥；mega 形态自动锁进化石道具，
+  烈空坐例外——校验携带画龙点睛；超极巨化形态自动点亮极巨化标记，HP 显示 ×2）。
+  **超极巨化本质即极巨化：gmax 形态与极巨标记共存合法**（`is_gmax` 单列，仅与 Z/太晶互斥），
+  招式属性命中专属属性时引擎注入 gmax 固定威力（狂擂乱打/破阵火球/狙击神射=160）。
+- **Z/极巨/超极巨官方招式名**：显示层查表替换（对齐 @smogon/calc move.ts）——极巨=属性→`moves`
+  表官方名（变化招=极巨防壁）、gmax 形态属性命中→`gmax_moves` 官方名、Z（伤害招）=专属命中→专属名
+  否则泛用属性名（`z_generic`）；不改威力档位与取整链。
+- **力量戏法** = 场地区两侧标记（静态语义：至切换者下次下场）：router 装配后
   `_swap_atk_def` 互换该侧 `stats.atk/def` 实际值（能力升降仍按能力名生效），**不触碰 damage.py
   公式与取整链**，calib 基准不受影响；batch 为 sides per-side flag，单招端点为
   `power_trick`/`defender_power_trick`。
-- **场地区双侧对称**：左右状态列由同一份 `SIDE_GROUPS` 配置渲染（`views/calc.js`），逐项一字不差；
-  中栏为单双打切换+天气/场地/气场/四灾兽/空间重力；壁与撒菱为单选语义，其余多选；
+- **「切换」= 换下场状态**（per-side `switching`，对齐参考站 switchingOut）：唯一计算效果为
+  攻方对其**追打**威力 ×2（引擎 `is_switching_out` 分支）；单招端点对等字段 `defender_switching_out`。
+- **气势披带 = 道具派生**（与参考站一致，场地区无此按钮）：`side.item === "气势披带"` 自动
+  派生 defender_sash，KO 判定满血首击残留 1 HP 不变。
+- **场地区完全复刻参考站**：左右状态列 8 行 × 中间场地 7 行逐行逐键一致（`SIDE_ROWS` 单源配置，
+  `views/calc.js`）；无列标题/组名/说明文字/攻守标识——左右列固定绑定左右宝可梦，攻守由上方
+  招式选择决定；原生 `fp-btn` 白底描边按钮（选中浅蓝）、撒菱连体分段、灾祸四件套两行按钮、
+  三列 `space-between` 同高底边对齐；壁与撒菱为单选语义，其余多选；
   中毒/剧毒/冰冻/睡眠/麻痹/顺风为展示态（速度序不在伤害模型内）。
+- **计算器视图常驻无痕切换**：`calc-view` 首次挂载后 `v-show` 常驻（app.js `visited` 标记），
+  切走仅 display:none——状态保留、零请求、图片不回源；meta/每物种 forms·moves 为模块级缓存
+  （启动预热 + Promise 共享 + FIFO 24），两侧初始化 `Promise.all` 并行，机制图标 20 张预加载。
 
 ### 校准流程（改公式后必须重跑，AGENTS 铁律）
 
@@ -185,10 +204,12 @@ app/static/dist/
   index.html          引入 vendor UMD + js + css（无构建步骤）
   css/base|dex|features|calc.css   按页拆分样式
   js/api.js           fetch 封装 + 全局常量（TYPE_LIST/STAT_KEYS…）
-  js/components.js    store + 全局组件（TypeBadge 定宽78px/PokeToggle 24px/AbilityList 展开卡/EvoChain…）
-  js/app.js           根组件 + 哈希路由（#/#game/{id}/{feature}/#pokemon/{id}/#calc）
-  js/views/*.js       home/dex/detail/ev/sandwiches/donuts/curry/calc
-  assets/             配图/属性雪碧图/机制图标（mechanism/：极巨 1 + 太晶 19）
+  js/components.js    store + 全局组件（TypeBadge 定宽78px/PokeToggle 24px/AbilityList 展开卡/EvoChain…/
+                       Monoline 图标体系 MONO_ICONS+MonoIcon/RailNav 窄栏/BackBtn 返回）
+  js/app.js           根组件 + 哈希路由（#/home 首页宫格 · #/games 游戏中心 · #/game/{id}/{feature}
+                       游戏内 64px 图标窄栏 · #/pokemon 全屏 · #/calc 全画面常驻）
+  js/views/*.js       home(功能宫格)/games(游戏中心)/dex/detail/ev/sandwiches/donuts/curry/calc
+  assets/             配图/属性雪碧图/机制图标（mechanism/：极巨 1 + 太晶 19）/游戏商标
   assets/../sprites/items/   道具图标（PokeAPI sprites + 52poke Z 纯晶兜底）
   vendor/             vue/element-plus/中文语言包/图标 UMD
 ```
@@ -196,6 +217,14 @@ app/static/dist/
 约束：视图为**模板字符串组件**（无 SFC/JSX）；新全局组件在 `components.js` 注册；路由用 `location.hash`，
 游戏上下文存 `store.gameId`；请求失败统一 `api-error` 事件 → toast。全量下拉（道具 2127/特性 374）
 用 `filter-method` 只渲染匹配前 80 条。模板字符串插值只用于纯文本展示（无 v-html 注入外部数据）。
+
+导航架构（批次三）：左侧 200px 文字栏已移除——首页=功能宫格（游戏中心/伤害计算器/模拟对战预留置灰）；
+进入游戏后出现 **64px 图标窄栏**（顶部官方商标大图标 GameIcons + 功能 Monoline 图标，无文字、
+hover 原生 title 提示、active 金色高亮+左侧条）；左上角 BackBtn 按路由层级静态映射返回
+（游戏中心→首页 / 游戏页→游戏中心 / 计算器→首页；详情页沿用自带「返回图鉴」）；图鉴等页面横向
+空间 +136px。**Monoline 图标体系**：10 枚手写 SVG（viewBox 24/stroke 2/round/fill none/currentColor），
+FEATURES.icon 值供窄栏与宫格共用；游戏大图标复用官方商标资产不重绘；预览审查页
+`tools/icon-preview.html`（本地用）；功能图标 emoji 已全部清零（含甜甜圈/三明治页内装饰）。
 
 ## §7 设计决策记录（为什么这么做）
 
@@ -218,6 +247,14 @@ app/static/dist/
 | 测试样板收敛 conftest；ruff 零告警基线 | 五期 M8 审查要求 | M8 |
 | 场地区改版为「左状态/场地全局/右状态」三栏，两侧状态 `SIDE_GROUPS` 单源配置 | 伤害计算相互，两侧均需完整对称列表（对齐参考站）；单源保证左右永不漂移 | 计算器改版 |
 | 力量戏法在 router 层互换 stats，不动 damage.py | 钉子/盐淹/寄生种子只依赖 max HP 与属性相性，与互换先后无关；取整链与 calib 基准零影响 | 计算器改版 |
+| 跨路由共享常量收编 `services/constants.py`；路由连接 Depends 注入；静态资源 no-cache | 全量审查 R1（P0-1/3/4）：消除 routers 隐式耦合、异常路径连接泄漏、忘 bump 版本号分发旧前端三类正确性隐患 | R1 |
+| sqlite 连接 `check_same_thread=False` | 真实 uvicorn（anyio 线程池）下依赖 setup/端点体/teardown 分属不同线程，默认同线程校验导致计算器首载 500（Poketools.log 实证）；连接为请求级短生命周期，TestClient 单线程 portal 是测试盲区→补跨线程单测护栏 | CALC-FIX |
+| Z/极巨/超极巨显示名查表替换（gmax curated 34 条、z_generic 18 条入库） | 对齐 @smogon/calc「官方名条目整体替换」做法；本地数据源 52poke，宁缺勿错 | CALC-FIX |
+| gmax 形态与极巨标记互斥放行（`is_gmax` 单列） | 超极巨化本质即极巨化，形态+标记是唯一合法组合；此前误并入 is_mega 桶导致 gmax 形态全不可算 | CALC-FIX |
+| 「切换」= 换下场状态（追打×2），非攻守交换 | 参考源码查证（radiantwf/vgc-damage-calc switchingOut + smogon gen789 isSwitching） | CALC-FIX |
+| 气势披带移出场地区，改道具派生 | 披带是道具非场地状态（参考站即如此）；场地区与参考站逐键零偏差 | CALC-FIX |
+| calc 视图 v-show 常驻 + 模块级缓存预热 | v-if 链切走即销毁全子树，重进重发 7 请求+白屏闪烁；常驻后零请求零重绘 | CALC-FIX |
+| 导航重构：首页功能宫格 + 游戏中心 + 64px 图标窄栏；图标弃 emoji 改手写 Monoline SVG | 图鉴获得 +136px 横向空间；模拟对战入口预留；SVG 可版本管理/迭代，currentColor 天然适配高亮态 | CALC-FIX 批次三 |
 
 ## §8 代码与测试规范
 
@@ -225,7 +262,11 @@ app/static/dist/
 - UI 文案一律简体中文；界面缺失数据一律标注「待补充」，禁止编造数据。
 - 52poke 解析失败条目必须落 `data/curated/TODO.json`，不静默丢弃。
 - 前端构建产物提交仓库；`data/raw|*.db|sprites/`、`node_modules/` 不提交。
-- SQL 全参数化；`static_conn` 只读 URI；curated 合并走 `guarded()` 行数护栏。
+- SQL 全参数化；`static_conn` 只读 URI（两连接均 `check_same_thread=False`，真实 uvicorn
+  线程池跨线程必需）；**路由连接一律经 `db.get_static_db/get_state_db` Depends 注入
+  （请求结束自动关闭，异常路径不泄漏）**，确需自管的（如 lru_cache 缓存函数）自行 try/finally；
+  curated 合并走 `guarded()`/`require_rows()` 行数护栏。
+- 静态资源响应带 `Cache-Control: no-cache`（main.py 中间件）：手动 `?v=` 版本号忘 bump 不会再分发旧前端。
 - 事件监听（hashchange 等）卸载时解绑；异步回填带 token 防竞态。
 
 测试分层（`tests/conftest.py` 统一 sys.path 注入与 DB skipif）：
@@ -248,9 +289,10 @@ app/static/dist/
 - 道具图标缺 ~1300（TM 系列与 GO/Let's Go 杂项，前端隐藏图标兜底）。
 - Z-A 新超进化（姆克鹰等）无进化石道具数据（PokeAPI 未收录，无锁定不阻塞）。
 - 彩粉蝶花纹/霜奶仙糖饰等未建模变体（单形态种）——如需支持须扩 PokeAPI 形态映射。
-- **模拟对战（pkmn-solo-battle）**：独立 `battle` 分支开发（Tauri 2 + React + TS monorepo 子目录，
-  与主仓 Python 栈零耦合），M0-M8 里程碑与并入可行性评估按该分支 `battle/docs/` 规划推进；
-  并入决议与 APK（竖屏 UI）路线待 battle M0-M4 后评估，届时更新本表。
+- **模拟对战（pkmn-solo-battle）**：`battle` 分支开发（Tauri 2 + React + TS monorepo 子目录，
+  与主仓 Python 栈零耦合），M0-M8 串行推进，功能验证成功后合并回 main；规划文档在 `plans/`
+  （不入 git，总执行计划 plans/MASTER-PLAN.md），功能说明文档沉淀为 `docs/BATTLE.md` 单文档；
+  APK（竖屏 UI）路线同见 plans/MASTER-PLAN.md Track C。
 
 ## §10 变更历史
 
@@ -264,3 +306,6 @@ app/static/dist/
 | 五期 M0-M7 | 特性文案/形态分支/图鉴默认形态/体型/进化招式语义/全量道具·特性·Z 纯晶/双引擎全量扩展/计算器 UI 对齐参考站/捕捉标记重制+同游戏同步/详情重设计/EV 地点/咖喱全图/进化&回忆/食谱数量 | 交付；本文档即产物 |
 | 五期 M8 | 全量审查（ruff 零告警+node check）/conftest 收敛/四文档合并为本文档/DATA-GAPS 重写/AGENTS 同步 | 交付 |
 | 计算器改版 | 场地区三栏对称（SIDE_GROUPS 单源）/力量戏法（router 层攻防互换）/按钮文字居中修复/单双打切换移入中栏 | 交付；60 测试绿 |
+| 审查 R1 | 全量审查 P0 五项修复：常量收编 services/constants.py / damage.ko_summary 公开化 / 连接管理 Depends 注入（四路由全覆盖）/ 静态资源 no-cache 中间件 / build_db curated 装载护栏 require_rows；独立安全扫描无新增高危项 | 交付；60 测试绿 + ruff 零告警 + 冒烟通过 |
+| CALC-FIX 批次一/二 | 跨线程 500 修复（check_same_thread）/ 计算器常驻无痕切换（v-show+模块缓存预热+并行初始化）/ Z·极巨·超极巨官方招式名（z_generic+gmax_moves 两表三端点，gmax 160 威力特判，皮卡丘 caps 脏行修复+多后缀）/ 场地区完全复刻参考站（8+7 行逐键一致、切换=追打×2、披带道具派生、gmax+极巨互斥放行）/ 新增 8 组用例 | 交付；68 测试绿 + calib 51+41 全绿 + uvicorn 并发冒烟（80 GET+30 POST 零 500） |
+| CALC-FIX 批次三 | 全局导航重构（首页功能宫格/游戏中心 #/games/64px 图标窄栏/BackBtn 层级返回/calc 全画面常驻叠加）+ Monoline 图标体系（10 枚手写 SVG + MonoIcon/RailNav/BackBtn 组件 + tools/icon-preview.html）+ 功能图标 emoji 清零 | 交付；浏览器实测全过（首页三卡/五游戏可达/窄栏高亮/详情全屏/常驻零请求/三列同高逐键一致）；资产 bump v21 |

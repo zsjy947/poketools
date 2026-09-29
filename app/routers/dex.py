@@ -2,10 +2,11 @@
 from __future__ import annotations
 
 import json
+import sqlite3
 
-from fastapi import APIRouter, Body, HTTPException, Query
+from fastapi import APIRouter, Body, Depends, HTTPException, Query
 
-from ..db import state_conn, static_conn
+from ..db import get_state_db, get_static_db
 
 router = APIRouter(prefix="/api")
 
@@ -20,8 +21,7 @@ def _type_sort(types: str) -> str:
 
 
 @router.get("/games")
-def games():
-    con = static_conn()
+def games(con: sqlite3.Connection = Depends(get_static_db)):
     out = []
     for g in con.execute("SELECT * FROM games ORDER BY sort"):
         try:
@@ -37,7 +37,6 @@ def games():
             dexes.append(dict(d))
         out.append({**{k: v for k, v in dict(g).items() if k != "features"},
                     "features": features, "dexes": dexes})
-    con.close()
     return out
 
 
@@ -48,14 +47,14 @@ def dex_entries(
     filter: str = Query("all", pattern="^(all|caught|uncaught)$"),
     type: str = "",
     q: str = "",
+    con: sqlite3.Connection = Depends(get_static_db),
+    scon: sqlite3.Connection = Depends(get_state_db),
 ):
-    con = static_conn()
     dex = con.execute(
         """SELECT d.*, g.id AS game_id, g.name_zh AS game_zh
            FROM regional_dexes d JOIN games g ON g.id = d.game_id WHERE d.id=?""",
         (dex_id,)).fetchone()
     if dex is None:
-        con.close()
         raise HTTPException(404, "dex not found")
 
     # 图鉴默认展示形态：优先 dex_default_forms 覆盖（如洗翠图鉴显洗翠样子/北上乡月月熊显血月），
@@ -67,12 +66,10 @@ def dex_entries(
            FROM forms f JOIN dex_entries e ON e.species_id = f.species_id
            WHERE e.dex_id = ? AND f.is_default = 1""", (dex_id,)).fetchall()}
     caught_map = {}
-    scon = state_conn()
     for r in scon.execute(
             "SELECT species_id, caught FROM caught_state WHERE profile_id=? AND dex_id=?",
             (profile, dex_id)):
         caught_map[r["species_id"]] = bool(r["caught"])
-    scon.close()
 
     q_lower = q.strip().lower()
     entries = []
@@ -100,7 +97,6 @@ def dex_entries(
         entries = [e for e in entries if q_lower in e["name_zh"].lower()
                    or q_lower in (e["name_en"] or "").lower()
                    or q_lower == str(e["ndex"])]
-    con.close()
     return {"id": dex["id"], "name_zh": dex["name_zh"], "name_en": dex["name_en"],
             "game_id": dex["game_id"], "game_zh": dex["game_zh"],
             "total": len(entries), "entries": entries}
@@ -117,21 +113,19 @@ def _int_or_400(v, name: str) -> int:
         raise HTTPException(400, f"{name} 无效") from e
 
 
-def _same_game_dex_ids(species_id: int, game_id: str) -> list[str]:
+def _same_game_dex_ids(con: sqlite3.Connection, species_id: int, game_id: str) -> list[str]:
     """同游戏内含该物种的全部图鉴（本体↔DLC 双向同步；跨游戏不同步）。
 
     图鉴成员在静态库，userstate 只存 caught_state。"""
-    con = static_conn()
-    rows = [r["dex_id"] for r in con.execute(
+    return [r["dex_id"] for r in con.execute(
         """SELECT DISTINCT e.dex_id AS dex_id
            FROM dex_entries e JOIN regional_dexes d ON d.id = e.dex_id
            WHERE e.species_id = ? AND d.game_id = ?""", (species_id, game_id))]
-    con.close()
-    return rows
 
 
 @router.put("/state")
-def set_state(body: dict = Body(...)):
+def set_state(body: dict = Body(...), con: sqlite3.Connection = Depends(get_static_db),
+              scon: sqlite3.Connection = Depends(get_state_db)):
     pid = _int_or_400(body.get("profile_id"), "profile_id")
     dex_id = body.get("dex_id") or ""
     try:
@@ -141,15 +135,12 @@ def set_state(body: dict = Body(...)):
     if not dex_id:
         raise HTTPException(400, "dex_id 必填")
     caught = 1 if body.get("caught") else 0
-    sreader = static_conn()
-    game = sreader.execute(
+    game = con.execute(
         "SELECT game_id FROM regional_dexes WHERE id=?", (dex_id,)).fetchone()
-    sreader.close()
     if game is None:
         raise HTTPException(400, "dex_id 无效")
-    scon = state_conn()
     # 同游戏双向同步：本体 / DLC 图鉴随标记操作一并对齐
-    dex_ids = _same_game_dex_ids(species_id, game["game_id"]) or [dex_id]
+    dex_ids = _same_game_dex_ids(con, species_id, game["game_id"]) or [dex_id]
     if dex_id not in dex_ids:
         dex_ids.append(dex_id)
     scon.executemany(
@@ -159,12 +150,12 @@ def set_state(body: dict = Body(...)):
            DO UPDATE SET caught=excluded.caught, updated_at=datetime('now','localtime')""",
         [(pid, d, species_id, caught) for d in dex_ids])
     scon.commit()
-    scon.close()
     return {"ok": True, "synced_dexes": dex_ids}
 
 
 @router.post("/state/bulk")
-def set_state_bulk(body: dict = Body(...)):
+def set_state_bulk(body: dict = Body(...), con: sqlite3.Connection = Depends(get_static_db),
+                   scon: sqlite3.Connection = Depends(get_state_db)):
     pid = _int_or_400(body.get("profile_id"), "profile_id")
     dex_id = body.get("dex_id") or ""
     if not dex_id:
@@ -174,17 +165,14 @@ def set_state_bulk(body: dict = Body(...)):
         ids = [int(s) for s in body.get("species_ids", [])]
     except (TypeError, ValueError) as e:
         raise HTTPException(400, "species_ids 无效") from e
-    sreader = static_conn()
-    game = sreader.execute(
+    game = con.execute(
         "SELECT game_id FROM regional_dexes WHERE id=?", (dex_id,)).fetchone()
-    sreader.close()
     if game is None:
         raise HTTPException(400, "dex_id 无效")
-    scon = state_conn()
     # 逐物种同步：同游戏内所有含该物种的图鉴一并 UPSERT（本体↔DLC 双向）
     rows = []
     for sid in ids:
-        for d in _same_game_dex_ids(sid, game["game_id"]):
+        for d in _same_game_dex_ids(con, sid, game["game_id"]):
             rows.append((pid, d, sid, caught))
     scon.executemany(
         """INSERT INTO caught_state (profile_id, dex_id, species_id, caught)
@@ -193,17 +181,14 @@ def set_state_bulk(body: dict = Body(...)):
            DO UPDATE SET caught=excluded.caught, updated_at=datetime('now','localtime')""",
         rows)
     scon.commit()
-    scon.close()
     return {"ok": True, "count": len(ids)}
 
 
 @router.get("/state/counts")
-def state_counts(profile: int = 1):
+def state_counts(profile: int = 1, scon: sqlite3.Connection = Depends(get_state_db)):
     """全部图鉴的已捕捉计数（一次返回，修复未访问 tab 计数恒 0）。"""
-    scon = state_conn()
     rows = scon.execute(
         """SELECT c.dex_id, COUNT(*) AS caught
            FROM caught_state c WHERE c.profile_id=? AND c.caught=1
            GROUP BY c.dex_id""", (profile,)).fetchall()
-    scon.close()
     return {r["dex_id"]: r["caught"] for r in rows}
