@@ -1,4 +1,4 @@
-// ESLint 9 flat config；M0 完成时按锁定的版本复核规则集（docs/00 §6.2/§6.5：TS strict、禁用 any）
+// ESLint 9 flat config；M0 完成时按锁定的版本复核规则集（plans/00 §6.2/§6.5：TS strict、禁用 any）
 import js from "@eslint/js";
 
 export default [

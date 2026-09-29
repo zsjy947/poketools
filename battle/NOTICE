@@ -2,7 +2,7 @@ NOTICE —— 第三方代码与素材来源、协议声明
 ==========================================
 
 本应用（宝可梦模拟对战 / pkmn-solo-battle）及其产物仅供本人本地学习研究使用，
-不公开分发、不商用（合规立场全文见 docs/00-项目规划文档.md §2.3）。
+不公开分发、不商用（合规立场全文见 plans/00-项目规划文档.md §2.3）。
 
 第三方代码
 ----------
@@ -21,6 +21,6 @@ NOTICE —— 第三方代码与素材来源、协议声明
   （https://pokemonshowdown.com/files/resources/sprites.zip），属 © Nintendo / Creatures Inc. /
   GAME FREAK inc. / The Pokémon Company 版权资产，**仅作个人本地使用的素材副本**；
   下载日期与来源记录于 `src/assets/manifest.json`（素材管线生成）。
-- 若未来出现任何公开分发计划，必须先整体移除素材与游戏数据并重新评审（docs/00 §8 R2）。
+- 若未来出现任何公开分发计划，必须先整体移除素材与游戏数据并重新评审（plans/00 §8 R2）。
 
 宝可梦相关名称与形象 © 1995-2026 Nintendo / Creatures Inc. / GAME FREAK inc.、© 2026 Pokémon。
