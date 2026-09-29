@@ -68,10 +68,12 @@ def meta_abilities(con: sqlite3.Connection = Depends(get_static_db)):
 
 @router.get("/meta/z-moves")
 def meta_z_moves(con: sqlite3.Connection = Depends(get_static_db)):
-    """Z 纯晶表：泛用（属性→纯晶）+ 专属（species+招式→Z 招式）。"""
+    """Z 纯晶表：泛用（属性→纯晶+Z招式官方名）+ 专属（species+招式→Z 招式）。"""
     generic = [dict(r) for r in con.execute(
-        """SELECT i.identifier AS crystal_identifier, i.name_zh AS crystal_name
-           FROM items i WHERE i.id >= 900000 AND i.id < 900100 ORDER BY i.id""")]
+        """SELECT i.identifier AS crystal_identifier, i.name_zh AS crystal_name,
+                  z.type, z.z_move_name
+           FROM items i JOIN z_generic z ON z.crystal_identifier = i.identifier
+           WHERE i.id >= 900000 AND i.id < 900100 ORDER BY i.id""")]
     exclusive = [dict(r) for r in con.execute(
         """SELECT z.crystal_identifier, i.name_zh AS crystal_name, z.species_id,
                   z.form_suffix, z.base_move_id, z.z_move_name, z.power,
@@ -79,6 +81,21 @@ def meta_z_moves(con: sqlite3.Connection = Depends(get_static_db)):
            FROM z_exclusive z LEFT JOIN items i ON i.identifier = z.crystal_identifier
            ORDER BY z.crystal_identifier, z.species_id""")]
     return {"generic": generic, "exclusive": exclusive}
+
+
+@router.get("/meta/max-moves")
+def meta_max_moves(con: sqlite3.Connection = Depends(get_static_db)):
+    """极巨招式官方名（18 属性 + 极巨防壁），供前端建 属性→极巨名 映射。"""
+    return [dict(r) for r in con.execute(
+        """SELECT identifier, name_zh, type_zh, damage_class
+           FROM moves WHERE identifier LIKE 'max-%' ORDER BY id""")]
+
+
+@router.get("/meta/gmax-moves")
+def meta_gmax_moves(con: sqlite3.Connection = Depends(get_static_db)):
+    """超极巨专属招式表（gmax 形态 → 官方名/属性/固定威力特判），供前端显示名替换。"""
+    return [dict(r) for r in con.execute(
+        "SELECT species_id, form_identifier, gmax_move_name, type_zh, power FROM gmax_moves")]
 
 
 @router.get("/meta/natures")
@@ -148,6 +165,8 @@ def _assemble(con, side: dict, is_attacker: bool) -> dict:
         # 互斥用「特殊形态」标记：mega 之外，原始回归/超极巨化在 PokeAPI 中 is_mega=0
         "is_mega": bool(form["is_mega"])
         or (form["identifier"] or "").endswith(("-primal", "-gmax")),
+        # 超极巨化本质即极巨化：形态 + 极巨标记是合法组合（不与极巨互斥，仍与 Z/太晶互斥）
+        "is_gmax": (form["identifier"] or "").endswith("-gmax"),
         "tera_type": side.get("tera_type") or "",
         "stats": stats, "_raw": {**side},
         "evs": evs, "ivs": ivs,
@@ -157,36 +176,64 @@ def _assemble(con, side: dict, is_attacker: bool) -> dict:
     }
 
 
-def _z_of(con, atk: dict, move_id: int) -> dict:
-    """专属 Z 映射：(species+原始招式) 命中 → 专属 Z 招式；否则泛用（z_power 换算）。"""
+def _z_of(con, atk: dict, mv: sqlite3.Row) -> dict:
+    """专属 Z 映射：(species+原始招式) 命中 → 专属 Z 招式；否则泛用（官方名 + z_power 换算）。"""
     row = con.execute(
         "SELECT * FROM z_exclusive WHERE base_move_id=? AND species_id=?",
-        (move_id, atk["species_id"])).fetchone()
-    if row is None:
-        return {"source": "generic"}
-    # 形态限定（阿罗拉雷丘/黄昏鬃岩狼人/究极奈克洛兹玛等）按 identifier 后缀匹配
-    suffix = row["form_suffix"] or ""
-    if suffix and not self_suffix_ok(atk, suffix):
-        return {"source": "generic"}
-    if row["power"] is None:
-        # 固定 HP 类 / 变化类专属 Z：无常规伤害，仅返回效果文案
+        (mv["id"], atk["species_id"])).fetchone()
+    if row is not None:
+        # 形态限定（阿罗拉雷丘/帽子皮卡丘/究极奈克洛兹玛等）按 identifier 后缀匹配
+        suffix = row["form_suffix"] or ""
+        if suffix and not self_suffix_ok(atk, suffix):
+            row = None
+    if row is not None:
+        if row["power"] is None:
+            # 固定 HP 类 / 变化类专属 Z：无常规伤害，仅返回效果文案
+            return {"source": "exclusive", "name": row["z_move_name"],
+                    "power": None, "damage_class": row["damage_class"],
+                    "note": row["note"], "no_damage": True}
         return {"source": "exclusive", "name": row["z_move_name"],
-                "power": None, "damage_class": row["damage_class"],
-                "note": row["note"], "no_damage": True}
-    return {"source": "exclusive", "name": row["z_move_name"],
-            "power": row["power"], "damage_class": row["damage_class"],
-            "note": row["note"]}
+                "power": row["power"], "damage_class": row["damage_class"],
+                "note": row["note"]}
+    # 泛用 Z：按招式属性查官方名（查无仍返回无名泛用，引擎走 z_power 换算）
+    g = con.execute("SELECT z_move_name FROM z_generic WHERE type=?",
+                    (mv["type_zh"],)).fetchone()
+    if g is not None:
+        return {"source": "generic", "name": g["z_move_name"], "type": mv["type_zh"]}
+    return {"source": "generic"}
 
 
 def self_suffix_ok(atk: dict, suffix: str) -> bool:
-    """攻击方当前形态 identifier 是否带指定后缀（-galar / -galar-standard 等）。"""
+    """攻击方当前形态 identifier 是否带指定后缀（-galar / 帽子皮卡丘多后缀等，逗号分隔任一命中）。"""
     ident = atk.get("form_identifier") or ""
-    return bool(ident) and (ident.endswith(f"-{suffix}") or f"-{suffix}-" in ident)
+    if not ident:
+        return False
+    return any(
+        ident.endswith(f"-{sfx}") or f"-{sfx}-" in ident
+        for sfx in (p.strip() for p in suffix.split(",") if p.strip()))
+
+
+def _gmax_of(con, att: dict) -> dict | None:
+    """攻方为超极巨形态时的专属招式信息（非 gmax 形态返回 None）。"""
+    ident = att.get("form_identifier") or ""
+    if not ident.endswith("-gmax"):
+        return None
+    row = con.execute(
+        "SELECT * FROM gmax_moves WHERE form_identifier=?", (ident,)).fetchone()
+    return dict(row) if row else None
+
+
+def _apply_gmax(opt: dict, gmax: dict | None, mv: sqlite3.Row) -> None:
+    """招式属性命中超极巨专属属性且为伤害招 → 引擎注入固定威力（无特判值时按属性档位换算）。"""
+    if gmax and mv["type_zh"] == gmax["type_zh"] and mv["damage_class"] != "status":
+        opt["gmax_move"] = {"name": gmax["gmax_move_name"],
+                            "type": gmax["type_zh"], "power": gmax["power"]}
 
 
 def _validate_mechanisms(atk: dict, dfd: dict, body: dict) -> None:
     """机制互斥：超级进化/原始回归/超极巨化(形态派生) / Z招式 / 极巨化 / 太晶化 同侧只能一个。
 
+    例外：超极巨化形态本身即极巨化，形态与极巨标记共存合法（仅与 Z/太晶互斥）。
     Z 招式为每招独立字段 z_moves[4]，但一场战斗仅一次 Z 力量 —— 多招同时点亮即拒绝。"""
     def _check(side_label: str, flags: list[str]) -> None:
         on = [f for f in flags if f]
@@ -202,12 +249,12 @@ def _validate_mechanisms(atk: dict, dfd: dict, body: dict) -> None:
     else:
         z_on = bool(body.get("z_move"))
 
-    _check("攻击方", [atk["is_mega"] and "超级进化",
+    _check("攻击方", [(atk["is_mega"] or atk["is_gmax"]) and "超级进化",
                      z_on and "Z招式",
-                     (body.get("max_move") or atk["is_dynamax"]) and "极巨化",
+                     (body.get("max_move") or atk["is_dynamax"]) and not atk["is_gmax"] and "极巨化",
                      atk["tera_type"] and "太晶化"])
-    _check("防御方", [dfd["is_mega"] and "超级进化",
-                     dfd["is_dynamax"] and "极巨化",
+    _check("防御方", [(dfd["is_mega"] or dfd["is_gmax"]) and "超级进化",
+                     dfd["is_dynamax"] and not dfd["is_gmax"] and "极巨化",
                      dfd["tera_type"] and "太晶化"])
 
 
@@ -241,11 +288,14 @@ def calc(body: dict = Body(...), con: sqlite3.Connection = Depends(get_static_db
     opt = {k: body.get(k) for k in FIELD_OPTS}
     opt.update({k: body.get(k) for k in ("burn", "screen", "defender_full_hp",
                                          "move_power_override", "z_move", "max_move")})
+    opt["is_switching_out"] = bool(body.get("defender_switching_out"))
     z_info = None
     if opt.get("z_move"):
-        z_info = _z_of(con, atk, body["move_id"])
+        z_info = _z_of(con, atk, mv)
         if z_info["source"] == "exclusive" and not z_info.get("no_damage"):
             opt["z_exclusive"] = {"name": z_info["name"], "power": z_info["power"]}
+    if opt.get("max_move"):
+        _apply_gmax(opt, _gmax_of(con, atk), mv)
     result = damage.calc_damage(atk, dfd, dict(mv), opt)
     hazard = _hazard_hp(con, dfd, opt)
     if hazard < dfd["stats"]["hp"] and "ko" in result:
@@ -280,8 +330,8 @@ def calc_batch(body: dict = Body(...), con: sqlite3.Connection = Depends(get_sta
     请求：{attacker, defender, moves: {atk: [id×4], dfd: [id×4]},
            field: {mode, weather, terrain, auras, ruin, gravity, magic_room, wonder_room},
            sides: {atk: {burn,crit,helping,z_moves[4],screen,sash,friend_guard,
-                         flower_gift,steely_spirit,battery,power_spot,foresight,hazards,
-                         power_trick},
+                         flower_gift,steely,battery,power_spot,foresight,hazards,
+                         power_trick,switching},
                    dfd: {…同结构}}}
     响应：{atk: {stats, results[4]}, dfd: {stats, results[4]}, hazard_hp: {atk, dfd}}
     """
@@ -320,6 +370,8 @@ def calc_batch(body: dict = Body(...), con: sqlite3.Connection = Depends(get_sta
             "defender_sash": dfd_flags.get("sash"),
             "defender_full_hp": True,
             "max_move": bool(att.get("is_dynamax")),
+            # 防守方换下场状态：攻方对其追打威力 ×2（引擎分支）
+            "is_switching_out": bool(dfd_flags.get("switching")),
         })
         return o
 
@@ -327,6 +379,7 @@ def calc_batch(body: dict = Body(...), con: sqlite3.Connection = Depends(get_sta
                  move_ids: list, z_marks: list, dfd_hazard: int):
         out = []
         opts0 = _opts(att, dfd_side, att_flags, dfd_flags)
+        gmax = _gmax_of(con, att) if opts0.get("max_move") else None
         for i, mobj in enumerate(move_ids or []):
             if not mobj:
                 out.append(None)
@@ -341,9 +394,11 @@ def calc_batch(body: dict = Body(...), con: sqlite3.Connection = Depends(get_sta
             opt = dict(opts0)
             if power_override:
                 opt["move_power_override"] = power_override
+            if gmax:
+                _apply_gmax(opt, gmax, mv)
             zi = None
             if z_marks and z_marks[i]:
-                zi = _z_of(con, att, mid)
+                zi = _z_of(con, att, mv)
                 opt["z_move"] = True
                 if zi["source"] == "exclusive" and not zi.get("no_damage"):
                     opt["z_exclusive"] = {"name": zi["name"], "power": zi["power"]}

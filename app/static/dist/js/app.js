@@ -33,13 +33,15 @@ const App = {
         <curry-view v-else-if="route.feature === 'curry'"></curry-view>
       </template>
       <detail-view v-else-if="route.page === 'pokemon'"></detail-view>
-      <calc-view v-else-if="route.page === 'calc'"></calc-view>
+      <!-- 计算器视图首次进入后常驻（v-show 隐藏）：状态保留、零请求、图片不回源 -->
+      <calc-view v-if="visited.calc" v-show="route.page === 'calc'"></calc-view>
     </div>
   </div>
   `,
   setup() {
     const { reactive, computed, onMounted, provide } = Vue;
     const route = reactive({ page: "home", gameId: "", feature: "", hash: "" });
+    const visited = reactive({ calc: false });
 
     const game = computed(() => store.games.find((g) => g.id === route.gameId) || null);
     const gameFeatures = computed(() =>
@@ -61,6 +63,7 @@ const App = {
         store.gameId = q.get("game") || store.gameId;
       } else if (parts[0] === "calc") {
         route.page = "calc";
+        visited.calc = true;
       } else {
         route.page = "home";
       }
@@ -76,7 +79,7 @@ const App = {
       parseHash();
     });
 
-    return { store, route, game, gameFeatures, go };
+    return { store, route, visited, game, gameFeatures, go };
   },
 };
 

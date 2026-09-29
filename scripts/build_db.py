@@ -241,6 +241,15 @@ CREATE TABLE z_exclusive (
   base_move_id INTEGER, z_move_name TEXT, power INTEGER, damage_class TEXT,
   note TEXT
 );
+-- 泛用 Z 招式名（z_moves.json generic；属性 → Z 招式官方名 + 对应纯晶）
+CREATE TABLE z_generic (
+  type TEXT, z_move_name TEXT, crystal_identifier TEXT, crystal_id INTEGER
+);
+-- 超极巨专属招式（gmax_moves.json curated；gmax 形态 → 超极巨招式官方名，power 仅存 160 特判）
+CREATE TABLE gmax_moves (
+  species_id INTEGER, form_identifier TEXT, gmax_move_name TEXT,
+  type_zh TEXT, power INTEGER
+);
 -- 二期伤害计算器数据
 CREATE TABLE learnsets_all (
   form_id INTEGER, move_id INTEGER, method TEXT, vg INTEGER
@@ -590,6 +599,21 @@ def main() -> None:
               x.get("note", ""))
              for x in zdata.get("exclusive", [])])
         require_rows(con, "z_exclusive", 20, z_file.name)
+        con.executemany(
+            "INSERT OR REPLACE INTO z_generic VALUES (?,?,?,?)",
+            [(g["type"], g["z_move_name"], g["crystal_identifier"], g["crystal_id"])
+             for g in zdata.get("generic", [])])
+        require_rows(con, "z_generic", 18, z_file.name)
+    # 超极巨专属招式（52poke curated；forms 表 34 个 *-gmax 形态一一对应）
+    gmax_file = ROOT / "data" / "curated" / "gmax_moves.json"
+    if gmax_file.exists():
+        gmax = json.loads(gmax_file.read_text(encoding="utf-8"))
+        con.executemany(
+            "INSERT OR REPLACE INTO gmax_moves VALUES (?,?,?,?,?)",
+            [(m["species_id"], m["form_identifier"], m["gmax_move_name"],
+              m["type_zh"], m.get("power"))
+             for m in gmax.get("moves", [])])
+        require_rows(con, "gmax_moves", 34, gmax_file.name)
     item_rows.sort(key=lambda r: r[0])
     con.executemany("INSERT OR REPLACE INTO items VALUES (?,?,?)", item_rows)
 
@@ -839,7 +863,7 @@ def main() -> None:
     for table in ("games", "regional_dexes", "dex_entries", "species", "forms",
                   "moves", "learnsets", "machines", "encounters",
                   "abilities", "items", "form_game_availability", "dex_default_forms",
-                  "evo_branches", "z_exclusive"):
+                  "evo_branches", "z_exclusive", "z_generic", "gmax_moves"):
         n = con.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
         print(f"{table:24s} {n}")
     print("\nlearnsets per vg:")

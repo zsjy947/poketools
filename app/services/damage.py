@@ -307,7 +307,15 @@ def calc_damage_modern(a: dict, d: dict, move: dict, opt: dict) -> dict:
     elif opt.get("z_move"):
         power = z_power(move.get("power") or power, move_ident)
     elif opt.get("max_move"):
-        power = max_power(move.get("power") or power, move["type_zh"], move_ident)
+        gmax = opt.get("gmax_move")
+        # 超极巨专属招式固定威力特判（狂擂乱打/破阵火球/狙击神射=160）；其余按属性档位换算
+        power = (gmax["power"] if gmax and gmax.get("power")
+                 else max_power(move.get("power") or power, move["type_zh"], move_ident))
+    # 追打 × 换下场目标：威力 ×2（对齐 smogon gen789 isSwitching 分支；Z/极巨换算后招式名
+    # 已替换、该分支不生效，故仅在未换算路径生效）
+    if (move_ident == "pursuit" and opt.get("is_switching_out")
+            and not (opt.get("z_move") or z_ex or opt.get("max_move"))):
+        power = power * 2
 
     # ---- 威力阶段修正（bpMods 4096 分数链，顺序对齐 smogon） ----
     bp_mods: list[int] = []
