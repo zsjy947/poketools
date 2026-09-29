@@ -252,9 +252,10 @@ app/static/dist/
 - 道具图标缺 ~1300（TM 系列与 GO/Let's Go 杂项，前端隐藏图标兜底）。
 - Z-A 新超进化（姆克鹰等）无进化石道具数据（PokeAPI 未收录，无锁定不阻塞）。
 - 彩粉蝶花纹/霜奶仙糖饰等未建模变体（单形态种）——如需支持须扩 PokeAPI 形态映射。
-- **模拟对战（pkmn-solo-battle）**：独立 `battle` 分支开发（Tauri 2 + React + TS monorepo 子目录，
-  与主仓 Python 栈零耦合），M0-M8 里程碑与并入可行性评估按该分支 `battle/docs/` 规划推进；
-  并入决议与 APK（竖屏 UI）路线待 battle M0-M4 后评估，届时更新本表。
+- **模拟对战（pkmn-solo-battle）**：`battle` 分支开发（Tauri 2 + React + TS monorepo 子目录，
+  与主仓 Python 栈零耦合），M0-M8 串行推进，功能验证成功后合并回 main；规划文档在 `plans/`
+  （不入 git，总执行计划 plans/MASTER-PLAN.md），功能说明文档沉淀为 `docs/BATTLE.md` 单文档；
+  APK（竖屏 UI）路线同见 plans/MASTER-PLAN.md Track C。
 
 ## §10 变更历史
 
