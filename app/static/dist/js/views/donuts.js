@@ -23,7 +23,7 @@ const DonutView = {
               <img class="donut-img" :src="'/assets/donut_' + s.name + '.png'" loading="lazy"
                 onerror="this.style.display='none'">
             </div>
-            <h4>🍩 {{ s.name }}</h4>
+            <h4><mono-icon name="donut" :size="18" style="vertical-align:-3px"></mono-icon> {{ s.name }}</h4>
             <div class="flavor-row">
               <span v-for="(v, k) in FLAVOR_NAMES" :key="k" class="flavor-chip"
                 :class="'fl-' + k" :style="{opacity: s[k] ? 1 : 0.25}">{{ v }} {{ s[k] }}</span>
@@ -96,7 +96,7 @@ const DonutView = {
         </div>
         <div class="sand-grid" v-if="customList.length">
           <div v-for="r in customList" :key="r.id" class="sand-card custom">
-            <h4>🍩 {{ r.name }}
+            <h4><mono-icon name="donut" :size="18" style="vertical-align:-3px"></mono-icon> {{ r.name }}
               <el-button size="small" text type="danger" style="float:right"
                 @click="removeCustom(r)">删除</el-button>
             </h4>

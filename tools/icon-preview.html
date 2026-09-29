@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<!-- Monoline 图标预览审查页（本地开发用，不入 app/static/dist 主链）。
+     直接双击打开；改 components.js 的 MONO_ICONS 后刷新本页复查。 -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Monoline 图标预览</title>
+<style>
+  body { font-family: "Segoe UI", "Microsoft YaHei", sans-serif; background: #eef1f6; margin: 0; padding: 28px; color: #333; }
+  h1 { font-size: 20px; } h2 { font-size: 15px; margin: 26px 0 10px; color: #445; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .card { background: #fff; border: 1px solid #e4e8f0; border-radius: 12px; padding: 14px 10px;
+    text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .sizes { display: flex; align-items: flex-end; gap: 10px; height: 52px; }
+  .name { font-size: 12.5px; color: #556; }
+  svg { display: block; }
+  .dark { background: #1f2533; border-radius: 12px; padding: 18px; }
+  .dark .demo { display: flex; gap: 18px; align-items: center; color: #8d97ab; }
+  .dark .demo .on { color: #f6c344; }
+  .dark .demo .hl { color: #cfd6e4; }
+</style>
+</head>
+<body>
+<h1>Monoline 图标预览（stroke 2 / round / fill none）</h1>
+<div class="grid" id="grid"></div>
+
+<h2>窄栏场景模拟（深色底 #1f2533；普通 / hover / active 金色）</h2>
+<div class="dark"><div class="demo" id="rail-demo"></div></div>
+
+<h2>首页宫格场景模拟（48px 蓝色）</h2>
+<div class="grid" id="feature-demo"></div>
+
+<script>
+/* 与 components.js 保持同一份定义（复制粘贴；本页仅预览用） */
+const MONO_ICONS = {
+  dex: '<path d="M12 7C10 5.4 7.2 4.8 4 4.8v13.4c3.2 0 6 .6 8 2.2 2-1.6 4.8-2.2 8-2.2V4.8c-3.2 0-6 .6-8 2.2z"/>' +
+       '<path d="M12 7v13.4"/><circle cx="12" cy="12.6" r="1.6"/>',
+  ev: '<path d="M4 20.2h16"/><rect x="5" y="13.6" width="3.6" height="6.6" rx="1"/>' +
+      '<rect x="10.2" y="9.6" width="3.6" height="10.6" rx="1"/>' +
+      '<rect x="15.4" y="5.6" width="3.6" height="14.6" rx="1"/>',
+  sandwich: '<rect x="4" y="4.8" width="16" height="4.6" rx="2.3"/>' +
+            '<rect x="5.6" y="10.8" width="12.8" height="2.8" rx="1.4"/>' +
+            '<rect x="4" y="15" width="16" height="4.6" rx="2.3"/>',
+  donut: '<circle cx="12" cy="12.6" r="8.4"/><circle cx="12" cy="12.6" r="3.2"/>' +
+         '<path d="M6.6 8.4a6.6 6.6 0 0 1 10.8 0"/>',
+  curry: '<path d="M4 10.2h16v2.8a7 7 0 0 1-7 7h-2a7 7 0 0 1-7-7z"/>' +
+         '<path d="M1.8 10.2h2.8M19.4 10.2h2.8"/><path d="M9.4 4.2c.7.7.7 1.6 0 2.3M13.6 4.2c.7.7.7 1.6 0 2.3M11.5 2.6v1.2"/>',
+  calc: '<rect x="5" y="3" width="14" height="18" rx="2"/>' +
+        '<rect x="7.6" y="5.6" width="8.8" height="3.4" rx="0.8"/>' +
+        '<path d="M8.8 13.2v.01M15.2 13.2v.01M8.8 17.4v.01M15.2 17.4v.01"/>',
+  battle: '<path d="M4.6 4.6l11.8 11.8M19.4 4.6L7.6 16.4"/>' +
+          '<path d="M13.6 17.8l3.8-3.8M16.4 19.6l2.4-2.4M4 15.2l2.2 2.2"/>',
+  games: '<rect x="2.6" y="7.2" width="18.8" height="10.4" rx="5.2"/>' +
+         '<path d="M7.2 10.2v4.2M5.1 12.3h4.2"/><path d="M15.4 10.8v.01M17.6 13.6v.01"/>',
+  home: '<path d="M3.8 11.2L12 4l8.2 7.2"/><path d="M5.8 9.6V20h12.4V9.6"/><path d="M10 20v-5.4h4V20"/>',
+  back: '<path d="M19 12H5"/><path d="M11 5.4L4.4 12l6.6 6.6"/>',
+};
+
+function svg(name, size, color) {
+  return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none"' +
+    ' stroke="' + (color || "currentColor") + '" stroke-width="2" stroke-linecap="round"' +
+    ' stroke-linejoin="round">' + MONO_ICONS[name] + "</svg>";
+}
+
+document.getElementById("grid").innerHTML = Object.keys(MONO_ICONS).map((k) =>
+  '<div class="card"><div class="sizes">' + [16, 22, 32, 48].map((s) => svg(k, s, "#333")).join("") +
+  '</div><div class="name">' + k + "</div></div>").join("");
+
+document.getElementById("rail-demo").innerHTML =
+  ["dex", "ev", "sandwich", "donut", "curry"].map((k, i) =>
+    '<div title="' + k + '" class="' + (i === 0 ? "on" : i === 1 ? "hl" : "") + '">' + svg(k, 22) + "</div>").join("");
+
+document.getElementById("feature-demo").innerHTML = ["games", "calc", "battle"].map((k) =>
+  '<div class="card" style="flex-direction:row;justify-content:flex-start;gap:14px;padding:20px 18px">' +
+  svg(k, 48, "#2a7be4") + '<div style="text-align:left"><div style="font-weight:700">' + k +
+  '</div><div style="font-size:12px;color:#98a1b3">48px 宫格</div></div></div>').join("");
+</script>
+</body>
+</html>

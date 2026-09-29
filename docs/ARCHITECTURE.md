@@ -204,10 +204,12 @@ app/static/dist/
   index.html          引入 vendor UMD + js + css（无构建步骤）
   css/base|dex|features|calc.css   按页拆分样式
   js/api.js           fetch 封装 + 全局常量（TYPE_LIST/STAT_KEYS…）
-  js/components.js    store + 全局组件（TypeBadge 定宽78px/PokeToggle 24px/AbilityList 展开卡/EvoChain…）
-  js/app.js           根组件 + 哈希路由（#/#game/{id}/{feature}/#pokemon/{id}/#calc）
-  js/views/*.js       home/dex/detail/ev/sandwiches/donuts/curry/calc
-  assets/             配图/属性雪碧图/机制图标（mechanism/：极巨 1 + 太晶 19）
+  js/components.js    store + 全局组件（TypeBadge 定宽78px/PokeToggle 24px/AbilityList 展开卡/EvoChain…/
+                       Monoline 图标体系 MONO_ICONS+MonoIcon/RailNav 窄栏/BackBtn 返回）
+  js/app.js           根组件 + 哈希路由（#/home 首页宫格 · #/games 游戏中心 · #/game/{id}/{feature}
+                       游戏内 64px 图标窄栏 · #/pokemon 全屏 · #/calc 全画面常驻）
+  js/views/*.js       home(功能宫格)/games(游戏中心)/dex/detail/ev/sandwiches/donuts/curry/calc
+  assets/             配图/属性雪碧图/机制图标（mechanism/：极巨 1 + 太晶 19）/游戏商标
   assets/../sprites/items/   道具图标（PokeAPI sprites + 52poke Z 纯晶兜底）
   vendor/             vue/element-plus/中文语言包/图标 UMD
 ```
@@ -215,6 +217,14 @@ app/static/dist/
 约束：视图为**模板字符串组件**（无 SFC/JSX）；新全局组件在 `components.js` 注册；路由用 `location.hash`，
 游戏上下文存 `store.gameId`；请求失败统一 `api-error` 事件 → toast。全量下拉（道具 2127/特性 374）
 用 `filter-method` 只渲染匹配前 80 条。模板字符串插值只用于纯文本展示（无 v-html 注入外部数据）。
+
+导航架构（批次三）：左侧 200px 文字栏已移除——首页=功能宫格（游戏中心/伤害计算器/模拟对战预留置灰）；
+进入游戏后出现 **64px 图标窄栏**（顶部官方商标大图标 GameIcons + 功能 Monoline 图标，无文字、
+hover 原生 title 提示、active 金色高亮+左侧条）；左上角 BackBtn 按路由层级静态映射返回
+（游戏中心→首页 / 游戏页→游戏中心 / 计算器→首页；详情页沿用自带「返回图鉴」）；图鉴等页面横向
+空间 +136px。**Monoline 图标体系**：10 枚手写 SVG（viewBox 24/stroke 2/round/fill none/currentColor），
+FEATURES.icon 值供窄栏与宫格共用；游戏大图标复用官方商标资产不重绘；预览审查页
+`tools/icon-preview.html`（本地用）；功能图标 emoji 已全部清零（含甜甜圈/三明治页内装饰）。
 
 ## §7 设计决策记录（为什么这么做）
 
@@ -244,6 +254,7 @@ app/static/dist/
 | 「切换」= 换下场状态（追打×2），非攻守交换 | 参考源码查证（radiantwf/vgc-damage-calc switchingOut + smogon gen789 isSwitching） | CALC-FIX |
 | 气势披带移出场地区，改道具派生 | 披带是道具非场地状态（参考站即如此）；场地区与参考站逐键零偏差 | CALC-FIX |
 | calc 视图 v-show 常驻 + 模块级缓存预热 | v-if 链切走即销毁全子树，重进重发 7 请求+白屏闪烁；常驻后零请求零重绘 | CALC-FIX |
+| 导航重构：首页功能宫格 + 游戏中心 + 64px 图标窄栏；图标弃 emoji 改手写 Monoline SVG | 图鉴获得 +136px 横向空间；模拟对战入口预留；SVG 可版本管理/迭代，currentColor 天然适配高亮态 | CALC-FIX 批次三 |
 
 ## §8 代码与测试规范
 
@@ -297,3 +308,4 @@ app/static/dist/
 | 计算器改版 | 场地区三栏对称（SIDE_GROUPS 单源）/力量戏法（router 层攻防互换）/按钮文字居中修复/单双打切换移入中栏 | 交付；60 测试绿 |
 | 审查 R1 | 全量审查 P0 五项修复：常量收编 services/constants.py / damage.ko_summary 公开化 / 连接管理 Depends 注入（四路由全覆盖）/ 静态资源 no-cache 中间件 / build_db curated 装载护栏 require_rows；独立安全扫描无新增高危项 | 交付；60 测试绿 + ruff 零告警 + 冒烟通过 |
 | CALC-FIX 批次一/二 | 跨线程 500 修复（check_same_thread）/ 计算器常驻无痕切换（v-show+模块缓存预热+并行初始化）/ Z·极巨·超极巨官方招式名（z_generic+gmax_moves 两表三端点，gmax 160 威力特判，皮卡丘 caps 脏行修复+多后缀）/ 场地区完全复刻参考站（8+7 行逐键一致、切换=追打×2、披带道具派生、gmax+极巨互斥放行）/ 新增 8 组用例 | 交付；68 测试绿 + calib 51+41 全绿 + uvicorn 并发冒烟（80 GET+30 POST 零 500） |
+| CALC-FIX 批次三 | 全局导航重构（首页功能宫格/游戏中心 #/games/64px 图标窄栏/BackBtn 层级返回/calc 全画面常驻叠加）+ Monoline 图标体系（10 枚手写 SVG + MonoIcon/RailNav/BackBtn 组件 + tools/icon-preview.html）+ 功能图标 emoji 清零 | 交付；浏览器实测全过（首页三卡/五游戏可达/窄栏高亮/详情全屏/常驻零请求/三列同高逐键一致）；资产 bump v21 |
