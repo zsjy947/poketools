@@ -33,7 +33,7 @@ export function spriteUrl(
   else if (opts?.back && opts?.shiny) dir = "back-shiny";
   else if (opts?.back) dir = "back";
   else if (opts?.shiny) dir = "shiny";
-  const ext = opts?.animated || opts?.dex ? ANIMATED_EXT : STATIC_EXT;
+  const ext = opts?.animated ? ANIMATED_EXT : STATIC_EXT;
   const base = dir ? `sprites/${dir}` : "sprites";
   return `${base}/${id}${ext}`;
 }

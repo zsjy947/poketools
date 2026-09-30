@@ -54,6 +54,20 @@ function writeJson(key: string, value: unknown): void {
   }
 }
 
+/** 记录写入：配额不足时逐条丢弃最旧记录重试（日志体积大，100 条可能超 5MB 配额） */
+function writeRecords(records: StoredBattleRecord[]): StoredBattleRecord[] {
+  let list = records;
+  for (;;) {
+    try {
+      localStorage.setItem(KEY.records, JSON.stringify(list));
+      return list;
+    } catch {
+      if (list.length <= 1) return list; // 连单条都放不下：放弃并保留内存态
+      list = list.slice(0, list.length - 1);
+    }
+  }
+}
+
 export const storage = {
   loadTeams: <T>(): T | null => readJson<T>(KEY.teams),
   saveTeams: (v: unknown) => writeJson(KEY.teams, v),
@@ -63,10 +77,9 @@ export const storage = {
   }),
   saveSettings: (v: StoredSettings) => writeJson(KEY.settings, v),
   loadRecords: (): StoredBattleRecord[] => readJson<StoredBattleRecord[]>(KEY.records) ?? [],
-  saveRecords: (v: StoredBattleRecord[]) => writeJson(KEY.records, v),
+  saveRecords: (v: StoredBattleRecord[]) => writeRecords(v),
   deleteRecord: (id: string): StoredBattleRecord[] => {
     const next = (readJson<StoredBattleRecord[]>(KEY.records) ?? []).filter((r) => r.id !== id);
-    writeJson(KEY.records, next);
-    return next;
+    return writeRecords(next);
   },
 };

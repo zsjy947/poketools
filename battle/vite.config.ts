@@ -12,4 +12,15 @@ export default defineConfig({
   build: {
     target: "es2022",
   },
+  test: {
+    coverage: {
+      // 口径：自研可单测核心（引擎适配/数据/队伍/演出/精灵）；UI=浏览器实测、vendor=上游引擎、scripts=构建工具
+      include: [
+        "src/engine-adapter/{index,session,parse}.ts",
+        "src/data/**/*.ts",
+        "src/team/**/*.ts",
+        "src/battle/**/*.ts",
+      ],
+    },
+  },
 });

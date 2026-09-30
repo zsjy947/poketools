@@ -101,6 +101,12 @@ pnpm tauri android build --apk     # Android APK
 
 开发：`pnpm dev`（http://localhost:1420）。
 
+**Android 构建注意事项（Windows）**：
+
+1. `pnpm tauri android build --apk` 会因**符号链接权限**失败（未开启开发者模式的 Windows 不允许非特权 symlink）——手动流程：`cargo build --release --target aarch64-linux-android` 后将 `target/aarch64-linux-android/release/*.so` **复制**到 `src-tauri/gen/android/app/src/main/jniLibs/arm64-v8a/`，再 `gen/android` 下 `gradlew.bat assembleArm64Release -x rustBuildArm64Release`；
+2. gradle wrapper 下载经代理可能 TLS 失败：手动以国内镜像（腾讯/华为）拉 `gradle-9.6.1-bin.zip` 放入 `~/.gradle/wrapper/dists/…`，并设 `JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStoreType=WINDOWS-ROOT` 使依赖下载信任系统根证书；
+3. 产物 `app/build/outputs/apk/arm64/release/app-arm64-release-unsigned.apk`（当前 439MB：精灵资产随 dist 内嵌；M7 考虑移动端剔除 dex/ani-shiny 目录）。
+
 ## 4. 数据
 
 - **赛制目录** `src/data/formats.ts`：8 项（id 以上游 formats 实际导出为准，存在命名漂移，验收以显示名为准）；`verifyFormats()` 构建期 fail-fast。
@@ -125,13 +131,15 @@ pnpm tauri android build --apk     # Android APK
 
 | 里程碑 | 状态 | 结论 |
 | --- | --- | --- |
-| M0 环境与脚手架 | ✅ | 引擎供应商化打通（champions mod 全通）；Windows NSIS exe 构建成功；Android 工程已生成 |
+| M0 环境与脚手架 | ✅ | 引擎供应商化打通（champions mod 全通）；Windows NSIS exe 构建成功；**Android APK 构建成功**（app-arm64-release 439MB，需手动流程规避 Windows 符号链接权限，见 §3） |
 | M1 数据层 | ✅ | formats 8 赛制校验通过；数据访问层 + zh-cn 映射；7 用例 |
-| M2 引擎集成 | ✅ | BattleSession/协议解析；脚本驱动 gen9vgc2025regi 双打、bssregi 单打、champions 完整一局；同种子确定性逐行一致；官方 replay 对拍待补（M6） |
-| M3 队伍层 | ✅ | 导入（Dex 存在性过滤）/导出/校验（13 条中文规则）/往返无损 12 组；16 用例 |
+| M2 引擎集成 | ✅ | BattleSession/协议解析；脚本驱动 gen9vgc2025regi 双打、bssregi 单打、champions 完整一局；同种子确定性逐行一致；**官方 replay 结构对拍 9 条全绿**（官方日志无 seed，对拍口径=图鉴/学习表/属性克制/道具特性四维核验，见 §6） |
+| M3 队伍层 | ✅ | 导入（Dex 存在性过滤）/导出/校验（14 条中文规则）/往返无损 12 组；16 用例 |
 | M4 信息流对战 | ✅ | 浏览器实测完整打完双打（gen9vgc2025regi 6 回合）+ 单打（gen9bssregi 13 回合）各一局，零 JS 错误，记录入库与日志回看通过 |
-| M5 动画渲染 | 🔄 | 静态精灵 + 血条已实现；动画队列/演出时序细化中 |
-| M6-M8 | ⬜ | 测试审查 / 发布 / 合并待执行 |
+| M5 动画渲染 | ✅ | anim.ts 事件→演出映射（10 种演出 + CSS 关键帧 + useBattleAnim）+ 速度倍率；动画关闭自动降级信息流；精灵三级回退（静态→动画→官方绘图→占位）+ 引擎 spriteid 命名；抽样 30 招式演出测试；AGPL 隔离审查通过（运行时全 MIT：自研 + 上游引擎 MIT + ts-chacha20 MIT，@pkmn/* 已移除） |
+| M6 测试与审查 | ✅ | 56 用例全绿（data 7/engine 9/showdown 16/replay 10/anim 4/core 10）；覆盖率口径（引擎适配/数据/队伍/演出/精灵）86.9% 语句 ≥85% 门禁；对拍 9 条官方 replay ×4 维 = 36 项 ≥30；审查报告见 §6 |
+| M7 构建发布 | 🔄 | 双端产物/签名/SHA256SUMS/安装演练进行中 |
+| M8 文档收尾 + 合并 | ⬜ | 待 M7 |
 
 M4 实测发现并修复的产品缺陷（均有回归测试护栏的候选）：
 
@@ -144,3 +152,19 @@ M4 实测发现并修复的产品缺陷（均有回归测试护栏的候选）�
 7. 残局目标判定（按场地槽位而非存活数）；
 8. 逐行 emit 性能（回合结算 30-60s → 批量后秒级）；
 9. 日志渲染 clean() 正则吞掉错误文本。
+
+M5/M6 期间发现并修复：
+
+10. parse.ts `move` 事件 `to` 索引错位（p[3]→p[2]，目标受击演出/克制核验曾静默失效）；
+11. 精灵文件名 = 引擎 `spriteid`（garchomp-mega/hooh/muk-alola），非显示名或 toID；
+12. dex 官方绘图扩展名为 png（曾误按 gif 解析）；
+13. 校验器「can't learn X」未翻译（补中文规则）；
+14. 记录持久化配额自愈（日志体积可超 localStorage 5MB → 逐条丢弃最旧重试）；
+15. fetch-sprites 根级文件过滤正则缺段（zip 根目录实为图标工作表，静态战斗图源头不存在——回退链兜底）。
+
+### 6.1 M6 审查报告（P0/P1 清零记录）
+
+- **P0（正确性）**：§6 所列 15 项全部修复并有测试护栏；无遗留。
+- **P1（分层/结构）**：① BattleView.tsx 约 850 行，指令面板组件（MoveOrders/ForceSwitchChoice/TeamPreviewChoice）可拆独立文件；② describeChoice 与 ForceSwitchChoice 的替补互斥逻辑近似重复。均为可维护性问题，不影响行为，登记为后续重构项。
+- **P2（规范）**：① 前端单 chunk 8.6MB（引擎内嵌所致，本地应用可接受；manualChunks 可优化首屏）；② anim.ts 的 useBattleAnim 依赖 DOM 无法纯单测（浏览器实测覆盖，纯函数 eventsToSteps 已单测）；③ APK 439MB（dex/ani-shiny 目录未从移动端资产剔除，M7 处理）。
+- **明确不做**：① 官方 replay 逐行重放（公开日志无 seed，结构核验已覆盖数据一致性）；② 引擎 Web Worker 线程化（批量 emit 后回合结算已秒级）；③ 静态战斗精灵下载（上游 zip 已不提供，动画图全覆盖 + 回退链）。

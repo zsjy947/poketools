@@ -78,6 +78,7 @@ const VALIDATOR_MSG_ZH: Array<[RegExp, string]> = [
   [/'s item (.+) does not exist in Gen 9/, "的道具「$1」在该赛制不可用"],
   [/'s ability (.+) does not exist in Gen 9/, "的特性「$1」在该赛制不可用"],
   [/'s move (.+) does not exist in Gen 9/, "的招式「$1」在该赛制不可用"],
+  [/can't learn (.+?)\.?$/, "无法学会招式「$1」"],
   [/\((.+)\) has evolutions it hasn't evolved to/, "（$1）存在未完成的进化，请使用最终形态"],
   [/is banned by rule (.+)/, "被规则「$1」禁止"],
   [/is not obtainable in this format/, "在该赛制不可获得"],

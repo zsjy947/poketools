@@ -71,7 +71,7 @@ export function parseLogLine(line: string): BattleEvent {
     case "turn":
       return ev({ kind: "turn", value: p[0] });
     case "move":
-      return ev({ kind: "move", side: sideOf(p[0]), from: p[0], value: p[1], to: p[3] });
+      return ev({ kind: "move", side: sideOf(p[0]), from: p[0], value: p[1], to: p[2] });
     case "switch":
     case "drag":
       return ev({ kind: "switch", side: sideOf(p[0]), from: p[0], value: p[1] });

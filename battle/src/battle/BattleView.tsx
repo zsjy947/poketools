@@ -4,6 +4,8 @@ import type { MonState, SideSlot } from "../engine-adapter";
 import type { RequestChoice } from "../engine-adapter/session";
 import { dexFor, moveView, speciesView, TYPE_ZH, STATUS_ZH } from "../data";
 import { spriteUrl } from "./sprites";
+import { useBattleAnim } from "./anim";
+import type { AnimKind } from "./anim";
 import type { StoredBattleRecord } from "../app/storage";
 import { exportShowdown } from "../team/showdown";
 
@@ -65,6 +67,8 @@ export function BattleView(): JSX.Element {
   }, [snapshot?.phase, snapshot?.winner, session, finishBattle, snapshot, teams, snapshot?.turn]);
 
   const dex = useMemo(() => dexFor(format?.mod ?? "gen9"), [format]);
+  // 动画演出态（ident → 当前演出；关闭时恒空 = 降级信息流）
+  const animMap = useBattleAnim(snapshot?.events ?? [], animated, settings.animationSpeed);
 
   if (!session || !snapshot) {
     return (
@@ -132,6 +136,7 @@ export function BattleView(): JSX.Element {
           dex={dex}
           animated={animated}
           active={activeSide === "p2"}
+          animMap={animMap}
         />
         <div className="field-mid">
           <span>{snapshot.events.slice(-1)[0]?.value ?? ""}</span>
@@ -142,6 +147,7 @@ export function BattleView(): JSX.Element {
           dex={dex}
           animated={animated}
           active={activeSide === "p1"}
+          animMap={animMap}
           back
         />
       </div>
@@ -206,9 +212,10 @@ function SideBoard(props: {
   dex: ReturnType<typeof dexFor>;
   animated: boolean;
   active: boolean;
+  animMap: Record<string, AnimKind>;
   back?: boolean;
 }): JSX.Element {
-  const { side, snapshot, dex, animated, back } = props;
+  const { side, snapshot, dex, animated, back, animMap } = props;
   const state = snapshot.sides[side];
   const actives = state.active
     .map((ident) => state.bench.find((m) => m.ident === ident))
@@ -224,7 +231,15 @@ function SideBoard(props: {
       <div className="side-actives">
         {actives.length > 0 ? (
           actives.map((m) => (
-            <MonStage key={m.ident} mon={m} dex={dex} animated={animated} back={!!back} />
+            <MonStage
+              key={m.ident}
+              mon={m}
+              dex={dex}
+              animated={animated}
+              side={side}
+              back={!!back}
+              anim={animMap[m.ident]}
+            />
           ))
         ) : (
           <div className="mon-stage empty muted">（无在场宝可梦）</div>
@@ -249,16 +264,34 @@ function MonStage(props: {
   mon: MonState;
   dex: ReturnType<typeof dexFor>;
   animated: boolean;
+  side: "p1" | "p2";
   back: boolean;
+  anim?: AnimKind | undefined;
 }): JSX.Element {
-  const { mon, dex, animated, back } = props;
-  const speciesId = mon.details.split(",")[0]?.trim().toLowerCase().replace(/ /g, "-") ?? "";
-  const url = spriteUrl(speciesId, { back, animated });
+  const { mon, dex, animated, side, back, anim } = props;
+  // 精灵文件名 = 引擎 spriteid（官方 dump 口径：garchomp-mega/hooh/muk-alola）；中文名按物种 id 查
+  const spName = mon.details.split(",")[0]?.trim() ?? "";
+  const sp = dex.species.get(spName);
+  const nameId = sp.exists ? sp.id : spName.toLowerCase().replace(/ /g, "-");
+  const spriteId = sp.exists ? sp.spriteid : nameId;
+  // 三级回退：静态 → 动画 → 官方绘图（dex）；全部缺失时占位隐藏（dump 个别缺口兜底）
+  const [srcIdx, setSrcIdx] = useState(0);
+  const candidates = (
+    animated
+      ? [spriteUrl(spriteId, { back, animated: true }), spriteUrl(spriteId, { dex: true })]
+      : [
+          spriteUrl(spriteId, { back }),
+          spriteUrl(spriteId, { back, animated: true }),
+          spriteUrl(spriteId, { dex: true }),
+        ]
+  ).filter(Boolean);
+  const url = candidates[srcIdx] ?? null;
   const pct = mon.maxhp > 0 ? Math.round((mon.hp / mon.maxhp) * 100) : 0;
+  const animCls = anim ? " anim-" + anim : "";
   return (
     <div className="mon-stage">
       <div className="hp-panel">
-        <span className="hp-name">{zhNameOf(dex, speciesId)}</span>
+        <span className="hp-name">{zhNameOf(dex, nameId)}</span>
         {mon.status && (
           <span className={"status st-" + mon.status}>{STATUS_ZH[mon.status] ?? mon.status}</span>
         )}
@@ -274,11 +307,13 @@ function MonStage(props: {
       </div>
       {url ? (
         <img
-          className={"mon-sprite" + (mon.fainted ? " fainted" : "")}
+          className={"mon-sprite" + (mon.fainted ? " fainted" : "") + animCls}
+          data-side={side}
           src={url}
           alt={mon.details}
           onError={(e) => {
-            (e.target as HTMLImageElement).style.visibility = "hidden";
+            if (srcIdx + 1 < candidates.length) setSrcIdx(srcIdx + 1);
+            else (e.target as HTMLImageElement).style.visibility = "hidden";
           }}
         />
       ) : (

@@ -456,6 +456,153 @@ button.mini.danger {
   filter: grayscale(1);
   opacity: 0.45;
 }
+
+/* ===== 动画演出（FR-08）：anim.ts 事件映射 → CSS 关键帧；关闭动画不挂类自动降级信息流 ===== */
+@keyframes anim-lunge-p2 {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  45% {
+    transform: translate(-26px, 14px);
+  }
+}
+@keyframes anim-lunge-p1 {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  45% {
+    transform: translate(26px, -14px);
+  }
+}
+@keyframes anim-hit {
+  0%,
+  100% {
+    filter: none;
+  }
+  25%,
+  75% {
+    filter: brightness(1.9) sepia(1) saturate(6) hue-rotate(-45deg);
+  }
+  50% {
+    transform: translate(6px, 2px);
+  }
+}
+@keyframes anim-faint {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(64px) scale(0.85);
+    opacity: 0;
+  }
+}
+@keyframes anim-switch-in {
+  0% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.12);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes anim-heal {
+  0%,
+  100% {
+    filter: none;
+  }
+  50% {
+    filter: brightness(1.35) sepia(1) saturate(4) hue-rotate(70deg);
+  }
+}
+@keyframes anim-status {
+  0%,
+  100% {
+    filter: none;
+  }
+  50% {
+    filter: saturate(2.2) brightness(1.15);
+  }
+}
+@keyframes anim-tera {
+  0%,
+  100% {
+    filter: none;
+  }
+  40%,
+  60% {
+    filter: brightness(1.6) saturate(2.4) drop-shadow(0 0 14px #7de3e8);
+  }
+}
+@keyframes anim-mega {
+  0%,
+  100% {
+    filter: none;
+  }
+  40%,
+  60% {
+    filter: brightness(1.7) drop-shadow(0 0 16px #d59df2);
+  }
+}
+@keyframes anim-max {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: none;
+  }
+  50% {
+    transform: scale(1.22);
+    filter: brightness(1.4) drop-shadow(0 0 12px #f2836b);
+  }
+}
+@keyframes anim-zmove {
+  0%,
+  100% {
+    filter: none;
+  }
+  50% {
+    filter: brightness(1.8) drop-shadow(0 0 18px #ffe28a);
+  }
+}
+.mon-sprite[data-side="p2"].anim-lunge {
+  animation: anim-lunge-p2 0.34s ease;
+}
+.mon-sprite[data-side="p1"].anim-lunge {
+  animation: anim-lunge-p1 0.34s ease;
+}
+.mon-sprite.anim-hit {
+  animation: anim-hit 0.42s ease;
+}
+.mon-sprite.anim-faint {
+  animation: anim-faint 0.7s ease forwards;
+}
+.mon-sprite.anim-switch-in {
+  animation: anim-switch-in 0.42s ease;
+}
+.mon-sprite.anim-heal {
+  animation: anim-heal 0.42s ease;
+}
+.mon-sprite.anim-status {
+  animation: anim-status 0.38s ease;
+}
+.mon-sprite.anim-tera {
+  animation: anim-tera 0.6s ease;
+}
+.mon-sprite.anim-mega {
+  animation: anim-mega 0.6s ease;
+}
+.mon-sprite.anim-max {
+  animation: anim-max 0.6s ease;
+}
+.mon-sprite.anim-zmove {
+  animation: anim-zmove 0.52s ease;
+}
 .hp-panel {
   flex: 1;
   display: flex;

@@ -107,11 +107,20 @@ async function main() {
   const cdBuf = await fetchRange(cdOffset, cdOffset + cdSize - 1);
   const entries = parseCentralDir(cdBuf);
   console.log(`[sprites] 共 ${entries.length} 条目`);
+  // 根级静态图（sprites/<file>.png）与子目录（sprites/<dir>/<file>）都匹配；
+  // --incremental：跳过本地已存在的文件（目录结构漂移后补拉缺失）
+  const incremental = process.argv.includes("--incremental");
   const wanted = entries.filter((e) => {
     if (e.name.endsWith("/")) return false;
-    const m = e.name.match(/^sprites\/([^/]*)\/([^/]+\.(?:png|gif))$/i);
+    const m = e.name.match(/^sprites\/(?:([^/]*)\/)?([^/]+\.(?:png|gif))$/i);
     if (!m) return false;
-    return KEEP.includes(m[1]);
+    const dir = m[1] ?? "";
+    if (!KEEP.includes(dir)) return false;
+    if (incremental && dir !== undefined) {
+      const rel = e.name.replace(/^sprites\//, "").replace(/\//g, path.sep);
+      if (fs.existsSync(path.join(OUT, rel))) return false;
+    }
+    return true;
   });
   console.log(`[sprites] 目标 ${wanted.length} 个文件`);
   // 本地头在大块中的定位需要按 entry 逐个：本地头在 cd 里的 localOffset。
@@ -119,7 +128,7 @@ async function main() {
   wanted.sort((a, b) => a.localOffset - b.localOffset);
   const BLOCK = 16 * 1024 * 1024;
   let done = 0;
-  fs.rmSync(OUT, { recursive: true, force: true });
+  if (!incremental) fs.rmSync(OUT, { recursive: true, force: true });
   fs.mkdirSync(OUT, { recursive: true });
   let i = 0;
   while (i < wanted.length) {
