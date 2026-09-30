@@ -47,5 +47,8 @@ battle/dist/
 battle/src-tauri/target/
 battle/src-tauri/gen/
 battle/release/
-battle/src/data/
+battle/src/engine-adapter/vendor/
+battle/public/
+battle/.sprite-raw/
+battle/.engine-tmp/
 battle/.tauri/

@@ -4,6 +4,10 @@ version = "0.1.0"
 description = "宝可梦模拟对战——完全本地、单人操控双方的对战练功工具（仅限个人使用）"
 edition = "2021"
 
+[lib]
+name = "pkmn_solo_battle_lib"
+crate-type = ["staticlib", "cdylib", "lib"]
+
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
 
