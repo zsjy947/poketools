@@ -255,6 +255,20 @@ FEATURES.icon 值供窄栏与宫格共用；游戏大图标复用官方商标资
 | 气势披带移出场地区，改道具派生 | 披带是道具非场地状态（参考站即如此）；场地区与参考站逐键零偏差 | CALC-FIX |
 | calc 视图 v-show 常驻 + 模块级缓存预热 | v-if 链切走即销毁全子树，重进重发 7 请求+白屏闪烁；常驻后零请求零重绘 | CALC-FIX |
 | 导航重构：首页功能宫格 + 游戏中心 + 64px 图标窄栏；图标弃 emoji 改手写 Monoline SVG | 图鉴获得 +136px 横向空间；模拟对战入口预留；SVG 可版本管理/迭代，currentColor 天然适配高亮态 | CALC-FIX 批次三 |
+| 模拟对战并入 main（battle/ 子目录独立工程，M0-M8 验证后合并） | 评测实测见 §7.1；battle 自成可发布项目（Windows NSIS + Android APK 双端产物），与主仓 Python 栈零耦合（Tauri 2 + React + TS monorepo 子目录） | battle M8 |
+| poketools APK 走路线 B：数据静态化 + Tauri 壳（不用 sidecar） | APK 内无法运行 Python 进程（sidecar 仅桌面可行）；构建期把 poketools.db 读侧导出 JSON 分片，api.js 端点签名不变改本地实现，userstate 迁 localStorage；damage.py TS 移植以 calib 51+41 双语言对拍为硬门禁 | UPDATE §3/§4 |
+
+### §7.1 模拟对战并入评估报告（UPDATE-PLAN §3.4 指标实测，2026-10-02）
+
+| 指标 | go 条件 | 实测 / 判定 |
+|---|---|---|
+| 性能 | 统一壳冷启动 ≤3s（桌面）；列表/详情操作无感延迟 | battle 壳 = Tauri 2 + WebView（前端单 chunk 8.6MB + 供应商化引擎 11MB）；M4-M6 浏览器实测完整单打/双打对局全程交互无感延迟（批量 emit 后回合结算秒级）。统一壳冷启动 ≤3s 由 Track C A3/A4 落地实测验收 |
+| 包体 | 统一 exe ≤ 双 exe 之和 ×80%；APK ≤120MB | 数据点：poketools release 165MB（exe 54.7MB + data 110MB＝db 43.8MB + 精灵图 69MB）；battle exe 415.25MiB（454MB 精灵资产压缩内嵌）；battle APK 440MB（全量资产，docs/BATTLE.md §6.1 P2 决策保留）。统一 exe / poketools APK 体积随 Track C A1-A4 实测（素材面 69MB sprites + 13MB 前端 + 静态 JSON 分片，≤120MB 判定可行） |
+| 维护成本 | B 路线完成后仅剩 TS 单栈 | **go**：运行时全 TS/JS（battle 栈已验证）；Python 仅保留构建期数据管线；damage 公式 TS 移植用 calib 既有 smogon 基准逐 roll 对拍护栏 |
+| 数据一致性 | 静态导出与 SQLite 全表 diff 零 + 抽样 50 物种逐字段一致 | Track C A1 硬门禁（export 脚本构建期强制），结果随 A1 验收回填 |
+| 功能对等 | 迁移清单逐页验收；测试折算 TS 等价用例 | Track C A2 按 UPDATE-PLAN §4.2 清单逐页验收；battle 侧已 56 用例 + 官方 replay 对拍 36 项 |
+
+**结论：并入执行**——battle 分支 M8 合并回 main；统一壳以路线 B（数据静态化）推进，Track C A1-A4 即 UPDATE-PLAN §4 的 APK 落地；UI 迁移基线 = battle 的 React 18 + TS 组件体系（终态），过渡期 poketools 免构建 Vue 前端原样保留、竖屏化后入壳。
 
 ## §8 代码与测试规范
 
@@ -289,10 +303,10 @@ FEATURES.icon 值供窄栏与宫格共用；游戏大图标复用官方商标资
 - 道具图标缺 ~1300（TM 系列与 GO/Let's Go 杂项，前端隐藏图标兜底）。
 - Z-A 新超进化（姆克鹰等）无进化石道具数据（PokeAPI 未收录，无锁定不阻塞）。
 - 彩粉蝶花纹/霜奶仙糖饰等未建模变体（单形态种）——如需支持须扩 PokeAPI 形态映射。
-- **模拟对战（pkmn-solo-battle）**：`battle` 分支开发（Tauri 2 + React + TS monorepo 子目录，
-  与主仓 Python 栈零耦合），M0-M8 串行推进，功能验证成功后合并回 main；规划文档在 `plans/`
-  （不入 git，总执行计划 plans/MASTER-PLAN.md），功能说明文档沉淀为 `docs/BATTLE.md` 单文档；
-  APK（竖屏 UI）路线同见 plans/MASTER-PLAN.md Track C。
+- **模拟对战（pkmn-solo-battle）**：已并入 main（battle/ 子目录，双端产物与构建链见 `docs/BATTLE.md`）；
+  后续项：移动端资产分级（APK 440MB → 剔目录/按需下载）、真机安装演练（无设备环境，签名已验证）。
+- **poketools APK（Track C）**：A1 数据静态化 → A2 竖屏 UI → A3 Tauri 安卓壳 → A4 APK 发布；
+  复用 battle M0/M7 验证的 Windows 手动构建链（docs/BATTLE.md §3）。
 
 ## §10 变更历史
 
@@ -309,3 +323,4 @@ FEATURES.icon 值供窄栏与宫格共用；游戏大图标复用官方商标资
 | 审查 R1 | 全量审查 P0 五项修复：常量收编 services/constants.py / damage.ko_summary 公开化 / 连接管理 Depends 注入（四路由全覆盖）/ 静态资源 no-cache 中间件 / build_db curated 装载护栏 require_rows；独立安全扫描无新增高危项 | 交付；60 测试绿 + ruff 零告警 + 冒烟通过 |
 | CALC-FIX 批次一/二 | 跨线程 500 修复（check_same_thread）/ 计算器常驻无痕切换（v-show+模块缓存预热+并行初始化）/ Z·极巨·超极巨官方招式名（z_generic+gmax_moves 两表三端点，gmax 160 威力特判，皮卡丘 caps 脏行修复+多后缀）/ 场地区完全复刻参考站（8+7 行逐键一致、切换=追打×2、披带道具派生、gmax+极巨互斥放行）/ 新增 8 组用例 | 交付；68 测试绿 + calib 51+41 全绿 + uvicorn 并发冒烟（80 GET+30 POST 零 500） |
 | CALC-FIX 批次三 | 全局导航重构（首页功能宫格/游戏中心 #/games/64px 图标窄栏/BackBtn 层级返回/calc 全画面常驻叠加）+ Monoline 图标体系（10 枚手写 SVG + MonoIcon/RailNav/BackBtn 组件 + tools/icon-preview.html）+ 功能图标 emoji 清零 | 交付；浏览器实测全过（首页三卡/五游戏可达/窄栏高亮/详情全屏/常驻零请求/三列同高逐键一致）；资产 bump v21 |
+| battle M0-M8 | 模拟对战全栈：供应商化引擎/BattleSession 协议/数据层/队伍构建/信息流对战/动画演出/双端发布；56 用例 + 官方 replay 对拍 9 条 × 4 维 + 覆盖率 86.9%；Windows NSIS exe + Android 签名 APK + SHA256SUMS；并入评估报告（§7.1）结论=并入 | 交付；tag `battle-v1.0.0`；battle 分支合并回 main；功能说明 = docs/BATTLE.md |

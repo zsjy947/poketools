@@ -52,3 +52,4 @@ battle/public/
 battle/.sprite-raw/
 battle/.engine-tmp/
 battle/.tauri/
+battle/.keystore/
