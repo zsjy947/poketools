@@ -51,6 +51,21 @@ def ping():
     return {"ok": True}
 
 
+@app.get("/api/version")
+def version():
+    """版本横幅（P2-10）：桌面模式读 pyproject；本地模式由 manifest.data_version 表达数据版本。"""
+    import re
+    v = "dev"
+    try:
+        text = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+        m = re.search(r'^version\s*=\s*"([^"]+)"', text, re.M)
+        if m:
+            v = m.group(1)
+    except OSError:
+        pass
+    return {"version": v}
+
+
 @app.get("/")
 def index():
     if (DIST / "index.html").exists():

@@ -5,6 +5,7 @@ const HomeView = {
     <div class="home-hero">
       <h1>宝可梦工具助手</h1>
     </div>
+    <div class="home-version" v-if="ver">v{{ ver }}</div>
     <div class="feature-grid">
       <div class="feature-card" @click="enter('#/games')">
         <mono-icon name="games" :size="48"></mono-icon>
@@ -25,7 +26,9 @@ const HomeView = {
   </div>
   `,
   setup() {
+    const ver = Vue.ref("");
+    apiGet("/api/version").then((r) => { ver.value = r.version; }).catch(() => {});
     function enter(hash) { location.hash = hash; }
-    return { enter };
+    return { enter, ver };
   },
 };

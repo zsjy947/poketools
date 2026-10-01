@@ -15,6 +15,7 @@ Target Switch games (version group ids):
 """
 from __future__ import annotations
 
+import contextlib
 import csv
 import json
 import sqlite3
@@ -269,6 +270,7 @@ CREATE TABLE dex_flavor (
 CREATE TABLE form_flavor (          -- 形态独立图鉴介绍（地区形态/洛托姆换装等，默认形态走 dex_flavor）
   form_id INTEGER, game TEXT, version_label TEXT, text TEXT
 );
+CREATE INDEX idx_get_methods ON get_methods(species_id, game, form);
 CREATE TABLE tm_how (
   vg INTEGER, machine_number INTEGER, move_id INTEGER,
   how TEXT, materials TEXT, PRIMARY KEY (vg, machine_number)
@@ -323,95 +325,160 @@ CREATE INDEX idx_gm_species ON get_methods (species_id);
 """
 
 
-def main() -> None:
-    if not CSV_DIR.exists():
-        sys.exit("PokeAPI csv data not found. Run: git clone --depth 1 https://github.com/PokeAPI/pokeapi data/raw/pokeapi")
-
+def build_reference() -> dict:
+    """PokeAPI 查找表与种族/形态预备（阶段 1/5）。"""
+    ref: dict = {}
     # ---- reference tables ----
-    vg_rows = {to_int(r["id"]): r for r in read_csv("version_groups")}
+    ref["vg_rows"] = {to_int(r["id"]): r for r in read_csv("version_groups")}
 
     pokedexes = {to_int(r["id"]): r for r in read_csv("pokedexes")}
-    dex_prose_zh, dex_prose_en = {}, {}
+    ref["dex_prose_zh"], ref["dex_prose_en"] = {}, {}
     for r in read_csv("pokedex_prose"):
         lang = to_int(r["local_language_id"])
         d = to_int(r["pokedex_id"])
         if lang == ZH:
-            dex_prose_zh[d] = r["name"]
+            ref["dex_prose_zh"][d] = r["name"]
         elif lang == EN:
-            dex_prose_en[d] = r["name"]
-    dex_vgs: dict[int, list[int]] = {}
+            ref["dex_prose_en"][d] = r["name"]
+    ref["dex_vgs"]: dict[int, list[int]] = {}
     for r in read_csv("pokedex_version_groups"):
-        dex_vgs.setdefault(to_int(r["pokedex_id"]), []).append(to_int(r["version_group_id"]))
+        ref["dex_vgs"].setdefault(to_int(r["pokedex_id"]), []).append(to_int(r["version_group_id"]))
 
-    type_zh, type_en = name_map("type_names", "type_id")
-    ability_zh, _ = name_map("ability_names", "ability_id")
-    move_zh, move_en = name_map("move_names", "move_id")
-    species_zh, species_en = name_map("pokemon_species_names", "pokemon_species_id")
-    genus_zh = {}
+    ref["type_zh"], ref["type_en"] = name_map("type_names", "type_id")
+    ref["ability_zh"], _ = name_map("ability_names", "ability_id")
+    ref["move_zh"], ref["move_en"] = name_map("move_names", "move_id")
+    ref["species_zh"], ref["species_en"] = name_map("pokemon_species_names", "pokemon_species_id")
+    ref["genus_zh"] = {}
     for r in read_csv("pokemon_species_names"):
         if to_int(r["local_language_id"]) == ZH and r["genus"]:
-            genus_zh[to_int(r["pokemon_species_id"])] = r["genus"]
+            ref["genus_zh"][to_int(r["pokemon_species_id"])] = r["genus"]
 
-    item_ident = {to_int(r["id"]): r["identifier"] for r in read_csv("items")}
+    ref["item_ident"] = {to_int(r["id"]): r["identifier"] for r in read_csv("items")}
     stat_ident = {to_int(r["id"]): r["identifier"] for r in read_csv("stats")}
 
     # dex id by identifier, and vg->dex list restricted to our games
     dexes_for_vg: dict[int, list[int]] = {}
-    for dex_id, vgs in dex_vgs.items():
+    for dex_id, vgs in ref["dex_vgs"].items():
         for vg in vgs:
             if vg in GAME_OF_VG:
                 dexes_for_vg.setdefault(vg, []).append(dex_id)
-    dex_ident = {i: pokedexes[i]["identifier"] for i in pokedexes}
+    ref["dex_ident"] = {i: pokedexes[i]["identifier"] for i in pokedexes}
     vg_dex_ident: dict[int, list[str]] = {}
     for vg, ids in dexes_for_vg.items():
-        vg_dex_ident[vg] = sorted(dex_ident[i] for i in ids)
+        vg_dex_ident[vg] = sorted(ref["dex_ident"][i] for i in ids)
 
     # ---- species ----
-    species_rows = {to_int(r["id"]): r for r in read_csv("pokemon_species")}
-    egg_of_species: dict[int, set[str]] = {}
+    ref["species_rows"] = {to_int(r["id"]): r for r in read_csv("pokemon_species")}
+    ref["egg_of_species"]: dict[int, set[str]] = {}
     eg_ident = {to_int(r["id"]): r["identifier"] for r in read_csv("egg_groups")}
     for r in read_csv("pokemon_egg_groups"):
-        egg_of_species.setdefault(to_int(r["species_id"]), set()).add(
+        ref["egg_of_species"].setdefault(to_int(r["species_id"]), set()).add(
             EGG_GROUP_ZH.get(eg_ident[to_int(r["egg_group_id"])], eg_ident[to_int(r["egg_group_id"])]))
 
     # ---- forms (pokemon) ----
-    pokemon_rows = {to_int(r["id"]): r for r in read_csv("pokemon")}
-    form_meta = {to_int(r["pokemon_id"]): r for r in read_csv("pokemon_forms")}
+    ref["pokemon_rows"] = {to_int(r["id"]): r for r in read_csv("pokemon")}
+    ref["form_meta"] = {to_int(r["pokemon_id"]): r for r in read_csv("pokemon_forms")}
 
-    base_stats: dict[int, dict] = {}
-    evs: dict[int, dict] = {}
+    ref["base_stats"]: dict[int, dict] = {}
+    ref["evs"]: dict[int, dict] = {}
     for r in read_csv("pokemon_stats"):
         pid = to_int(r["pokemon_id"])
         key = stat_ident.get(to_int(r["stat_id"]))
         if key in ("hp", "attack", "defense", "special-attack", "special-defense", "speed"):
             key = {"hp": "hp", "attack": "atk", "defense": "def", "special-attack": "spa",
                    "special-defense": "spd", "speed": "spe"}[key]
-            base_stats.setdefault(pid, {})[key] = to_int(r["base_stat"])
+            ref["base_stats"].setdefault(pid, {})[key] = to_int(r["base_stat"])
             if to_int(r["effort"]):
-                evs.setdefault(pid, {})[key] = to_int(r["effort"])
+                ref["evs"].setdefault(pid, {})[key] = to_int(r["effort"])
 
-    types_of: dict[int, list[int]] = {}
+    ref["types_of"]: dict[int, list[int]] = {}
     for r in read_csv("pokemon_types"):
-        types_of.setdefault(to_int(r["pokemon_id"]), []).append(to_int(r["type_id"]))
+        ref["types_of"].setdefault(to_int(r["pokemon_id"]), []).append(to_int(r["type_id"]))
 
-    abils_of: dict[int, list[tuple[int, int]]] = {}
+    ref["abils_of"]: dict[int, list[tuple[int, int]]] = {}
     for r in read_csv("pokemon_abilities"):
-        abils_of.setdefault(to_int(r["pokemon_id"]), []).append(
+        ref["abils_of"].setdefault(to_int(r["pokemon_id"]), []).append(
             (to_int(r["ability_id"]), to_int(r["is_hidden"]) or 0))
 
-    # ---- moves ----
-    move_rows = {to_int(r["id"]): r for r in read_csv("moves")}
+    ref["move_rows"] = {to_int(r["id"]): r for r in read_csv("moves")}
+    return ref
 
-    flavor_zh: dict[int, str] = {}
-    flavor_vg: dict[int, int] = {}
+
+def build_species_forms(ref: dict) -> tuple[list, list]:
+    """species/forms 插入行（脏 *-mega-z 过滤；阶段 2/5）。"""
+    sp_rows = []
+    for sid, r in ref["species_rows"].items():
+        sp_rows.append((
+            sid, r["identifier"], ref["species_zh"].get(sid) or ref["species_en"].get(sid, r["identifier"]),
+            ref["species_en"].get(sid, r["identifier"]), ref["genus_zh"].get(sid, ""),
+            to_int(r["generation_id"]),
+            ",".join(sorted(ref["egg_of_species"].get(sid, set()))),
+            to_int(r["gender_rate"]), to_int(r["capture_rate"]),
+            to_int(r["is_legendary"]), to_int(r["is_mythical"]),
+            to_int(r["evolves_from_species_id"]) if r["evolves_from_species_id"] else None,
+            SHAPE_ZH.get(to_int(r["shape_id"]) or 0, ""),
+        ))
+
+    form_rows = []
+    skipped_mega_z = 0
+    for pid, r in ref["pokemon_rows"].items():
+        sid = to_int(r["species_id"])
+        meta = ref["form_meta"].get(pid, {})
+        form_ident = meta.get("form_identifier", "") or ""
+        # 脏数据：*-mega-z 三形态（10307/10309/10310， PokeAPI 建模错误）不入库
+        if "-mega-z" in r["identifier"]:
+            skipped_mega_z += 1
+            continue
+        label = FORM_SUFFIX_ZH.get(form_ident, form_ident)
+        sp = ref["base_stats"].get(pid, {})
+        ev = ref["evs"].get(pid, {})
+        t_ids = ref["types_of"].get(pid, [])
+        abil_list = [(ref["ability_zh"].get(a, str(a)), hidden) for a, hidden in ref["abils_of"].get(pid, [])]
+        form_rows.append((
+            pid, sid, r["identifier"], label,
+            to_int(r["is_default"]) or 0,
+            to_int(meta.get("is_mega")) or 0,
+            ",".join(ref["type_zh"].get(t, ref["type_en"].get(t, str(t))) for t in t_ids),
+            ",".join(n for n, _ in abil_list),
+            ",".join(n for n, h in abil_list if h),
+            sp.get("hp"), sp.get("atk"), sp.get("def"), sp.get("spa"), sp.get("spd"), sp.get("spe"),
+            ev.get("hp", 0), ev.get("atk", 0), ev.get("def", 0),
+            ev.get("spa", 0), ev.get("spd", 0), ev.get("spe", 0),
+            to_int(r["height"]), to_int(r["weight"]),
+        ))
+    return sp_rows, form_rows
+
+
+def build_moves(ref: dict) -> tuple[list, dict]:
+    """moves 插入行 + 简中招式说明（阶段 3/5）。"""
+    # ---- moves ----
+
+    ref["flavor_zh"]: dict[int, str] = {}
+    ref["flavor_vg"]: dict[int, int] = {}
     for r in read_csv("move_flavor_text"):
         if to_int(r["language_id"]) != ZH:
             continue
         mid, vg = to_int(r["move_id"]), to_int(r["version_group_id"])
-        if mid not in flavor_vg or vg > flavor_vg[mid]:
-            flavor_zh[mid] = r["flavor_text"].replace("\n", " ").replace("\f", " ")
-            flavor_vg[mid] = vg
+        if mid not in ref["flavor_vg"] or vg > ref["flavor_vg"][mid]:
+            ref["flavor_zh"][mid] = r["flavor_text"].replace("\n", " ").replace("\f", " ")
+            ref["flavor_vg"][mid] = vg
 
+    mv_rows = []
+    for mid, r in ref["move_rows"].items():
+        t = to_int(r["type_id"])
+        mv_rows.append((
+            mid, r["identifier"], ref["move_zh"].get(mid) or ref["move_en"].get(mid, r["identifier"]),
+            ref["move_en"].get(mid, r["identifier"]),
+            ref["type_zh"].get(t, ref["type_en"].get(t, "")), DAMAGE_CLASS.get(to_int(r["damage_class_id"]), ""),
+            to_int(r["power"]), to_int(r["accuracy"]), to_int(r["pp"]), to_int(r["priority"]),
+            to_int(r["generation_id"]), ref["flavor_zh"].get(mid, ""),
+            1 if to_int(r["target_id"]) in SPREAD_TARGET_IDS else 0,
+        ))
+    return mv_rows, ref["flavor_zh"]
+
+
+def build_learnsets(ref: dict) -> dict:
+    """学习集/机器/遭遇/图鉴成员/全世代并集/性格（阶段 4/5）。"""
     # ---- learnsets / machines (target games only) ----
     learn: list[tuple] = []
     for r in read_csv("pokemon_moves"):
@@ -419,7 +486,7 @@ def main() -> None:
         if vg not in LEARNSET_VGS:
             continue
         mid = to_int(r["move_id"])
-        if mid not in move_rows:
+        if mid not in ref["move_rows"]:
             continue
         method = METHOD_IDS.get(to_int(r["pokemon_move_method_id"]))
         level = to_int(r["level"])
@@ -431,7 +498,7 @@ def main() -> None:
         vg = to_int(r["version_group_id"])
         if vg in MACHINE_VGS:
             machine_rows.append((vg, to_int(r["machine_number"]), to_int(r["move_id"]),
-                                 item_ident.get(to_int(r["item_id"]), "")))
+                                 ref["item_ident"].get(to_int(r["item_id"]), "")))
 
     # ---- encounters (target games only) ----
     versions = {to_int(r["id"]): to_int(r["version_group_id"]) for r in read_csv("versions")}
@@ -447,7 +514,7 @@ def main() -> None:
             continue
         area = to_int(r["location_area_id"])
         pid = to_int(r["pokemon_id"])
-        sid = to_int(pokemon_rows[pid]["species_id"]) if pid in pokemon_rows else pid
+        sid = to_int(ref["pokemon_rows"][pid]["species_id"]) if pid in ref["pokemon_rows"] else pid
         enc_rows.append((
             vg, GAME_OF_VG[vg], sid, pid,
             area_ident.get(area, ""), area_prose_en.get(area, ""),
@@ -458,10 +525,10 @@ def main() -> None:
     seen_dexes: dict[str, dict] = {}
     for r in read_csv("pokemon_dex_numbers"):
         dex_id = to_int(r["pokedex_id"])
-        ident = DEX_ID_MAP.get(dex_ident.get(dex_id), dex_ident.get(dex_id))
+        ident = DEX_ID_MAP.get(ref["dex_ident"].get(dex_id), ref["dex_ident"].get(dex_id))
         if ident not in DEX_ZH:
             continue
-        vg = dex_vgs.get(dex_id, [])
+        vg = ref["dex_vgs"].get(dex_id, [])
         game = DEX_GAME_OVERRIDE.get(ident)
         if game is None:
             game = next((GAME_OF_VG[v] for v in vg if v in GAME_OF_VG), None)
@@ -470,7 +537,7 @@ def main() -> None:
         dex_rows.append((ident, to_int(r["pokedex_number"]), to_int(r["species_id"])))
         if ident not in seen_dexes:
             seen_dexes[ident] = {"game": game, "id": dex_id}
-    dex_order = {ident: i for i, ident in enumerate(DEX_ORDER)}
+    ref["dex_order"] = {ident: i for i, ident in enumerate(DEX_ORDER)}
 
     # ---- learnsets_all（全世代，供伤害计算器招式并集） ----
     learn_all: list[tuple] = []
@@ -496,95 +563,44 @@ def main() -> None:
                             up if up != down else None,
                             down if up != down else None))
 
+    return {"learn": learn, "machine_rows": machine_rows, "enc_rows": enc_rows,
+            "dex_rows": dex_rows, "seen_dexes": seen_dexes, "learn_all": learn_all,
+            "nature_rows": nature_rows}
+
+
+def write_and_merge(con, ref: dict, ld: dict) -> None:
+    """建库写入 + curated 合并（z/gmax/fga/eb + 派生 ddf；阶段 5/5）。"""
     # ---- write db ----
-    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    if DB_PATH.exists():
-        DB_PATH.unlink()
-    con = sqlite3.connect(DB_PATH)
-    con.row_factory = sqlite3.Row
-    con.executescript(SCHEMA)
-    con.executemany("INSERT OR IGNORE INTO learnsets_all VALUES (?,?,?,?)", learn_all)
-    con.executemany("INSERT OR REPLACE INTO natures VALUES (?,?,?,?,?)", nature_rows)
+    con.executemany("INSERT OR IGNORE INTO learnsets_all VALUES (?,?,?,?)", ld["learn_all"])
+    con.executemany("INSERT OR REPLACE INTO natures VALUES (?,?,?,?,?)", ld["nature_rows"])
     con.executemany("INSERT OR REPLACE INTO vgs VALUES (?,?,?)",
                     [(to_int(r["id"]), r["identifier"], to_int(r["generation_id"]))
-                     for r in vg_rows.values()])
+                     for r in ref["vg_rows"].values()])
 
     con.executemany("INSERT INTO games VALUES (?,?,?,?,?,?,?,?)",
                     [(gid, g["name_zh"], g["name_en"], g["gen"], g["has_breeding"],
                       g["has_tms"], json.dumps(g["features"], ensure_ascii=False), i)
                      for i, (gid, g) in enumerate(GAMES.items())])
 
-    for ident, info in seen_dexes.items():
+    for ident, info in ld["seen_dexes"].items():
         did = info["id"]
         con.execute("INSERT INTO regional_dexes VALUES (?,?,?,?,?)",
-                    (ident, info["game"], DEX_ZH.get(ident, dex_prose_zh.get(did) or ident),
-                     dex_prose_en.get(did) or ident, dex_order[ident]))
+                    (ident, info["game"], DEX_ZH.get(ident, ref["dex_prose_zh"].get(did) or ident),
+                     ref["dex_prose_en"].get(did) or ident, ref["dex_order"][ident]))
 
-    con.executemany("INSERT INTO dex_entries VALUES (?,?,?)", dex_rows)
+    con.executemany("INSERT INTO dex_entries VALUES (?,?,?)", ld["dex_rows"])
 
-    sp_rows = []
-    for sid, r in species_rows.items():
-        sp_rows.append((
-            sid, r["identifier"], species_zh.get(sid) or species_en.get(sid, r["identifier"]),
-            species_en.get(sid, r["identifier"]), genus_zh.get(sid, ""),
-            to_int(r["generation_id"]),
-            ",".join(sorted(egg_of_species.get(sid, set()))),
-            to_int(r["gender_rate"]), to_int(r["capture_rate"]),
-            to_int(r["is_legendary"]), to_int(r["is_mythical"]),
-            to_int(r["evolves_from_species_id"]) if r["evolves_from_species_id"] else None,
-            SHAPE_ZH.get(to_int(r["shape_id"]) or 0, ""),
-        ))
+    sp_rows, form_rows = build_species_forms(ref)
     con.executemany("INSERT INTO species VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", sp_rows)
-
-    form_rows = []
-    skipped_mega_z = 0
-    for pid, r in pokemon_rows.items():
-        sid = to_int(r["species_id"])
-        meta = form_meta.get(pid, {})
-        form_ident = meta.get("form_identifier", "") or ""
-        # 脏数据：*-mega-z 三形态（10307/10309/10310， PokeAPI 建模错误）不入库
-        if "-mega-z" in r["identifier"]:
-            skipped_mega_z += 1
-            continue
-        label = FORM_SUFFIX_ZH.get(form_ident, form_ident)
-        sp = base_stats.get(pid, {})
-        ev = evs.get(pid, {})
-        t_ids = types_of.get(pid, [])
-        abil_list = [(ability_zh.get(a, str(a)), hidden) for a, hidden in abils_of.get(pid, [])]
-        form_rows.append((
-            pid, sid, r["identifier"], label,
-            to_int(r["is_default"]) or 0,
-            to_int(meta.get("is_mega")) or 0,
-            ",".join(type_zh.get(t, type_en.get(t, str(t))) for t in t_ids),
-            ",".join(n for n, _ in abil_list),
-            ",".join(n for n, h in abil_list if h),
-            sp.get("hp"), sp.get("atk"), sp.get("def"), sp.get("spa"), sp.get("spd"), sp.get("spe"),
-            ev.get("hp", 0), ev.get("atk", 0), ev.get("def", 0),
-            ev.get("spa", 0), ev.get("spd", 0), ev.get("spe", 0),
-            to_int(r["height"]), to_int(r["weight"]),
-        ))
     con.executemany(
         "INSERT INTO forms VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", form_rows)
-    if skipped_mega_z:
-        print(f"  skipped {skipped_mega_z} dirty *-mega-z forms")
-
-    mv_rows = []
-    for mid, r in move_rows.items():
-        t = to_int(r["type_id"])
-        mv_rows.append((
-            mid, r["identifier"], move_zh.get(mid) or move_en.get(mid, r["identifier"]),
-            move_en.get(mid, r["identifier"]),
-            type_zh.get(t, type_en.get(t, "")), DAMAGE_CLASS.get(to_int(r["damage_class_id"]), ""),
-            to_int(r["power"]), to_int(r["accuracy"]), to_int(r["pp"]), to_int(r["priority"]),
-            to_int(r["generation_id"]), flavor_zh.get(mid, ""),
-            1 if to_int(r["target_id"]) in SPREAD_TARGET_IDS else 0,
-        ))
+    mv_rows, _fzh = build_moves(ref)
     con.executemany("INSERT INTO moves VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", mv_rows)
 
     # ---- 全量道具（缺中文名的条目不入库；Z 纯晶由 z_moves.json 注入） ----
     item_zh_all, _ = name_map("item_names", "item_id")
     item_rows = [(iid, ident, item_zh_all.get(iid) or "")
-                 for iid, ident in item_ident.items() if item_zh_all.get(iid)]
+                 for iid, ident in ref["item_ident"].items() if item_zh_all.get(iid)]
     z_file = ROOT / "data" / "curated" / "z_moves.json"
     if z_file.exists():
         zdata = json.loads(z_file.read_text(encoding="utf-8"))
@@ -617,18 +633,21 @@ def main() -> None:
     item_rows.sort(key=lambda r: r[0])
     con.executemany("INSERT OR REPLACE INTO items VALUES (?,?,?)", item_rows)
 
-    # ---- 特性表（名称层；intro/effect/extra 由 scrape_52poke 抓取填充） ----
+    # ---- 特性表（名称层；intro/effect/extra 由 scrape_52poke 抓取填充）----
+    # 无简中名的条目（eelevate 等 Champions 特性）不入库：界面不展示、forms 不引用（已核实），
+    # 缺口账目在 data/curated/TODO.json#ability_parse_failed（P2-6）
     ability_ident = {to_int(r["id"]): r["identifier"] for r in read_csv("abilities")}
-    con.executemany(
-        "INSERT OR IGNORE INTO abilities (ability_id, name_zh) VALUES (?,?)",
-        [(aid, ability_zh.get(aid) or ability_ident.get(aid, str(aid)))
-         for aid in sorted(ability_ident)])
+    ability_rows = [(aid, ref["ability_zh"][aid]) for aid in sorted(ability_ident) if ref["ability_zh"].get(aid)]
+    skipped_abilities = len(ability_ident) - len(ability_rows)
+    con.executemany("INSERT OR IGNORE INTO abilities (ability_id, name_zh) VALUES (?,?)", ability_rows)
+    if skipped_abilities:
+        print(f"  skipped {skipped_abilities} abilities without zh names (see TODO.json)")
 
-    con.executemany("INSERT OR IGNORE INTO learnsets VALUES (?,?,?,?,?,?)", learn)
-    con.executemany("INSERT OR IGNORE INTO machines VALUES (?,?,?,?)", machine_rows)
-    con.executemany("INSERT OR IGNORE INTO encounters VALUES (?,?,?,?,?,?,?,?,?,?)", enc_rows)
+    con.executemany("INSERT OR IGNORE INTO learnsets VALUES (?,?,?,?,?,?)", ld["learn"])
+    con.executemany("INSERT OR IGNORE INTO machines VALUES (?,?,?,?)", ld["machine_rows"])
+    con.executemany("INSERT OR IGNORE INTO encounters VALUES (?,?,?,?,?,?,?,?,?,?)", ld["enc_rows"])
     con.executemany("INSERT OR REPLACE INTO move_flavor VALUES (?,?,?)",
-                    [(mid, t, "zh") for mid, t in flavor_zh.items()])
+                    [(mid, t, "zh") for mid, t in ref["flavor_zh"].items()])
 
     # 种族图鉴描述（PokeAPI 简中仅覆盖到剑盾，新游戏由 52poke 补充）
     ver_ident = {to_int(r["id"]): r["identifier"] for r in read_csv("versions")}
@@ -654,8 +673,8 @@ def main() -> None:
     evo_rows = []
     for r in read_csv("pokemon_evolution"):
         to_sid = to_int(r["evolved_species_id"])
-        frm = to_int(species_rows[to_sid]["evolves_from_species_id"]) \
-            if to_sid in species_rows and species_rows[to_sid]["evolves_from_species_id"] else None
+        frm = to_int(ref["species_rows"][to_sid]["evolves_from_species_id"]) \
+            if to_sid in ref["species_rows"] and ref["species_rows"][to_sid]["evolves_from_species_id"] else None
         evo_rows.append((
             frm,
             to_sid,
@@ -665,17 +684,17 @@ def main() -> None:
             item_zh.get(to_int(r["held_item_id"]) or 0, ""),
             r["time_of_day"] or "",
             location_zh.get(to_int(r["location_id"]) or 0, ""),
-            move_zh.get(to_int(r["known_move_id"]) or 0, ""),
+            ref["move_zh"].get(to_int(r["known_move_id"]) or 0, ""),
             to_int(r["minimum_happiness"]),
             to_int(r["minimum_affection"]),
             to_int(r["needs_overworld_rain"]) or 0,
             to_int(r["turn_upside_down"]) or 0,
             # 冷门条件：攻击与防御关系 / 队伍条件 / 交换对象 / 性别与地区限定等
             (None if r["relative_physical_stats"] == "" else to_int(r["relative_physical_stats"])),
-            species_zh.get(to_int(r["party_species_id"]) or 0, ""),
-            type_zh.get(to_int(r["party_type_id"]) or 0, ""),
-            species_zh.get(to_int(r["trade_species_id"]) or 0, ""),
-            type_zh.get(to_int(r["known_move_type_id"]) or 0, ""),
+            ref["species_zh"].get(to_int(r["party_species_id"]) or 0, ""),
+            ref["type_zh"].get(to_int(r["party_type_id"]) or 0, ""),
+            ref["species_zh"].get(to_int(r["trade_species_id"]) or 0, ""),
+            ref["type_zh"].get(to_int(r["known_move_type_id"]) or 0, ""),
             {1: "雌性", 2: "雄性"}.get(to_int(r["gender_id"]) or 0, ""),
             region_zh.get(to_int(r["region_id"]) or 0, ""),
             to_int(r["near_special_rock"]) or None,
@@ -738,81 +757,9 @@ def main() -> None:
                         fga_rows.append((f[0], g))
         con.executemany("INSERT OR REPLACE INTO form_game_availability VALUES (?,?)", fga_rows)
         require_rows(con, "form_game_availability", 150, fga_file.name)
-
-        # ---- 图鉴默认形态：按可用性自动派生（同图鉴成员 + 该游戏可用的形态） ----
-        REGION_PREF = {"sword-shield": ["galar", "alola", "hisui", "paldea"],
-                       "legends-arceus": ["hisui", "alola"],
-                       "scarlet-violet": ["paldea", "galar", "alola", "hisui"],
-                       "legends-za": ["galar", "hisui", "alola", "paldea"]}
-        dex_region = {"galar": "galar", "isle-of-armor": "galar", "crown-tundra": "galar",
-                      "hisui": "hisui", "paldea": "paldea", "kitakami": "paldea",
-                      "blueberry": "paldea"}
-        suffix_of = {}
-        for f in con.execute("SELECT id, species_id, identifier, is_default FROM forms"):
-            if f["is_default"]:
-                continue
-            _, _, suf = f["identifier"].rpartition("-")
-            suffix_of[f["id"]] = (f["species_id"], suf)
-        avail: dict[int, set[str]] = {}
-        for fid, g in con.execute("SELECT form_id, game_id FROM form_game_availability"):
-            avail.setdefault(fid, set()).add(g)
-        ddf_rows: list[tuple] = []
-        for dex, game in con.execute("SELECT id, game_id FROM regional_dexes").fetchall():
-            pref = REGION_PREF.get(game, [])
-            region = dex_region.get(dex, "")
-            for e in con.execute(
-                    "SELECT species_id FROM dex_entries WHERE dex_id=?", (dex,)).fetchall():
-                sid = e["species_id"]
-                cands = [(fid, suf) for fid, (s2, suf) in suffix_of.items() if s2 == sid
-                         and game in avail.get(fid, set())
-                         and suf not in ("gmax", "mega", "primal", "mega-x", "mega-y")]
-                if not cands:
-                    continue
-                pick = None
-                cand_sufs = {s for _, s in cands}
-                if region in cand_sufs:
-                    pick = next(f for f, s in cands if s == region)
-                else:
-                    for p in pref:
-                        if p in cand_sufs:
-                            pick = next(f for f, s in cands if s == p)
-                            break
-                if pick is None and len(cands) == 1:
-                    pick = cands[0][0]
-                if pick is not None:
-                    ddf_rows.append((dex, sid, pick))
-        # 人工增补/覆盖（curated dex_default_forms.json，优先生效）
-        ddf_file = ROOT / "data" / "curated" / "dex_default_forms.json"
-        if ddf_file.exists():
-            manual = json.loads(ddf_file.read_text(encoding="utf-8"))
-            manual_pairs = set()
-            for dex, m in manual.items():
-                for sid_s, suffix in m.items():
-                    sid = int(sid_s)
-                    row = con.execute(
-                        """SELECT id FROM forms WHERE species_id=? AND identifier LIKE '%-'||?
-                           ORDER BY id LIMIT 1""", (sid, suffix)).fetchone()
-                    if row:
-                        ddf_rows.append((dex, sid, row[0]))
-                        manual_pairs.add((dex, sid))
-            ddf_rows = [r for r in ddf_rows if (r[0], r[1]) not in manual_pairs] + \
-                       [r for r in ddf_rows if (r[0], r[1]) in manual_pairs]
-        # 一致性校验：默认形态必须在该游戏可用（hidden/未配置形态不校验）
-        bad = []
-        seen_pk = set()
-        final_ddf = []
-        for dex, sid, fid in ddf_rows:
-            if (dex, sid) in seen_pk:
-                continue
-            seen_pk.add((dex, sid))
-            game = con.execute("SELECT game_id FROM regional_dexes WHERE id=?", (dex,)).fetchone()
-            if fid in avail and game and game[0] not in avail[fid]:
-                bad.append((dex, sid, fid))
-                continue
-            final_ddf.append((dex, sid, fid))
-        if bad:
-            print(f"  !! dex_default_forms 与可用性冲突 {len(bad)} 条（已跳过）：{bad[:6]}")
-        con.executemany("INSERT OR REPLACE INTO dex_default_forms VALUES (?,?,?)", final_ddf)
+        # ---- 图鉴默认形态：派生外移 scripts/derive_dex_defaults.py（P1-7）----
+        from derive_dex_defaults import derive as derive_dex_defaults
+        derive_dex_defaults(con)
 
     # ---- 地区形态分支进化链（curated evo_branches.json） ----
     eb_file = ROOT / "data" / "curated" / "evo_branches.json"
@@ -859,6 +806,37 @@ def main() -> None:
 
     con.commit()
 
+
+
+
+def _reset_db(con: sqlite3.Connection) -> None:
+    """清空旧库（DROP 全部对象后由 SCHEMA 重建）。
+    不做文件级删除：Windows 下文件监控/索引服务可能对新建文件短暂持有句柄，
+    unlink 会误报锁；就地 DROP 语义等同且对句柄免疫。"""
+    objs = [r[0] for r in con.execute(
+        "SELECT name FROM sqlite_master WHERE type IN ('table','view','trigger')")]
+    for name in objs:
+        con.execute(f'DROP TABLE IF EXISTS "{name}"')
+    con.commit()
+
+
+def main() -> None:
+    if not CSV_DIR.exists():
+        sys.exit("PokeAPI csv data not found. Run: git clone --depth 1 https://github.com/PokeAPI/pokeapi data/raw/pokeapi")
+    ref = build_reference()
+    ref["flavor_zh"], ref["flavor_vg"] = {}, {}
+    ld = build_learnsets(ref)
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+    # -wal/-shm 残留清理（可缺省；主库就地 DROP 重建；被句柄占用时留给 SQLite 自行回收）
+    for suffix in ("-wal", "-shm"):
+        with contextlib.suppress(PermissionError):
+            DB_PATH.with_name(DB_PATH.name + suffix).unlink(missing_ok=True)
+    con = sqlite3.connect(DB_PATH)
+    con.row_factory = sqlite3.Row
+    _reset_db(con)
+    con.executescript(SCHEMA)
+    write_and_merge(con, ref, ld)
+    con.commit()
     # ---- report ----
     for table in ("games", "regional_dexes", "dex_entries", "species", "forms",
                   "moves", "learnsets", "machines", "encounters",
@@ -879,6 +857,7 @@ def main() -> None:
         print(f"  {row[0]:14s} {row[1]:14s} {row[2]}  {row[3]} species")
     con.close()
     print(f"\nOK -> {DB_PATH}")
+
 
 
 if __name__ == "__main__":

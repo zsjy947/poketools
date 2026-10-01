@@ -143,7 +143,7 @@ const DetailView = {
             <el-collapse-item title="性格 / 努力值 / 个体值（展开后实时重算）" name="sc">
               <div class="fld-row">
                 <span class="lbl">性格</span>
-                <el-select v-model="sc.nature" size="small" style="width:170px" filterable>
+                <el-select v-model="sc.nature" size="small" class="w170" filterable>
                   <el-option v-for="n in natures" :key="n.identifier" :value="n.identifier"
                     :label="n.name_zh + (n.up && n.up !== n.down ? '（+' + STAT_ZH[n.up] + ' -' + STAT_ZH[n.down] + '）' : '')" />
                 </el-select>
@@ -152,9 +152,9 @@ const DetailView = {
               <div class="fld-row" v-for="k in STAT_KEYS" :key="k">
                 <span class="lbl">{{ STAT_ZH[k] }}</span>
                 <span class="mini">努力值</span>
-                <el-input-number v-model="sc.ev[k]" :min="0" :max="252" :step="4" size="small" style="width:96px" />
+                <el-input-number v-model="sc.ev[k]" :min="0" :max="252" :step="4" size="small" class="w96" />
                 <span class="mini">个体值</span>
-                <el-input-number v-model="sc.iv[k]" :min="0" :max="31" size="small" style="width:96px" />
+                <el-input-number v-model="sc.iv[k]" :min="0" :max="31" size="small" class="w96" />
                 <span class="mini result">= <b>{{ computedStats[k] ?? "—" }}</b></span>
               </div>
             </el-collapse-item>

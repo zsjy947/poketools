@@ -348,7 +348,8 @@ FEATURES.icon 值供窄栏与宫格共用；游戏大图标复用官方商标资
 1. **数据完整性**（test_db）：行数护栏、新表覆盖率断言；
 2. **API 集成**（test_api）：每新增/修改端点必须带正反用例；
 3. **纯函数**（test_damage / test_breeding）；
-4. **公式改动铁律**：扩 `tools/calib` 案例并重跑 `node harness.mjs → python check.py` 逐 roll 全绿；
+4. **公式改动铁律**：扩 `tools/calib` 案例并重跑 `node harness.mjs → python check.py` 逐 roll 全绿（JS 引擎另有 calib-js 同基准门禁）；
+4b. **静态化/等价性门禁**：export diff 零差异 + `verify_static_equivalence.py` 524 调用一致 + `tools/smoke.mjs` 冒烟 + `state.test.mjs`——改 routers 或 js/local 任一侧都必须重跑；
 5. **数据管线回归**：`build_db → build_z_moves → build_db → scrape_52poke → fetch_*` 重建后跑 pytest。
 
 最终回归 checklist：重建管线 → pytest 全绿 → calib 全绿 → `python -m app.main` 逐页冒烟
@@ -387,3 +388,4 @@ FEATURES.icon 值供窄栏与宫格共用；游戏大图标复用官方商标资
 | Track C A1 数据静态化 | export_static_data.py（33 表 83.2 万行分片导出 + 全表 diff 零门禁）+ js/local/* 本地引擎（routers 逐行移植，damage.py TS/JS 化）+ api.js 后端不可达自动切本地；等价性 524 调用逐字段一致；calib-js 51+41 全绿 | 交付；pytest 68 绿 + ruff 零告警 + 浏览器纯静态实测（首页/图鉴/详情/招式/计算器零 JS 错误） |
 | Track C A2 竖屏 UI | mobile.css 统一 ≤768/≤480 竖屏层（底部 Tab/窄栏底部化/双列图鉴/详情分段锚点+三层吸顶/EV 卡片流/特化页筛选抽屉/计算器纵向堆叠+手风琴/弹窗全屏）+ viewport/theme-color meta；桌面 >768 零影响 | 交付；移动 390×844 与桌面 1280 双视口浏览器实测（导航/锚点滚动/抽屉/手风琴/卡片流/桌面回归全过） |
 | Track C A3/A4 APK | apk/ 独立 Tauri 2 壳（竖屏锁定/零权限/图标全套）+ build_apk_assets.py 资产组装 + 手动构建链复用；产物 92.5MB ≤120MB 门禁、apksigner v2 验证、SHA256SUMS | 交付；安装演练环境受限记录（同 battle M7） |
+| Track D D1-D3 | 全量复审（基线四绿+冒烟）+ OPTIMIZE-PLAN 执行：api.js 降级状态机修复（P0）/js/utils 抽取+50 处内联样式收敛+toast 去重/test_api 五域拆分/smoke+state 单测固化/build_db 五函数化+derive_dex_defaults 外移/scrape parsers 拆分/abilities 中文过滤+get_methods 索引+版本横幅；R2 延后至 React 统一壳、P2-8 否决（双实现镜像） | 交付；管线重跑全表 diff 仅预期 -63 abilities；四绿+524 等价+10 state+冒烟全绿 |

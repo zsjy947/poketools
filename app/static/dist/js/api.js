@@ -3,10 +3,12 @@
  * 端点签名不变、前端视图零改动；正常桌面模式仍走 FastAPI。 */
 function _apiError(e) {
   console.error(e);
+  e._toasted = true;   // 页面级 catch 据此跳过重复 toast（P2-3 去重）
   try { window.dispatchEvent(new CustomEvent("api-error", { detail: String(e.message || e) })); } catch (_) {}
 }
 
-let _localMode = false;   // 一旦后端判定不可达（APK/Tauri 壳）即常驻本地模式
+let _localMode = false;        // 一旦后端判定不可达（APK/Tauri 壳）即常驻本地模式
+let _backendConfirmed = false; // 首个 JSON 响应确认后端在线；此前任何失败都视为「无后端」转本地
 
 async function _localDispatch(method, url, params, body) {
   try {
@@ -15,6 +17,12 @@ async function _localDispatch(method, url, params, body) {
     _apiError(e);
     throw e;
   }
+}
+
+function _looksStatic(res) {
+  /* 壳内静态服务特征：200 但非 JSON（SPA 兜底 HTML）；未确认后端时的 404 */
+  const ctype = res.headers.get("content-type") || "";
+  return (res.ok && !ctype.includes("application/json")) || (!_backendConfirmed && res.status === 404);
 }
 
 async function apiGet(url, params = {}) {
@@ -32,9 +40,17 @@ async function apiGet(url, params = {}) {
     return _localDispatch("GET", url, params);
   }
   const ctype = res.headers.get("content-type") || "";
-  if (res.ok && ctype.includes("application/json")) return res.json();
-  _localMode = true;     // 壳内静态服务返回 HTML/404 → 本地数据引擎
-  return _localDispatch("GET", url, params);
+  if (res.ok && ctype.includes("application/json")) {
+    _backendConfirmed = true;
+    return res.json();
+  }
+  if (_looksStatic(res)) {
+    _localMode = true;   // 壳内静态服务（HTML/404 兜底）→ 本地数据引擎
+    return _localDispatch("GET", url, params);
+  }
+  const e = new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+  _apiError(e);          // 真实后端的 4xx/5xx：照常报错，不误切本地
+  throw e;
 }
 async function apiSend(method, url, body) {
   if (_localMode) return _localDispatch(method, url, null, body);
@@ -50,7 +66,14 @@ async function apiSend(method, url, body) {
     return _localDispatch(method, url, null, body);
   }
   const ctype = res.headers.get("content-type") || "";
-  if (res.ok && ctype.includes("application/json")) return res.json();
+  if (res.ok && ctype.includes("application/json")) {
+    _backendConfirmed = true;
+    return res.json();
+  }
+  if (_looksStatic(res)) {
+    _localMode = true;   // POST 打到壳内静态服务（非 JSON 响应）→ 本地写入
+    return _localDispatch(method, url, null, body);
+  }
   const e = new Error((await res.json().catch(() => ({}))).detail || res.statusText);
   _apiError(e);
   throw e;

@@ -7,7 +7,7 @@ const DonutView = {
     <div class="page-head">
       <span class="page-title">甜甜圈工房</span>
       <el-tag size="small" type="warning" effect="plain">传说 Z-A</el-tag>
-      <span style="color:#888;font-size:13px">旅馆Ｚ安馨儿的甜甜圈店 · 树果配方与风味力量</span>
+      <span class="muted-13">旅馆Ｚ安馨儿的甜甜圈店 · 树果配方与风味力量</span>
     </div>
 
     <template v-if="d">
@@ -59,9 +59,9 @@ const DonutView = {
         <div class="filter-mask" v-if="showFilters" @click="showFilters = false"></div>
         <div class="filter-bar" :class="{open: showFilters}">
         <div class="page-head">
-          <el-input v-model="berryQ" clearable placeholder="搜索树果" style="width:160px" />
+          <el-input v-model="berryQ" clearable placeholder="搜索树果" class="w160" />
           <div class="spacer"></div>
-          <span style="font-size:13px;color:#888">{{ filteredBerries.length }} 种</span>
+          <span class="muted-13">{{ filteredBerries.length }} 种</span>
         </div>
         </div>
         <el-table :data="filteredBerries" size="small" height="520">
@@ -96,7 +96,7 @@ const DonutView = {
 
       <el-tab-pane :label="'我的配方 (' + customList.length + ')'" name="custom">
         <div class="page-head">
-          <span style="color:#888;font-size:13px">自由组合记录</span>
+          <span class="muted-13">自由组合记录</span>
           <div class="spacer"></div>
           <el-button type="primary" size="small" @click="openEditor">＋ 录入配方</el-button>
         </div>
@@ -129,7 +129,7 @@ const DonutView = {
             <el-select v-model="e.power" size="small" filterable style="width:140px" placeholder="力量">
               <el-option v-for="p in powerNames" :key="p" :value="p" :label="p" />
             </el-select>
-            <el-select v-model="e.type" size="small" clearable style="width:100px" placeholder="属性">
+            <el-select v-model="e.type" size="small" clearable class="w100" placeholder="属性">
               <el-option v-for="t in TYPE_LIST" :key="t" :value="t" :label="t" />
             </el-select>
             <el-select v-model="e.level" size="small" style="width:80px">
@@ -141,15 +141,15 @@ const DonutView = {
             @click="editor.effects.push({power: '', type: '', level: 1})">＋ 添加</el-button>
         </el-form-item>
         <el-form-item label="树果" required>
-          <div style="width:100%">
+          <div class="w-full">
             <el-select :model-value="null" filterable
-              placeholder="搜索并添加树果（同种可多个）" style="width:100%"
+              placeholder="搜索并添加树果（同种可多个）" class="w-full"
               @change="addBerry">
               <el-option v-for="b in d.berries" :key="b.name" :value="b.name" :label="b.name" />
             </el-select>
             <div v-for="(it, i) in editor.ingredients" :key="it.name" class="qty-row">
               <span class="qty-name">{{ it.name }}</span>
-              <el-input-number v-model="it.count" :min="1" :max="8" size="small" style="width:96px" />
+              <el-input-number v-model="it.count" :min="1" :max="8" size="small" class="w96" />
               <el-button size="small" text type="danger" @click="editor.ingredients.splice(i, 1)">删</el-button>
             </div>
             <div class="berry-count" :class="{bad: berryTotal > 0 && (berryTotal < 3 || berryTotal > 8)}">

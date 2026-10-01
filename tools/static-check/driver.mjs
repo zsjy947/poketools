@@ -21,14 +21,13 @@ const localStorageShim = {
 const ctx = vm.createContext({
   console,
   localStorage: localStorageShim,
-  globalThis: {},
 });
 const FILES = ["damage.js", "data-core.js", "state.js", "pokemon.js",
   "lookup.js", "calc.js", "local-api.js"];
 for (const f of FILES) {
   new vm.Script(readFileSync(path.join(DIST, f), "utf-8"), { filename: f }).runInContext(ctx);
 }
-const PKT = ctx.globalThis.__PKT_LOCAL__;
+const PKT = ctx.__PKT_LOCAL__;
 PKT.data.setLoader((rel) => Promise.resolve(
   JSON.parse(readFileSync(path.join(DATA, rel), "utf-8"))));
 

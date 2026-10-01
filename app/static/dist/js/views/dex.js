@@ -57,7 +57,7 @@ const DexView = {
       </el-select>
       <el-input v-model="q" size="small" clearable placeholder="搜索名称/编号" style="width: 180px" />
       <div class="spacer"></div>
-      <span style="font-size:13px;color:#888">显示 {{ entries.length }} 只</span>
+      <span class="muted-13">显示 {{ entries.length }} 只</span>
     </div>
 
     <div class="dex-grid" v-loading="loading">
@@ -142,7 +142,7 @@ const DexView = {
         refreshCounts();
       } catch (err) {
         e.caught = prev;                      // 失败回滚
-        store.toast("标记失败：" + (err.message || err), "error");
+        if (!err._toasted) store.toast("标记失败：" + (err.message || err), "error");
       }
     }
     async function bulkSet(ids, caught, label) {
@@ -158,7 +158,7 @@ const DexView = {
         await loadDex();
         store.toast(caught ? `已标记 ${ids.length} 只` : `已清除 ${ids.length} 只标记`, "success");
       } catch (err) {
-        store.toast("批量操作失败：" + (err.message || err), "error");
+        if (!err._toasted) store.toast("批量操作失败：" + (err.message || err), "error");
       }
     }
     async function onBatch(cmd) {

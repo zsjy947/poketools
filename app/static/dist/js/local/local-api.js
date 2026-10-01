@@ -16,6 +16,10 @@
     const body = method === "GET" ? null : (paramsOrBody || {});
 
     if (head === "ping") return { ok: true };
+    if (head === "version") {
+        // 本地模式以数据分片版本表达（manifest.data_version；桌面模式为 pyproject 版本）
+        return { version: (await PKT.data.manifest()).data_version };
+    }
     if (head === "games") return PKT.pokemonApi.games();
     if (head === "dex" && sub) return PKT.pokemonApi.dexEntries(decodeURIComponent(sub), p);
     if (head === "pokemon" && sub) {

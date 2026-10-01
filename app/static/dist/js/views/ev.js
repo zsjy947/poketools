@@ -4,26 +4,26 @@ const EvView = {
   <div class="ev-page">
     <div class="page-head">
       <span class="page-title">{{ game ? game.name_zh : "" }} · 努力值查询</span>
-      <span style="color:#888;font-size:13px">击倒该宝可梦可获得的努力值点数（仅当前游戏图鉴，含野外自然出现地点）</span>
+      <span class="muted-13">击倒该宝可梦可获得的努力值点数（仅当前游戏图鉴，含野外自然出现地点）</span>
     </div>
     <div class="page-head">
       <el-button class="filter-toggle" size="small" @click="showFilters = !showFilters">
         筛选{{ stat ? '' : '' }}<mono-icon name="ev" :size="14" style="margin-left:4px"></mono-icon>
       </el-button>
       <div class="spacer"></div>
-      <span style="font-size:13px;color:#888">{{ list.length }} 只</span>
+      <span class="muted-13">{{ list.length }} 只</span>
     </div>
     <div class="filter-mask" v-if="showFilters" @click="showFilters = false"></div>
     <div class="filter-bar page-head" :class="{open: showFilters}">
       <div class="page-head" style="margin:0">
-      <el-select v-model="stat" style="width:110px">
+      <el-select v-model="stat" class="w110">
         <el-option v-for="(v, k) in EV_NAMES" :key="k" :value="k" :label="v" />
       </el-select>
-      <el-select v-model="value" style="width:130px">
+      <el-select v-model="value" class="w130">
         <el-option :value="0" label="任意点数" />
         <el-option v-for="v in [1, 2, 3]" :key="v" :value="v" :label="'+' + v + ' 点'" />
       </el-select>
-      <el-input v-model="q" clearable placeholder="搜索名称" style="width:160px" />
+      <el-input v-model="q" clearable placeholder="搜索名称" class="w160" />
       <el-button size="small" @click="showFilters = false">收起</el-button>
       </div>
     </div>

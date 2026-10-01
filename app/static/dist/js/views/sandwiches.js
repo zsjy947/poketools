@@ -5,7 +5,7 @@ const SandwichView = {
     <div class="page-head">
       <span class="page-title">三明治食谱</span>
       <el-tag size="small" type="warning" effect="plain">朱／紫</el-tag>
-      <span style="color:#888;font-size:13px">按食力筛选 · 自由模式可录入自己的配方</span>
+      <span class="muted-13">按食力筛选 · 自由模式可录入自己的配方</span>
     </div>
 
     <div class="hero-banner">
@@ -20,13 +20,13 @@ const SandwichView = {
         <div class="filter-mask" v-if="showFilters" @click="showFilters = false"></div>
         <div class="filter-bar" :class="{open: showFilters}">
         <div class="page-head">
-          <el-select v-model="power" clearable placeholder="食力类型" style="width:130px">
+          <el-select v-model="power" clearable placeholder="食力类型" class="w130">
             <el-option v-for="p in POWER_LIST" :key="p" :value="p" :label="p" />
           </el-select>
-          <el-select v-model="ptype" clearable placeholder="目标属性" style="width:110px">
+          <el-select v-model="ptype" clearable placeholder="目标属性" class="w110">
             <el-option v-for="t in TYPE_LIST" :key="t" :value="t" :label="t" />
           </el-select>
-          <el-select v-model="level" clearable placeholder="等级" style="width:100px">
+          <el-select v-model="level" clearable placeholder="等级" class="w100">
             <el-option v-for="v in [1, 2, 3]" :key="v" :value="v" :label="'Lv.' + v" />
           </el-select>
           <el-radio-group v-model="sort" size="small">
@@ -34,9 +34,9 @@ const SandwichView = {
             <el-radio-button value="power">按效果</el-radio-button>
             <el-radio-button value="level">按等级</el-radio-button>
           </el-radio-group>
-          <el-input v-model="q" clearable placeholder="搜索名称/食材" style="width:170px" />
+          <el-input v-model="q" clearable placeholder="搜索名称/食材" class="w170" />
           <div class="spacer"></div>
-          <span style="font-size:13px;color:#888">{{ list.length }} 个食谱</span>
+          <span class="muted-13">{{ list.length }} 个食谱</span>
         </div>
         </div>
         <div class="sand-grid" v-loading="loading">
@@ -65,9 +65,9 @@ const SandwichView = {
             <el-radio-button value="食材">食材</el-radio-button>
             <el-radio-button value="调味料">调味料</el-radio-button>
           </el-radio-group>
-          <el-input v-model="itemQ" clearable placeholder="搜索" style="width:160px" />
+          <el-input v-model="itemQ" clearable placeholder="搜索" class="w160" />
           <div class="spacer"></div>
-          <span style="font-size:13px;color:#888">{{ filteredItems.length }} 项</span>
+          <span class="muted-13">{{ filteredItems.length }} 项</span>
         </div>
         <el-table :data="filteredItems" size="small" height="520">
           <el-table-column label="名称" min-width="130">
@@ -89,7 +89,7 @@ const SandwichView = {
 
       <el-tab-pane :label="'我的食谱 (' + customList.length + ')'" name="custom">
         <div class="page-head">
-          <span style="color:#888;font-size:13px">自由模式配方记录（效果/食材/调味料必填）</span>
+          <span class="muted-13">自由模式配方记录（效果/食材/调味料必填）</span>
           <div class="spacer"></div>
           <el-button type="primary" size="small" @click="openEditor">＋ 录入食谱</el-button>
         </div>
@@ -121,10 +121,10 @@ const SandwichView = {
         </el-form-item>
         <el-form-item label="效果" required>
           <div v-for="(e, i) in editor.effects" :key="i" class="fld-row">
-            <el-select v-model="e.power" size="small" style="width:110px" placeholder="食力">
+            <el-select v-model="e.power" size="small" class="w110" placeholder="食力">
               <el-option v-for="p in POWER_LIST" :key="p" :value="p" :label="p" />
             </el-select>
-            <el-select v-model="e.type" size="small" clearable style="width:100px" placeholder="属性">
+            <el-select v-model="e.type" size="small" clearable class="w100" placeholder="属性">
               <el-option v-for="t in TYPE_LIST" :key="t" :value="t" :label="t" />
             </el-select>
             <el-select v-model="e.level" size="small" style="width:80px" placeholder="等级">
@@ -135,29 +135,29 @@ const SandwichView = {
           <el-button size="small" text type="primary" @click="editor.effects.push({power: '', type: '', level: 1})">＋ 添加效果</el-button>
         </el-form-item>
         <el-form-item label="食材" required>
-          <div style="width:100%">
-            <el-select :model-value="null" filterable placeholder="搜索并添加食材" style="width:100%"
+          <div class="w-full">
+            <el-select :model-value="null" filterable placeholder="搜索并添加食材" class="w-full"
               @change="addItem(editor.ingredients, $event)">
               <el-option v-for="i in itemOptions('食材')" :key="i" :value="i" :label="i"
                 :disabled="editor.ingredients.some(x => x.name === i)" />
             </el-select>
             <div v-for="(it, i) in editor.ingredients" :key="it.name" class="qty-row">
               <span class="qty-name">{{ it.name }}</span>
-              <el-input-number v-model="it.count" :min="1" :max="99" size="small" style="width:96px" />
+              <el-input-number v-model="it.count" :min="1" :max="99" size="small" class="w96" />
               <el-button size="small" text type="danger" @click="editor.ingredients.splice(i, 1)">删除</el-button>
             </div>
           </div>
         </el-form-item>
         <el-form-item label="调味料" required>
-          <div style="width:100%">
-            <el-select :model-value="null" filterable placeholder="搜索并添加调味料" style="width:100%"
+          <div class="w-full">
+            <el-select :model-value="null" filterable placeholder="搜索并添加调味料" class="w-full"
               @change="addItem(editor.seasonings, $event)">
               <el-option v-for="i in itemOptions('调味料')" :key="i" :value="i" :label="i"
                 :disabled="editor.seasonings.some(x => x.name === i)" />
             </el-select>
             <div v-for="(it, i) in editor.seasonings" :key="it.name" class="qty-row">
               <span class="qty-name">{{ it.name }}</span>
-              <el-input-number v-model="it.count" :min="1" :max="99" size="small" style="width:96px" />
+              <el-input-number v-model="it.count" :min="1" :max="99" size="small" class="w96" />
               <el-button size="small" text type="danger" @click="editor.seasonings.splice(i, 1)">删除</el-button>
             </div>
           </div>

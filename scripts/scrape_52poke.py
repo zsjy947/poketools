@@ -22,7 +22,27 @@ import re
 import sqlite3
 import sys
 from collections import Counter
+from pathlib import Path
 
+# 自锚定：无论以 `python scripts/xxx.py` 或跨目录导入，parsers/ 始终可解析
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from parsers.features import (
+    parse_curries,
+    parse_donuts_full,
+    parse_food_ingredients,
+    parse_item_how,
+    parse_picnic_condiments,
+    parse_sandwiches,
+)
+from parsers.wikitext import (  # noqa: F401
+    cell_text,
+    clean_wt,
+    find_template,
+    parse_params,
+    split_params,
+    wikitables,
+)
 from pokemondb_client import fetch_html as pdb_fetch_html
 from pokemondb_client import strip_tags as pdb_strip_tags
 from wiki_client import (  # 共享 52poke 客户端（缓存/批量 wikitext/别名回退）
@@ -88,222 +108,6 @@ SPECIAL_LOC = {
 }
 
 # ------------------------------------------------- wiki fetch（统一走 wiki_client）
-
-
-# ---------------------------------------------------------------- wikitext utils
-
-def find_template(wt: str, name: str, start: int = 0) -> list[tuple[int, str]]:
-    """Return [(offset, inner_body)] for each {{name|...}} occurrence."""
-    out = []
-    needle = f"{{{{{name}"
-    i = wt.find(needle, start)
-    while i != -1:
-        nxt = wt[i + len(needle):i + len(needle) + 1]
-        if nxt not in ("|", "}", "\n", " ", "\t"):
-            i = wt.find(needle, i + len(needle))
-            continue
-        depth = 2
-        j = i + 2
-        while j < len(wt) and depth:
-            if wt.startswith("{{", j):
-                depth += 2; j += 2
-            elif wt.startswith("}}", j):
-                depth -= 2; j += 2
-            else:
-                j += 1
-        if depth == 0:
-            body = wt[i + 2 + len(name):j - 2]
-            body = body.removeprefix("|")
-            out.append((i, body))
-        i = wt.find(needle, j)
-    return out
-
-
-def split_params(body: str) -> list[str]:
-    """Split template body on top-level '|' (braces/brackets aware), keep order."""
-    parts, cur, b, k = [], [], 0, 0
-    for ch in body:
-        if ch == "{":
-            b += 1
-        elif ch == "}":
-            b -= 1
-        elif ch == "[":
-            k += 1
-        elif ch == "]":
-            k -= 1
-        if ch == "|" and b == 0 and k == 0:
-            parts.append("".join(cur)); cur = []
-        else:
-            cur.append(ch)
-    parts.append("".join(cur))
-    return parts
-
-
-def parse_params(body: str) -> tuple[dict[int, str], dict[str, str]]:
-    """Return (positional{1..n}, named{}) in original order."""
-    pos, named = {}, {}
-    n = 0
-    for raw in split_params(body):
-        b, k = 0, 0
-        eq = -1
-        for idx, ch in enumerate(raw):
-            if ch == "{":
-                b += 1
-            elif ch == "}":
-                b -= 1
-            elif ch == "[":
-                k += 1
-            elif ch == "]":
-                k -= 1
-            elif ch == "=" and b == 0 and k == 0 and eq == -1:
-                eq = idx
-        if eq > 0:
-            key = raw[:eq].strip()
-            named[key] = raw[eq + 1:]
-        else:
-            n += 1
-            pos[n] = raw
-    return pos, named
-
-
-_RE_ZH = re.compile(r"-\{\s*zh-hans:([^;{}]*?)\s*;\s*zh-hant:.*?\}-", re.DOTALL)
-_RE_ZH2 = re.compile(r"-\{\s*zh-hant:[^;{}]*?\s*;\s*zh-hans:([^;{}]*?)\s*\}-", re.DOTALL)
-_RE_TT = re.compile(r"\{\{tt\|([^|{}]*)(?:\|[^{}]*)?\}\}")
-_RE_SIMPLE = [
-    (re.compile(r"\{\{bag\|([^|{}]+)(?:\|[^{}]*)?\}\}"), r"\1"),
-    (re.compile(r"\{\{[iamp]\|([^|{}]+)(?:\|[^{}]*)?\}\}"), r"\1"),
-    (re.compile(r"\{\{typelink\|([^|{}]+)(?:\|[^{}]*)?\}\}"), r"\1"),
-    (re.compile(r"\{\{rt\|([^|{}]+)\|[^{}]*\}\}"), r"\1号道路"),
-    (re.compile(r"\{\{par\|([^|{}]+)\|([^|{}]+)\}\}"), r"\1（\2）"),
-    (re.compile(r"\{\{E\|([^|{}]+)\}\}"), r"\1"),
-    (re.compile(r"\{\{(?:GameIconzh/\d+|game4?|MS\w*|sup[/\d]*)[^{}]*\}\}"), ""),
-    (re.compile(r"\[\[File:[^\]]*\]\]"), ""),
-    (re.compile(r"<!--.*?-->", re.DOTALL), ""),
-    (re.compile(r"<ref[^>]*>.*?</ref>", re.DOTALL), ""),
-    (re.compile(r"<ref[^>]*/>"), ""),
-]
-_RE_LINK = re.compile(r"\[\[([^\]|]*)\|([^\]]*)\]\]")
-_RE_LINK2 = re.compile(r"\[\[([^\]]*)\]\]")
-_RE_TAIL = re.compile(r"<small>（[^<]*）</small>")
-
-
-def clean_wt(s: str | None) -> str:
-    if not s:
-        return ""
-    s = _RE_SIMPLE[8][0].sub("", s)  # <!--...-->
-    s = _RE_SIMPLE[9][0].sub("", s)  # <ref>...
-    s = _RE_SIMPLE[10][0].sub("", s)  # <ref/>
-    s = _RE_SIMPLE[7][0].sub("", s)  # [[File:...]]
-    s = _RE_ZH2.sub(lambda m: m.group(1), s)
-    s = _RE_ZH.sub(lambda m: m.group(1), s)
-    for _ in range(4):
-        s = _RE_LINK.sub(lambda m: m.group(2), s)
-        s = _RE_LINK2.sub(lambda m: m.group(1), s)
-        s = _RE_TT.sub(r"\1", s)
-        for rx, rep in _RE_SIMPLE[:7]:
-            s = rx.sub(rep, s)
-        inner = re.search(r"\{\{([^{}]*)\}\}", s)
-        if inner:
-            last = [p for p in inner.group(1).split("|") if p.strip()]
-            s = s[:inner.start()] + (last[-1] if last else "") + s[inner.end():]
-    s = s.replace("<br>", "；").replace("<br/>", "；").replace("<br />", "；")
-    s = re.sub(r"<[^>]+>", "", s)
-    s = s.replace("''", "")
-    s = s.replace("\r", "").replace("\n", " ").replace("\t", " ")
-    return re.sub(r"\s+", " ", s).strip()
-
-
-# ---------------------------------------------------------------- 表格工具：wikitable -> rows of cells
-
-def wikitables(wt: str, start: int = 0) -> list[list[list[str]]]:
-    """Parse {| ... |} tables into list of tables, each a list of rows (list of raw cell text)."""
-    tables = []
-    i = wt.find("{|", start)
-    while i != -1:
-        depth = 0
-        j = i
-        while j < len(wt):
-            if wt.startswith("{|", j):
-                depth += 1; j += 2
-            elif wt.startswith("|}", j):
-                depth -= 1; j += 2
-                if depth == 0:
-                    break
-            else:
-                j += 1
-        tables.append(_parse_table(wt[i:j]))
-        i = wt.find("{|", j)
-    return tables
-
-
-def _parse_table(seg: str) -> list[list[str]]:
-    rows: list[list[str]] = []
-    # 去掉嵌套表格里的 || 分隔行头；按行聚合单元格
-    cur_cells: list[str] = []
-    cur = ""
-    for line in seg.splitlines():
-        ls = line.strip()
-        if ls.startswith(("{|", "|}")):
-            continue
-        if ls.startswith("|-"):
-            if cur_cells or cur.strip():
-                cur_cells.append(cur)
-                rows.append([c for c in cur_cells])
-            cur_cells, cur = [], ""
-            continue
-        if ls.startswith("!"):
-            ls_cells = ls.lstrip("!").split("!!")
-            if cur_cells or cur.strip():
-                cur_cells.append(cur)
-                rows.append(cur_cells[:])
-                cur_cells, cur = [], ""
-            rows.append([c.strip() for c in ls_cells])  # 表头行（当普通行处理）
-            continue
-        if ls.startswith("|"):
-            parts = re.split(r"(?<!\|)\|\|(?!\|)", ls[1:])
-            if len(parts) > 1:
-                for k, p in enumerate(parts):
-                    if k == 0 and cur.strip():
-                        cur_cells.append(cur); cur = ""
-                    if k < len(parts) - 1:
-                        cur_cells.append(p.strip())
-                    else:
-                        cur = p.strip()
-            else:
-                if cur.strip():
-                    cur_cells.append(cur)
-                cur = ls[1:].strip()
-        else:
-            if cur_cells:
-                cur += " " + ls
-    if cur_cells or cur.strip():
-        cur_cells.append(cur)
-        rows.append(cur_cells[:])
-    return rows
-
-
-def _strip_cell_attrs(c: str) -> str:
-    """wikitable 单元格 `attr|value` 形式：取顶层第一个 | 之后的内容（模板内 | 不算）。"""
-    b = k = 0
-    for i, ch in enumerate(c):
-        if ch == "{":
-            b += 1
-        elif ch == "}":
-            b -= 1
-        elif ch == "[":
-            k += 1
-        elif ch == "]":
-            k -= 1
-        elif ch == "|" and b == 0 and k == 0:
-            return c[i + 1:]
-    return c
-
-
-def cell_text(c: str) -> str:
-    # Bag/Bag Latest 模板第 1 参数是道具名（generic 内层模板折叠会取最后一个参数）
-    c = _strip_cell_attrs(c)
-    c = re.sub(r"\{\{Bag(?:/Latest)?(?:/ZA)?\|([^|{}]+)[^{}]*\}\}", r"\1", c)
-    return clean_wt(c)
 
 
 # ---------------------------------------------------------------- pokemon pages: get_methods + flavor
@@ -639,176 +443,6 @@ def _div_span(html: str, div_id: str) -> tuple[int, int] | None:
     return None
 
 
-# ---------------------------------------------------------------- sandwiches
-
-def parse_sandwiches(wt: str) -> list[dict]:
-    i = wt.find("== 食谱列表 ==")
-    if i < 0:
-        i = wt.find("==食谱列表==")
-    seg = wt[i:] if i >= 0 else wt
-    j = seg.find("{|")
-    if j < 0:
-        return []
-    table = seg[j:seg.find("\n|}", j) if seg.find("\n|}", j) > 0 else len(seg)]
-    recipes = []
-    for row in re.split(r"^\|-.*$", table, flags=re.MULTILINE):
-        cells = []
-        for line in row.splitlines():
-            ls = line.strip()
-            if ls.startswith(("!!", "|}")):
-                continue
-            if ls.startswith("|"):
-                cells.append(ls[1:].strip())
-            elif cells and ls and not ls.startswith("!"):
-                cells[-1] += " " + ls
-        cells = [c for c in cells if not c.startswith("[[File:")]
-        if len(cells) < 6 or not cells[0].strip().isdigit():
-            continue
-        num, name, ing, seas, eff, how = cells[0], cells[1], cells[2], cells[3], cells[4], cells[5]
-        effects = []
-        for part in eff.replace("<br>", "；").replace("<br/>", "；").split("；"):
-            part = part.strip()
-            m = re.match(r"^(.+?力)(?:：(.+?))?\s*Lv\.?\s*(\d)$", part)
-            if m:
-                effects.append({"power": m.group(1), "type": m.group(2) or "", "level": int(m.group(3))})
-        recipes.append({
-            "no": int(num),
-            "name": clean_wt(name),
-            "ingredients": "、".join(re.findall(r"\{\{bag\|([^|{}]+)", ing)),
-            "seasonings": "、".join(re.findall(r"\{\{bag\|([^|{}]+)", seas)),
-            "effects": effects,
-            "how": clean_wt(how),
-        })
-    return recipes
-
-
-# ---------------------------------------------------------------- 食材/调味料（野餐道具 + 食材 + 道具页）
-
-def parse_picnic_condiments(wt: str) -> list[dict]:
-    """野餐道具页 调味料 表：道具/说明/获取地点/价格"""
-    out = []
-    i = wt.find("===调味料===")
-    if i < 0:
-        return out
-    j = wt.find("===三明治签===", i)
-    seg = wt[i:j if j > 0 else len(wt)]
-    for tb in wikitables(seg):
-        for row in tb:
-            cells = [cell_text(c) for c in row]
-            if len(cells) >= 4 and cells[0] and not cells[0].startswith("道具") and "秘传" not in cells[0][:2]:
-                price = cells[3].replace("$", "").strip()
-                out.append({"name": cells[0], "kind": "调味料",
-                            "desc": cells[1], "how": cells[2], "price": price})
-    return out
-
-
-def parse_food_ingredients(wt: str, section: str, kind: str) -> list[dict]:
-    """食材页 {{道具列表}} 条目"""
-    out = []
-    i = wt.find(section)
-    if i < 0:
-        return out
-    j = wt.find("==", i + len(section))
-    seg = wt[i:j if j > 0 else len(wt)]
-    for _, body in find_template(seg, "道具列表"):
-        _, named = parse_params(body)
-        name = clean_wt(named.get("name", ""))
-        if not name:
-            continue
-        out.append({"name": name, "kind": kind,
-                    "desc": clean_wt(named.get("desc", "")), "how": "", "price": ""})
-    return out
-
-
-def parse_item_how(wt: str) -> str:
-    """道具页 {{道具地点|...|sv=...}} 的 sv 字段"""
-    for _, body in find_template(wt, "道具地点"):
-        _, named = parse_params(body)
-        for key in ("sv", "swsh", "za"):
-            if named.get(key):
-                return clean_wt(named[key])
-        break
-    return ""
-
-
-# ---------------------------------------------------------------- 甜甜圈
-
-def _ni(s: str) -> int:
-    try:
-        return int(re.sub(r"[^0-9]", "", s) or 0)
-    except ValueError:
-        return 0
-
-
-def parse_donuts_full(wt: str) -> dict:
-    """甜甜圈页完整解析：types/special/berries/flavor_powers/intro。"""
-    out = {"types": [], "special": [], "berries": [], "flavor_powers": [], "intro": ""}
-
-    # 制作段：基础甜甜圈表（0→★5）
-    i = wt.find("=== 制作 ===")
-    j = wt.find("=== 效果 ===")
-    make_seg = wt[i:j] if 0 <= i < j else ""
-    m = re.search(r"在旅馆Ｚ的安馨儿.*?制作甜甜圈。", make_seg, re.DOTALL)
-    if m:
-        out["intro"] = clean_wt(m.group(0))
-    for tb in wikitables(make_seg):
-        for row in tb:
-            cells = [cell_text(c) for c in row]
-            if len(cells) >= 4 and cells[1] in ("蛋白霜", "咖喱", "蜜饯", "巧克力", "奶油", "综合"):
-                out["types"].append({"flavor": cells[3], "name": cells[1], "desc": cells[2]})
-
-    # 特殊甜甜圈表：13 列（含 rowspan=2 的食材列缺格时 12 列）
-    k = wt.find("安抚并捕捉扭洞深处")
-    if k > 0:
-        end = wt.find("== 现实世界中 ==")
-        seg = wt[k:end if end > 0 else len(wt)]
-        for tb in wikitables(seg):
-            last_ing = ""
-            for row in tb:
-                cells = [cell_text(c) for c in row]
-                if len(cells) < 12 or not cells[1].endswith("甜甜圈"):
-                    continue
-                nums = cells[3:8]
-                if not all(re.fullmatch(r"\d+", n) for n in nums):
-                    continue
-                if len(cells) >= 13:
-                    ing = cells[8] or last_ing
-                    if cells[8]:
-                        last_ing = ing
-                    power, target, rift, loc = cells[9], cells[10], cells[11], cells[12]
-                else:  # 食材列被上一行 rowspan 占用
-                    ing = last_ing
-                    power, target, rift, loc = cells[8], cells[9], cells[10], cells[11]
-                out["special"].append({
-                    "name": cells[1], "desc": cells[2],
-                    "sweet": _ni(cells[3]), "spicy": _ni(cells[4]),
-                    "sour": _ni(cells[5]), "bitter": _ni(cells[6]), "fresh": _ni(cells[7]),
-                    "ingredients": ing, "power": power, "target": target,
-                    "rift": rift, "location": loc,
-                })
-
-    # 树果提供的效果
-    bi = wt.find("=== 树果提供的效果 ===")
-    bj = wt.find("=== 风味力量 ===")
-    if 0 <= bi < bj:
-        seg = wt[bi:bj]
-        for tb in wikitables(seg):
-            for row in tb:
-                cells = [cell_text(c) for c in row]
-                if len(cells) >= 8 and cells[0].endswith("果"):
-                    out["berries"].append({
-                        "name": cells[0],
-                        "sweet": _ni(cells[1]), "spicy": _ni(cells[2]), "sour": _ni(cells[3]),
-                        "bitter": _ni(cells[4]), "fresh": _ni(cells[5]),
-                        "boost": cells[6], "energy": _ni(cells[7])})
-
-    # 风味力量：表格 rowspan/colspan 布局不规则，使用人工整理的 curated 数据
-    fp_file = CURATED / "flavor_powers_manual.json"
-    if fp_file.exists():
-        out["flavor_powers"] = json.loads(fp_file.read_text(encoding="utf-8"))
-    return out
-
-
 # ---------------------------------------------------------------- abilities（特性文案）
 
 def _section(wt: str, title: str) -> str:
@@ -873,32 +507,6 @@ def parse_ability_page(wt: str) -> dict | None:
     if not effect and not intro:
         return None
     return {"effect": effect, "extra": extra, "intro": intro}
-
-
-# ---------------------------------------------------------------- 咖喱饭
-
-def parse_curries(wt: str) -> list[dict]:
-    i = wt.find("==咖哩圖鑑==")
-    j = wt.find("===圖鑑收集獎勵===")
-    seg = wt[i:j if j > 0 else len(wt)]
-    out = []
-    for tb in wikitables(seg):
-        carried_key = ""
-        for row in tb:
-            cells = [cell_text(c) for c in row]
-            if not cells or not cells[0].isdigit():
-                continue
-            no = int(cells[0])
-            name = cells[1]
-            if len(cells) >= 6:
-                key_raw = cells[4]
-                m = re.search(r"\{\{i\|([^|}]+)", row[4]) or re.search(r"link=([^]|]+?)(?:（道具）)?\|", row[4])
-                carried_key = (m.group(1) if m else key_raw)
-                desc = cells[5]
-            else:
-                desc = cells[-1]
-            out.append({"no": no, "name": name, "key_ingredient": carried_key, "desc": desc})
-    return out
 
 
 # ---------------------------------------------------------------- main

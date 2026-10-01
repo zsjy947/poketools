@@ -48,6 +48,8 @@ body { margin: 0; font-family: "Segoe UI", "Microsoft YaHei", sans-serif; backgr
 .feature-name { font-size: 18px; font-weight: 700; }
 .feature-desc { font-size: 13px; color: #98a1b3; }
 
+.home-version { position: fixed; right: 14px; bottom: 10px; font-size: 11.5px; color: #b0b8c8;
+  z-index: 5; pointer-events: none; }
 .page-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
 .page-title { font-size: 20px; font-weight: 700; margin: 0 8px 0 0; }
 .spacer { flex: 1; }
@@ -90,3 +92,12 @@ body { margin: 0; font-family: "Segoe UI", "Microsoft YaHei", sans-serif; backgr
 .toggle-chip.on .dot { background: #f6a5c8; box-shadow: 0 0 4px #f6a5c8; }
 .toggle-chip.small { padding: 1px 9px; font-size: 12px; }
 .toggle-chip.disabled { opacity: .4; cursor: not-allowed; }
+
+/* ---- 通用工具类（O4：收敛视图内联样式）---- */
+.muted-13 { font-size: 13px; color: #888; }
+.muted-12 { font-size: 12px; color: #98a1b3; }
+.flex1 { flex: 1; }
+.w-full { width: 100%; }
+.w72 { width: 72px; } .w80 { width: 80px; } .w96 { width: 96px; } .w100 { width: 100px; }
+.w110 { width: 110px; } .w130 { width: 130px; } .w140 { width: 140px; } .w160 { width: 160px; }
+.w170 { width: 170px; } .w180 { width: 180px; } .w200 { width: 200px; }

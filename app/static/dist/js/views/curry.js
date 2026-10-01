@@ -5,7 +5,7 @@ const CurryView = {
     <div class="page-head">
       <span class="page-title">咖喱图鉴</span>
       <el-tag size="small" type="warning" effect="plain">剑／盾</el-tag>
-      <span style="color:#888;font-size:13px">露营咖喱 · 收集全部 151 种解锁奖励</span>
+      <span class="muted-13">露营咖喱 · 收集全部 151 种解锁奖励</span>
     </div>
 
     <el-alert type="info" :closable="false" style="margin-bottom:12px" show-icon
@@ -17,12 +17,12 @@ const CurryView = {
     </div>
     <div class="filter-mask" v-if="showFilters" @click="showFilters = false"></div>
     <div class="filter-bar page-head-wrap" :class="{open: showFilters}">
-      <div class="page-head">      <el-input v-model="q" clearable placeholder="搜索咖喱名/关键食材" style="width:200px" />
-      <el-select v-model="ingredient" clearable filterable placeholder="关键食材" style="width:160px">
+      <div class="page-head">      <el-input v-model="q" clearable placeholder="搜索咖喱名/关键食材" class="w200" />
+      <el-select v-model="ingredient" clearable filterable placeholder="关键食材" class="w160">
         <el-option v-for="i in ingredients" :key="i" :value="i" :label="i" />
       </el-select>
       <div class="spacer"></div>
-      <span style="font-size:13px;color:#888">{{ filtered.length }} / {{ list.length }} 种</span>
+      <span class="muted-13">{{ filtered.length }} / {{ list.length }} 种</span>
       </div>
     </div>
 

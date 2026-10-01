@@ -284,18 +284,7 @@ const CalcView = {
       if (!r || r.error) return "info";
       return r.ohko ? "danger" : (r.ko && r.ko.probs && r.ko.probs[2] >= 100) ? "warning" : "info";
     });
-    const koText = computed(() => {
-      const r = activeResult.value;
-      if (!r || r.error) return "";
-      const ko = r.ko || { guaranteed_turns: null, probs: {} };
-      const g = ko.guaranteed_turns;
-      if (r.ohko) return "确定一击击倒";
-      if (g && g > 0) return `确定 ${g} 回合击倒`;
-      const p2 = ko.probs[2] || 0, p3 = ko.probs[3] || 0, p4 = ko.probs[4] || 0;
-      if (p4 >= 100) return `4 回合内必击倒（保证 4 回合）`;
-      if (p4 > 0) return `${Math.round(p4)}% 4 回合内击倒`;
-      return "4 回合内无法击倒";
-    });
+    const koText = computed(() => PktUtils.koTextFromKo(activeResult.value && activeResult.value.ko));
     const activeHpText = computed(() => {
       const s = atkSide.value;
       if (!s) return "";
@@ -621,7 +610,7 @@ const SideEditor = {
     <h3>{{ label }}</h3>
     <div class="fld-row">
       <el-select :model-value="side.speciesId" filterable placeholder="搜索宝可梦（全图鉴）"
-        style="flex:1" @change="onSpecies">
+        class="flex1" @change="onSpecies">
         <el-option v-for="s in speciesList" :key="s.id" :value="s.id"
           :label="s.name_zh + ' #' + String(s.id).padStart(4, '0')">
           <span>{{ s.name_zh }}</span>
@@ -631,7 +620,7 @@ const SideEditor = {
     </div>
     <div class="fld-row" v-if="side.forms.length > 1">
       <span class="lbl">形态</span>
-      <el-select v-model="side.formId" size="small" style="flex:1" @change="onForm">
+      <el-select v-model="side.formId" size="small" class="flex1" @change="onForm">
         <el-option v-for="f in side.forms" :key="f.id" :value="f.id"
           :label="formLabel(f)" />
       </el-select>
@@ -640,7 +629,7 @@ const SideEditor = {
 
     <div class="fld-row">
       <span class="lbl">特性</span>
-      <el-select v-model="side.ability" size="small" filterable clearable style="flex:1" @change="onItemOrAbility">
+      <el-select v-model="side.ability" size="small" filterable clearable class="flex1" @change="onItemOrAbility">
         <el-option-group label="自身特性">
           <el-option v-for="a in ownAbilities" :key="'o' + a.name" :value="a.name"
             :label="a.name + (a.hidden ? '（隐藏）' : '')" />
@@ -652,12 +641,12 @@ const SideEditor = {
     </div>
     <div class="fld-row">
       <span class="lbl">太晶属性</span>
-      <el-select v-model="side.teraType" size="small" style="width:110px" @change="$emit('changed')">
+      <el-select v-model="side.teraType" size="small" class="w110" @change="$emit('changed')">
         <el-option v-for="t in TYPE_LIST" :key="t" :value="t" :label="t" />
         <el-option value="星晶" label="星晶" />
       </el-select>
       <span class="lbl" style="margin-left:8px">道具</span>
-      <el-select v-model="side.item" size="small" clearable filterable style="flex:1"
+      <el-select v-model="side.item" size="small" clearable filterable class="flex1"
         :filter-method="filterItems" @change="onItemChange" @visible-change="onItemsOpen">
         <el-option v-for="i in shownItems" :key="i.identifier" :value="i.name_zh" :label="i.name_zh">
           <img class="item-icon" :src="'/sprites/items/' + i.identifier + '.png'"
@@ -671,7 +660,7 @@ const SideEditor = {
       <div v-for="i in 4" :key="i" class="fld-row">
         <span class="lbl">招式{{ i }}</span>
         <el-select :model-value="side.moves[i - 1]" filterable clearable size="small"
-          style="flex:1" placeholder="搜索招式（含变化招式）" @change="setMove(i - 1, $event)"
+          class="flex1" placeholder="搜索招式（含变化招式）" @change="setMove(i - 1, $event)"
           @focus="ensureMoves">
           <el-option v-for="m in side.moveOptions" :key="m.move_id" :value="m.move_id"
             :label="m.name_zh">
@@ -679,7 +668,7 @@ const SideEditor = {
             <span style="float:right;color:#999;font-size:12px">{{ m.type_zh }} · {{ clsName(m.damage_class) }} · {{ m.power || (m.damage_class === 'status' ? '变化' : '—') }} · 世代{{ m.gens.join(",") }}</span>
           </el-option>
         </el-select>
-        <el-input-number v-if="needsPower(side.moves[i - 1])" size="small" style="width:96px"
+        <el-input-number v-if="needsPower(side.moves[i - 1])" size="small" class="w96"
           :min="1" :max="250" v-model="side.varPowers[side.moves[i - 1]]" placeholder="威力"
           @change="$emit('changed')" />
         <span v-else class="mv-power">{{ movePowerOf(side.moves[i - 1]) }}</span>
@@ -701,7 +690,7 @@ const SideEditor = {
 
     <div class="fld-row">
       <span class="lbl">性格</span>
-      <el-select v-model="side.nature" size="small" filterable style="flex:1" @change="$emit('changed')">
+      <el-select v-model="side.nature" size="small" filterable class="flex1" @change="$emit('changed')">
         <el-option v-for="n in natures" :key="n.identifier" :value="n.identifier"
           :label="n.name_zh + (n.up && n.up !== n.down ? '（+' + STAT_ZH[n.up] + ' -' + STAT_ZH[n.down] + '）' : '')" />
       </el-select>
@@ -710,22 +699,22 @@ const SideEditor = {
     </div>
     <div class="fld-row">
       <span class="lbl">攻击升降</span>
-      <el-select :model-value="side.boosts.atk" size="small" style="width:72px"
+      <el-select :model-value="side.boosts.atk" size="small" class="w72"
         @update:model-value="setBoost('atk', $event)">
         <el-option v-for="k in BOOST_RANGE" :key="k" :value="k" :label="k > 0 ? '+' + k : k" />
       </el-select>
       <span class="lbl">特攻</span>
-      <el-select :model-value="side.boosts.spa" size="small" style="width:72px"
+      <el-select :model-value="side.boosts.spa" size="small" class="w72"
         @update:model-value="setBoost('spa', $event)">
         <el-option v-for="k in BOOST_RANGE" :key="k" :value="k" :label="k > 0 ? '+' + k : k" />
       </el-select>
       <span class="lbl">防御</span>
-      <el-select :model-value="side.boosts.def" size="small" style="width:72px"
+      <el-select :model-value="side.boosts.def" size="small" class="w72"
         @update:model-value="setBoost('def', $event)">
         <el-option v-for="k in BOOST_RANGE" :key="k" :value="k" :label="k > 0 ? '+' + k : k" />
       </el-select>
       <span class="lbl">特防</span>
-      <el-select :model-value="side.boosts.spd" size="small" style="width:72px"
+      <el-select :model-value="side.boosts.spd" size="small" class="w72"
         @update:model-value="setBoost('spd', $event)">
         <el-option v-for="k in BOOST_RANGE" :key="k" :value="k" :label="k > 0 ? '+' + k : k" />
       </el-select>
