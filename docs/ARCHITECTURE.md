@@ -35,7 +35,28 @@ python scripts/fetch_sprites.py       # 官方绘图（三级回退）-> data/sp
 python scripts/fetch_calc_assets.py   # 全量道具图标 + 机制图标（极巨/太晶19种）-> sprites/items + assets/mechanism
 python scripts/fetch_feature_images.py / fetch_sandwich_images.py   # 特化页配图 -> dist/assets
 python scripts/make_icon.py           # 精灵球应用图标
+python scripts/export_static_data.py  # db 读侧 -> app/static/data/ JSON 分片（APK/无后端模式；含全表 diff 硬门禁）
+python scripts/verify_static_equivalence.py  # 真实 API vs 本地 JS 引擎逐字段等价性验证（524 调用门禁）
+node tools/static-check/calib-js.mjs  # JS 伤害引擎 vs smogon 基准（calib 双语言门禁之二）
 ```
+
+### 静态化管线（路线 B / APK 基座，UPDATE-PLAN §3.2）
+
+- **导出**：`export_static_data.py` 33 表 → `app/static/data/`（gitignore 可重建，~57MB）：
+  常规表全量 `tables/*.json`（行序=rowid 序）；大表分片——`learnsets` 按 vg、
+  `learnsets_all`/`encounters` 按物种（懒加载）；`manifest.json`（data_version 行数指纹 + 文件清单）。
+- **一致性硬门禁**（go/no-go）：① 脚本内置导出后全表回读逐行逐字段 diff 零差异；
+  ② `verify_static_equivalence.py` 起真实 FastAPI 与 Node 驱动（tools/static-check/driver.mjs）
+  跑同一调用计划（抽样 50 物种 × 6 游戏变体 + form/dex 参数 + EV 扫描 + 计算器 + 生蛋链，
+  共 524 调用）逐字段一致；③ `calib-js.mjs` 51+41 smogon 基准全绿（damage.py 移植护栏）。
+- **本地引擎**：`app/static/dist/js/local/`（damage/data-core/state/pokemon/lookup/calc/local-api），
+  routers 层逐行移植；`api.js` 在后端不可达（连接拒绝/非 JSON 响应）时自动切本地模式，
+  端点签名不变、视图零改动。用户状态（caught_state/custom_recipes）迁 localStorage，
+  `PKT.state.exportAll/importAll` 提供一次性迁移兜底。
+- 语义对齐要点（移植时踩过的坑，勿回退）：Python `.get(key, True)` 的「键缺失 ≠ 键为 None」
+  （多重鳞片满血判定用 undefined 哨兵区分）；生蛋链 chains 顺序源自 Python set 迭代序
+  （等价性验证做序无关规范化）；字典整数键迭代序差异用 Map（插入序）规避；
+  字符串排序是码点序（localeCompare 不等价）；表缓存行不可变异（detail 挂 ability_list 曾污染缓存）。
 
 ### PokeAPI（离线整包 CSV）
 
@@ -324,3 +345,4 @@ FEATURES.icon 值供窄栏与宫格共用；游戏大图标复用官方商标资
 | CALC-FIX 批次一/二 | 跨线程 500 修复（check_same_thread）/ 计算器常驻无痕切换（v-show+模块缓存预热+并行初始化）/ Z·极巨·超极巨官方招式名（z_generic+gmax_moves 两表三端点，gmax 160 威力特判，皮卡丘 caps 脏行修复+多后缀）/ 场地区完全复刻参考站（8+7 行逐键一致、切换=追打×2、披带道具派生、gmax+极巨互斥放行）/ 新增 8 组用例 | 交付；68 测试绿 + calib 51+41 全绿 + uvicorn 并发冒烟（80 GET+30 POST 零 500） |
 | CALC-FIX 批次三 | 全局导航重构（首页功能宫格/游戏中心 #/games/64px 图标窄栏/BackBtn 层级返回/calc 全画面常驻叠加）+ Monoline 图标体系（10 枚手写 SVG + MonoIcon/RailNav/BackBtn 组件 + tools/icon-preview.html）+ 功能图标 emoji 清零 | 交付；浏览器实测全过（首页三卡/五游戏可达/窄栏高亮/详情全屏/常驻零请求/三列同高逐键一致）；资产 bump v21 |
 | battle M0-M8 | 模拟对战全栈：供应商化引擎/BattleSession 协议/数据层/队伍构建/信息流对战/动画演出/双端发布；56 用例 + 官方 replay 对拍 9 条 × 4 维 + 覆盖率 86.9%；Windows NSIS exe + Android 签名 APK + SHA256SUMS；并入评估报告（§7.1）结论=并入 | 交付；tag `battle-v1.0.0`；battle 分支合并回 main；功能说明 = docs/BATTLE.md |
+| Track C A1 数据静态化 | export_static_data.py（33 表 83.2 万行分片导出 + 全表 diff 零门禁）+ js/local/* 本地引擎（routers 逐行移植，damage.py TS/JS 化）+ api.js 后端不可达自动切本地；等价性 524 调用逐字段一致；calib-js 51+41 全绿 | 交付；pytest 68 绿 + ruff 零告警 + 浏览器纯静态实测（首页/图鉴/详情/招式/计算器零 JS 错误） |

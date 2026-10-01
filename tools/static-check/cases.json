@@ -1,0 +1,1005 @@
+{
+ "cases": [
+  {
+   "key": "eq_basic",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Earthquake"
+  },
+  {
+   "key": "flamethrower",
+   "atk": {
+    "sp": "Charizard",
+    "level": 50,
+    "nature": "modest",
+    "evs": {
+     "spa": 252
+    }
+   },
+   "def": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Flamethrower"
+  },
+  {
+   "key": "eq_crit_lo",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    },
+    "item": "生命宝珠"
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Earthquake",
+   "crit": true
+  },
+  {
+   "key": "rain_hydro",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "modest",
+    "evs": {
+     "spa": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful",
+    "evs": {
+     "hp": 252
+    }
+   },
+   "move": "Hydro Pump",
+   "weather": "rain"
+  },
+  {
+   "key": "guts_burn_cc",
+   "atk": {
+    "sp": "Hariyama",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    },
+    "ability": "毅力",
+    "burn": true
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Close Combat"
+  },
+  {
+   "key": "scarf_punch_sun",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 100,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    },
+    "item": "讲究头带"
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 100,
+    "nature": "bold",
+    "evs": {
+     "def": 252,
+     "hp": 252
+    }
+   },
+   "move": "Fire Punch",
+   "weather": "sun"
+  },
+  {
+   "key": "freeze_dry",
+   "atk": {
+    "sp": "Glaceon",
+    "level": 50,
+    "nature": "modest",
+    "evs": {
+     "spa": 252
+    }
+   },
+   "def": {
+    "sp": "Gyarados",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Freeze-Dry"
+  },
+  {
+   "key": "helping_hand_eq",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Earthquake",
+   "helping_hand": true
+  },
+  {
+   "key": "grassy_terrain_eq",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Earthquake",
+   "terrain": "grassy"
+  },
+  {
+   "key": "levitate_immune",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    }
+   },
+   "def": {
+    "sp": "Rotom-Wash",
+    "level": 50,
+    "nature": "bold",
+    "ability": "漂浮"
+   },
+   "move": "Earthquake"
+  },
+  {
+   "key": "snow_ice_def",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    }
+   },
+   "def": {
+    "sp": "Glaceon",
+    "level": 50,
+    "nature": "bold",
+    "evs": {
+     "def": 252
+    }
+   },
+   "move": "Earthquake",
+   "weather": "snow"
+  },
+  {
+   "key": "sand_rock_spd",
+   "atk": {
+    "sp": "Charizard",
+    "level": 50,
+    "nature": "modest",
+    "evs": {
+     "spa": 252
+    }
+   },
+   "def": {
+    "sp": "Gigalith",
+    "level": 50,
+    "nature": "calm"
+   },
+   "move": "Flamethrower",
+   "weather": "sand"
+  },
+  {
+   "key": "psychic_terrain",
+   "atk": {
+    "sp": "Gardevoir",
+    "level": 50,
+    "nature": "modest",
+    "evs": {
+     "spa": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Psychic",
+   "terrain": "psychic"
+  },
+  {
+   "key": "misty_terrain_dragon",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "modest",
+    "evs": {
+     "spa": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Draco Meteor",
+   "terrain": "misty"
+  },
+  {
+   "key": "electric_terrain",
+   "atk": {
+    "sp": "Charizard",
+    "level": 50,
+    "nature": "modest",
+    "evs": {
+     "spa": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Thunderbolt",
+   "terrain": "electric"
+  },
+  {
+   "key": "grassy_boost_grass",
+   "atk": {
+    "sp": "Charizard",
+    "level": 50,
+    "nature": "modest",
+    "evs": {
+     "spa": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Energy Ball",
+   "terrain": "grassy"
+  },
+  {
+   "key": "doubles_spread_eq",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Earthquake",
+   "mode": "doubles"
+  },
+  {
+   "key": "doubles_screen",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Earthquake",
+   "mode": "doubles",
+   "screen": "reflect"
+  },
+  {
+   "key": "friend_guard",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Earthquake",
+   "friend_guard": true
+  },
+  {
+   "key": "steely_spirit",
+   "atk": {
+    "sp": "Corviknight",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Steel Wing",
+   "steely_spirit": true
+  },
+  {
+   "key": "battery_special",
+   "atk": {
+    "sp": "Charizard",
+    "level": 50,
+    "nature": "modest",
+    "evs": {
+     "spa": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Flamethrower",
+   "battery": true
+  },
+  {
+   "key": "power_spot",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Earthquake",
+   "power_spot": true
+  },
+  {
+   "key": "fairy_aura",
+   "atk": {
+    "sp": "Gardevoir",
+    "level": 50,
+    "nature": "modest",
+    "evs": {
+     "spa": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Moonblast",
+   "auras": {
+    "fairy": true
+   }
+  },
+  {
+   "key": "dark_aura_break",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Crunch",
+   "auras": {
+    "dark": true,
+    "break": true
+   }
+  },
+  {
+   "key": "ruin_sword_def",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Earthquake",
+   "ruin": {
+    "sword": true
+   }
+  },
+  {
+   "key": "ruin_beads_spd",
+   "atk": {
+    "sp": "Charizard",
+    "level": 50,
+    "nature": "modest",
+    "evs": {
+     "spa": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Flamethrower",
+   "ruin": {
+    "beads": true
+   }
+  },
+  {
+   "key": "ruin_tablets_atk",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Earthquake",
+   "ruin": {
+    "tablets": true
+   }
+  },
+  {
+   "key": "ruin_vessel_spa",
+   "atk": {
+    "sp": "Charizard",
+    "level": 50,
+    "nature": "modest",
+    "evs": {
+     "spa": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Flamethrower",
+   "ruin": {
+    "vessel": true
+   }
+  },
+  {
+   "key": "flower_gift_sun",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Earthquake",
+   "weather": "sun",
+   "flower_gift": true
+  },
+  {
+   "key": "multiscale_sr",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    }
+   },
+   "def": {
+    "sp": "Dragonite",
+    "level": 50,
+    "nature": "careful",
+    "ability": "多重鳞片"
+   },
+   "move": "Dragon Claw",
+   "hazards": {
+    "rocks": true
+   }
+  },
+  {
+   "key": "multiscale_full",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    }
+   },
+   "def": {
+    "sp": "Dragonite",
+    "level": 50,
+    "nature": "careful",
+    "ability": "多重鳞片"
+   },
+   "move": "Dragon Claw"
+  },
+  {
+   "key": "stellar_stab_orig",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    },
+    "tera_type": "星晶"
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Earthquake"
+  },
+  {
+   "key": "stellar_stab_nonorig",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    },
+    "tera_type": "星晶"
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Stone Edge"
+  },
+  {
+   "key": "def_tera_weak_shift",
+   "atk": {
+    "sp": "Charizard",
+    "level": 50,
+    "nature": "modest",
+    "evs": {
+     "spa": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful",
+    "tera_type": "格斗"
+   },
+   "move": "Air Slash"
+  },
+  {
+   "key": "def_tera_immune_gone",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    }
+   },
+   "def": {
+    "sp": "Gyarados",
+    "level": 50,
+    "nature": "careful",
+    "tera_type": "龙"
+   },
+   "move": "Earthquake"
+  },
+  {
+   "key": "def_tera_stellar_keep",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    }
+   },
+   "def": {
+    "sp": "Gyarados",
+    "level": 50,
+    "nature": "careful",
+    "tera_type": "星晶"
+   },
+   "move": "Earthquake"
+  },
+  {
+   "key": "atk_tera_stab",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    },
+    "tera_type": "龙"
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Dragon Claw"
+  },
+  {
+   "key": "gravity_eq_flying",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    }
+   },
+   "def": {
+    "sp": "Gyarados",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Earthquake",
+   "gravity": true
+  },
+  {
+   "key": "wonder_room_special",
+   "atk": {
+    "sp": "Charizard",
+    "level": 50,
+    "nature": "modest",
+    "evs": {
+     "spa": 252
+    }
+   },
+   "def": {
+    "sp": "Shuckle",
+    "level": 50,
+    "nature": "bold",
+    "evs": {
+     "def": 252
+    }
+   },
+   "move": "Flamethrower",
+   "wonder_room": true
+  },
+  {
+   "key": "magic_room_lo",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    },
+    "item": "生命宝珠"
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Earthquake",
+   "magic_room": true
+  },
+  {
+   "key": "assault_vest",
+   "atk": {
+    "sp": "Charizard",
+    "level": 50,
+    "nature": "modest",
+    "evs": {
+     "spa": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful",
+    "item": "突击背心"
+   },
+   "move": "Flamethrower"
+  },
+  {
+   "key": "eviolite_chansey",
+   "atk": {
+    "sp": "Charizard",
+    "level": 50,
+    "nature": "modest",
+    "evs": {
+     "spa": 252
+    }
+   },
+   "def": {
+    "sp": "Chansey",
+    "level": 50,
+    "nature": "calm",
+    "evs": {
+     "hp": 252
+    },
+    "item": "进化奇石"
+   },
+   "move": "Focus Blast"
+  },
+  {
+   "key": "crit_ignores_def_boost",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful",
+    "boosts": {
+     "def": 2
+    }
+   },
+   "move": "Earthquake",
+   "crit": true
+  },
+  {
+   "key": "def_boost_nocrit",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful",
+    "boosts": {
+     "def": 2
+    }
+   },
+   "move": "Earthquake"
+  },
+  {
+   "key": "z_generic_eq",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Earthquake",
+   "z_move": true,
+   "z_generic_only": true
+  },
+  {
+   "key": "z_generic_giga",
+   "atk": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Giga Impact",
+   "z_move": true,
+   "z_generic_only": true
+  },
+  {
+   "key": "max_eq",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    },
+    "is_dynamax": true
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Earthquake",
+   "max_move": true
+  },
+  {
+   "key": "max_rock_blast",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    },
+    "is_dynamax": true
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Rock Blast",
+   "max_move": true
+  },
+  {
+   "key": "max_fighting",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "adamant",
+    "evs": {
+     "atk": 252
+    },
+    "is_dynamax": true
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful"
+   },
+   "move": "Close Combat",
+   "max_move": true
+  },
+  {
+   "key": "flash_fire_immune",
+   "atk": {
+    "sp": "Charizard",
+    "level": 50,
+    "nature": "modest",
+    "evs": {
+     "spa": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful",
+    "ability": "引火"
+   },
+   "move": "Flamethrower"
+  },
+  {
+   "key": "water_absorb_immune",
+   "atk": {
+    "sp": "Garchomp",
+    "level": 50,
+    "nature": "modest",
+    "evs": {
+     "spa": 252
+    }
+   },
+   "def": {
+    "sp": "Snorlax",
+    "level": 50,
+    "nature": "careful",
+    "ability": "储水"
+   },
+   "move": "Surf"
+  }
+ ],
+ "SID": {
+  "Garchomp": 445,
+  "Snorlax": 143,
+  "Charizard": 6,
+  "Hariyama": 297,
+  "Glaceon": 471,
+  "Gyarados": 130,
+  "Rotom-Wash": 10009,
+  "Gardevoir": 282,
+  "Gigalith": 526,
+  "Dragonite": 149,
+  "Shuckle": 213,
+  "Chansey": 113,
+  "Corviknight": 823,
+  "Raichu-Alola": 10100
+ },
+ "MOVE_EN": {
+  "Earthquake": "地震",
+  "Flamethrower": "喷射火焰",
+  "Hydro Pump": "水炮",
+  "Close Combat": "近身战",
+  "Fire Punch": "火焰拳",
+  "Freeze-Dry": "冷冻干燥",
+  "Psychic": "精神强念",
+  "Draco Meteor": "流星群",
+  "Thunderbolt": "十万伏特",
+  "Energy Ball": "能量球",
+  "Steel Wing": "钢翼",
+  "Moonblast": "月亮之力",
+  "Crunch": "咬碎",
+  "Dragon Claw": "龙爪",
+  "Air Slash": "空气斩",
+  "Stone Edge": "尖石攻击",
+  "Rock Blast": "岩石爆击",
+  "Giga Impact": "终极冲击",
+  "Surf": "冲浪",
+  "Focus Blast": "真气弹"
+ }
+}

@@ -18,8 +18,9 @@ venv/
 node_modules/
 web/dist/
 
-# --- frontend 构建产物随仓库分发（勿忽略 app/static/dist）---
+# --- frontend 构建产物随仓库分发（勿忽略 app/static/dist；data/ 为静态导出可重建）---
 !app/static/dist/
+app/static/data/
 
 # --- misc ---
 .DS_Store

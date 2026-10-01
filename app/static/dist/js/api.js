@@ -1,9 +1,24 @@
-/* 轻量 API 封装：失败时派发全局事件（app.js 统一 toast） */
+/* 轻量 API 封装：失败时派发全局事件（app.js 统一 toast）。
+ * 路线 B（APK/统一壳）：后端不可达时自动切换本地数据引擎（js/local/*，JSON 分片），
+ * 端点签名不变、前端视图零改动；正常桌面模式仍走 FastAPI。 */
 function _apiError(e) {
   console.error(e);
   try { window.dispatchEvent(new CustomEvent("api-error", { detail: String(e.message || e) })); } catch (_) {}
 }
+
+let _localMode = false;   // 一旦后端判定不可达（APK/Tauri 壳）即常驻本地模式
+
+async function _localDispatch(method, url, params, body) {
+  try {
+    return await window.__PKT_LOCAL__.localApi.handle(method, url, params || body);
+  } catch (e) {
+    _apiError(e);
+    throw e;
+  }
+}
+
 async function apiGet(url, params = {}) {
+  if (_localMode) return _localDispatch("GET", url, params);
   const qs = new URLSearchParams();
   for (const [k, v] of Object.entries(params)) {
     if (v !== undefined && v !== null && v !== "") qs.set(k, v);
@@ -12,14 +27,17 @@ async function apiGet(url, params = {}) {
   let res;
   try {
     res = await fetch(url + (s ? "?" + s : ""));
-  } catch (e) { _apiError(new Error("网络请求失败：" + url)); throw e; }
-  if (!res.ok) {
-    const e = new Error((await res.json().catch(() => ({}))).detail || res.statusText);
-    _apiError(e); throw e;
+  } catch (e) {
+    _localMode = true;   // 无后端（连接拒绝）→ 本地数据引擎
+    return _localDispatch("GET", url, params);
   }
-  return res.json();
+  const ctype = res.headers.get("content-type") || "";
+  if (res.ok && ctype.includes("application/json")) return res.json();
+  _localMode = true;     // 壳内静态服务返回 HTML/404 → 本地数据引擎
+  return _localDispatch("GET", url, params);
 }
 async function apiSend(method, url, body) {
+  if (_localMode) return _localDispatch(method, url, null, body);
   let res;
   try {
     res = await fetch(url, {
@@ -27,12 +45,15 @@ async function apiSend(method, url, body) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
-  } catch (e) { _apiError(new Error("网络请求失败：" + url)); throw e; }
-  if (!res.ok) {
-    const e = new Error((await res.json().catch(() => ({}))).detail || res.statusText);
-    _apiError(e); throw e;
+  } catch (e) {
+    _localMode = true;
+    return _localDispatch(method, url, null, body);
   }
-  return res.json();
+  const ctype = res.headers.get("content-type") || "";
+  if (res.ok && ctype.includes("application/json")) return res.json();
+  const e = new Error((await res.json().catch(() => ({}))).detail || res.statusText);
+  _apiError(e);
+  throw e;
 }
 
 const TYPE_LIST = ["一般", "火", "水", "电", "草", "冰", "格斗", "毒", "地面",
