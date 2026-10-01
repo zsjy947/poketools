@@ -40,3 +40,16 @@ data/*.db-wal
 
 # --- release build output (exe + data, copy-to-run) ---
 /release/
+
+# --- battle/ 模拟对战子项目（Tauri 2 + React + TS，与主仓 Python 栈零耦合）---
+battle/node_modules/
+battle/dist/
+battle/src-tauri/target/
+battle/src-tauri/gen/
+battle/release/
+battle/src/engine-adapter/vendor/
+battle/public/
+battle/.sprite-raw/
+battle/.engine-tmp/
+battle/.tauri/
+battle/.keystore/

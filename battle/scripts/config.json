@@ -1,0 +1,11 @@
+{
+  "comment": "版本锁定（M1 数据层落实并回填；重新抓取/导出必须同步更新此文件与 src/data/data-version.json）",
+  "pkmnDexVersion": "^0.10.11",
+  "showdownCommit": "a5df827",
+  "showdownRepo": "https://github.com/smogon/pokemon-showdown",
+  "sprites": {
+    "sourceUrl": "https://pokemonshowdown.com/files/resources/sprites.zip",
+    "downloadedAt": ""
+  },
+  "showdownPath": "../data/raw/pokemon-showdown"
+}
