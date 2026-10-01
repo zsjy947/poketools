@@ -7,6 +7,15 @@ const EvView = {
       <span style="color:#888;font-size:13px">击倒该宝可梦可获得的努力值点数（仅当前游戏图鉴，含野外自然出现地点）</span>
     </div>
     <div class="page-head">
+      <el-button class="filter-toggle" size="small" @click="showFilters = !showFilters">
+        筛选{{ stat ? '' : '' }}<mono-icon name="ev" :size="14" style="margin-left:4px"></mono-icon>
+      </el-button>
+      <div class="spacer"></div>
+      <span style="font-size:13px;color:#888">{{ list.length }} 只</span>
+    </div>
+    <div class="filter-mask" v-if="showFilters" @click="showFilters = false"></div>
+    <div class="filter-bar page-head" :class="{open: showFilters}">
+      <div class="page-head" style="margin:0">
       <el-select v-model="stat" style="width:110px">
         <el-option v-for="(v, k) in EV_NAMES" :key="k" :value="k" :label="v" />
       </el-select>
@@ -15,8 +24,8 @@ const EvView = {
         <el-option v-for="v in [1, 2, 3]" :key="v" :value="v" :label="'+' + v + ' 点'" />
       </el-select>
       <el-input v-model="q" clearable placeholder="搜索名称" style="width:160px" />
-      <div class="spacer"></div>
-      <span style="font-size:13px;color:#888">{{ list.length }} 只</span>
+      <el-button size="small" @click="showFilters = false">收起</el-button>
+      </div>
     </div>
 
     <el-table :data="list" size="small" class="ev-table" v-loading="loading"
@@ -52,14 +61,40 @@ const EvView = {
         </template>
       </el-table-column>
     </el-table>
+
+    <!-- 移动端卡片流（竖屏；桌面隐藏）：地点折叠为「+N」展开 -->
+    <div class="ev-cards">
+      <div v-for="row in list" :key="row.species_id" class="ev-card" @click="openDetail(row)">
+        <poke-img :form-id="row.form_id" :size="52"></poke-img>
+        <div class="evc-info">
+          <div class="evc-name">{{ row.name_zh }} <span class="evc-en">{{ row.name_en }}</span></div>
+          <type-badge :types="row.types"></type-badge>
+          <ev-badges :ev="row.ev"></ev-badges>
+          <div class="evc-locs" v-if="row.locations && row.locations.length">
+            <template v-for="(l, i) in expanded[row.species_id] ? row.locations : row.locations.slice(0, 2)"
+              :key="i">
+              <span v-if="versionChip(l.version_label)" class="ev-ver-chip"
+                :class="chipClass(l.version_label)">{{ versionChip(l.version_label) }}</span>{{ l.location }}　
+            </template>
+            <span v-if="row.locations.length > 2" class="evc-more"
+              @click.stop="expanded[row.species_id] = !expanded[row.species_id]">
+              {{ expanded[row.species_id] ? '收起' : '+' + (row.locations.length - 2) + ' 地点' }}
+            </span>
+          </div>
+          <div class="evc-locs" v-else style="color:#a8b0c0">本作无自然出现</div>
+        </div>
+      </div>
+    </div>
   </div>
   `,
   setup() {
-    const { ref, computed, watch, inject } = Vue;
+    const { ref, reactive, computed, watch, inject } = Vue;
     const store = inject("store");
     const stat = ref("hp");
     const value = ref(0);
     const q = ref("");
+    const showFilters = ref(false);
+    const expanded = reactive({});
     const list = ref([]);
     const loading = ref(false);
 
@@ -102,6 +137,7 @@ const EvView = {
     watch(q, () => { clearTimeout(qt); qt = setTimeout(load, 300); });
     load();
     return { store, stat, value, q, list, loading, game, EV_NAMES, openDetail,
-             shownLocations, allLocationsText, versionChip, chipClass };
+             shownLocations, allLocationsText, versionChip, chipClass,
+             showFilters, expanded };
   },
 };

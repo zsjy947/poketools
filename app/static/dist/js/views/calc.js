@@ -171,16 +171,37 @@ const CalcView = {
       </template>
     </div>
 
-    <!-- 编辑面板（每侧）+ 场地与状态区（下部） -->
+    <!-- 编辑面板（每侧）+ 场地与状态区（下部）；移动端折叠为「我方/对手/场地」手风琴 -->
     <div class="calc-editors">
-      <side-editor :side="A" :label="'左侧编辑 · ' + (A.nameZh || '未选择')" :species-list="speciesList"
-        :items="items" :abilities="allAbilities" :z-meta="zMeta"
-        @changed="onSideChanged" @mech="onMechChange"></side-editor>
-      <side-editor :side="D" :label="'右侧编辑 · ' + (D.nameZh || '未选择')" :species-list="speciesList"
-        :items="items" :abilities="allAbilities" :z-meta="zMeta"
-        @changed="onSideChanged" @mech="onMechChange"></side-editor>
-      <field-panel :field="field" :sides="{atk: A, dfd: D}"
-        @changed="onSideChanged"></field-panel>
+      <div class="acc-item" :class="{open: acc.A}">
+        <div class="acc-head" @click="acc.A = !acc.A">
+          <span>我方 · {{ A.nameZh || "未选择" }}</span><span class="acc-arrow">›</span>
+        </div>
+        <div class="acc-body">
+          <side-editor :side="A" :label="'左侧编辑 · ' + (A.nameZh || '未选择')" :species-list="speciesList"
+            :items="items" :abilities="allAbilities" :z-meta="zMeta"
+            @changed="onSideChanged" @mech="onMechChange"></side-editor>
+        </div>
+      </div>
+      <div class="acc-item" :class="{open: acc.D}">
+        <div class="acc-head" @click="acc.D = !acc.D">
+          <span>对手 · {{ D.nameZh || "未选择" }}</span><span class="acc-arrow">›</span>
+        </div>
+        <div class="acc-body">
+          <side-editor :side="D" :label="'右侧编辑 · ' + (D.nameZh || '未选择')" :species-list="speciesList"
+            :items="items" :abilities="allAbilities" :z-meta="zMeta"
+            @changed="onSideChanged" @mech="onMechChange"></side-editor>
+        </div>
+      </div>
+      <div class="acc-item field-wrap" :class="{open: acc.F}">
+        <div class="acc-head" @click="acc.F = !acc.F">
+          <span>场地与状态</span><span class="acc-arrow">›</span>
+        </div>
+        <div class="acc-body">
+          <field-panel :field="field" :sides="{atk: A, dfd: D}"
+            @changed="onSideChanged"></field-panel>
+        </div>
+      </div>
     </div>
   </div>
   `,
@@ -400,9 +421,11 @@ const CalcView = {
     watch(A, scheduleRecalc, { deep: true });
     watch(D, scheduleRecalc, { deep: true });
 
+    /* 移动端手风琴开合（桌面忽略） */
+    const acc = reactive({ A: false, D: false, F: false });
     return {
       A, D, field, speciesList, items, allAbilities, zMeta, maxMeta, gmaxMeta,
-      atkSide, activeMoveIdx, activeResult, activeZName, activeZNote, zOnForActive,
+      acc, atkSide, activeMoveIdx, activeResult, activeZName, activeZNote, zOnForActive,
       resultDesc, koText, koTagType, activeHpText,
       pickMove, onSideChanged, onMechChange, MECH_LABELS,
       toggleMechMark, onZ: (s, idx) => { toggleZMark(s, idx, items.value, zMeta.value); scheduleRecalc(); },

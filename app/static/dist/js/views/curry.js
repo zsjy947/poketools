@@ -12,13 +12,18 @@ const CurryView = {
       title="咖喱等级与奖励"
       description="与宝可梦一起露营制作咖喱。咖喱等级由食材与宝可梦的好感度决定（★★~★★★★★）；大份咖喱能让宝可梦回复更多。收集咖喱图鉴达到一定数量可在集汇空地的咖喱店主处获得奖励。" />
 
-    <div class="page-head">
-      <el-input v-model="q" clearable placeholder="搜索咖喱名/关键食材" style="width:200px" />
+    <div class="page-head" style="margin-bottom:8px">
+      <el-button class="filter-toggle" size="small" @click="showFilters = !showFilters">筛选</el-button>
+    </div>
+    <div class="filter-mask" v-if="showFilters" @click="showFilters = false"></div>
+    <div class="filter-bar page-head-wrap" :class="{open: showFilters}">
+      <div class="page-head">      <el-input v-model="q" clearable placeholder="搜索咖喱名/关键食材" style="width:200px" />
       <el-select v-model="ingredient" clearable filterable placeholder="关键食材" style="width:160px">
         <el-option v-for="i in ingredients" :key="i" :value="i" :label="i" />
       </el-select>
       <div class="spacer"></div>
       <span style="font-size:13px;color:#888">{{ filtered.length }} / {{ list.length }} 种</span>
+      </div>
     </div>
 
     <div class="curry-grid">
@@ -35,6 +40,7 @@ const CurryView = {
   </div>
   `,
   setup() {
+    const showFilters = Vue.ref(false);
     const { ref, computed } = Vue;
     const loading = ref(true);
     const list = ref([]);
@@ -56,6 +62,6 @@ const CurryView = {
     }
 
     apiGet("/api/curries").then((r) => { list.value = r; loading.value = false; });
-    return { loading, list, q, ingredient, ingredients, filtered, curryImg };
+    return { loading, list, q, ingredient, ingredients, filtered, curryImg, showFilters };
   },
 };

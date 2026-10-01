@@ -13,6 +13,11 @@ const DetailView = {
     </div>
 
     <template v-if="d">
+    <!-- 移动端分段锚点（基本/获取/招式/能力；桌面隐藏） -->
+    <div class="mobile-sec-chips">
+      <span v-for="sec in SEC_CHIPS" :key="sec.key" class="chip-sec"
+        :class="{on: activeSec === sec.key}" @click="scrollSec(sec)">{{ sec.label }}</span>
+    </div>
     <!-- 形态选择：缩略图 tab 条（默认形态不带任何标注；选中非默认形态后可还原） -->
     <div v-if="d.forms.length > 1" class="form-strip">
       <div v-for="f in d.forms" :key="f.id" class="form-chip" :class="{active: f.id === formId}"
@@ -28,7 +33,7 @@ const DetailView = {
       <!-- 左栏 -->
       <div class="dcol">
         <!-- 头部信息卡 -->
-        <div class="detail-head">
+        <div class="detail-head" id="sec-basic">
           <div class="detail-art">
             <poke-img :form-id="curForm.id" :size="176"></poke-img>
           </div>
@@ -115,7 +120,7 @@ const DetailView = {
       <!-- 右栏 -->
       <div class="dcol">
         <!-- 种族值 + 能力值（合并一卡） -->
-        <div class="block">
+        <div class="block" id="sec-ability">
           <div class="page-head" style="margin-bottom:6px">
             <h3 style="margin:0">种族值与能力值</h3>
             <div class="spacer"></div>
@@ -163,13 +168,13 @@ const DetailView = {
         </div>
 
         <!-- 获取方式 -->
-        <div class="block">
+        <div class="block" id="sec-get">
           <h3>获取方式<template v-if="game">（{{ game.name_zh }}）</template></h3>
           <get-method-list :rows="d.get_methods" :extra="d.encounters_api"></get-method-list>
         </div>
 
         <!-- 招式表 -->
-        <div class="block">
+        <div class="block" id="sec-moves">
           <h3>招式表<template v-if="game">（{{ game.name_zh }}）</template></h3>
           <el-tabs v-model="tab" v-if="moves">
             <el-tab-pane v-for="t in moves.tabs" :key="t.key"
@@ -270,6 +275,12 @@ const DetailView = {
   </div>
   `,
   setup() {
+    const SEC_CHIPS = [
+      { key: "basic", label: "基本", sel: "#sec-basic" },
+      { key: "ability", label: "能力", sel: "#sec-ability" },
+      { key: "get", label: "获取", sel: "#sec-get" },
+      { key: "moves", label: "招式", sel: "#sec-moves" },
+    ];
     const { ref, reactive, computed, inject, watch, onUnmounted } = Vue;
     const store = inject("store");
     const loading = ref(true);
@@ -552,6 +563,14 @@ const DetailView = {
 
     loadNav().then(prefetchNeighbors);
     load();
+
+    /* 移动端分段锚点（基本/能力/获取/招式；桌面 CSS 隐藏锚点条） */
+    const activeSec = ref("basic");
+    function scrollSec(sec) {
+      activeSec.value = sec.key;
+      const el = document.querySelector(sec.sel);
+      if (el) el.scrollIntoView({ behavior: "instant", block: "start" });
+    }
     return {
       loading, d, sid, formId, curForm, formName, curFlavor, curEv, curDex, game, gameId,
       noAbilities,
@@ -560,6 +579,7 @@ const DetailView = {
       rangeOf, pct, STAT_BAR_COLOR,
       effMode, effGroups, effClass, myTypes, atkGroupsOf,
       navList, prevId, nextId, goNeighbor,
+      SEC_CHIPS, activeSec, scrollSec,
     };
   },
 };

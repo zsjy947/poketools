@@ -53,10 +53,16 @@ const DonutView = {
       </el-tab-pane>
 
       <el-tab-pane :label="'树果效果 (' + d.berries.length + ')'" name="berries">
+        <div class="page-head" style="margin-bottom:8px">
+          <el-button class="filter-toggle" size="small" @click="showFilters = !showFilters">筛选</el-button>
+        </div>
+        <div class="filter-mask" v-if="showFilters" @click="showFilters = false"></div>
+        <div class="filter-bar" :class="{open: showFilters}">
         <div class="page-head">
           <el-input v-model="berryQ" clearable placeholder="搜索树果" style="width:160px" />
           <div class="spacer"></div>
           <span style="font-size:13px;color:#888">{{ filteredBerries.length }} 种</span>
+        </div>
         </div>
         <el-table :data="filteredBerries" size="small" height="520">
           <el-table-column label="树果" min-width="110">
@@ -184,6 +190,7 @@ const DonutView = {
   </div>
   `,
   setup() {
+    const showFilters = Vue.ref(false);
     const { ref, reactive, computed, inject } = Vue;
     const store = inject("store");
     const loading = ref(true);
@@ -249,7 +256,7 @@ const DonutView = {
           if (fp.flavor === zh && !seen.has(fp.power)) { seen.add(fp.power); powers.push(fp.power); }
         }
       }
-      return { sums: entries, star, maxFlavor: entries[0][0], second: entries[1], powers };
+      return { sums: entries, star, maxFlavor: entries[0][0], second: entries[1], powers , showFilters };
     });
     async function saveCustom() {
       const effects = editor.effects.filter((e) => e.power);

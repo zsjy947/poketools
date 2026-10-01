@@ -247,6 +247,18 @@ hover 原生 title 提示、active 金色高亮+左侧条）；左上角 BackBtn
 FEATURES.icon 值供窄栏与宫格共用；游戏大图标复用官方商标资产不重绘；预览审查页
 `tools/icon-preview.html`（本地用）；功能图标 emoji 已全部清零（含甜甜圈/三明治页内装饰）。
 
+### 断点体系（2026-10 A2 起）
+
+| 档位 | 位置 | 用途 |
+| --- | --- | --- |
+| ≤1280 | calc.css | 桌面窄窗：计算器编辑区单列 |
+| ≤1080 | dex.css / calc.css | 桌面窄窗/平板横屏：详情两栏→单列、场地区三栏→单列 |
+| **≤768** | **mobile.css（统一竖屏层）** | **竖屏主档：底部 Tab/窄栏变底部导航、双列图鉴、卡片流、抽屉、手风琴、触控热区 ≥40px、safe-area** |
+| **≤480** | **mobile.css** | **小屏收紧：图标/字号/间距** |
+
+移动端专属元素（TabBar/分段锚点/筛选抽屉/手风琴/卡片流）全部由 mobile.css 在 >768 隐藏，桌面零影响；
+三层吸顶（返回钮 40px → 分段锚点 40→88px → 形态条 88px）依次下移避免叠压。
+
 ## §7 设计决策记录（为什么这么做）
 
 | 决策 | 理由 | 里程碑 |
@@ -346,3 +358,4 @@ FEATURES.icon 值供窄栏与宫格共用；游戏大图标复用官方商标资
 | CALC-FIX 批次三 | 全局导航重构（首页功能宫格/游戏中心 #/games/64px 图标窄栏/BackBtn 层级返回/calc 全画面常驻叠加）+ Monoline 图标体系（10 枚手写 SVG + MonoIcon/RailNav/BackBtn 组件 + tools/icon-preview.html）+ 功能图标 emoji 清零 | 交付；浏览器实测全过（首页三卡/五游戏可达/窄栏高亮/详情全屏/常驻零请求/三列同高逐键一致）；资产 bump v21 |
 | battle M0-M8 | 模拟对战全栈：供应商化引擎/BattleSession 协议/数据层/队伍构建/信息流对战/动画演出/双端发布；56 用例 + 官方 replay 对拍 9 条 × 4 维 + 覆盖率 86.9%；Windows NSIS exe + Android 签名 APK + SHA256SUMS；并入评估报告（§7.1）结论=并入 | 交付；tag `battle-v1.0.0`；battle 分支合并回 main；功能说明 = docs/BATTLE.md |
 | Track C A1 数据静态化 | export_static_data.py（33 表 83.2 万行分片导出 + 全表 diff 零门禁）+ js/local/* 本地引擎（routers 逐行移植，damage.py TS/JS 化）+ api.js 后端不可达自动切本地；等价性 524 调用逐字段一致；calib-js 51+41 全绿 | 交付；pytest 68 绿 + ruff 零告警 + 浏览器纯静态实测（首页/图鉴/详情/招式/计算器零 JS 错误） |
+| Track C A2 竖屏 UI | mobile.css 统一 ≤768/≤480 竖屏层（底部 Tab/窄栏底部化/双列图鉴/详情分段锚点+三层吸顶/EV 卡片流/特化页筛选抽屉/计算器纵向堆叠+手风琴/弹窗全屏）+ viewport/theme-color meta；桌面 >768 零影响 | 交付；移动 390×844 与桌面 1280 双视口浏览器实测（导航/锚点滚动/抽屉/手风琴/卡片流/桌面回归全过） |

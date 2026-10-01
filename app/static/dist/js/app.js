@@ -24,6 +24,8 @@ const App = {
       <!-- 计算器视图首次进入后常驻（v-show 隐藏）：状态保留、零请求、图片不回源 -->
       <calc-view v-if="visited.calc" v-show="route.page === 'calc'"></calc-view>
     </div>
+    <!-- 移动端竖屏底部 Tab（桌面 CSS 隐藏；游戏内由窄栏底部变体承担，详情页用返回键） -->
+    <tab-bar v-if="['home', 'games', 'calc'].includes(route.page)" :active="route.page"></tab-bar>
   </div>
   `,
   setup() {

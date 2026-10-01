@@ -347,6 +347,28 @@ const EvoNode = {
 
 const Empty = { template: `<div class="empty-hint"><slot/></div>` };
 
+/* 底部 Tab 栏（移动端竖屏专用；桌面由 CSS 隐藏）：首页 / 游戏中心 / 计算器 */
+const TabBar = {
+  props: ["active"],
+  template: `
+  <nav class="tab-bar">
+    <div v-for="t in tabs" :key="t.key" class="tab-item" :class="{active: active === t.key}"
+      @click="go(t.hash)">
+      <mono-icon :name="t.icon" :size="20"></mono-icon>
+      <span class="tab-label">{{ t.label }}</span>
+    </div>
+  </nav>`,
+  setup() {
+    const tabs = [
+      { key: "home", label: "首页", icon: "home", hash: "#/home" },
+      { key: "games", label: "游戏中心", icon: "games", hash: "#/games" },
+      { key: "calc", label: "计算器", icon: "calc", hash: "#/calc" },
+    ];
+    function go(hash) { location.hash = hash; }
+    return { tabs, go };
+  },
+};
+
 function registerGlobalComponents(app) {
   app.component("type-badge", TypeBadge);
   app.component("move-class-badge", MoveClassBadge);
@@ -362,6 +384,7 @@ function registerGlobalComponents(app) {
   app.component("mono-icon", MonoIcon);
   app.component("rail-nav", RailNav);
   app.component("back-btn", BackBtn);
+  app.component("tab-bar", TabBar);
 }
 
 /* 属性相性计算（防守方视角）：需要 store.typeChart 已加载 */

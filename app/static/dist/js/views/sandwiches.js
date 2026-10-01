@@ -14,6 +14,11 @@ const SandwichView = {
 
     <el-tabs v-model="tabName">
       <el-tab-pane label="食谱列表" name="recipes">
+        <div class="page-head" style="margin-bottom:8px">
+          <el-button class="filter-toggle" size="small" @click="showFilters = !showFilters">筛选</el-button>
+        </div>
+        <div class="filter-mask" v-if="showFilters" @click="showFilters = false"></div>
+        <div class="filter-bar" :class="{open: showFilters}">
         <div class="page-head">
           <el-select v-model="power" clearable placeholder="食力类型" style="width:130px">
             <el-option v-for="p in POWER_LIST" :key="p" :value="p" :label="p" />
@@ -32,6 +37,7 @@ const SandwichView = {
           <el-input v-model="q" clearable placeholder="搜索名称/食材" style="width:170px" />
           <div class="spacer"></div>
           <span style="font-size:13px;color:#888">{{ list.length }} 个食谱</span>
+        </div>
         </div>
         <div class="sand-grid" v-loading="loading">
           <div v-for="r in list" :key="r.no" class="sand-card">
@@ -165,6 +171,7 @@ const SandwichView = {
   </div>
   `,
   setup() {
+    const showFilters = Vue.ref(false);
     const { ref, reactive, computed, watch, inject } = Vue;
     const store = inject("store");
     const tabName = ref("recipes");
@@ -262,7 +269,8 @@ const SandwichView = {
       itemKind, itemQ, items, filteredItems, itemOptions,
       customList, editorDlg, editor, saving,
       openEditor, saveCustom, removeCustom, fmtList,
-      POWER_LIST, TYPE_LIST, POWER_COLORS,
+      POWER_LIST, TYPE_LIST, POWER_COLORS, showFilters,
+      showFilters,
     };
   },
 };
