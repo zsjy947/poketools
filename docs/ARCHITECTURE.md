@@ -38,6 +38,8 @@ python scripts/make_icon.py           # 精灵球应用图标
 python scripts/export_static_data.py  # db 读侧 -> app/static/data/ JSON 分片（APK/无后端模式；含全表 diff 硬门禁）
 python scripts/verify_static_equivalence.py  # 真实 API vs 本地 JS 引擎逐字段等价性验证（524 调用门禁）
 node tools/static-check/calib-js.mjs  # JS 伤害引擎 vs smogon 基准（calib 双语言门禁之二）
+python scripts/build_apk_assets.py    # 前端 dist + 数据分片 + 精灵图 → apk/dist（APK 资产组装）
+# APK 构建（Windows 手动链，同 battle M0/M7 验证过的流程，详见 §2 末「APK 构建管线」）
 ```
 
 ### 静态化管线（路线 B / APK 基座，UPDATE-PLAN §3.2）
@@ -57,6 +59,29 @@ node tools/static-check/calib-js.mjs  # JS 伤害引擎 vs smogon 基准（calib
   （多重鳞片满血判定用 undefined 哨兵区分）；生蛋链 chains 顺序源自 Python set 迭代序
   （等价性验证做序无关规范化）；字典整数键迭代序差异用 Map（插入序）规避；
   字符串排序是码点序（localeCompare 不等价）；表缓存行不可变异（detail 挂 ability_list 曾污染缓存）。
+
+### APK 构建管线（Track C A3/A4，UPDATE-PLAN §4.1）
+
+壳工程 `apk/`（独立于 battle/ 的 Tauri 2 壳：`identifier com.poketools.app`、竖屏锁定
+`AndroidManifest screenOrientation=portrait`、无自定义命令无额外权限）：
+
+```bash
+python scripts/build_apk_assets.py     # dist+data+sprites → apk/dist（~136MB，gitignore）
+cd apk && <tauri-cli> android init     # 生成 gen/（一次性）；图标 tauri icon 生成全套
+# .so（必须带 custom-protocol 内嵌前端；CARGO_TARGET_DIR 可复用 battle 依赖缓存加速）：
+cd apk/src-tauri && cargo build --release --target aarch64-linux-android --features tauri/custom-protocol
+cp <target>/.../libpoketools_app_lib.so gen/android/app/src/main/jniLibs/arm64-v8a/
+# ⚠ `tauri android init` 只生成 MainActivity；generated/（TauriActivity/RustWebView 等）
+#   与 tauri.settings.gradle/tauri.build.gradle.kts 由 `tauri android build` 首跑生成
+#   （Windows 符号链接报错属预期，文件已落盘）——之后走 gradle 手动链：
+cd gen/android && ./gradlew.bat assembleArm64Release -x rustBuildArm64Release
+# zipalign → apksigner（apk/.keystore/poketools-release.keystore，双备份+口令本地）→ SHA256SUMS
+```
+
+产物：`release/poketools/宝可梦工具助手_1.0.0_arm64.apk`（92.5MB ≤ 120MB 门禁；arm64-v8a、
+versionName 1.0.0、竖屏锁定、v2 签名验证通过）；升级用同 keystore 覆盖安装；
+用户数据在 localStorage（`PKT.state.exportAll/importAll` 迁移兜底）。
+安装演练同 battle M7 环境受限（无真机/模拟器无硬件加速），签名与包结构已验证。
 
 ### PokeAPI（离线整包 CSV）
 
@@ -290,6 +315,8 @@ FEATURES.icon 值供窄栏与宫格共用；游戏大图标复用官方商标资
 | 导航重构：首页功能宫格 + 游戏中心 + 64px 图标窄栏；图标弃 emoji 改手写 Monoline SVG | 图鉴获得 +136px 横向空间；模拟对战入口预留；SVG 可版本管理/迭代，currentColor 天然适配高亮态 | CALC-FIX 批次三 |
 | 模拟对战并入 main（battle/ 子目录独立工程，M0-M8 验证后合并） | 评测实测见 §7.1；battle 自成可发布项目（Windows NSIS + Android APK 双端产物），与主仓 Python 栈零耦合（Tauri 2 + React + TS monorepo 子目录） | battle M8 |
 | poketools APK 走路线 B：数据静态化 + Tauri 壳（不用 sidecar） | APK 内无法运行 Python 进程（sidecar 仅桌面可行）；构建期把 poketools.db 读侧导出 JSON 分片，api.js 端点签名不变改本地实现，userstate 迁 localStorage；damage.py TS 移植以 calib 51+41 双语言对拍为硬门禁 | UPDATE §3/§4 |
+| APK 独立壳 apk/（不复用 battle 壳做多入口） | 两应用发布节奏/图标/包名独立；资产互不膨胀（battle 精灵 454MB 与 poketools 136MB 分包）；构建链完全复用（.cargo linker/gradle 镜像/zipalign 签名同一套手动流程） | Track C A3 |
+| api.js 后端探测降级（连接拒绝/非 JSON → 本地模式） | 同一 dist 双运行时复用：桌面 exe 走 FastAPI，APK 走本地引擎，零分支构建 | Track C A1 |
 
 ### §7.1 模拟对战并入评估报告（UPDATE-PLAN §3.4 指标实测，2026-10-02）
 
@@ -359,3 +386,4 @@ FEATURES.icon 值供窄栏与宫格共用；游戏大图标复用官方商标资
 | battle M0-M8 | 模拟对战全栈：供应商化引擎/BattleSession 协议/数据层/队伍构建/信息流对战/动画演出/双端发布；56 用例 + 官方 replay 对拍 9 条 × 4 维 + 覆盖率 86.9%；Windows NSIS exe + Android 签名 APK + SHA256SUMS；并入评估报告（§7.1）结论=并入 | 交付；tag `battle-v1.0.0`；battle 分支合并回 main；功能说明 = docs/BATTLE.md |
 | Track C A1 数据静态化 | export_static_data.py（33 表 83.2 万行分片导出 + 全表 diff 零门禁）+ js/local/* 本地引擎（routers 逐行移植，damage.py TS/JS 化）+ api.js 后端不可达自动切本地；等价性 524 调用逐字段一致；calib-js 51+41 全绿 | 交付；pytest 68 绿 + ruff 零告警 + 浏览器纯静态实测（首页/图鉴/详情/招式/计算器零 JS 错误） |
 | Track C A2 竖屏 UI | mobile.css 统一 ≤768/≤480 竖屏层（底部 Tab/窄栏底部化/双列图鉴/详情分段锚点+三层吸顶/EV 卡片流/特化页筛选抽屉/计算器纵向堆叠+手风琴/弹窗全屏）+ viewport/theme-color meta；桌面 >768 零影响 | 交付；移动 390×844 与桌面 1280 双视口浏览器实测（导航/锚点滚动/抽屉/手风琴/卡片流/桌面回归全过） |
+| Track C A3/A4 APK | apk/ 独立 Tauri 2 壳（竖屏锁定/零权限/图标全套）+ build_apk_assets.py 资产组装 + 手动构建链复用；产物 92.5MB ≤120MB 门禁、apksigner v2 验证、SHA256SUMS | 交付；安装演练环境受限记录（同 battle M7） |

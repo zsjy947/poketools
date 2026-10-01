@@ -1,0 +1,7 @@
+{
+  "name": "poketools-apk",
+  "private": true,
+  "scripts": {
+    "tauri": "tauri"
+  }
+}
