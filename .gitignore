@@ -26,7 +26,6 @@ apk/src-tauri/target/
 apk/src-tauri/gen/
 apk/.keystore/
 apk/appicon-1024.png
-
 # --- misc ---
 .DS_Store
 Thumbs.db
@@ -47,16 +46,17 @@ data/*.db-wal
 # --- release build output (exe + data, copy-to-run) ---
 /release/
 
-# --- battle/ 模拟对战子项目（Tauri 2 + React + TS，与主仓 Python 栈零耦合）---
-battle/node_modules/
-battle/dist/
-battle/src-tauri/target/
-battle/src-tauri/gen/
-battle/release/
-battle/src/engine-adapter/vendor/
-battle/public/
-battle/.sprite-raw/
-battle/.engine-tmp/
-battle/.tauri/
-battle/.keystore/
-battle/coverage/
+# --- web/ 唯一前端（自 battle/ 迁入；Tauri 2 + React + TS + poketools 页面）---
+web/node_modules/
+web/dist/
+web/src-tauri/target/
+web/src-tauri/gen/
+web/release/
+web/src/engine-adapter/vendor/
+web/public/
+web/.sprite-raw/
+web/.engine-tmp/
+web/.tauri/
+web/.keystore/
+web/coverage/
+web/public/data/

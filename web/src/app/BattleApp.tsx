@@ -7,10 +7,12 @@ import { PreviewPage } from "./pages/PreviewPage";
 import { BattleView } from "../battle/BattleView";
 import { RecordsPage } from "./pages/RecordsPage";
 import { SettingsPage } from "./pages/SettingsPage";
-import { version } from "../../package.json";
 
 /** 渲染异常兜底：显示错误信息而非整树卸载白屏（错误详情进 console 便于排查） */
-class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
+export class BattleErrorBoundary extends Component<
+  { children: ReactNode },
+  { error: Error | null }
+> {
   state = { error: null as Error | null };
   static getDerivedStateFromError(error: Error) {
     return { error };
@@ -41,10 +43,11 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | 
 }
 
 /**
- * 应用壳：页面流 = 主页(赛制选择) → 队伍编辑 → 预览上阵 → 对战 → 记录/设置。
+ * 模拟对战区（统一壳的一个分区）：页面流 = 赛制选择 → 队伍编辑 → 预览上阵 → 对战 → 记录/设置。
  * 全中文界面；阵营 A 蓝系 / 阵营 B 红系（对战页防误操作配色）。
+ * 内部页面切换由 zustand store 驱动（不入 hash 路由）；对外入口 = 统一壳 #/battle。
  */
-export function App(): JSX.Element {
+export function BattleApp(): JSX.Element {
   const page = useApp((s) => s.page);
   const go = useApp((s) => s.go);
 
@@ -54,7 +57,7 @@ export function App(): JSX.Element {
   }, []);
 
   const NAV: Array<{ id: typeof page; label: string }> = [
-    { id: "home", label: "主页" },
+    { id: "home", label: "赛制选择" },
     { id: "team", label: "队伍编辑" },
     { id: "preview", label: "上阵预览" },
     { id: "records", label: "对局记录" },
@@ -62,30 +65,22 @@ export function App(): JSX.Element {
   ];
 
   return (
-    <div className="app-shell">
-      <header className="app-header">
-        <div className="app-title" onClick={() => go("home")}>
-          宝可梦模拟对战 <span className="app-sub">Pokémon Solo Battle</span>
-        </div>
-        <nav className="app-nav">
-          {NAV.map((n) => (
-            <button key={n.id} className={page === n.id ? "on" : ""} onClick={() => go(n.id)}>
-              {n.label}
-            </button>
-          ))}
-        </nav>
-        <span className="app-version">v{version}</span>
-      </header>
-      <main className="app-main">
-        <ErrorBoundary>
-          {page === "home" && <HomePage />}
-          {page === "team" && <TeamBuilderPage />}
-          {page === "preview" && <PreviewPage />}
-          {page === "battle" && <BattleView />}
-          {page === "records" && <RecordsPage />}
-          {page === "settings" && <SettingsPage />}
-        </ErrorBoundary>
-      </main>
+    <div className="battle-section">
+      <div className="section-nav">
+        {NAV.map((n) => (
+          <button key={n.id} className={page === n.id ? "on" : ""} onClick={() => go(n.id)}>
+            {n.label}
+          </button>
+        ))}
+      </div>
+      <BattleErrorBoundary>
+        {page === "home" && <HomePage />}
+        {page === "team" && <TeamBuilderPage />}
+        {page === "preview" && <PreviewPage />}
+        {page === "battle" && <BattleView />}
+        {page === "records" && <RecordsPage />}
+        {page === "settings" && <SettingsPage />}
+      </BattleErrorBoundary>
     </div>
   );
 }

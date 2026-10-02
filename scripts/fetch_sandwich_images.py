@@ -20,7 +20,7 @@ from pathlib import Path
 import wiki_client as wc
 from PIL import Image
 
-OUT = wc.ROOT / "app" / "static" / "dist" / "assets" / "sandwiches"
+OUT = wc.ROOT / "web" / "public" / "assets" / "sandwiches"
 SIZE_CAP = 40 * 1024          # 单张体积上限，超过则降档
 THUMB_W = (640, 512)          # 首选 / 降档缩略图宽度（原比例 16:9）
 QUALITY = 85

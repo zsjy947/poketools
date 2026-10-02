@@ -18,8 +18,8 @@ import wiki_client as wc
 
 ROOT = wc.ROOT
 DB_PATH = ROOT / "data" / "poketools.db"
-ITEMS_OUT = ROOT / "data" / "sprites" / "items"
-ASSETS = ROOT / "app" / "static" / "dist" / "assets"
+ITEMS_OUT = ROOT / "web" / "public" / "assets" / "items"
+ASSETS = ROOT / "web" / "public" / "assets"
 ITEM_BASE = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items"
 
 # 机制图标：52poke File 标题 → 相对 assets/mechanism/ 的文件名

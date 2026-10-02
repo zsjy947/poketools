@@ -865,3 +865,67 @@ button.mini.on {
   gap: 10px;
   margin: 8px 0;
 }
+
+/* ===== 统一壳：首页宫格 + 分区导航 ===== */
+.section-nav {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.section-nav button.on {
+  border-color: var(--p1);
+  color: var(--p1);
+  background: var(--p1-bg);
+  font-weight: 700;
+}
+.pkt-home {
+  padding-top: 6vh;
+  text-align: center;
+}
+.pkt-home h1 {
+  font-size: 26px;
+}
+.pkt-home-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  max-width: 760px;
+  margin: 32px auto 0;
+}
+.pkt-home-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 30px 18px 24px;
+  border-radius: 16px;
+  background: #fff;
+  border: 1.5px solid var(--line);
+}
+.pkt-home-card:hover {
+  border-color: #b8c6e4;
+  box-shadow: 0 4px 16px rgba(47, 111, 216, 0.1);
+}
+.pkt-home-ic-wrap {
+  display: inline-flex;
+  width: 64px;
+  height: 64px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: var(--p1-bg);
+  color: var(--p1);
+}
+.pkt-home-ic {
+  width: 36px;
+  height: 36px;
+}
+.pkt-home-title {
+  font-weight: 700;
+  font-size: 16px;
+  margin-top: 6px;
+}
+.pkt-home-desc {
+  font-size: 12.5px;
+}

@@ -25,7 +25,7 @@ sys.path.insert(0, str(ROOT))
 from app.db import project_root  # noqa: E402
 
 DB_PATH = project_root() / "data" / "poketools.db"
-OUT_DIR = ROOT / "app" / "static" / "data"
+OUT_DIR = ROOT / "web" / "public" / "data"
 
 # 分片例外：这三张表不进 tables/ 全量文件
 SHARDED = {"learnsets": "vg", "learnsets_all": "species", "encounters": "species"}
