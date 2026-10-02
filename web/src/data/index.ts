@@ -4,6 +4,9 @@
  */
 import { Dex } from "../engine-adapter";
 import type { AbilityData, ItemData, SpeciesData } from "../engine-adapter";
+import { zhOfPatched, zhTable, ZH_ITEM_DESC } from "./zh-patch";
+
+export { zhLine } from "./zh-patch";
 
 export interface SpeciesView {
   id: string;
@@ -49,7 +52,7 @@ export interface AbilityView {
 
 export interface NamedText {
   Pokedex: Record<string, { name?: string }>;
-  Moves: Record<string, { name?: string }>;
+  Moves: Record<string, { name?: string; shortDesc?: string; desc?: string }>;
   Abilities: Record<string, { name?: string }>;
   Items: Record<string, { name?: string }>;
 }
@@ -136,7 +139,12 @@ export function zhText(): NamedText {
 }
 
 function zhOf(table: Record<string, { name?: string }>, id: string, fallback: string): string {
-  return table[id]?.name || fallback;
+  // 引擎 zh-cn 优先；缺失或值仍是英文占位（Gmax/Mega 形态、进化石、champions 新条目）走补丁表
+  const engine = table[id]?.name;
+  if (engine && /[一-鿿]/.test(engine)) return engine;
+  const patched = zhOfPatched(zhTable(zhText()), id, "");
+  if (patched) return patched;
+  return engine || fallback;
 }
 
 /** 按赛制解析 mod dex（formats.id → mod），UI 一切查询带赛制上下文 */
@@ -177,8 +185,14 @@ export function moveView(dex: ReturnType<typeof dexFor>, id: string): MoveView |
     pp: mv.pp,
     category: mv.category,
     priority: mv.priority,
-    desc: mv.desc || mv.shortDesc || "",
+    desc: zhMoveDesc(mv.id, mv),
   };
+}
+
+/** 招式说明：优先中文 shortDesc（zh-cn 文本），缺则回退英文 desc/shortDesc */
+function zhMoveDesc(id: string, mv: { desc?: string; shortDesc?: string }): string {
+  const zh = zhText().Moves[id];
+  return zh?.shortDesc || zh?.desc || mv.desc || mv.shortDesc || "";
 }
 
 export function itemView(dex: ReturnType<typeof dexFor>, id: string): ItemView | null {
@@ -188,7 +202,7 @@ export function itemView(dex: ReturnType<typeof dexFor>, id: string): ItemView |
     id: it.id,
     name: it.name,
     zhName: zhOf(zhText().Items, it.id, it.name),
-    desc: it.desc || it.shortDesc || "",
+    desc: ZH_ITEM_DESC[it.id] || it.desc || it.shortDesc || "",
     megaEvolves: it.megaEvolves,
   };
 }
@@ -253,6 +267,20 @@ export function abilityList(dex: ReturnType<typeof dexFor>): AbilityView[] {
     if (v) out.push(v);
   }
   return out;
+}
+
+/** 展示名：昵称为空或等于种名（中/英，PS 导入会带种名作昵称）时显示中文种名，自定义昵称原样 */
+export function displayName(
+  dex: ReturnType<typeof dexFor>,
+  species: string,
+  name?: string,
+): string {
+  const sp = speciesView(dex, species);
+  const nick = name ?? "";
+  if (!nick || nick === sp?.name || nick === sp?.zhName) {
+    return sp?.zhName ?? species;
+  }
+  return nick;
 }
 
 /** 性格清单（简中名 + 升降） */

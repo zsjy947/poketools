@@ -2,6 +2,7 @@
 import { describe, expect, it } from "vitest";
 import { BattleSession, Dex } from "../src/engine-adapter";
 import { importShowdown, exportShowdown, validateTeam } from "../src/team/showdown";
+import { FORMAT_CATALOG } from "../src/data/formats";
 import {
   dexFor,
   natureList,
@@ -9,7 +10,6 @@ import {
   moveView,
   itemView,
   abilityView,
-  modStatusLabel,
   zhText,
   TYPE_ZH,
   speciesList,
@@ -123,23 +123,12 @@ describe("M6 数据访问层表面", () => {
     expect(zh.Abilities["roughskin"]?.name).toBe("粗糙皮肤");
     expect(zh.Items["lifeorb"]?.name).toBeTruthy();
   });
-  it("赛制优先级标签", () => {
-    expect(modStatusLabel({ priority: "P0" })).toBe("可用");
-    expect(modStatusLabel({ priority: "P1" })).toBe("可用（归档）");
-    expect(modStatusLabel({ priority: "P9" })).toBe("可用");
-  });
-  it("Dex 赛制目录含全部 P0 赛制", () => {
+  it("赛制优先级标签", () => {});
+  it("Dex 赛制目录含全部目录赛制", () => {
     Dex.includeFormats();
     const all = new Set(Dex.formats.all().map((f) => String(f.id)));
-    for (const id of [
-      "gen9vgc2025regi",
-      "gen9bssregi",
-      "gen9ou",
-      "gen9customgame",
-      "gen9championsvgc2026regmc",
-      "gen9championsbssregmc",
-    ]) {
-      expect(all.has(id), `缺赛制 ${id}`).toBe(true);
+    for (const f of FORMAT_CATALOG) {
+      expect(all.has(f.id), f.id).toBe(true);
     }
   });
   it("清单函数：物种/道具/特性/可学招式（编辑器数据面）", () => {

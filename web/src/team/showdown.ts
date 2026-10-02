@@ -3,6 +3,7 @@
  * 解析/序列化复用引擎 Teams；校验复用 TeamValidator（错误文案翻译为简中）。
  */
 import { Dex, TeamValidator, Teams, toID } from "../engine-adapter";
+import { zhLine, zhText } from "../data";
 import type { Format, PokemonSet } from "../engine-adapter";
 
 export type { PokemonSet };
@@ -49,8 +50,8 @@ export function exportShowdown(sets: PokemonSet[]): string {
   }
 }
 
-/** 单只默认模板（编辑器新建起点） */
-export function blankSet(species = "Garchomp"): PokemonSet {
+/** 单只默认模板（编辑器新建起点；物种用小写 id，与选择器 option value 一致） */
+export function blankSet(species = "garchomp"): PokemonSet {
   return {
     name: "",
     species,
@@ -69,15 +70,29 @@ const VALIDATOR_MSG_ZH: Array<[RegExp, string]> = [
     /You must bring at least (\d+) Pokémon \(your team has (\d+)\)\./,
     "队伍至少需要 $1 只（当前 $2 只）",
   ],
-  [/has more than (\d+) Stat Points in (\w+)/, "的 $2 努力值超过 $1 点上限"],
+  [/(.+) needs to have an ability\./, "$1 未选择特性"],
+  [/(.+?) has more than (\d+) Stat Points in (\w+)/, "$1 的$3努力值超过 $2 点上限"],
   [
     /IVs are not maxed out, but this format requires all IVs to be 31/,
     "的个体值必须全为 31（该赛制不支持 IV 调整）",
   ],
-  [/has too many total Stat Points/, "的努力值总和超限"],
-  [/'s item (.+) does not exist in Gen 9/, "的道具「$1」在该赛制不可用"],
-  [/'s ability (.+) does not exist in Gen 9/, "的特性「$1」在该赛制不可用"],
-  [/'s move (.+) does not exist in Gen 9/, "的招式「$1」在该赛制不可用"],
+  [
+    /(.+?) has (\d+) total Stat Points, which is more than this format's limit of (\d+)/,
+    "$1 努力值总和 $2 点，超过该赛制上限 $3 点",
+  ],
+  [/(.+?) has too many total Stat Points/, "$1 的努力值总和超限"],
+  [
+    /(.+?) has exactly (\d+) EVs, but this format does not restrict you to (\d+) EVs/,
+    "$1 努力值合计 $2 点为非常规分配（如确有意为之，请分配满 $3 点或在任一项加 1 点）",
+  ],
+  [/(.+?)'s item (.+?) does not exist in Gen 9/, "$1 的道具「$2」在该赛制不可用"],
+  [/(.+?)'s ability (.+?) does not exist in Gen 9/, "$1 的特性「$2」在该赛制不可用"],
+  [/(.+?)'s move (.+?) does not exist in Gen 9/, "$1 的招式「$2」在该赛制不可用"],
+  [/(.+?) does not exist in Gen 9\./, "$1 在该赛制不存在"],
+  [
+    /You are limited to 1 of each item by Item Clause\. \(You have more than 1 (.+?)\)/,
+    "道具条款：每种道具限 1 个（「$1」重复了）",
+  ],
   [/can't learn (.+?)\.?$/, "无法学会招式「$1」"],
   [/\((.+)\) has evolutions it hasn't evolved to/, "（$1）存在未完成的进化，请使用最终形态"],
   [/is banned by rule (.+)/, "被规则「$1」禁止"],
@@ -87,16 +102,46 @@ const VALIDATOR_MSG_ZH: Array<[RegExp, string]> = [
   [/is banned/, "被禁用"],
 ];
 
+/** 能力键英文 → 中文（校验消息的 Stat Points in {Special/Speed/...} 捕获值） */
+const STAT_KEY_ZH: Record<string, string> = {
+  hp: "HP",
+  atk: "攻击",
+  def: "防御",
+  spa: "特攻",
+  spd: "特防",
+  spe: "速度",
+  special: "特攻",
+  specialattack: "特攻",
+  specialdefense: "特防",
+  speed: "速度",
+  attack: "攻击",
+  defense: "防御",
+};
+
 function translateValidatorError(msg: string): string {
   for (const [re, zh] of VALIDATOR_MSG_ZH) {
     const m = msg.match(re);
     if (m) {
       let out = zh;
-      for (let i = 1; i < m.length; i++) out = out.replace(`$${i}`, m[i] ?? "");
+      for (let i = 1; i < m.length; i++) {
+        const raw = m[i] ?? "";
+        const cap = STAT_KEY_ZH[raw.toLowerCase()] ?? zhCapture(raw);
+        out = out.replace(`$${i}`, cap);
+      }
       return out;
     }
   }
-  return msg;
+  return zhLine(msg);
+}
+
+/** 校验消息里的英文专名（$1 捕获值）转中文：物种/道具/特性/招式名查表，未命中保留原文 */
+function zhCapture(raw: string): string {
+  const id = toID(raw);
+  if (!id) return raw;
+  const zh = zhText();
+  const hit =
+    zh.Pokedex[id]?.name ?? zh.Items[id]?.name ?? zh.Abilities[id]?.name ?? zh.Moves[id]?.name;
+  return hit || raw;
 }
 
 export interface ValidationResult {
@@ -120,7 +165,12 @@ export async function validateTeam(
     const validator = TeamValidator.get(format);
     const problems = await validator.validateTeam(sets);
     if (problems === null) return { ok: true, errors: [] };
-    return { ok: false, errors: problems.map(translateValidatorError) };
+    // 空特性会同时触发「No Ability 不存在」与「needs to have an ability」两条，
+    // 前者整条含 No Ability 的报错丢弃，只留中文化的未选择特性提示
+    const filtered = problems.filter(
+      (m) => !/No Ability/.test(m) || !problems.some((x) => /needs to have an ability/.test(x)),
+    );
+    return { ok: false, errors: filtered.map(translateValidatorError) };
   } catch (e) {
     return { ok: false, errors: [`校验器异常：${String(e)}`] };
   }

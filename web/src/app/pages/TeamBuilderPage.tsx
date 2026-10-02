@@ -4,6 +4,7 @@ import {
   abilityList,
   abilityView,
   dexFor,
+  displayName,
   itemList,
   learnableMoves,
   natureList,
@@ -83,6 +84,8 @@ export function TeamBuilderPage(): JSX.Element {
   const clearSlot = () => setTeam(slot, []);
 
   const currentSpecies = current ? speciesView(dex, current.species) : null;
+  /** B10：宝可梦冠军赛制（Champions mod）无太晶机制，编辑器不渲染太晶下拉 */
+  const hasTera = format?.mod === "gen9";
   const currentMoves: MoveView[] = useMemo(
     () => (current ? learnableMoves(dex, current.species) : []),
     [dex, current?.species],
@@ -127,9 +130,14 @@ export function TeamBuilderPage(): JSX.Element {
         </button>
       </div>
 
+      <p className="muted" style={{ margin: "4px 0 0", fontSize: 12 }}>
+        此处按「注册整队（最多 6
+        只）」做官方全量校验；本局上阵数量与顺位在下一步「上阵预览」把关（单打 6 选 3 / 双打 6 选
+        4）。
+      </p>
       {(validation[slot]?.errors.length ?? 0) > 0 && (
         <div className="alert warn">
-          <b>合法性校验（{format.zhName}）：</b>
+          <b>合法性校验（{format.zhName}，注册口径 = 整队 6 只）：</b>
           <ul>
             {validation[slot]?.errors.map((e, i) => (
               <li key={i}>{e}</li>
@@ -141,7 +149,6 @@ export function TeamBuilderPage(): JSX.Element {
       <div className="team-layout">
         <div className="team-list">
           {team.sets.map((s, i) => {
-            const sp = speciesView(dex, s.species);
             return (
               <div
                 key={i}
@@ -149,7 +156,7 @@ export function TeamBuilderPage(): JSX.Element {
                 onClick={() => setEditing(i)}
               >
                 <span className="idx">{i + 1}</span>
-                <span className="name">{sp?.zhName ?? s.species}</span>
+                <span className="name">{displayName(dex, s.species, s.name)}</span>
                 <span className="muted">{s.item ? `@ ${itemLabel(dex, s.item)}` : ""}</span>
                 <button
                   className="mini danger"
@@ -168,7 +175,13 @@ export function TeamBuilderPage(): JSX.Element {
             );
           })}
           {team.sets.length < 6 && (
-            <button className="team-add" onClick={() => setTeam(slot, [...team.sets, blankSet()])}>
+            <button
+              className="team-add"
+              onClick={() => {
+                setTeam(slot, [...team.sets, blankSet()]);
+                setEditing(team.sets.length);
+              }}
+            >
               + 添加宝可梦
             </button>
           )}
@@ -224,15 +237,26 @@ export function TeamBuilderPage(): JSX.Element {
               <label>宝可梦</label>
               <select
                 value={current.species}
-                onChange={(e) =>
-                  patchSet({ species: e.target.value, ability: "", moves: ["", "", "", ""] })
-                }
+                onChange={(e) => {
+                  const oldZh = currentSpecies.zhName;
+                  const oldEn = currentSpecies.name;
+                  const nick = current.name ?? "";
+                  // 昵称为空或等于旧种名（中/英）才跟随新物种；自定义昵称不覆盖
+                  const follow = !nick || nick === oldZh || nick === oldEn;
+                  const next = speciesView(dex, e.target.value);
+                  patchSet({
+                    species: e.target.value,
+                    ability: "",
+                    moves: ["", "", "", ""],
+                    name: follow ? (next?.zhName ?? "") : nick,
+                  });
+                }}
               >
                 {species
-                  .filter((s) => !s.isMega || format.mod !== "gen9")
+                  .filter((s) => !s.isMega && !/-(gmax|mega)/.test(s.id))
                   .map((s) => (
                     <option key={s.id} value={s.id}>
-                      {s.zhName}（{s.num}）
+                      {s.zhName}
                     </option>
                   ))}
               </select>
@@ -242,7 +266,7 @@ export function TeamBuilderPage(): JSX.Element {
               <input
                 value={current.name ?? ""}
                 onChange={(e) => patchSet({ name: e.target.value })}
-                placeholder="默认为物种名"
+                placeholder="默认为中文种名"
               />
               <label>等级</label>
               <input
@@ -280,18 +304,22 @@ export function TeamBuilderPage(): JSX.Element {
                   </option>
                 ))}
               </select>
-              <label>太晶属性</label>
-              <select
-                value={current.teraType ?? ""}
-                onChange={(e) => patchSet({ teraType: e.target.value })}
-              >
-                <option value="">（无）</option>
-                {Object.values(TYPE_ZH).map((t) => (
-                  <option key={t} value={reverseType(t)}>
-                    {t}
-                  </option>
-                ))}
-              </select>
+              {hasTera && (
+                <>
+                  <label>太晶属性</label>
+                  <select
+                    value={current.teraType ?? ""}
+                    onChange={(e) => patchSet({ teraType: e.target.value })}
+                  >
+                    <option value="">（无）</option>
+                    {Object.values(TYPE_ZH).map((t) => (
+                      <option key={t} value={reverseType(t)}>
+                        {t}
+                      </option>
+                    ))}
+                  </select>
+                </>
+              )}
             </div>
 
             <div className="ed-moves">

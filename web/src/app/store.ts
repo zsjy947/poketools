@@ -27,7 +27,7 @@ interface AppState {
   activeSide: SideSlot;
   records: StoredBattleRecord[];
   settings: StoredSettings;
-  /** 上阵预览选择（6 选 4 / 6 选 3） */
+  /** 上阵预览选择（有序：单打第 1 只 = 首发、双打前 2 只 = 首发位；顺位末位存活者 = 幻觉伪装目标） */
   picks: { p1: number[]; p2: number[] };
 
   go: (page: Page) => void;
@@ -44,6 +44,8 @@ interface AppState {
   removeRecord: (id: string) => void;
   updateSettings: (patch: Partial<StoredSettings>) => void;
   togglePick: (side: "p1" | "p2", index: number, max: number) => void;
+  /** 上阵顺位调整（index 为队伍槽位号；dir=-1 上移 / +1 下移） */
+  movePick: (side: "p1" | "p2", index: number, dir: -1 | 1) => void;
 }
 
 export const useApp = create<AppState>((set, get) => ({
@@ -93,12 +95,23 @@ export const useApp = create<AppState>((set, get) => ({
   togglePick: (side, index, max) => {
     const picks = { ...get().picks };
     const cur = picks[side];
+    // 有序：点击顺序即上阵顺位（不再按槽位号排序）
     const next = cur.includes(index)
       ? cur.filter((i) => i !== index)
       : cur.length >= max
         ? cur
-        : [...cur, index].sort((a, b) => a - b);
+        : [...cur, index];
     picks[side] = next;
+    set({ picks });
+  },
+  movePick: (side, index, dir) => {
+    const picks = { ...get().picks };
+    const cur = [...picks[side]];
+    const pos = cur.indexOf(index);
+    const target = pos + dir;
+    if (pos < 0 || target < 0 || target >= cur.length) return;
+    [cur[pos], cur[target]] = [cur[target]!, cur[pos]!];
+    picks[side] = cur;
     set({ picks });
   },
 }));

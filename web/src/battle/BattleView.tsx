@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "../app/store";
 import type { MonState, SideSlot } from "../engine-adapter";
 import type { RequestChoice } from "../engine-adapter/session";
-import { dexFor, moveView, speciesView, TYPE_ZH, STATUS_ZH } from "../data";
+import { dexFor, moveView, speciesView, TYPE_ZH, STATUS_ZH, zhLine } from "../data";
 import { spriteUrl } from "./sprites";
 import { useBattleAnim } from "./anim";
 import type { AnimKind } from "./anim";
@@ -83,11 +83,16 @@ export function BattleView(): JSX.Element {
   const req = snapshot.requests[activeSide];
   const awaitingThis = snapshot.pending.includes(activeSide);
 
-  const choose = (choice: string) => {
-    void session.choose(activeSide, choice);
+  /* 单人双控的侧推进：引擎在两侧指令齐备前不发新请求，store 的 pending 不会即时清除，
+     故在成功下达后本地切换到另一待办侧（否则「已下达」后玩家需手点另一阵营按钮） */
+  const chooseAndAdvance = async (choice: string): Promise<void> => {
+    await session.choose(activeSide, choice);
+    const other: "p1" | "p2" = activeSide === "p1" ? "p2" : "p1";
+    if (snapshot.pending.includes(other)) setActiveSide(other);
   };
+
   const doTeamPreview = (order: number[]) => {
-    choose(`team ${order.join(",")}`);
+    void chooseAndAdvance(`team ${order.join(",")}`);
   };
 
   return (
@@ -157,7 +162,7 @@ export function BattleView(): JSX.Element {
         {snapshot.lastError && snapshot.lastError.side === activeSide && (
           <div className="alert warn">
             <b>指令未被接受：</b>
-            {snapshot.lastError.message}（已复位，请重新下达）
+            {zhLine(snapshot.lastError.message)}（已复位，请重新下达）
           </div>
         )}
         {snapshot.phase === "finished" ? (
@@ -175,13 +180,15 @@ export function BattleView(): JSX.Element {
           </div>
         ) : awaitingThis && req ? (
           <div className={"choices choices-" + activeSide}>
-            {req.teamPreview && <TeamPreviewChoice req={req} onChoose={doTeamPreview} />}
-            {req.forceSwitch && <ForceSwitchChoice req={req} onChoose={choose} />}
+            {req.teamPreview && <TeamPreviewChoice req={req} dex={dex} onChoose={doTeamPreview} />}
+            {req.forceSwitch && (
+              <ForceSwitchChoice req={req} dex={dex} onChoose={(c) => void chooseAndAdvance(c)} />
+            )}
             {req.active && (
               <MoveOrders
                 req={req}
                 dex={dex}
-                onChoose={choose}
+                onChoose={(c) => void chooseAndAdvance(c)}
                 animated={animated}
                 speed={settings.animationSpeed}
               />
@@ -296,7 +303,7 @@ function MonStage(props: {
           <span className={"status st-" + mon.status}>{STATUS_ZH[mon.status] ?? mon.status}</span>
         )}
         {mon.terastallized && <span className="tera-badge">太晶·{mon.teraType}</span>}
-        {mon.mega && <span className="mega-badge">MEGA</span>}
+        {mon.mega && <span className="mega-badge">超级进化</span>}
         {mon.max && <span className="max-badge">极巨</span>}
         <div className="hp-bar">
           <div className={"hp-fill hp-" + hpBand(pct)} style={{ width: pct + "%" }} />
@@ -376,7 +383,7 @@ function MoveOrders(props: {
       <div>
         <p className="muted">没有可行动的宝可梦。</p>
         <button className="primary" onClick={() => onChoose("pass")}>
-          跳过（pass）
+          跳过（换人）
         </button>
       </div>
     );
@@ -466,7 +473,11 @@ function MoveOrders(props: {
                           mech: cur?.kind === "move" ? cur.mech : undefined,
                         })
                       }
-                      title={mv.exists ? mv.desc || mv.shortDesc || "" : ""}
+                      title={
+                        mv.exists
+                          ? (moveView(dex, m.id)?.desc ?? mv.desc ?? mv.shortDesc ?? "")
+                          : ""
+                      }
                     >
                       <span className="mv-name">{zhMoveName(dex, m.id, m.move)}</span>
                       <span className="mv-meta muted">
@@ -606,9 +617,10 @@ function mechBtn(
 /** 被迫换人（多槽）：forceSwitch 每个槽位一条 switch/pass；替补不足的槽用 pass。 */
 function ForceSwitchChoice(props: {
   req: RequestChoice;
+  dex: ReturnType<typeof dexFor>;
   onChoose: (c: string) => void;
 }): JSX.Element {
-  const { req, onChoose } = props;
+  const { req, dex, onChoose } = props;
   const needs = (req.forceSwitch ?? []).map((n, i) => ({ n: !!n, i })).filter((x) => x.n);
   const benchOf = (req.side?.pokemon ?? [])
     .map((p, i) => ({ p, i }))
@@ -665,7 +677,7 @@ function ForceSwitchChoice(props: {
                   })
                 }
               >
-                {b.p.details}
+                {zhDetails(b.p.details, dex)}
               </button>
             ))}
           </div>
@@ -681,9 +693,10 @@ function ForceSwitchChoice(props: {
 /** 上阵顺序（1 基编号）：按出招顺序排列上阵成员；须选满才能确认（引擎要求完整 pickedTeamSize） */
 function TeamPreviewChoice(props: {
   req: RequestChoice;
+  dex: ReturnType<typeof dexFor>;
   onChoose: (order: number[]) => void;
 }): JSX.Element {
-  const { req, onChoose } = props;
+  const { req, dex, onChoose } = props;
   const [order, setOrder] = useState<number[]>([]);
   const [submitted, setSubmitted] = useState(false);
   useEffect(() => {
@@ -711,7 +724,7 @@ function TeamPreviewChoice(props: {
             setOrder(next);
           }}
         >
-          {p.details}
+          {zhDetails(p.details, dex)}
         </button>
       ))}
       <button
@@ -743,7 +756,7 @@ function describeChoice(
       : c.mech === "dynamax"
         ? "（极巨）"
         : c.mech === "mega"
-          ? "（Mega）"
+          ? "（超级进化）"
           : c.mech === "zmove"
             ? "（Z）"
             : "";
@@ -767,7 +780,7 @@ function LogLine(props: { line: string }): JSX.Element {
   if (!line.startsWith("|")) return <div className="log-raw">{line}</div>;
   const parts = line.split("|");
   const kind = parts[1] ?? "";
-  const text = renderLine(kind, parts.slice(2));
+  const text = zhLine(renderLine(kind, parts.slice(2)));
   return <div className={"log-line log-" + kind.replace(/[^a-z-]/g, "")}>{text}</div>;
 }
 
@@ -802,10 +815,19 @@ function renderLine(kind: string, p: string[]): string {
     case "zpower":
       return `${p[0]} 汇聚了 Z 力量！`;
     case "weather":
-      return `天气：${p[0]}`;
+    case "-weather":
+      return `天气：${zhFieldText(p[0] ?? "")}`;
     case "-fieldstart":
     case "fieldstart":
-      return `场地：${p[0]}`;
+      return `场地：${zhFieldText(p[0] ?? "")}`;
+    case "-fieldend":
+    case "fieldend":
+      return `场地结束：${zhFieldText(p[0] ?? "")}`;
+    case "-end":
+    case "-singlemove":
+    case "-singleturn":
+    case "-activate":
+      return zhFieldText(clean(p.join(" ")));
     case "-supereffective":
       return "效果绝佳！";
     case "-resisted":
@@ -823,6 +845,38 @@ function renderLine(kind: string, p: string[]): string {
     default:
       return clean(p.filter(Boolean).join(" "));
   }
+}
+
+/** 天气/场地/持续效果段的中文渲染（SunnyDay [from] ability: 日照 [of] p1a: 喷火龙 等） */
+const FIELD_ZH: Record<string, string> = {
+  SunnyDay: "日照强烈",
+  RainDance: "下雨",
+  Sandstorm: "沙暴",
+  Hail: "冰雹",
+  Snow: "下雪",
+  ElectricTerrain: "电气场地",
+  GrassyTerrain: "青草场地",
+  MistyTerrain: "薄雾场地",
+  PsychicTerrain: "精神场地",
+  TrickRoom: "戏法空间",
+  Tailwind: "顺风",
+  Reflect: "反射壁",
+  LightScreen: "光墙",
+  AuroraVeil: "极光幕",
+  Safeguard: "神秘守护",
+  "move: Sunny Day": "日照强烈",
+  "move: Rain Dance": "下雨",
+};
+
+function zhFieldText(raw: string): string {
+  let out = raw;
+  for (const [en, zh] of Object.entries(FIELD_ZH)) out = out.replaceAll(en, zh);
+  out = out.replace(/\[upkeep\]/g, "（持续中）");
+  out = out.replace(/\[from\] ability: ?/g, "（特性：");
+  out = out.replace(/\[from\] ?move: ?/g, "（招式：");
+  out = out.replace(/\[of\] ?/g, "——");
+  if (out.includes("（特性：") && !out.endsWith("）")) out += "）";
+  return out;
 }
 
 function zhDetails(details: string, dex: Dex): string {

@@ -10,8 +10,11 @@ describe("M1 数据层", () => {
     expect(v.ok, `缺失：${v.missing.join(",")}`).toBe(true);
   });
 
-  it("赛制目录至少含 6 个 P0 项", () => {
-    expect(FORMAT_CATALOG.filter((f) => f.priority === "P0").length).toBeGreaterThanOrEqual(6);
+  it("赛制目录三大类齐备（冠军/朱紫/自由对战）", () => {
+    for (const sec of ["宝可梦冠军", "朱紫", "自由对战"]) {
+      expect(FORMAT_CATALOG.filter((f) => f.section === sec).length).toBeGreaterThanOrEqual(1);
+    }
+    expect(FORMAT_CATALOG.length).toBeGreaterThanOrEqual(6);
   });
 
   it("champions mod 生效：Mega 回归 + PP 上限 20", () => {
