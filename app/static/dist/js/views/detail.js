@@ -428,6 +428,7 @@ const DetailView = {
     /* ---- 数据加载（翻页用预取缓存 + 原地替换） ---- */
     const detailCache = new Map();   // key: sid|game -> detail payload（上限 40 条，先进先出）
     let loadToken = 0;
+    let appliedFormId = null;        // 本次 load 应用到界面的形态 id（watch 据此跳过自身联动）
     async function load(silent = false) {
       const token = ++loadToken;
       if (!silent) loading.value = true;
@@ -443,20 +444,22 @@ const DetailView = {
         }
         if (token !== loadToken) return;
         d.value = detailCache.get(key);
-        suppressMoveWatch = true;
         // 默认选中：请求带回的形态 > 默认形态
         const wantSuffix = d.value.selected_suffix || suffix;
         const want = wantSuffix
           ? d.value.forms.find((f) => (f.identifier || "").endsWith("-" + wantSuffix))
           : null;
-        formId.value = (want || d.value.default_form || d.value.forms[0] || {}).id || null;
-        suppressMoveWatch = false;
+        appliedFormId = (want || d.value.default_form || d.value.forms[0] || {}).id || null;
+        formId.value = appliedFormId;
         try {
           await Promise.all([loadMoves(), loadNatures()]);
         } catch (_) { moves.value = null; }   // 招式失败不阻塞详情，避免新旧数据混排
       } catch (_) {
         if (token === loadToken && !silent) d.value = null;  // 详情失败显示空态
-      } finally { if (token === loadToken && !silent) loading.value = false; }
+      } finally { if (token === loadToken) loading.value = false; }
+      // 最新 token 完成即清 loading（不区分 silent）：后端已按图鉴默认形态过滤内容，
+      // watch 侧不再发起冗余的静默重载，先前的「suppress 同步标记」方案因 watch 异步
+      // 触发时标记已复位而失效（曾致地区形态默认物种永久转圈）。
     }
     function prefetchNeighbors() {
       for (const nid of [prevId.value, nextId.value]) {
@@ -477,7 +480,6 @@ const DetailView = {
       }
     }
     let moveToken = 0;
-    let suppressMoveWatch = false;
     const pendingSuffix = ref("");   // 当前选中形态的 identifier 后缀（空=默认）
     const noAbilities = computed(() =>
       gameId.value === "legends-arceus" || gameId.value === "legends-za");
@@ -492,9 +494,10 @@ const DetailView = {
         tab.value = moves.value.tabs[0].key;
       }
     }
-    /* 切换形态：招式表重载 + 后缀变化时详情重载（获取方式/进化链按形态过滤） */
+    /* 切换形态：招式表重载 + 后缀变化时详情重载（获取方式/进化链按形态过滤）。
+     * load 自身应用的形态（appliedFormId）跳过：内容已按该形态返回，避免冗余重载。 */
     watch(formId, () => {
-      if (!formId.value || suppressMoveWatch || !d.value) return;
+      if (!formId.value || !d.value || formId.value === appliedFormId) return;
       const f = (d.value.forms || []).find((x) => x.id === formId.value);
       const ident = (f && f.identifier) || "";
       const suffix = f && f.is_default ? "" : ident.split("-").slice(1).join("-");

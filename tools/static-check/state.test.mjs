@@ -98,6 +98,33 @@ await t("custom-recipes：正常写入 → 列表（倒序）→ 删除", async 
   eq(d, { ok: true });
   eq((await call("GET", "/api/custom-recipes", {})).length, 0);
 });
+await t("custom-recipes：朱紫 POST（食材/调味料各带数量）→ GET 往返", async () => {
+  const r = await call("POST", "/api/custom-recipes",
+    { profile_id: 1, game: "scarlet-violet", name: "测试三明治",
+      effects: [{ power: "龙之力", type: "龙", level: 2 }],
+      ingredients: [{ name: "辣香肠", count: 2 }, { name: "生菜", count: 1 }],
+      seasonings: [{ name: "盐", count: 1 }, { name: "胡椒", count: 3 }] });
+  eq(r.ingredients, [{ name: "辣香肠", count: 2 }, { name: "生菜", count: 1 }]);
+  eq(r.seasonings, [{ name: "盐", count: 1 }, { name: "胡椒", count: 3 }]);
+  const list = await call("GET", "/api/custom-recipes", { game: "scarlet-violet" });
+  eq(list.length, 1);
+  eq(list[0].ingredients[1], { name: "生菜", count: 1 });
+  await call("DELETE", `/api/custom-recipes/${r.id}`);
+});
+await t("custom-recipes：旧格式（字符串数组）localStorage 兼容读取", async () => {
+  // 旧版以纯字符串数组存食材/调味料（无数量）；GET 不崩溃原样返回（与后端 _parse_items 语义一致），
+  // 展示层 fmtList 兼容两种格式；再次写入的行经 recipeItemsCounted 归一为 [{name,count}]
+  mem.set("pkt.custom_recipes.v1", JSON.stringify([{
+    id: 990, game: "scarlet-violet", name: "旧格式食谱",
+    effects: [{ power: "蛋蛋力", level: 1 }],
+    ingredients: ["辣香肠", "生菜"], seasonings: ["盐"],
+  }]));
+  const list = await call("GET", "/api/custom-recipes", { game: "scarlet-violet" });
+  eq(list.length, 1);
+  eq(list[0].ingredients, ["辣香肠", "生菜"]);
+  eq(list[0].seasonings, ["盐"]);
+  mem.delete("pkt.custom_recipes.v1");
+});
 await t("exportAll/importAll：迁移兜底往返无损", async () => {
   mem.clear();
   await call("PUT", "/api/state", { profile_id: 1, dex_id: "paldea", species_id: 25, caught: true });

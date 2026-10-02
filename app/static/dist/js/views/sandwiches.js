@@ -268,9 +268,8 @@ const SandwichView = {
       tabName, power, ptype, level, sort, q, list, loading,
       itemKind, itemQ, items, filteredItems, itemOptions,
       customList, editorDlg, editor, saving,
-      openEditor, saveCustom, removeCustom, fmtList,
+      openEditor, saveCustom, removeCustom, fmtList, addItem,
       POWER_LIST, TYPE_LIST, POWER_COLORS, showFilters,
-      showFilters,
     };
   },
 };

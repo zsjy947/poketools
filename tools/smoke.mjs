@@ -90,6 +90,37 @@ async function main() {
       if (r.status !== 200) { failed += 1; console.log(`[FAIL] 资源 ${ref} -> ${r.status}`); }
     }
     console.log(`[ ok ] 静态资源 ${refs.length} 项全部 200`);
+    // 图鉴默认形态全量枚举：逐行打开详情，selected_suffix 必须等于 ddf 形态后缀
+    // （U4 回归防线：后端按 dex 默认后缀过滤内容，前端据此选形态，错位即详情死循环回归）
+    const ddf = JSON.parse(readFileSync(
+      path.join(ROOT, "app", "static", "data", "tables", "dex_default_forms.json"), "utf-8")).rows;
+    const forms = JSON.parse(readFileSync(
+      path.join(ROOT, "app", "static", "data", "tables", "forms.json"), "utf-8")).rows;
+    const dexes = JSON.parse(readFileSync(
+      path.join(ROOT, "app", "static", "data", "tables", "regional_dexes.json"), "utf-8")).rows;
+    const formIdent = new Map(forms.map((f) => [f.id, f.identifier || ""]));
+    const dexGame = new Map(dexes.map((d) => [d.id, d.game_id]));
+    let ddfBad = 0;
+    for (const r of ddf) {
+      const game = dexGame.get(r.dex_id) || "";
+      const ident = formIdent.get(r.form_id) || "";
+      const suffix = ident.includes("-") ? ident.slice(ident.lastIndexOf("-") + 1) : "";
+      const q = `/api/pokemon/${r.species_id}?game=${game}&dex=${r.dex_id}`;
+      const j = await (await fetch(BASE + q)).json();
+      if (j.selected_suffix !== suffix) {
+        ddfBad += 1;
+        console.log(`[FAIL] ddf ${r.dex_id}#${r.species_id} 期望 ${suffix} 实得 ${j.selected_suffix}`);
+      }
+    }
+    if (ddfBad) failed += ddfBad;
+    else console.log(`[ ok ] 图鉴默认形态 ${ddf.length} 行全量枚举一致`);
+    // 默认形态详情招式表可正常返回（形态过滤参数通路）
+    for (const r of [ddf[0], ddf[Math.floor(ddf.length / 2)], ddf[ddf.length - 1]]) {
+      const game = dexGame.get(r.dex_id) || "";
+      const rm = await fetch(`${BASE}/api/pokemon/${r.species_id}/moves?game=${game}&form_id=${r.form_id}`);
+      if (!rm.ok) { failed += 1; console.log(`[FAIL] ddf moves ${r.dex_id}#${r.species_id} -> ${rm.status}`); }
+    }
+    console.log("[ ok ] 默认形态招式表抽样 3 行 200");
   } finally {
     proc.kill("SIGTERM");
   }
