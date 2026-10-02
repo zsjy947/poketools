@@ -2,7 +2,8 @@
 
 > 本文是项目**当前实现**的唯一权威设计文档，由 DESIGN.md / PLAN.md（四期规范）/ SELF-ITERATION.md
 > 与五期两份更新计划（UPDATE-PLAN / CALC-UPDATE-PLAN）合并而成，只保留仍在生效的方案；
-> 已被推翻的内容压缩进 §10 变更历史。数据缺口见 `DATA-GAPS.md`，操作手册见 `USER-MANUAL.md`。
+> 已被推翻的内容压缩进 §10 变更历史。数据缺口见 `DATA-GAPS.md`，操作手册见 `USER-MANUAL.md`，
+> 未完成/延后/否决事项见 `ROADMAP.md`。
 
 ## §1 技术栈与架构
 
@@ -41,6 +42,9 @@ node tools/static-check/calib-js.mjs  # JS 伤害引擎 vs smogon 基准（calib
 python scripts/build_apk_assets.py    # 前端 dist + 数据分片 + 精灵图 → apk/dist（APK 资产组装）
 # APK 构建（Windows 手动链，同 battle M0/M7 验证过的流程，详见 §2 末「APK 构建管线」）
 ```
+
+build_db 重建采用**连接内就地 DROP 重建**：Windows 下直接删除 `poketools.db` 可能遇 unlink 幻影锁
+（文件句柄未释放），就地 DROP 各表再建对句柄占用免疫——重建失败勿只想着删文件。
 
 ### 静态化管线（路线 B / APK 基座，UPDATE-PLAN §3.2）
 
@@ -164,6 +168,7 @@ versionName 1.0.0、竖屏锁定、v2 签名验证通过）；升级用同 keyst
 | `GET /api/calc/moves?species_id=` | 全世代招式并集（**含变化招式**，含 is_spread） |
 | `POST /api/calc` | 单次伤害计算（支持 z_move 专属映射解析；`power_trick`/`defender_power_trick` 攻防实际值互换；`defender_switching_out` 防守方换下场=追打×2） |
 | `POST /api/calc/batch` | **一次算双方×4招**（替代串行 8 POST；招式项可为 `{id, power}` 带威力覆盖；sides 支持 per-side `power_trick`/`switching`；gmax 形态+极巨自动装配专属招式威力） |
+| `GET /api/version` | 应用版本（构建期注入；前端版本横幅/关于信息核对用） |
 
 已删除：`/api/calc/compare-forms`（五期随 UI 移除）、`/api/profiles`（四期 P3-1 下线）。
 
@@ -242,6 +247,7 @@ python check.py                        # 需先完成数据管线
 - 剧毒/灼伤/盐淹的**每回合**削血不进 KO 卷积（进场类一次性先扣）；吃剩的东西等回复不建模。
 - 逐回合速度先手模拟（顺风/麻痹仅展示）。
 - 热门构筑/剪贴板/保存队伍等 meta 功能。
+- 超极巨招式的次要效果（灼烧/能力变化等）不建模——仅威力/属性档位生效（对齐参考站口径）。
 
 ## §6 前端架构（免构建）
 
@@ -283,6 +289,7 @@ FEATURES.icon 值供窄栏与宫格共用；游戏大图标复用官方商标资
 
 移动端专属元素（TabBar/分段锚点/筛选抽屉/手风琴/卡片流）全部由 mobile.css 在 >768 隐藏，桌面零影响；
 三层吸顶（返回钮 40px → 分段锚点 40→88px → 形态条 88px）依次下移避免叠压。
+移动端锚点滚动 `scrollIntoView` 必须用 `instant`——Android WebView 的 `smooth` 滚动不可靠（A2 实测坑）。
 
 ## §7 设计决策记录（为什么这么做）
 
@@ -317,6 +324,11 @@ FEATURES.icon 值供窄栏与宫格共用；游戏大图标复用官方商标资
 | poketools APK 走路线 B：数据静态化 + Tauri 壳（不用 sidecar） | APK 内无法运行 Python 进程（sidecar 仅桌面可行）；构建期把 poketools.db 读侧导出 JSON 分片，api.js 端点签名不变改本地实现，userstate 迁 localStorage；damage.py TS 移植以 calib 51+41 双语言对拍为硬门禁 | UPDATE §3/§4 |
 | APK 独立壳 apk/（不复用 battle 壳做多入口） | 两应用发布节奏/图标/包名独立；资产互不膨胀（battle 精灵 454MB 与 poketools 136MB 分包）；构建链完全复用（.cargo linker/gradle 镜像/zipalign 签名同一套手动流程） | Track C A3 |
 | api.js 后端探测降级（连接拒绝/非 JSON → 本地模式） | 同一 dist 双运行时复用：桌面 exe 走 FastAPI，APK 走本地引擎，零分支构建 | Track C A1 |
+| routers→services 分层拆分（R2）**延后至 React 统一壳**，不先行单独拆 | A1 已把 routers 逐行镜像到 js/local 并以 524 调用等价门禁锁定双实现同构；先拆 Python 须同步改 JS 镜像并重过门禁，成本翻倍、漂移风险 > 收益；随统一壳 Python 退役/瘦身一并处理（ROADMAP RM-02） | Track D |
+| damage 取整函数 `rnd_half_down`/`poke_round_ratio` 不更名不删除（P2-8 否决） | Python↔JS 双实现镜像的对照锚点，更名破坏同构；JS 版两函数均为核心链路 | Track D |
+| `z_exclusive` 不加 crystal_id 列 | 列由 curated 生成，加列须改 build_z_moves 双端构建脚本，收益仅省一个 join | Track D |
+| 架构五否决：不引入前端构建链 / 不上 ORM / 不状态机化 store / 不合并 routers 单文件类 / 不用 vitest | 免构建+产物入库是架构原则；SQL 已全参数化手写最直白；状态极少；FastAPI 函数式惯用法；免构建约束下 smoke.mjs 已覆盖同等风险 | 重构规划 |
+| battle 应用壳 Tauri 2（落选 Electron+Capacitor、Flutter） | 一套代码双端产出（Windows NSIS exe + Android APK）；移动端官方支持与包体取舍 | battle M0 |
 
 ### §7.1 模拟对战并入评估报告（UPDATE-PLAN §3.4 指标实测，2026-10-02）
 
@@ -358,16 +370,10 @@ FEATURES.icon 值供窄栏与宫格共用；游戏大图标复用官方商标资
 
 ## §9 Roadmap（未完成项）
 
-- Z-A TM 获取方式 117/160 两站均未整理（见 DATA-GAPS §2）。
-- Z-A zadex 图鉴介绍缺 20 种；mastery 大面积缺失（源站未写）。
-- `form_flavor_unparsed_markers` 276 段（PokeAPI 未建模变体，见 DATA-GAPS §11）。
-- 道具图标缺 ~1300（TM 系列与 GO/Let's Go 杂项，前端隐藏图标兜底）。
-- Z-A 新超进化（姆克鹰等）无进化石道具数据（PokeAPI 未收录，无锁定不阻塞）。
-- 彩粉蝶花纹/霜奶仙糖饰等未建模变体（单形态种）——如需支持须扩 PokeAPI 形态映射。
-- **模拟对战（pkmn-solo-battle）**：已并入 main（battle/ 子目录，双端产物与构建链见 `docs/BATTLE.md`）；
-  后续项：移动端资产分级（APK 440MB → 剔目录/按需下载）、真机安装演练（无设备环境，签名已验证）。
-- **poketools APK（Track C）**：A1 数据静态化 → A2 竖屏 UI → A3 Tauri 安卓壳 → A4 APK 发布；
-  复用 battle M0/M7 验证的 Windows 手动构建链（docs/BATTLE.md §3）。
+未完成/延后/否决事项已于 2026-10-02 统一迁移至 **`plans/ROADMAP.md`**（本地维护，不入 git；自 plans/ 历史计划收编）：
+战略项（统一壳/UI 迁移、R2 延后、Python 退役）、battle 增强 T1-T8 与工程债（BattleView 拆分/资产分级/真机演练/性能实测）、
+主应用工程债（build_z_moves 合并保留）、否决备查清单。
+数据类缺口仍以 `DATA-GAPS.md` 为准（无源待补与变体建模两项仍开放，ROADMAP §5 仅索引）。
 
 ## §10 变更历史
 
@@ -388,4 +394,5 @@ FEATURES.icon 值供窄栏与宫格共用；游戏大图标复用官方商标资
 | Track C A1 数据静态化 | export_static_data.py（33 表 83.2 万行分片导出 + 全表 diff 零门禁）+ js/local/* 本地引擎（routers 逐行移植，damage.py TS/JS 化）+ api.js 后端不可达自动切本地；等价性 524 调用逐字段一致；calib-js 51+41 全绿 | 交付；pytest 68 绿 + ruff 零告警 + 浏览器纯静态实测（首页/图鉴/详情/招式/计算器零 JS 错误） |
 | Track C A2 竖屏 UI | mobile.css 统一 ≤768/≤480 竖屏层（底部 Tab/窄栏底部化/双列图鉴/详情分段锚点+三层吸顶/EV 卡片流/特化页筛选抽屉/计算器纵向堆叠+手风琴/弹窗全屏）+ viewport/theme-color meta；桌面 >768 零影响 | 交付；移动 390×844 与桌面 1280 双视口浏览器实测（导航/锚点滚动/抽屉/手风琴/卡片流/桌面回归全过） |
 | Track C A3/A4 APK | apk/ 独立 Tauri 2 壳（竖屏锁定/零权限/图标全套）+ build_apk_assets.py 资产组装 + 手动构建链复用；产物 92.5MB ≤120MB 门禁、apksigner v2 验证、SHA256SUMS | 交付；安装演练环境受限记录（同 battle M7） |
-| Track D D1-D3 | 全量复审（基线四绿+冒烟）+ OPTIMIZE-PLAN 执行：api.js 降级状态机修复（P0）/js/utils 抽取+50 处内联样式收敛+toast 去重/test_api 五域拆分/smoke+state 单测固化/build_db 五函数化+derive_dex_defaults 外移/scrape parsers 拆分/abilities 中文过滤+get_methods 索引+版本横幅；R2 延后至 React 统一壳、P2-8 否决（双实现镜像） | 交付；管线重跑全表 diff 仅预期 -63 abilities；四绿+524 等价+10 state+冒烟全绿 |
+| Track D D1-D3 | 全量复审（基线四绿+冒烟）+ OPTIMIZE-PLAN 执行：api.js 降级状态机修复（P0）/js/utils 抽取+50 处内联样式收敛+toast 去重/test_api 域拆分（dex/pokemon/calc/features 4 文件，recipes 并入 features 域）/smoke+state 单测固化/build_db 五函数化+derive_dex_defaults 外移/scrape parsers 拆分/abilities 中文过滤+get_methods 索引+版本横幅；R2 延后至 React 统一壳、P2-8 否决（双实现镜像） | 交付；管线重跑全表 diff 仅预期 -63 abilities；四绿+524 等价+10 state+冒烟全绿 |
+| 文档归档（2026-10-02） | plans/ 历史计划（00/UPDATE-PLAN/MASTER-PLAN/PROGRESS/CALC-FIX-PLAN/REFACTOR-PLAN/OPTIMIZE-PLAN）实现结论核对沉淀（本文档补录 R2/P2-8/crystal_id/架构五否决/Tauri 落选决策、/api/version 端点、build_db DROP 重建坑、scrollIntoView instant 坑、gmax 次要效果不做；BATTLE.md 补合规立场权威段并修 NOTICE 悬空引用；DATA-GAPS 修 build_z_moves 重跑矛盾），未完成项迁 plans/ROADMAP.md（本地维护，RM-01..RM-17）；plans/ 仅留活动计划与 KEYSTORE | 交付 |

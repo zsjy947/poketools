@@ -59,12 +59,15 @@ pythonw launcher.pyw               # 桌面窗口启动
 - 语言：PokeAPI CSV 中 zh-Hans=12，en=9。`learnsets` 保留 level=0 进化语义。
 - 生蛋链算法在 `app/services/breeding.py`：多源 BFS，节点=能学会该招式的物种，边=共享蛋组。
 - **设计总纲：`docs/ARCHITECTURE.md`**（技术栈/数据管线/Schema/API/伤害计算器/前端架构/设计决策记录/规范/Roadmap/变更历史）；
-  数据缺口清单 `docs/DATA-GAPS.md`（三档：无源待补/curated 已知账/明确取舍）；操作手册 `docs/USER-MANUAL.md`。
+  数据缺口清单 `docs/DATA-GAPS.md`（三档：无源待补/curated 已知账/明确取舍）；操作手册 `docs/USER-MANUAL.md`；
+  未完成/延后/否决项 `plans/ROADMAP.md`（本地维护，不入 git）。
   **文档命名规范：内容描述 + 全大写**。
-- **文档分层（2026-09-29 起）**：`docs/` = 说明文档（入库），只沉淀**已实现**的功能结论
-  （架构/操作/设计决策；模拟对战功能说明 = `docs/BATTLE.md` 单文档）；`plans/` = 计划文档
-  （**gitignore 不入 git**，本地维护：MASTER-PLAN 总执行计划 + 各专项计划 00/CALC-FIX-PLAN/UPDATE-PLAN/REFACTOR-PLAN）。
-  计划实现后按序把有效结论并入 docs/ 对应文档并随代码提交；执行状态与断点记录写在 plans/ 对应计划的执行日志节。
+- **文档分层（2026-10-02 归档修订）**：`docs/` = 说明文档（入库），只沉淀**已实现**的功能结论
+  （架构/操作/设计决策；模拟对战功能说明 = `docs/BATTLE.md` 单文档；未实现/延后/否决项统一追踪于 `plans/ROADMAP.md`，本地不入 git）；
+  `plans/` = 计划文档（**gitignore 不入 git**，本地仅维护活动计划：`UPDATE2-PLAN.md`（主应用第二轮 14 项）与
+  `BATTLE-UPDATE-PLAN.md`（模拟对战第二轮 10 项 + 统一化 PC 计划），另有 `KEYSTORE.md`（APK 签名 keystore 口令备忘，敏感信息不入 git））。
+  历史计划（00/UPDATE-PLAN/MASTER-PLAN/PROGRESS/CALC-FIX-PLAN/REFACTOR-PLAN/OPTIMIZE-PLAN）已于 2026-10-02 归档删除：
+  实现结论沉淀 docs/，未完成项迁 plans/ROADMAP.md（本地维护）。计划实现后按序把有效结论并入 docs/ 对应文档并随代码提交。
 - 伤害计算器：`app/services/damage.py`（仅现代公式，对齐 @smogon/calc gen9 修正链）+
   `app/routers/calc.py`（机制 mega/Z/极巨/太晶互斥校验；`POST /api/calc/batch` 一次算双方×4招）+
   前端 `views/calc.js`（太晶/极巨顶部标记、每招 Z 纯晶标记单选自动装备、场地区按钮网格）。
