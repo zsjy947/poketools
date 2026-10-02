@@ -61,7 +61,7 @@ export async function apiGet(url: string, params: Record<string, any> = {}): Pro
   throw e;
 }
 
-export async function apiSend(method: string, url: string, body: any): Promise<any> {
+export async function apiSend(method: string, url: string, body?: any): Promise<any> {
   if (_localMode) return _localDispatch(method, url, null, body);
   let res: Response;
   try {

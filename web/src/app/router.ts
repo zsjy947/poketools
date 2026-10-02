@@ -20,7 +20,7 @@ export type Route =
   | { name: "not-found"; hash: string };
 
 export function parseHash(hash: string): Route {
-  const clean = hash.replace(/^#/, "");
+  const clean = hash.replace(/^#/, "").split("?")[0]!;
   const parts = clean.split("/").filter(Boolean).map(decodeURIComponent);
   const [head, a, b] = parts;
   switch (head) {
