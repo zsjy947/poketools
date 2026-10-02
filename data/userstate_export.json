@@ -1,0 +1,30 @@
+{
+ "_comment": "poketools 桌面版用户数据一次性导出（caught_state + custom_recipes，默认档案）",
+ "caught_state": {
+  "blueberry": {
+   "84": 0
+  },
+  "galar": {
+   "6": 1,
+   "25": 0,
+   "94": 0,
+   "810": 1,
+   "811": 1,
+   "812": 0
+  },
+  "isle-of-armor": {
+   "25": 0
+  },
+  "kitakami": {
+   "25": 0,
+   "94": 0
+  },
+  "paldea": {
+   "25": 0,
+   "94": 0,
+   "906": 0,
+   "907": 0
+  }
+ },
+ "custom_recipes": []
+}

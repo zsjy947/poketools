@@ -18,7 +18,11 @@ export function App(): JSX.Element {
 
   const NAV = [
     { id: "home", label: "首页", on: route.name === "home" },
-    { id: "games", label: "游戏中心", on: route.name === "games" || route.name === "game" || route.name === "pokemon" },
+    {
+      id: "games",
+      label: "游戏中心",
+      on: route.name === "games" || route.name === "game" || route.name === "pokemon",
+    },
     { id: "calc", label: "伤害计算器", on: route.name === "calc" },
     { id: "battle", label: "模拟对战", on: route.name === "battle" },
   ];
@@ -44,14 +48,12 @@ export function App(): JSX.Element {
         {route.name === "game" && (
           <SectionPlaceholder title={`游戏功能：${route.gameId} / ${route.feature}`} />
         )}
-        {route.name === "pokemon" && <SectionPlaceholder title={`宝可梦详情 #${route.speciesId}`} />}
-        {route.name === "calc" && <SectionPlaceholder title="伤害计算器" />}
-        {route.name === "not-found" && (
-          <SectionPlaceholder title={`未找到页面：${route.hash}`} />
+        {route.name === "pokemon" && (
+          <SectionPlaceholder title={`宝可梦详情 #${route.speciesId}`} />
         )}
-        <div hidden={route.name !== "battle"}>
-          {visitedBattle.current ? <BattleApp /> : null}
-        </div>
+        {route.name === "calc" && <SectionPlaceholder title="伤害计算器" />}
+        {route.name === "not-found" && <SectionPlaceholder title={`未找到页面：${route.hash}`} />}
+        <div hidden={route.name !== "battle"}>{visitedBattle.current ? <BattleApp /> : null}</div>
       </main>
     </div>
   );

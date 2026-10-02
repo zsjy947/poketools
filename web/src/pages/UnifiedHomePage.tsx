@@ -6,8 +6,15 @@ import { navigate } from "../app/router";
 
 function IconGames(): JSX.Element {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
-      strokeLinecap="round" strokeLinejoin="round" className="pkt-home-ic">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="pkt-home-ic"
+    >
       <path d="M6 9h4M8 7v4" />
       <circle cx="15.5" cy="8.5" r="1" />
       <circle cx="18" cy="11" r="1" />
@@ -18,8 +25,15 @@ function IconGames(): JSX.Element {
 
 function IconCalc(): JSX.Element {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
-      strokeLinecap="round" strokeLinejoin="round" className="pkt-home-ic">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="pkt-home-ic"
+    >
       <rect x="4" y="2.5" width="16" height="19" rx="2.5" />
       <path d="M8 7h8" />
       <path d="M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16h.01M12 16h.01M15.5 16h.01" />
@@ -29,8 +43,15 @@ function IconCalc(): JSX.Element {
 
 function IconBattle(): JSX.Element {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
-      strokeLinecap="round" strokeLinejoin="round" className="pkt-home-ic">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="pkt-home-ic"
+    >
       <path d="M3.5 3.5 14 14" />
       <path d="m18.5 6.5-8 8-2.5-2.5 8-8 2.5 2.5Z" />
       <path d="M6 18l-2.5 2.5" />
