@@ -1,7 +1,0 @@
-{
-  "$schema": "../gen/schemas/desktop-schema.json",
-  "identifier": "default",
-  "description": "主窗口默认能力集；M3 队伍存档时再追加 fs / plugin-store 权限（最小权限原则）",
-  "windows": ["main"],
-  "permissions": ["core:default"]
-}

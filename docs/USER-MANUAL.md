@@ -1,13 +1,10 @@
 # USER-MANUAL —— 使用手册
 
-## Android 版（APK）
+## Android 版（APK，暂缓）
 
-- 产物：`release/poketools/宝可梦工具助手_1.0.0_arm64.apk`（arm64-v8a，约 92.5MB，
-  完全离线：数据分片与精灵图全部内嵌，安装后无任何网络请求）。
-- 安装：`adb install -r <apk>` 或文件管理器直接安装（需允许未知来源）；竖屏锁定。
-- 与桌面版差异：无 Python 后端，全部数据经本地引擎（js/local）读取；捕捉标记与自定义食谱
-  存于应用本地存储（清除应用数据会丢失；控制台 `PKT.state.exportAll()/importAll()` 可导出/迁移）。
-- 覆盖升级须使用同一签名（poketools-release.keystore）；升级构建链见 ARCHITECTURE §2「APK 构建管线」。
+- 安卓端（poketools APK 与 battle APK）开发已暂缓：apk 壳与双端构建链已迁移 `dev/android` 分支，
+  待桌面 exe（含统一化嵌入）完善后恢复。
+- 已发布产物的安装方式记录保留在 `docs/BATTLE.md` §3.1（历史）；本地 release/ 目录留存既有 exe/APK。
 
 ## 启动
 
@@ -50,7 +47,7 @@
   单列卡片 + 「筛选」底部抽屉；计算器对战场纵向堆叠、编辑区折叠为「我方/对手/场地」手风琴；
   弹窗近全屏。
 - **触控**：交互热区 ≥40px；≤480 小屏进一步收紧（图标/字号/间距）。
-- **数据模式**：无 Python 后端（APK/Tauri 壳）时自动切换本地数据引擎（见 ARCHITECTURE §2 静态化管线），
+- **数据模式**：无 Python 后端（本地静态托管等场景）时自动切换本地数据引擎（见 ARCHITECTURE §2 静态化管线），
   功能与桌面完全一致；用户数据（捕捉标记/自定义食谱）存于本地存储。
 
 ## 图鉴追踪

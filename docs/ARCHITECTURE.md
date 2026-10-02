@@ -36,11 +36,9 @@ python scripts/fetch_sprites.py       # 官方绘图（三级回退）-> data/sp
 python scripts/fetch_calc_assets.py   # 全量道具图标 + 机制图标（极巨/太晶19种）-> sprites/items + assets/mechanism
 python scripts/fetch_feature_images.py / fetch_sandwich_images.py   # 特化页配图 -> dist/assets
 python scripts/make_icon.py           # 精灵球应用图标
-python scripts/export_static_data.py  # db 读侧 -> app/static/data/ JSON 分片（APK/无后端模式；含全表 diff 硬门禁）
+python scripts/export_static_data.py  # db 读侧 -> app/static/data/ JSON 分片（无后端/本地模式；含全表 diff 硬门禁）
 python scripts/verify_static_equivalence.py  # 真实 API vs 本地 JS 引擎逐字段等价性验证（524 调用门禁）
 node tools/static-check/calib-js.mjs  # JS 伤害引擎 vs smogon 基准（calib 双语言门禁之二）
-python scripts/build_apk_assets.py    # 前端 dist + 数据分片 + 精灵图 → apk/dist（APK 资产组装）
-# APK 构建（Windows 手动链，同 battle M0/M7 验证过的流程，详见 §2 末「APK 构建管线」）
 ```
 
 build_db 重建采用**连接内就地 DROP 重建**：Windows 下直接删除 `poketools.db` 可能遇 unlink 幻影锁
@@ -64,28 +62,12 @@ build_db 重建采用**连接内就地 DROP 重建**：Windows 下直接删除 `
   （等价性验证做序无关规范化）；字典整数键迭代序差异用 Map（插入序）规避；
   字符串排序是码点序（localeCompare 不等价）；表缓存行不可变异（detail 挂 ability_list 曾污染缓存）。
 
-### APK 构建管线（Track C A3/A4，UPDATE-PLAN §4.1）
+### 安卓端（暂缓，已迁移 dev/android 分支）
 
-壳工程 `apk/`（独立于 battle/ 的 Tauri 2 壳：`identifier com.poketools.app`、竖屏锁定
-`AndroidManifest screenOrientation=portrait`、无自定义命令无额外权限）：
-
-```bash
-python scripts/build_apk_assets.py     # dist+data+sprites → apk/dist（~136MB，gitignore）
-cd apk && <tauri-cli> android init     # 生成 gen/（一次性）；图标 tauri icon 生成全套
-# .so（必须带 custom-protocol 内嵌前端；CARGO_TARGET_DIR 可复用 battle 依赖缓存加速）：
-cd apk/src-tauri && cargo build --release --target aarch64-linux-android --features tauri/custom-protocol
-cp <target>/.../libpoketools_app_lib.so gen/android/app/src/main/jniLibs/arm64-v8a/
-# ⚠ `tauri android init` 只生成 MainActivity；generated/（TauriActivity/RustWebView 等）
-#   与 tauri.settings.gradle/tauri.build.gradle.kts 由 `tauri android build` 首跑生成
-#   （Windows 符号链接报错属预期，文件已落盘）——之后走 gradle 手动链：
-cd gen/android && ./gradlew.bat assembleArm64Release -x rustBuildArm64Release
-# zipalign → apksigner（apk/.keystore/poketools-release.keystore，双备份+口令本地）→ SHA256SUMS
-```
-
-产物：`release/poketools/宝可梦工具助手_1.0.0_arm64.apk`（92.5MB ≤ 120MB 门禁；arm64-v8a、
-versionName 1.0.0、竖屏锁定、v2 签名验证通过）；升级用同 keystore 覆盖安装；
-用户数据在 localStorage（`PKT.state.exportAll/importAll` 迁移兜底）。
-安装演练同 battle M7 环境受限（无真机/模拟器无硬件加速），签名与包结构已验证。
+poketools 安卓壳（`apk/` Tauri 2 壳 + `build_apk_assets.py` 资产组装）与 battle 双端壳
+（`battle/src-tauri/`，Windows NSIS exe + Android APK 共用，含 Rust 工具链锁定）
+已于 2026-10-02 自 main 移除，完整工作区迁移至 `dev/android` 分支；待桌面 exe（含统一化嵌入）完善后在该分支恢复。
+main 保留纯前端能力：本地模式降级（api.js，无后端自动切本地引擎）与 ≤768 竖屏适配层；变更历史见 §10。
 
 ### PokeAPI（离线整包 CSV）
 
@@ -396,3 +378,4 @@ FEATURES.icon 值供窄栏与宫格共用；游戏大图标复用官方商标资
 | Track C A3/A4 APK | apk/ 独立 Tauri 2 壳（竖屏锁定/零权限/图标全套）+ build_apk_assets.py 资产组装 + 手动构建链复用；产物 92.5MB ≤120MB 门禁、apksigner v2 验证、SHA256SUMS | 交付；安装演练环境受限记录（同 battle M7） |
 | Track D D1-D3 | 全量复审（基线四绿+冒烟）+ OPTIMIZE-PLAN 执行：api.js 降级状态机修复（P0）/js/utils 抽取+50 处内联样式收敛+toast 去重/test_api 域拆分（dex/pokemon/calc/features 4 文件，recipes 并入 features 域）/smoke+state 单测固化/build_db 五函数化+derive_dex_defaults 外移/scrape parsers 拆分/abilities 中文过滤+get_methods 索引+版本横幅；R2 延后至 React 统一壳、P2-8 否决（双实现镜像） | 交付；管线重跑全表 diff 仅预期 -63 abilities；四绿+524 等价+10 state+冒烟全绿 |
 | 文档归档（2026-10-02） | plans/ 历史计划（00/UPDATE-PLAN/MASTER-PLAN/PROGRESS/CALC-FIX-PLAN/REFACTOR-PLAN/OPTIMIZE-PLAN）实现结论核对沉淀（本文档补录 R2/P2-8/crystal_id/架构五否决/Tauri 落选决策、/api/version 端点、build_db DROP 重建坑、scrollIntoView instant 坑、gmax 次要效果不做；BATTLE.md 补合规立场权威段并修 NOTICE 悬空引用；DATA-GAPS 修 build_z_moves 重跑矛盾），未完成项迁 plans/ROADMAP.md（本地维护，RM-01..RM-17）；plans/ 仅留活动计划与 KEYSTORE | 交付 |
+| 安卓端迁移（2026-10-02） | apk/ 壳与 build_apk_assets.py、battle/src-tauri 双端壳（含 rust-toolchain.toml）自 main 移除，完整工作区迁 dev/android 分支；ARCHITECTURE/BATTLE/USER-MANUAL 同步（发布历史保留），安卓开发待桌面 exe 完善后恢复 | 交付 |

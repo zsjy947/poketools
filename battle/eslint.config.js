@@ -36,7 +36,6 @@ export default tseslint.config(
     ignores: [
       "dist/",
       "node_modules/",
-      "src-tauri/",
       "src/engine-adapter/vendor/",
       ".probe/",
       ".engine-tmp/",

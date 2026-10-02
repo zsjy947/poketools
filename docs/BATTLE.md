@@ -54,7 +54,6 @@ battle/
 │     ├─ parse.ts           # 协议行解析（BattleEvent）
 │     └─ index.ts           # 重导出表面（未来可换 @pkmn/sim 而上层不感知）
 ├─ scripts/                 # build-engine / fetch-sprites / verify-data 等
-├─ src-tauri/               # Tauri 2 壳（Windows NSIS + Android）
 └─ tests/                   # vitest：data(7) / engine(9) / showdown(16)
 ```
 
@@ -92,9 +91,6 @@ battle/
 | --- | --- | --- |
 | Node | ≥22（实测 24） | package.json engines 锁定 |
 | pnpm | ≥9（实测 12） | `pnpm install`；esbuild 构建许可已写 `pnpm.onlyBuiltDependencies` |
-| Rust | stable（rust-toolchain.toml 锁定） | Tauri 壳编译 |
-| JDK 17 | — | Android 构建（JAVA_HOME） |
-| Android SDK | platform 34 + build-tools 34.0.0 + NDK 27 | ANDROID_HOME / NDK_HOME |
 
 ```bash
 cd battle
@@ -103,22 +99,17 @@ node scripts/build-engine.mjs      # 重建供应商化引擎（需 data/raw/pok
 node scripts/fetch-sprites.mjs     # 选择性下载精灵图（zip 中央目录 Range 解析，约 454MB → public/sprites，gitignore）
 pnpm test                          # vitest（32 用例）
 pnpm build                         # tsc + vite 产物
-pnpm tauri build                   # Windows NSIS exe
-pnpm tauri android build --apk     # Android APK
 ```
 
 开发：`pnpm dev`（http://localhost:1420）。
 
-**Android 构建注意事项（Windows）**：
-
-1. `pnpm tauri android build --apk` 会因**符号链接权限**失败（未开启开发者模式的 Windows 不允许非特权 symlink）——手动流程：`cargo build --release --target aarch64-linux-android --features tauri/custom-protocol` 后将 `target/aarch64-linux-android/release/*.so` **复制**到 `src-tauri/gen/android/app/src/main/jniLibs/arm64-v8a/`，再 `gen/android` 下 `gradlew.bat assembleArm64Release -x rustBuildArm64Release`；
-   ⚠ **必须带 `--features tauri/custom-protocol`**：该 feature 使 generate_context 内嵌 `frontendDist: ../dist` 资产；不带则走 `devUrl: localhost:1420`，产物 .so 仅 ~10.8MB 且**装上是白屏壳**（验收标准：.so 体积 ~439MB 量级）；
-   交叉编译 linker 由 `src-tauri/.cargo/config.toml` 提供（NDK clang 包装脚本）；
-2. gradle wrapper 下载经代理可能 TLS 失败：手动以国内镜像（腾讯/华为）拉 `gradle-9.6.1-bin.zip` 放入 `~/.gradle/wrapper/dists/…`，并设 `JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStoreType=WINDOWS-ROOT` 使依赖下载信任系统根证书；
-3. 产物 `app/build/outputs/apk/arm64/release/app-arm64-release-unsigned.apk`（~440MB：精灵资产随 dist 内嵌）；
-4. 签名链（build-tools 34）：`zipalign -f 4` → `apksigner sign --ks .keystore/battle-release.keystore --ks-key-alias battle`（口令本地保管）→ `apksigner verify`（v2+v3 通过）→ `sha256sum` 出 SHA256SUMS。
+**桌面/安卓打包（已迁移）**：Tauri 2 壳（`src-tauri/`，Windows NSIS exe + Android APK 共用的完整构建链——
+custom-protocol feature、NDK 交叉编译、gradle 手动链与签名流程）已于 2026-10-02 自 main 移除，
+迁移至 `dev/android` 分支维护；main 聚焦应用本体与统一化嵌入（vite 产物由主应用静态托管）。
 
 ### 3.1 安装指南与演练记录
+
+> 历史产物安装记录（battle v0.1.0 发布版；构建链已迁 `dev/android` 分支）。
 
 - **Windows**：双击 `release/宝可梦模拟对战_0.1.0_x64-setup.exe`（NSIS 安装器）安装；卸载走系统「应用」或 Uninstall 入口；升级直接覆盖安装（同版本覆盖装即升级路径验证）。
 - **Android（arm64）**：`adb install -r release/宝可梦模拟对战_0.1.0_arm64.apk`；卸载 `adb uninstall <包名>` 或桌面长按卸载；升级沿用 `adb install -r`（同 keystore 签名才可覆盖）。
