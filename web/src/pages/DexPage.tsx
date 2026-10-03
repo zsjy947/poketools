@@ -23,6 +23,9 @@ interface DexEntry {
   caught: boolean;
 }
 
+/* U18：进出详情保持图鉴滚动位置（按 gameId+dex 记忆，模块级跨挂载存活） */
+const dexScrollMem: Record<string, number> = {};
+
 export function DexPage({ gameId }: { gameId: string }): JSX.Element {
   const [game, setGameRow] = useState<GameRow | null>(null);
   const [dexId, setDexId] = useState("");
@@ -33,6 +36,39 @@ export function DexPage({ gameId }: { gameId: string }): JSX.Element {
   const [raw, setRaw] = useState<DexEntry[]>([]);
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [markMode, setMarkMode] = useState(false);
+
+  /* 记录滚动 + 挂载时恢复（数据渲染后再恢复一次，防高度不足被钳在顶部） */
+  useEffect(() => {
+    const el = document.querySelector(".game-main");
+    if (!el) return;
+    const key = gameId + ":" + dexId;
+    const onScroll = () => {
+      dexScrollMem[key] = el.scrollTop;
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    el.scrollTop = dexScrollMem[key] || 0;
+    return () => el.removeEventListener("scroll", onScroll);
+  }, [gameId, dexId]);
+  useEffect(() => {
+    if (loading || !raw.length) return;
+    const el = document.querySelector(".game-main");
+    if (!el) return;
+    const target = dexScrollMem[gameId + ":" + dexId] || 0;
+    el.scrollTop = target;
+    /* 精灵图懒加载使内容高度后变，位置会被钳住——短周期重锚定，用户主动滚动即停 */
+    const stopPin = () => {
+      window.clearInterval(iv);
+      window.removeEventListener("wheel", stopPin);
+      window.removeEventListener("touchstart", stopPin);
+    };
+    const iv = window.setInterval(() => {
+      if (document.querySelector(".game-main") === el) el.scrollTop = target;
+    }, 250);
+    window.addEventListener("wheel", stopPin, { passive: true, once: true });
+    window.addEventListener("touchstart", stopPin, { passive: true, once: true });
+    window.setTimeout(stopPin, 2000);
+    return () => stopPin();
+  }, [loading, raw.length, gameId, dexId]);
 
   /* 初始化当前图鉴 tab：hash 参数 > sessionStorage > 第一个 */
   const initDex = useCallback((g: GameRow | null) => {
