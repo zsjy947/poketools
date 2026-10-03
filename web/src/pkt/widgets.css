@@ -542,6 +542,22 @@
   cursor: default;
 }
 
+/* ---- U17：mega 锁图标内嵌选择框右缘 ---- */
+.fselect-lock {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  line-height: 1;
+  pointer-events: auto;
+  cursor: help;
+  z-index: 1;
+}
+.fselect-input-adorn {
+  padding-right: 26px;
+}
+
 /* ---- 详情攻击面（U6：徽章定宽 70px 居中） ---- */
 .eff-m.atk-src {
   width: 70px;

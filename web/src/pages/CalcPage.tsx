@@ -2,7 +2,12 @@
  * U12 击中要害撑满行、U13 场地区紧凑、U14 面板描边加深+轻投影） */
 import { useCallback, useEffect, useMemo, useRef, useState, Fragment } from "react";
 import { apiGet, apiSend, TYPE_LIST, STAT_KEYS, STAT_ZH } from "../data/api";
+import { BATTLE_ITEM_IDS } from "../data/battle-items";
 import { TypeBadge, formDisplayName, koTextFromKo, toast } from "../pkt/shared";
+
+/* U17：对战相关道具置前（champions 合法可携带道具，静态清单见 data/battle-items.ts）；
+ * 其余道具（GO/LGPE 杂项、Z 纯晶等）排后仍可搜索到 */
+const itemRank = (ident: string): number => (BATTLE_ITEM_IDS.has(ident) ? 0 : 1);
 
 /* ---- 模块级 meta 缓存 + 预热 ---- */
 interface MetaCache {
@@ -258,6 +263,7 @@ function FilterSelect({
   limit = 80,
   style,
   displayOf,
+  adornment,
 }: {
   value: any;
   onChange: (v: any) => void;
@@ -268,6 +274,8 @@ function FilterSelect({
   style?: React.CSSProperties;
   /** 收起态回显文本（value 非自描述时必传，如物种 id → 中文名） */
   displayOf?: (v: any) => string;
+  /** 框内右缘固定饰件（如 mega 锁图标），不随输入变化、不占外部宽度 */
+  adornment?: React.ReactNode;
 }): JSX.Element {
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
@@ -289,7 +297,7 @@ function FilterSelect({
   return (
     <div className="fselect" style={style}>
       <input
-        className="pkt-input w-full"
+        className={"pkt-input w-full" + (adornment ? " fselect-input-adorn" : "")}
         placeholder={placeholder || "搜索…"}
         value={open ? q : displayOf ? displayOf(value) : String(value ?? "")}
         onFocus={() => setOpen(true)}
@@ -299,6 +307,7 @@ function FilterSelect({
           setOpen(true);
         }}
       />
+      {adornment}
       {open && (
         <div className="fselect-list">
           {/* 选项带 grp 字段时按组渲染非交互分组头（如特性：自身特性/其他特性） */}
@@ -362,7 +371,9 @@ export function CalcPage(): JSX.Element {
 
   useEffect(() => {
     warmMeta("species").then(setSpeciesList);
-    warmMeta("items").then(setItems);
+    warmMeta("items").then((rows) =>
+      setItems([...rows].sort((a, b) => itemRank(a.identifier) - itemRank(b.identifier))),
+    );
     warmMeta("abilities").then(setAllAbilities);
     warmMeta("zMoves").then(setZMeta);
     warmMeta("maxMoves").then(setMaxMeta);
@@ -1247,11 +1258,6 @@ function SideEditor({
             </select>
           </span>
         )}
-        {megaStone && (
-          <span className="stone-lock" title={`超级进化形态自动装备：${megaStone}`}>
-            🔒 {megaStone}
-          </span>
-        )}
         <span className="fld-pair">
           <span className="lbl">太晶属性</span>
           <select
@@ -1270,13 +1276,20 @@ function SideEditor({
         </span>
         <span className="fld-pair" style={{ flex: 1, minWidth: 170 }}>
           <span className="lbl">道具</span>
-          {/* U10：道具下拉 = 过滤 + 上限 80 + 图标 */}
+          {/* U10：道具下拉 = 过滤 + 上限 80 + 图标；U17：mega 锁图标内嵌框内右缘 */}
           <FilterSelect
             value={side.item}
             onChange={onItemChange}
             options={items}
             placeholder="搜索道具"
             style={{ flex: 1, minWidth: 90 }}
+            adornment={
+              megaStone ? (
+                <span className="fselect-lock" title={`超级进化形态自动装备：${megaStone}`}>
+                  🔒
+                </span>
+              ) : null
+            }
             render={(i) => ({
               value: i.name_zh,
               search: `${i.name_zh} ${i.identifier}`,
