@@ -78,7 +78,7 @@ node tools/smoke.mjs               # 冒烟：web 构建产物静态托管逐资
   （架构/操作/设计决策；模拟对战功能说明 = `docs/BATTLE.md` 单文档；未实现/延后/否决项统一追踪于 `plans/ROADMAP.md`，本地不入 git）；
   `plans/` = 计划文档（**gitignore 不入 git**，本地仅维护活动计划 `MASTER-PLAN.md`（终态统一改造总执行手册，
   阶段 0-7，执行分支 dev）与 `KEYSTORE.md`（签名 keystore 口令备忘，敏感信息不入 git）；
-  根目录 `PROGRESS.md` 为断点续作手册）。
+  `plans/PROGRESS.md` 为断点续作手册（本地维护，不入 git）。
   历史计划（00/UPDATE-PLAN/MASTER-PLAN/PROGRESS/CALC-FIX-PLAN/REFACTOR-PLAN/OPTIMIZE-PLAN）已于 2026-10-02 归档删除：
   实现结论沉淀 docs/，未完成项迁 plans/ROADMAP.md（本地维护）。计划实现后按序把有效结论并入 docs/ 对应文档并随代码提交。
 - 伤害计算器：`web/src/data/damage.ts`（唯一实现，对齐 @smogon/calc gen9 修正链）+
