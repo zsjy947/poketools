@@ -104,7 +104,87 @@ FORM_SUFFIX_ZH = {
     "10-percent": "10%形态", "50-percent": "50%形态", "powerconstruct": "完全体形态",
     "active": "活性形态", "meteor": "流星形态", "core-forme": "核心形态",
     "electric": "电气形态", "fire": "火焰形态", "water": "水珠形态",
+    "midday": "白昼的样子", "midnight": "黑夜的样子", "dusk": "黄昏的样子",
+    "zero": "零号形态",
+    "bloodmoon": "血月",
+    "red-striped": "红条纹", "white-striped": "白条纹",
+    "baile": "热辣热辣", "pom-pom": "轻盈轻盈", "pau": "呼拉呼拉", "sensu": "娇娇",
+    "spring": "春天的样子", "summer": "夏天的样子", "autumn": "秋天的样子", "winter": "冬天的样子",
+    "eternal": "永恒之花", "dada": "达达",
+    "plant": "植物蓑衣", "overcast": "阴天形态",
+    "antique": "真品的样子", "phony": "赝品的样子",
+    "crowned": "王者形态", "eternamax": "无极巨化", "roaming": "流浪形态",
+    "confined": "惩戒形态", "unbound": "解放形态",
+    "galar-standard": "伽勒尔的样子", "galar-zen": "伽勒尔达摩模式",
+    "10": "10%形态",
+    "family-of-three": "三只家庭", "family-of-four": "四只家庭",
+    "two-segment": "二节形态", "three-segment": "三节形态",
+    "paldea-combat-breed": "帕底亚斗战种", "paldea-blaze-breed": "帕底亚火炽种",
+    "paldea-aqua-breed": "帕底亚水澜种",
+    "low-power-mode": "低功率模式", "drive-mode": "行驶模式",
+    "aquatic-mode": "水上模式", "glide-mode": "滑翔模式",
+    "apex-build": "顶点模式", "ultimate-mode": "终极模式",
+    # 彩粉蝶/粉蝶蛹/宝宝蚕 20 花纹
+    "icy-snow": "冰雪花纹", "polar": "极地花纹", "tundra": "雪国花纹",
+    "continental": "大陆花纹", "garden": "庭园花纹", "elegant": "高雅花纹",
+    "meadow": "草原花纹", "modern": "现代花纹", "marine": "海洋花纹",
+    "archipelago": "群岛花纹", "high-plains": "高地花纹", "sandstorm": "沙尘花纹",
+    "river": "河流花纹", "monsoon": "季风花纹", "savanna": "热带草原花纹",
+    "sun": "太阳花纹", "ocean": "大洋花纹", "jungle": "丛林花纹",
+    "fancy": "高档花纹", "poke-ball": "精灵球花纹",
+    "ice": "骑白马", "shadow": "骑黑马",
 }
+
+# 整 identifier 级中文名（后缀与其他物种撞车或需专用名时使用；优先于 FORM_SUFFIX_ZH）
+IDENT_LABEL_ZH = {
+    "zacian-crowned": "剑之王", "zamazenta-crowned": "盾之王",
+    "gimmighoul-chest": "宝箱形态",
+    "koraidon-apex-build": "顶点模式", "miraidon-ultimate-mode": "终极模式",
+    **{f"flabebe-{c}": n for c, n in (
+        ("red", "红花"), ("yellow", "黄花"), ("orange", "橙花"), ("blue", "蓝花"), ("white", "白花"))},
+    **{f"floette-{c}": n for c, n in (
+        ("red", "红花"), ("yellow", "黄花"), ("orange", "橙花"), ("blue", "蓝花"), ("white", "白花"))},
+    **{f"florges-{c}": n for c, n in (
+        ("red", "红花"), ("yellow", "黄花"), ("orange", "橙花"), ("blue", "蓝花"), ("white", "白花"))},
+    **{f"arceus-{t}": f"{zh}属性" for t, zh in (
+        ("normal", "普通"), ("fighting", "格斗"), ("flying", "飞行"), ("poison", "毒"),
+        ("ground", "地面"), ("rock", "岩石"), ("bug", "虫"), ("ghost", "幽灵"),
+        ("steel", "钢"), ("fire", "火"), ("water", "水"), ("grass", "草"),
+        ("electric", "电"), ("psychic", "超能力"), ("ice", "冰"), ("dragon", "龙"),
+        ("dark", "恶"), ("fairy", "妖精"))},
+    **{f"minior-{c}-core": f"{zh}核心" for c, zh in (
+        ("red", "红色"), ("orange", "橙色"), ("yellow", "黄色"), ("green", "绿色"),
+        ("blue", "蓝色"), ("indigo", "靛蓝"), ("violet", "紫罗兰"))},
+    **{
+        f"alcremie-{cream}-cream-{sweet}-sweet": f"{czh}奶油{szh}"
+        for cream, czh in (("vanilla", "香草"), ("ruby", "红钻"), ("matcha", "抹茶"),
+                           ("mint", "薄荷"), ("lemon", "柠檬"), ("salted", "雪盐"))
+        for sweet, szh in (("strawberry", "草莓"), ("berry", "野莓"), ("love", "爱心"),
+                           ("star", "星星"), ("clover", "三叶草"), ("flower", "花朵"),
+                           ("ribbon", "缎带"))
+    },
+    **{
+        f"alcremie-{swirl}-{sweet}-sweet": f"{czh}奶油{szh}"
+        for swirl, czh in (("ruby-swirl", "红钻综合"), ("caramel-swirl", "焦糖综合"),
+                           ("rainbow-swirl", "三色综合"))
+        for sweet, szh in (("strawberry", "草莓"), ("berry", "野莓"), ("love", "爱心"),
+                           ("star", "星星"), ("clover", "三叶草"), ("flower", "花朵"),
+                           ("ribbon", "缎带"))
+    },
+}
+
+_UNOWN_ZH = {"exclam": "！", "question": "？"}
+
+
+def form_label_of(form_ident: str, identifier: str) -> str:
+    """形态中文名：整 identifier 专用名 > 字母形态（未知图腾）> 后缀映射 > 原样。"""
+    if identifier in IDENT_LABEL_ZH:
+        return IDENT_LABEL_ZH[identifier]
+    if form_ident in _UNOWN_ZH:
+        return _UNOWN_ZH[form_ident]
+    if len(form_ident) == 1 and form_ident.isalpha():
+        return form_ident.upper() + " 字形"
+    return FORM_SUFFIX_ZH.get(form_ident, form_ident)
 
 EGG_GROUP_ZH = {
     "monster": "怪兽", "water1": "水中1", "bug": "虫", "flying": "飞行",
@@ -379,7 +459,20 @@ def build_reference() -> dict:
 
     # ---- forms (pokemon) ----
     ref["pokemon_rows"] = {to_int(r["id"]): r for r in read_csv("pokemon")}
-    ref["form_meta"] = {to_int(r["pokemon_id"]): r for r in read_csv("pokemon_forms")}
+    # 同一 pokemon 多条 forms 行时（PokeAPI 新建模：四季/花色等外观形态共挂基础行），
+    # 取 is_default 行的 form_identifier——末条覆盖会让基础行 label 变成兄弟形态（如四季鹿→winter）
+    form_meta_all: dict[int, list] = {}
+    for r in read_csv("pokemon_forms"):
+        form_meta_all.setdefault(to_int(r["pokemon_id"]), []).append(r)
+    ref["form_meta"] = {
+        pid: (next((x for x in rows if to_int(x["is_default"]) == 1), rows[0]))
+        for pid, rows in form_meta_all.items()
+    }
+    ref["form_meta_all"] = form_meta_all
+    ref["form_zh"] = {}
+    for r in read_csv("pokemon_form_names"):
+        if to_int(r["local_language_id"]) == ZH:
+            ref["form_zh"][to_int(r["pokemon_form_id"])] = (r["form_name"].strip(), r["pokemon_name"].strip())
 
     ref["base_stats"]: dict[int, dict] = {}
     ref["evs"]: dict[int, dict] = {}
@@ -429,7 +522,7 @@ def build_species_forms(ref: dict) -> tuple[list, list]:
         sid = to_int(r["species_id"])
         meta = ref["form_meta"].get(pid, {})
         form_ident = meta.get("form_identifier", "") or ""
-        label = FORM_SUFFIX_ZH.get(form_ident, form_ident)
+        label = form_label_of(form_ident, r["identifier"])
         sp = ref["base_stats"].get(pid, {})
         ev = ref["evs"].get(pid, {})
         t_ids = ref["types_of"].get(pid, [])
@@ -446,6 +539,37 @@ def build_species_forms(ref: dict) -> tuple[list, list]:
             ev.get("spa", 0), ev.get("spd", 0), ev.get("spe", 0),
             to_int(r["height"]), to_int(r["weight"]),
         ))
+
+    # ---- 纯外观形态补齐：PokeAPI 新建模把四季/花色/字母/花纹/命名蛋糕等只存于 pokemon_forms
+    # （pokemon_id 指回基础行，不再有独立 pokemon 行）——按 pokemon_forms 补建 forms 行，
+    # 属性/种族值/努力值/特性/身高体重继承本种基础行（外观形态不改变这些数据）----
+    covered = {r[2] for r in form_rows}
+    base_row_of: dict[int, tuple] = {}
+    for row in form_rows:
+        if row[4] == 1:
+            base_row_of.setdefault(row[1], row)
+    for rows in ref["form_meta_all"].values():
+        for fr in rows:
+            if fr["identifier"] in covered:
+                continue
+            sid = to_int(fr["pokemon_id"])
+            base = base_row_of.get(sid)
+            if base is None:
+                continue
+            if to_int(fr["is_default"]) == 1:
+                # forms 默认行与本种基础行是同一形态（如 deerling-spring = deerling），勿重复建行
+                continue
+            # 合成行 id 用 900000+forms_id：pokemon_forms 的自增 id 与 pokemon id 空间重叠，
+            # 直接用会撞已入库的兄弟物种形态行；fetch_sprites 按 900000 段还原精灵图源 id
+            form_rows.append((
+                900000 + to_int(fr["id"]), sid, fr["identifier"],
+                form_label_of(fr["form_identifier"] or "", fr["identifier"]),
+                to_int(fr["is_default"]) or 0, 0,
+                base[6], base[7], base[8],
+                base[9], base[10], base[11], base[12], base[13], base[14],
+                base[15], base[16], base[17], base[18], base[19], base[20],
+                base[21], base[22],
+            ))
     return sp_rows, form_rows
 
 

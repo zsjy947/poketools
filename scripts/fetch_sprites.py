@@ -66,10 +66,12 @@ def download(form_id: int) -> tuple[int, str | None]:
     dest = OUT / f"{form_id}.png"
     if dest.exists() and dest.stat().st_size > 0:
         return form_id, "cached"
+    # 合成外观形态行（build_db）：id = 900000 + pokemon_forms.id，精灵图源仍按后者
+    src_id = form_id - 900000 if form_id >= 900000 else form_id
     for key, base in SOURCES:
         for attempt in range(3):
             try:
-                r = get(f"{base}/{form_id}.png")
+                r = get(f"{base}/{src_id}.png")
                 if r.status_code == 404:
                     break
                 if r.status_code == 200 and r.content:

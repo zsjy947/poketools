@@ -27,11 +27,16 @@
 - 特例：波导防护（aura-guard，路卡利欧Ｚ专属）52poke 有页而 PokeAPI 无简中名，
   已在 build_db 直填译名入库（ability intro 仍待补）。
 
-### 4. 形态独立图鉴介绍未挂靠段（TODO.json 276 段）
+### 4. ✅ 形态独立图鉴介绍未挂靠段（原 276 段，2026-10-03 已全部解决）
 
-- 均为无法挂靠到 PokeAPI 形态行的变体（非解析失败）：东西海、花蓓蓓花色、彩粉蝶 20 花纹、
-  樱花晴阴、霜奶仙奶香/糖饰、四季鹿季节、阿尔宙斯/银伴战兽属性形态、来悲茶真赝品等。
-- 如需支持须先扩 PokeAPI 形态映射（见 ARCHITECTURE §9）。
+- 根因：PokeAPI 新建模把纯外观形态（四季/花色/字母/花纹/命名蛋糕/东西海/真赝品等 228 行）
+  只存于 `pokemon_forms.csv`（pokemon_id 指回基础行），build_db 只按 `pokemon.csv` 建形态行 →
+  形态行缺失 + 基础行 label 被兄弟形态覆盖（四季鹿→winter 之类）。
+- U19 修复：build_db 按 `pokemon_forms` 补建（合成行 id=900000+forms_id，属性/种族值/特性继承基础行；
+  form_meta 改取 is_default 行）；52poke FORM_MARKERS 补齐全部中文形态名→后缀映射（276 段清零）；
+  形态中文标签来自 PokeAPI 官方中文名 + curated 公式映射（花叶蒂=红花、未知图腾=Ａ 字形、
+  霜奶仙=香草奶油草莓等），52poke 无中文名者少量保留英文标识。
+- 配套：fetch_sprites 对 900000 段还原精灵图源 id；`web` 端 FORM_MARKER_TO_SUFFIX 三级解析不变。
 
 ### 5. 道具图标（缺 ~820）
 
@@ -40,6 +45,12 @@
   其余道具用 `Bag_{中文名} Sprite`（含 ZA 后缀变体）逐个试（净增 534 张，覆盖 1385/2207）；
   仍缺清单落 `data/curated/item_icons_missing.txt`（GO/LGPE 杂项等两站均无图）。
 - 前端 `onerror` 隐藏图标兜底，不阻塞选择。
+
+### 6. 精灵图缺 229 张（新补建的外观形态，待网络恢复）
+
+- U19 形态补齐新增 228+ 外观形态行（四季/花色/字母/花纹/蛋糕等），官方绘图源
+  raw.githubusercontent.com 当日不可达（环境代理），`python scripts/fetch_sprites.py` 重跑即可补齐
+  （脚本已按 900000 段还原精灵图源 id）。缺图时前端三级回退 + 隐藏兜底。
 
 ## 二、人工 curated 已知账
 
