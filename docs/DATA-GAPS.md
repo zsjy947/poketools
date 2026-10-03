@@ -23,7 +23,9 @@
 
 - `abilities.json` 已抓 310 个特性页（特性效果 + 特性说明第九世代优先）。
 - 失败 64 项落 `TODO.json` `ability_parse_failed`：多数为 PokeAPI 新增而 52poke 尚无页面的条目
-  （eelevate/fire-mane/aura-guard 等 Champions 数据），少量译名代差页 → 详情页显示「待补充」。
+  （eelevate/fire-mane 等 Champions 数据），少量译名代差页 → 详情页显示「待补充」。
+- 特例：波导防护（aura-guard，路卡利欧Ｚ专属）52poke 有页而 PokeAPI 无简中名，
+  已在 build_db 直填译名入库（ability intro 仍待补）。
 
 ### 4. 形态独立图鉴介绍未挂靠段（TODO.json 276 段）
 
@@ -31,9 +33,12 @@
   樱花晴阴、霜奶仙奶香/糖饰、四季鹿季节、阿尔宙斯/银伴战兽属性形态、来悲茶真赝品等。
 - 如需支持须先扩 PokeAPI 形态映射（见 ARCHITECTURE §9）。
 
-### 5. 道具图标（缺 ~1300）
+### 5. 道具图标（缺 ~820）
 
-- PokeAPI sprites 仓库不含 TM/HM 系列、GO/Let's Go/传说系杂项道具图；Z 纯晶已用 52poke Bag 图兜底 35/35。
+- PokeAPI sprites 仓库不含 TM/HM 系列、GO/Let's Go/传说系杂项道具图。
+- 2026-10-03 起兜底扩展：TM/TR 走 52poke 属性圆盘（`Bag_TM_{属性}_{世代}_Sprite.png`，同号跨作取最新盘），
+  其余道具用 `Bag_{中文名} Sprite`（含 ZA 后缀变体）逐个试（净增 534 张，覆盖 1385/2207）；
+  仍缺清单落 `data/curated/item_icons_missing.txt`（GO/LGPE 杂项等两站均无图）。
 - 前端 `onerror` 隐藏图标兜底，不阻塞选择。
 
 ## 二、人工 curated 已知账
@@ -62,6 +67,16 @@
 - Z 招式泛用 18 + 专属 22 来自 52poke「Ｚ招式」页（`build_z_moves.py` **重跑会冲掉 caps 脏行等手工修复，
   curated 修复后勿盲目重跑**——合并保留逻辑见 plans/ROADMAP.md RM-17），
   威力与 smogon data 对拍（zTable 41 项全绿）。
+
+### 5. mega-z（Z-A 异次元超进化）数据修正账
+
+- `garchomp-mega-z`/`absol-mega-z`/`lucario-mega-z`（10307/10309/10310）曾按 PokeAPI 脏数据过滤，
+  2026-10-03 核实种族值/属性为真实数据后入库（限定 legends-za，走 mega 名单）。
+- PokeAPI 两处缺漏已在 build_db 直填（对照 52poke 核实）：烈咬陆鲨Ｚ缺第二属性「地面」、
+  波导防护（314）无简中名。
+- Z-A 新超进化石 45 颗 PokeAPI 有 items 行无译名 → `ITEM_ZH_CURATED` 直填
+  （中文名逐一对照 52poke 道具页）。盖欧卡/固拉多原始回归用宝珠、烈空坐需画龙点睛，无进化石属正常。
+- 战斗形态（超级进化/原始回归等）无专属学习集 → 招式表回落默认形态（前端 pokemonMoves 回退逻辑）。
 
 ## 三、明确取舍
 

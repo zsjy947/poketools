@@ -83,7 +83,7 @@ DEX_ORDER = ["galar", "isle-of-armor", "crown-tundra", "sinnoh", "hisui",
              "paldea", "kitakami", "blueberry", "lumiose-city", "hyperspace"]
 
 FORM_SUFFIX_ZH = {
-    "mega": "超级进化", "mega-x": "超级进化X", "mega-y": "超级进化Y",
+    "mega": "超级进化", "mega-x": "超级进化X", "mega-y": "超级进化Y", "mega-z": "超级进化Ｚ",
     "gmax": "超极巨化", "primal": "原始回归",
     "hisui": "洗翠的样子", "paldea": "帕底亚的样子", "galar": "伽勒尔的样子",
     "alola": "阿罗拉的样子", "hoenn": "丰缘的样子", "sinnoh": "神奥的样子",
@@ -346,6 +346,8 @@ def build_reference() -> dict:
 
     ref["type_zh"], ref["type_en"] = name_map("type_names", "type_id")
     ref["ability_zh"], _ = name_map("ability_names", "ability_id")
+    # PokeAPI 缺简中名（对照 52poke 核实）：波导防护（aura-guard，路卡利欧Ｚ专属特性）
+    ref["ability_zh"][314] = "波导防护"
     ref["move_zh"], ref["move_en"] = name_map("move_names", "move_id")
     ref["species_zh"], ref["species_en"] = name_map("pokemon_species_names", "pokemon_species_id")
     ref["genus_zh"] = {}
@@ -394,6 +396,9 @@ def build_reference() -> dict:
     ref["types_of"]: dict[int, list[int]] = {}
     for r in read_csv("pokemon_types"):
         ref["types_of"].setdefault(to_int(r["pokemon_id"]), []).append(to_int(r["type_id"]))
+    # PokeAPI 缺漏（对照 52poke 核实）：烈咬陆鲨Ｚ（10309）缺第二属性地面
+    if 5 not in ref["types_of"].setdefault(10309, []):
+        ref["types_of"][10309].append(5)
 
     ref["abils_of"]: dict[int, list[tuple[int, int]]] = {}
     for r in read_csv("pokemon_abilities"):
@@ -405,7 +410,7 @@ def build_reference() -> dict:
 
 
 def build_species_forms(ref: dict) -> tuple[list, list]:
-    """species/forms 插入行（脏 *-mega-z 过滤；阶段 2/5）。"""
+    """species/forms 插入行（阶段 2/5）。"""
     sp_rows = []
     for sid, r in ref["species_rows"].items():
         sp_rows.append((
@@ -420,15 +425,10 @@ def build_species_forms(ref: dict) -> tuple[list, list]:
         ))
 
     form_rows = []
-    skipped_mega_z = 0
     for pid, r in ref["pokemon_rows"].items():
         sid = to_int(r["species_id"])
         meta = ref["form_meta"].get(pid, {})
         form_ident = meta.get("form_identifier", "") or ""
-        # 脏数据：*-mega-z 三形态（10307/10309/10310， PokeAPI 建模错误）不入库
-        if "-mega-z" in r["identifier"]:
-            skipped_mega_z += 1
-            continue
         label = FORM_SUFFIX_ZH.get(form_ident, form_ident)
         sp = ref["base_stats"].get(pid, {})
         ev = ref["evs"].get(pid, {})
@@ -599,8 +599,59 @@ def write_and_merge(con, ref: dict, ld: dict) -> None:
 
     # ---- 全量道具（缺中文名的条目不入库；Z 纯晶由 z_moves.json 注入） ----
     item_zh_all, _ = name_map("item_names", "item_id")
-    item_rows = [(iid, ident, item_zh_all.get(iid) or "")
-                 for iid, ident in ref["item_ident"].items() if item_zh_all.get(iid)]
+    # Z-A 异次元新超进化石（45 颗）：PokeAPI items 有行但无任何译名 → curated 直填。
+    # 中文名逐一对照 52poke 道具页（{{N|...}} 英文名与 PokeAPI identifier 对接）；
+    # 盖欧卡/固拉多原始回归用宝珠、烈空坐需画龙点睛，均无进化石，符合设计。
+    item_zh_curated = {
+        2233: "皮可西进化石",
+        2234: "大食花进化石",
+        2235: "宝石海星进化石",
+        2236: "快龙进化石",
+        2237: "大竺葵进化石",
+        2238: "大力鳄进化石",
+        2239: "盔甲鸟进化石",
+        2240: "雪妖女进化石",
+        2241: "席多蓝恩进化石",
+        2242: "达克莱伊进化石",
+        2243: "炎武王进化石",
+        2244: "龙头地鼠进化石",
+        2245: "蜈蚣王进化石",
+        2246: "头巾混混进化石",
+        2247: "麻麻鳗鱼王进化石",
+        2248: "水晶灯火灵进化石",
+        2249: "布里卡隆进化石",
+        2250: "妖火红狐进化石",
+        2251: "甲贺忍蛙进化石",
+        2252: "火炎狮进化石",
+        2253: "花叶蒂进化石",
+        2254: "乌贼王进化石",
+        2255: "龟足巨铠进化石",
+        2256: "毒藻龙进化石",
+        2257: "摔角鹰人进化石",
+        2258: "基格尔德进化石",
+        2259: "老翁龙进化石",
+        2260: "捷拉奥拉进化石",
+        2261: "列阵兵进化石",
+        2262: "雷丘进化石Ｘ",
+        2263: "雷丘进化石Ｙ",
+        2264: "风铃铃进化石",
+        2265: "阿勃梭鲁进化石Ｚ",
+        2266: "姆克鹰进化石",
+        2267: "烈咬陆鲨进化石Ｚ",
+        2268: "路卡利欧进化石Ｚ",
+        2269: "泥偶巨人进化石",
+        2270: "超能妙喵进化石",
+        2271: "好胜毛蟹进化石",
+        2272: "具甲武者进化石",
+        2273: "玛机雅娜进化石",
+        2274: "狠辣椒进化石",
+        2275: "戟脊龙进化石",
+        2276: "米立龙进化石",
+        2277: "晶光花进化石",
+    }
+    item_rows = [(iid, ident, item_zh_all.get(iid) or item_zh_curated.get(iid, ""))
+                 for iid, ident in ref["item_ident"].items()
+                 if item_zh_all.get(iid) or item_zh_curated.get(iid)]
     z_file = ROOT / "data" / "curated" / "z_moves.json"
     if z_file.exists():
         zdata = json.loads(z_file.read_text(encoding="utf-8"))

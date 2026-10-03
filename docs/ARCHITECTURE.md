@@ -96,7 +96,8 @@ main 保留纯前端能力：本地模式降级（api.js，无后端自动切本
 ### poketools.db（静态，构建期重建）
 
 核心：`games`（features JSON）· `regional_dexes`+`dex_entries` · `species`（含 evolves_from、**shape_zh 体型**）·
-`forms`（属性/种族值/努力值/形态标签/特性/隐藏特能，`*-mega-z` 脏形态已过滤）· `moves`（含 **is_spread**）·
+`forms`（属性/种族值/努力值/形态标签/特性/隐藏特能，含 Z-A 异次元 `*-mega-z` 三形态；
+烈咬陆鲨Ｚ补第二属性地面、波导防护补简中名——PokeAPI 缺漏见 DATA-GAPS §二.5）· `moves`（含 **is_spread**）·
 `learnsets`（仅目标游戏，含 Z-A mastery 与 level=0 进化语义）· `learnsets_all`（全世代，计算器用）·
 `machines` · `vgs` · `natures` · `evolutions`（进化条件 28 列，冷门机制已建模）
 
@@ -342,6 +343,13 @@ web/
 数据类缺口仍以 `DATA-GAPS.md` 为准（无源待补与变体建模两项仍开放，ROADMAP §5 仅索引）。
 
 ## §10 变更历史
+- **2026-10-03 十四项回归修复（U15/U16）**：壳层布局补齐（`.game-shell` flex + 84px 窄栏 +
+  双版本商标竖排 + 游戏中心/游戏内/计算器层级返回键）；图鉴详情（攻击面改读 damage.ts 相性表、
+  TM 编号 chip 点击展开独立行、删「还原默认形态」钮、form="base" 哨兵修形态切换死锁、
+  获取方式形态标记三级解析防静默丢弃）；数据（mega-z 三形态入库 + PokeAPI 缺漏修正 +
+  Z-A 新超进化石 45 颗 curated 译名 + 道具图标 52poke 兜底扩展 TM 圆盘/中文名 Bag）；计算器 UI
+  （宝可梦/性格/特性/等级一行、形态/太晶/道具一行、特性自身/其他分组、能力值表表头对齐 +
+  等级变化列移末、场地三列等高、按钮描边阴影加深）；图标路径 `/pkt/items` → `/assets/items`。
 - **2026-10-03 终态统一改造（阶段 0-7，dev 合入 main）**：battle/ → web/ 统一壳；
   js/local 六模块 + userstate TS 化为唯一实现（524 端点等价终验全绿后 Python 运行时退役）；
   poketools 八页 React 迁移（U1-U14 全落地）；模拟对战 B1-B10 修复（有序上阵/冠军 4+4 开局/
