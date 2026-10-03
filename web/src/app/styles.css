@@ -153,6 +153,47 @@ button.mini.danger {
   padding-left: 18px;
 }
 
+/* 赛制大类分组（FR-01）：全宽分段头 + 单双打子组标题 + 折行网格 */
+.format-section {
+  margin-bottom: 14px;
+}
+.format-section-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  background: #1f2533;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+}
+.format-section-head:hover {
+  background: #2a3245;
+}
+.format-section-name {
+  font-size: 15px;
+  font-weight: 700;
+}
+.format-section-count {
+  color: #aeb8cc;
+  font-size: 12.5px;
+}
+.format-section-head .acc-arrow {
+  margin-left: auto;
+  color: #aeb8cc;
+  font-size: 14px;
+}
+.format-subgroup {
+  margin-top: 10px;
+}
+.format-subgroup-title {
+  font-size: 12.5px;
+  margin: 2px 0 6px;
+}
+
 /* 主页赛制宫格 */
 .format-grid {
   display: grid;

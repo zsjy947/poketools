@@ -236,7 +236,7 @@ export function TeamBuilderPage(): JSX.Element {
             <div className="ed-row">
               <label>宝可梦</label>
               <select
-                value={current.species}
+                value={currentSpecies?.id ?? current.species}
                 onChange={(e) => {
                   const oldZh = currentSpecies.zhName;
                   const oldEn = currentSpecies.name;

@@ -62,7 +62,13 @@ export const useApp = create<AppState>((set, get) => ({
   go: (page) => set({ page }),
   setFormat: (f) => set({ format: f, picks: { p1: [], p2: [] } }),
   setTeam: (key, sets, name) => {
-    const teams = { ...get().teams, [key]: { name: name ?? get().teams[key].name, sets } };
+    // 旧版本样例数据曾以大写种名作 species（"Garchomp"）——写入前统一归一为小写 id 并清理同名昵称
+    const norm = sets.map((s) => {
+      const species = /^[a-z0-9-]+$/.test(s.species) ? s.species : s.species.toLowerCase();
+      const nick = s.name && s.name.toLowerCase() === s.species.toLowerCase() ? "" : (s.name ?? "");
+      return { ...s, species, name: nick };
+    });
+    const teams = { ...get().teams, [key]: { name: name ?? get().teams[key].name, sets: norm } };
     set({ teams });
     storage.saveTeams(teams);
   },
@@ -116,10 +122,18 @@ export const useApp = create<AppState>((set, get) => ({
   },
 }));
 
-/** 启动时恢复持久化队伍 */
+/** 启动时恢复持久化队伍。旧版本样例数据曾把 species 存成大写种名（如 "Garchomp"），
+ *  导致选择框值对不上、列表显示英文名——装载时统一归一为小写 id 并清掉同 species 名的昵称 */
 export function hydrateTeams(): void {
   const stored = storage.loadTeams<TeamState>();
-  if (stored?.A && stored?.B) {
-    useApp.setState({ teams: { A: stored.A, B: stored.B } });
-  }
+  if (!stored?.A || !stored?.B) return;
+  const fixSets = (slot: TeamState["A"]): TeamState["A"] => ({
+    ...slot,
+    sets: (slot.sets ?? []).map((s) => {
+      const species = /^[a-z0-9-]+$/.test(s.species) ? s.species : s.species.toLowerCase();
+      const name = s.name && s.name.toLowerCase() === s.species.toLowerCase() ? "" : (s.name ?? "");
+      return { ...s, species, name };
+    }),
+  });
+  useApp.setState({ teams: { A: fixSets(stored.A), B: fixSets(stored.B) } });
 }
