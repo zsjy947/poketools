@@ -22,13 +22,14 @@ export function GameSection({ gameId, feature }: { gameId: string; feature: stri
     });
   }, [gameId, feature, setGame]);
 
-  const features = useMemo(() => {
-    const keys = [...(game?.features || ["dex", "ev"])];
-    if (game?.id === "scarlet-violet") keys.push("sandwich");
-    if (game?.id === "legends-za") keys.push("donut");
-    if (game?.id === "sword-shield") keys.push("curry");
-    return keys.map((k) => FEATURES[k]).filter(Boolean) as (typeof FEATURES)[string][];
-  }, [game]);
+  /* games.features 已含特化功能键（curry/sandwich/donut 随游戏入表），勿再硬编码追加 */
+  const features = useMemo(
+    () =>
+      (game?.features ?? ["dex", "ev"])
+        .map((k) => FEATURES[k])
+        .filter((f): f is (typeof FEATURES)[string] => Boolean(f)),
+    [game],
+  );
 
   const goFeature = (key: string) => {
     navigate(`#/game/${gameId}/${key}`);
