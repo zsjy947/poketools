@@ -257,6 +257,7 @@ function FilterSelect({
   placeholder,
   limit = 80,
   style,
+  displayOf,
 }: {
   value: any;
   onChange: (v: any) => void;
@@ -265,6 +266,8 @@ function FilterSelect({
   placeholder?: string;
   limit?: number;
   style?: React.CSSProperties;
+  /** 收起态回显文本（value 非自描述时必传，如物种 id → 中文名） */
+  displayOf?: (v: any) => string;
 }): JSX.Element {
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
@@ -288,7 +291,7 @@ function FilterSelect({
       <input
         className="pkt-input w-full"
         placeholder={placeholder || "搜索…"}
-        value={open ? q : (value ?? "")}
+        value={open ? q : displayOf ? displayOf(value) : String(value ?? "")}
         onFocus={() => setOpen(true)}
         onBlur={() => setTimeout(() => setOpen(false), 150)}
         onChange={(e) => {
@@ -1146,6 +1149,7 @@ function SideEditor({
           value={side.speciesId}
           onChange={(v) => void onSpecies(v)}
           options={speciesList}
+          displayOf={(v) => speciesList.find((x) => x.id === v)?.name_zh ?? String(v ?? "")}
           placeholder="搜索宝可梦（全图鉴）"
           render={(s) => ({
             value: s.id,

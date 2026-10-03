@@ -53,6 +53,7 @@ export function DetailPage({
 
   const gameId = query.get("game") || "";
   const backParams = useRef(query);
+  backParams.current = query; // 每次渲染同步（Vue parseRoute 语义）；邻居翻页 query 不变，进化链跳转后不再指向旧图鉴
 
   /* ---- U4 修复语义：appliedFormId 跳过 load 自身触发的 watch 联动 ---- */
   const appliedFormId = useRef<number | null>(null);
