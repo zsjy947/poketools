@@ -5,24 +5,23 @@
 > 已被推翻的内容压缩进 §10 变更历史。数据缺口见 `DATA-GAPS.md`，操作手册见 `USER-MANUAL.md`，
 > 未完成/延后/否决事项见 `ROADMAP.md`。
 
-## §1 技术栈与架构
+## §1 技术栈与架构（终态，2026-10-03 统一化改造合入）
 
 | 层 | 选型 | 说明 |
 |---|---|---|
-| 后端 | Python 3.10 + FastAPI + uvicorn | 本地 REST API，单进程，默认端口 8734（占用自动顺延） |
-| 前端 | Vue 3 + Element Plus（**免构建**） | `vendor/` 放 UMD 产物，视图为模板字符串组件；无 Node 构建链 |
-| 窗口壳 | pywebview | `launcher.pyw` 拉起本地服务线程 + 原生窗口；WebView2 缺失回退浏览器 |
-| 打包 | PyInstaller onefile | `build_exe.bat` → `release/poketools/`（exe+data 即拷即用）；`--collect-all webview` 是窗口能弹出的关键 |
-| 存储 | SQLite ×2 | `data/poketools.db` 静态数据（**只读**，构建期生成）+ `data/userstate.db` 用户状态（可写） |
-| 运行时 | 完全离线 | 所有数据/图片在构建期入库/落盘 |
+| 构建期管线 | Python 3.10 + SQLite | PokeAPI CSV + 52poke/PokemonDB 抓取 → `data/poketools.db` → 静态分片导出 |
+| 唯一前端 | **web/**（React 18 + TS strict + Vite + zustand + vitest） | 统一壳 hash 路由：#/home #/games #/game/:id/:feature #/pokemon/:id #/calc #/battle；poketools 八页 + 模拟对战同壳（对战/计算器 keep-alive 常驻） |
+| 领域逻辑 | `web/src/data/*.ts` **TS 单实现** | damage/calc/pokemon/lookup/local-api + `state/user.ts`（伤害公式、数据访问、生蛋链唯一事实源） |
+| 窗口壳 | Tauri 2 | `web/src-tauri`；custom-protocol 内嵌 `web/dist` 全部资产；NSIS 安装包 + 便携 exe |
+| 存储 | 构建期 SQLite + 运行时 localStorage | `data/poketools.db`（静态源）→ `web/public/data` 分片（33 表+manifest+一致性门禁）；用户状态 `pkt.caught_state.v1`/`pkt.custom_recipes.v1` |
+| 运行时 | 完全离线 | 零 API、零网络请求；本地引擎即唯一数据通路 |
 
 架构原则：
 
-- 静态库由脚本重建，应用代码**绝不**在运行时写 `poketools.db`。
-- 前端构建产物（`app/static/dist`）随仓库提交，使用者无需 Node 即可运行/打包。
-- 功能入口**按游戏组织**（`games.features`），伤害计算器是全局独立入口，不随所选游戏联动。
-- 静态检查：`ruff check app/ scripts/ tests/ tools/calib/check.py`（配置在 `pyproject.toml`，零告警基线）；
-  前端免构建 JS 用 `node --check` 兜底语法。
+- 静态库由脚本重建，应用代码**绝不**改写管线产物；数据只经管线（build_db → export_static_data）。
+- **单一实现**：Python 侧 damage/breeding/routers 已退役；calib-js（vitest 读 tools 基准）为公式层唯一对拍门禁。
+- 功能入口**按游戏组织**（`games.features`），伤害计算器与模拟对战为全局独立入口。
+- 静态检查：web 侧 `tsc --noEmit + eslint + prettier`；python 侧 `ruff check scripts/ tests/`（零告警基线）。
 
 ## §2 数据管线与数据源
 
@@ -36,7 +35,7 @@ python scripts/fetch_sprites.py       # 官方绘图（三级回退）-> data/sp
 python scripts/fetch_calc_assets.py   # 全量道具图标 + 机制图标（极巨/太晶19种）-> sprites/items + assets/mechanism
 python scripts/fetch_feature_images.py / fetch_sandwich_images.py   # 特化页配图 -> dist/assets
 python scripts/make_icon.py           # 精灵球应用图标
-python scripts/export_static_data.py  # db 读侧 -> app/static/data/ JSON 分片（无后端/本地模式；含全表 diff 硬门禁）
+python scripts/export_static_data.py  # db 读侧 -> web/public/data/ JSON 分片（本地模式数据源；含全表 diff 硬门禁）
 python scripts/verify_static_equivalence.py  # 真实 API vs 本地 JS 引擎逐字段等价性验证（524 调用门禁）
 node tools/static-check/calib-js.mjs  # JS 伤害引擎 vs smogon 基准（calib 双语言门禁之二）
 ```
@@ -46,17 +45,13 @@ build_db 重建采用**连接内就地 DROP 重建**：Windows 下直接删除 `
 
 ### 静态化管线（路线 B / APK 基座，UPDATE-PLAN §3.2）
 
-- **导出**：`export_static_data.py` 33 表 → `app/static/data/`（gitignore 可重建，~57MB）：
+- **导出**：`export_static_data.py` 33 表 → `web/public/data/`（gitignore 可重建，~57MB）：
   常规表全量 `tables/*.json`（行序=rowid 序）；大表分片——`learnsets` 按 vg、
   `learnsets_all`/`encounters` 按物种（懒加载）；`manifest.json`（data_version 行数指纹 + 文件清单）。
 - **一致性硬门禁**（go/no-go）：① 脚本内置导出后全表回读逐行逐字段 diff 零差异；
-  ② `verify_static_equivalence.py` 起真实 FastAPI 与 Node 驱动（tools/static-check/driver.mjs）
-  跑同一调用计划（抽样 50 物种 × 6 游戏变体 + form/dex 参数 + EV 扫描 + 计算器 + 生蛋链，
-  共 524 调用）逐字段一致；③ `calib-js.mjs` 51+41 smogon 基准全绿（damage.py 移植护栏）。
-- **本地引擎**：`app/static/dist/js/local/`（damage/data-core/state/pokemon/lookup/calc/local-api），
-  routers 层逐行移植；`api.js` 在后端不可达（连接拒绝/非 JSON 响应）时自动切本地模式，
-  端点签名不变、视图零改动。用户状态（caught_state/custom_recipes）迁 localStorage，
-  `PKT.state.exportAll/importAll` 提供一次性迁移兜底。
+  ② `scripts/check_web_assets.py` 资产清单核对（manifest 行数 vs DB、官方绘图/对战精灵图/资产族）。
+  （历史上另有 524 调用 py↔js 等价终验与 calib-js.mjs，终态统一改造最后一次全绿后随双实现一起退役；
+  公式对拍由 `web/tests/calib.test.ts` 以同基准继续锁定。）
 - 语义对齐要点（移植时踩过的坑，勿回退）：Python `.get(key, True)` 的「键缺失 ≠ 键为 None」
   （多重鳞片满血判定用 undefined 哨兵区分）；生蛋链 chains 顺序源自 Python set 迭代序
   （等价性验证做序无关规范化）；字典整数键迭代序差异用 Map（插入序）规避；
@@ -127,7 +122,10 @@ main 保留纯前端能力：本地模式降级（api.js，无后端自动切本
 `profiles`（固定默认档案 id=1）· `caught_state(profile_id, dex_id, species_id, caught, note)` ·
 `custom_recipes`（ingredients/seasonings 存 `[{name,count}]` JSON，读取兼容旧字符串数组/顿号文本）
 
-## §4 API 设计（现行全部端点）
+## §4 端点映射（本地引擎 = `web/src/data/local-api.ts`，签名与原 FastAPI 一致）
+
+> 原 REST 端点已随 FastAPI 退役；下表路径即 `localApi.handle(method, path, params)` 的调度键，
+> 由 `web/src/data/api.ts` 直接调用（无 HTTP）。
 
 | 方法与路径 | 说明 |
 |---|---|
@@ -156,8 +154,8 @@ main 保留纯前端能力：本地模式降级（api.js，无后端自动切本
 
 ## §5 伤害计算器
 
-服务 `app/services/damage.py` + 路由 `app/routers/calc.py` + 前端 `views/calc.js`。
-只保留现代公式（阿尔宙斯/Z-A 公式已随四期 P4-1 移除）。五期起对齐 `@smogon/calc` gen9 修正链全量扩展。
+引擎 `web/src/data/damage.ts` + 装配校验 `web/src/data/calc.ts` + 界面 `web/src/pages/CalcPage.tsx`。
+只保留现代公式（阿尔策斯/Z-A 公式已随四期 P4-1 移除）。对齐 `@smogon/calc` gen9 修正链全量扩展。
 
 ### 公式与取整语义（勿改顺序）
 
@@ -231,47 +229,32 @@ python check.py                        # 需先完成数据管线
 - 热门构筑/剪贴板/保存队伍等 meta 功能。
 - 超极巨招式的次要效果（灼烧/能力变化等）不建模——仅威力/属性档位生效（对齐参考站口径）。
 
-## §6 前端架构（免构建）
+## §6 前端架构（React + TS，web/）
 
 ```
-app/static/dist/
-  index.html          引入 vendor UMD + js + css（无构建步骤）
-  css/base|dex|features|calc.css   按页拆分样式
-  js/api.js           fetch 封装 + 全局常量（TYPE_LIST/STAT_KEYS…）
-  js/components.js    store + 全局组件（TypeBadge 定宽78px/PokeToggle 24px/AbilityList 展开卡/EvoChain…/
-                       Monoline 图标体系 MONO_ICONS+MonoIcon/RailNav 窄栏/BackBtn 返回）
-  js/app.js           根组件 + 哈希路由（#/home 首页宫格 · #/games 游戏中心 · #/game/{id}/{feature}
-                       游戏内 64px 图标窄栏 · #/pokemon 全屏 · #/calc 全画面常驻）
-  js/views/*.js       home(功能宫格)/games(游戏中心)/dex/detail/ev/sandwiches/donuts/curry/calc
-  assets/             配图/属性雪碧图/机制图标（mechanism/：极巨 1 + 太晶 19）/游戏商标
-  assets/../sprites/items/   道具图标（PokeAPI sprites + 52poke Z 纯晶兜底）
-  vendor/             vue/element-plus/中文语言包/图标 UMD
+web/
+  index.html
+  src/app/            统一壳：router.ts(hash 路由) / App.tsx(分区+keep-alive) / BattleApp.tsx(对战分区)
+                      pktStore.ts(poketools 全局态：gameId/feature/profile，localStorage 持久)
+  src/pages/          UnifiedHome/Games/GameSection(rail+功能路由)/Dex/Detail/Ev/Sandwiches/
+                      Donuts/Curry/Calc（React 组件，自 Vue 模板字符串组件迁移，行为等价）
+  src/pkt/            共享层：shared.tsx(TypeBadge/PokeToggle/EvoChain/toast…+Monoline 图标)
+                      widgets.css(轻量控件替代 Element Plus：pkt-btn/select/table/modal/
+                      FilterSelect=过滤+可见上限)/base|dex|features|calc|mobile.css(Vue 版原样迁移)
+  src/data/           领域层 TS 单实现（见 §4/§5）+ api.ts(本地引擎直连) + zh-patch.ts(中文补丁)
+  src/state/user.ts   用户状态 localStorage（caught_state / custom_recipes）
+  src/battle/…        模拟对战（引擎适配/会话/队伍/对战界面；见 docs/BATTLE.md）
+  src/app/pages/      对战分区页（赛制选择/队伍编辑/上阵预览/记录/设置）
+  public/data         静态分片（33 表 + learnsets/encounters 懒加载 + manifest 行数指纹）
+  public/assets|pkt|sprites  配图/官方绘图/对战精灵图
+  src-tauri/          Tauri 2 壳（NSIS + 便携 exe）
 ```
 
-约束：视图为**模板字符串组件**（无 SFC/JSX）；新全局组件在 `components.js` 注册；路由用 `location.hash`，
-游戏上下文存 `store.gameId`；请求失败统一 `api-error` 事件 → toast。全量下拉（道具 2127/特性 374）
-用 `filter-method` 只渲染匹配前 80 条。模板字符串插值只用于纯文本展示（无 v-html 注入外部数据）。
-
-导航架构（批次三）：左侧 200px 文字栏已移除——首页=功能宫格（游戏中心/伤害计算器/模拟对战预留置灰）；
-进入游戏后出现 **64px 图标窄栏**（顶部官方商标大图标 GameIcons + 功能 Monoline 图标，无文字、
-hover 原生 title 提示、active 金色高亮+左侧条）；左上角 BackBtn 按路由层级静态映射返回
-（游戏中心→首页 / 游戏页→游戏中心 / 计算器→首页；详情页沿用自带「返回图鉴」）；图鉴等页面横向
-空间 +136px。**Monoline 图标体系**：10 枚手写 SVG（viewBox 24/stroke 2/round/fill none/currentColor），
-FEATURES.icon 值供窄栏与宫格共用；游戏大图标复用官方商标资产不重绘；预览审查页
-`tools/icon-preview.html`（本地用）；功能图标 emoji 已全部清零（含甜甜圈/三明治页内装饰）。
-
-### 断点体系（2026-10 A2 起）
-
-| 档位 | 位置 | 用途 |
-| --- | --- | --- |
-| ≤1280 | calc.css | 桌面窄窗：计算器编辑区单列 |
-| ≤1080 | dex.css / calc.css | 桌面窄窗/平板横屏：详情两栏→单列、场地区三栏→单列 |
-| **≤768** | **mobile.css（统一竖屏层）** | **竖屏主档：底部 Tab/窄栏变底部导航、双列图鉴、卡片流、抽屉、手风琴、触控热区 ≥40px、safe-area** |
-| **≤480** | **mobile.css** | **小屏收紧：图标/字号/间距** |
-
-移动端专属元素（TabBar/分段锚点/筛选抽屉/手风琴/卡片流）全部由 mobile.css 在 >768 隐藏，桌面零影响；
-三层吸顶（返回钮 40px → 分段锚点 40→88px → 形态条 88px）依次下移避免叠压。
-移动端锚点滚动 `scrollIntoView` 必须用 `instant`——Android WebView 的 `smooth` 滚动不可靠（A2 实测坑）。
+约束：TS strict + 零 any 新增；全量下拉（道具 2127/物种 1025）一律 `FilterSelect`
+（过滤 + 可见上限 80）；路由用 `location.hash`；请求/引擎异常经 toast 呈现。
+导航：首页三宫格 → 游戏内 **84px 图标窄栏**（双版本游戏商标竖排两枚防溢出，U2）；
+对战/计算器分区首次进入后常驻挂载（状态跨分区保留）。移动端（≤768px）mobile.css
+同一前端自适应（底部 Tab/双列卡片/手风琴，见 USER-MANUAL）。
 
 ## §7 设计决策记录（为什么这么做）
 
@@ -329,26 +312,27 @@ FEATURES.icon 值供窄栏与宫格共用；游戏大图标复用官方商标资
 - commit：`类型: 摘要`（feat/fix/data/docs/test/chore），每个里程碑一次 commit。
 - UI 文案一律简体中文；界面缺失数据一律标注「待补充」，禁止编造数据。
 - 52poke 解析失败条目必须落 `data/curated/TODO.json`，不静默丢弃。
-- 前端构建产物提交仓库；`data/raw|*.db|sprites/`、`node_modules/` 不提交。
-- SQL 全参数化；`static_conn` 只读 URI（两连接均 `check_same_thread=False`，真实 uvicorn
-  线程池跨线程必需）；**路由连接一律经 `db.get_static_db/get_state_db` Depends 注入
-  （请求结束自动关闭，异常路径不泄漏）**，确需自管的（如 lru_cache 缓存函数）自行 try/finally；
-  curated 合并走 `guarded()`/`require_rows()` 行数护栏。
-- 静态资源响应带 `Cache-Control: no-cache`（main.py 中间件）：手动 `?v=` 版本号忘 bump 不会再分发旧前端。
-- 事件监听（hashchange 等）卸载时解绑；异步回填带 token 防竞态。
+- 前端构建产物 `web/dist` 不入库；`data/raw|*.db`、`web/public/`、`node_modules/` 均不提交。
+- curated 合并走 `guarded()`/`require_rows()` 行数护栏；管线脚本 BLE 豁免（网络容错按设计裸捕获）。
+- 事件监听卸载时解绑；异步回填带 token 防竞态（React 侧同：stateRef 同步后再派生）。
 
-测试分层（`tests/conftest.py` 统一 sys.path 注入与 DB skipif）：
+测试分层（终态）：
 
-1. **数据完整性**（test_db）：行数护栏、新表覆盖率断言；
-2. **API 集成**（test_api）：每新增/修改端点必须带正反用例；
-3. **纯函数**（test_damage / test_breeding）；
-4. **公式改动铁律**：扩 `tools/calib` 案例并重跑 `node harness.mjs → python check.py` 逐 roll 全绿（JS 引擎另有 calib-js 同基准门禁）；
-4b. **静态化/等价性门禁**：export diff 零差异 + `verify_static_equivalence.py` 524 调用一致 + `tools/smoke.mjs` 冒烟 + `state.test.mjs`——改 routers 或 js/local 任一侧都必须重跑；
-5. **数据管线回归**：`build_db → build_z_moves → build_db → scrape_52poke → fetch_*` 重建后跑 pytest。
+1. **数据完整性**（tests/test_db）+ **解析器**（tests/test_parsers）：pytest；
+2. **公式对拍**（web/tests/calib.test.ts，vitest）：51 案例 + 41 行 Z/极巨威力表，
+   读 `tools/static-check/cases.json` + `tools/calib/smogon_baseline.json`；
+   **改伤害公式后必须重跑**；基准再生成 `tools/calib/harness.mjs`；
+3. **golden 用例**（web/tests/{damage,breeding,state}.golden.test.ts）：
+   Bulbapedia 官方算例、生蛋链结构校验、用户状态端点行为；
+4. **对战六域**（web/tests/{core,data,engine,anim,replay,showdown,zhpatch}.test.ts）；
+5. **构建产物冒烟**（tools/smoke.mjs）：vite preview 静态托管逐资源断言；
+6. **资产清单**（scripts/check_web_assets.py）：表行数 vs DB、绘图/精灵图/资产族核对；
+7. **数据管线回归**：`build_db → build_z_moves → build_db → scrape_52poke → export_static_data →
+   fetch_*` 重建后跑 pytest + check_web_assets。
 
-最终回归 checklist：重建管线 → pytest 全绿 → calib 全绿 → `python -m app.main` 逐页冒烟
-（图鉴标记/批量/同步、详情各栏、EV 地点列、咖喱全图、三明治/甜甜圈数量、计算器标记/单双打/KO/Z 纯晶锁定）→
-`./build_exe.bat` 打包离线冒烟。
+最终回归 checklist：重建管线 → pytest → `pnpm test`（vitest 全量）→ `node tools/smoke.mjs` →
+浏览器逐页走查（图鉴标记/批量/同步、详情各栏、EV 地点列、咖喱全图、三明治/甜甜圈数量、
+计算器标记/单双打/KO/Z 纯晶锁定、对战完整一局含超级进化）→ `npx tauri build` 离线冒烟。
 
 ## §9 Roadmap（未完成项）
 
@@ -358,6 +342,11 @@ FEATURES.icon 值供窄栏与宫格共用；游戏大图标复用官方商标资
 数据类缺口仍以 `DATA-GAPS.md` 为准（无源待补与变体建模两项仍开放，ROADMAP §5 仅索引）。
 
 ## §10 变更历史
+- **2026-10-03 终态统一改造（阶段 0-7，dev 合入 main）**：battle/ → web/ 统一壳；
+  js/local 六模块 + userstate TS 化为唯一实现（524 端点等价终验全绿后 Python 运行时退役）；
+  poketools 八页 React 迁移（U1-U14 全落地）；模拟对战 B1-B10 修复（有序上阵/冠军 4+4 开局/
+  全中文化含 zh-patch 派生表）；Tauri 2 壳（NSIS 宝可梦工具助手_1.0.0）；门禁重建
+  （calib=vitest 51+41、smoke=web 构建产物静态断言、pytest 缩域 test_db+test_parsers）。
 
 | 阶段 | 里程碑 | 结果 |
 |---|---|---|
