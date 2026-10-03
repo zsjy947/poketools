@@ -309,5 +309,14 @@
   "784:totem",
   "890:eternamax",
   "893:dada"
- ]
+ ],
+ "special": {
+  "876:female": [
+   "scarlet-violet",
+   "legends-za"
+  ],
+  "678:female": [
+   "scarlet-violet"
+  ]
+ }
 }

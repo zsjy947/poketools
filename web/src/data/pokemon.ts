@@ -287,11 +287,25 @@ export async function evolutionChain(
 
   const allForms = await table("forms");
   const formsOf = (sid: number) => allForms.filter((f) => f.species_id === sid);
+  const evolutions = await table("evolutions");
+  /* 家族全集（含根及其全部后代）——curated 分支键是分支基（如皮卡丘 25），
+     不一定是真正的家族根（皮丘 172），因此按成员集合匹配而非只比根 */
+  const family = new Set<number>([root]);
+  const queue = [root];
+  while (queue.length) {
+    const sid = queue.pop()!;
+    for (const r of evolutions) {
+      if (r.from_species === sid && !family.has(r.to_species)) {
+        family.add(r.to_species);
+        queue.push(r.to_species);
+      }
+    }
+  }
 
   // 地区形态分支（curated）
   const branches = new Map<string, Array<[number, string]>>();
   for (const r of await table("evo_branches")) {
-    if (String(r.family_key) !== String(root)) continue;
+    if (!family.has(Number(r.family_key))) continue;
     if (!branches.has(r.branch)) branches.set(r.branch, []);
     branches.get(r.branch)!.push([r.species_id, r.form_suffix]);
   }
@@ -317,7 +331,6 @@ export async function evolutionChain(
         children: Record<number, number[]> = {},
         conds: Record<string, string> = {};
       const chosenIds = [...new Set(chosen.map((t) => t[0]))];
-      const evolutions = await table("evolutions");
       let prev: [number, string] | null = null;
       const baseSuf = chosen[0]![1];
       for (const [sid, suf] of chosen) {
@@ -331,11 +344,29 @@ export async function evolutionChain(
         };
         if (prev !== null) {
           (children[prev[0]] = children[prev[0]] || []).push(sid);
-          const r =
-            evolutions.find((e) => e.from_species === prev![0] && e.to_species === sid) || null;
-          let cond = r ? evoCondition(r) : "进化";
+          /* PokeAPI 对地区形态进化常只建一行（region=阿罗拉等）：默认分支要选无地区行，
+             地区分支选 region 匹配行；都没有时回退首行并剥掉条件文本里的地区后缀 */
+          const cand = evolutions.filter(
+            (e) => e.from_species === prev![0] && e.to_species === sid,
+          );
+          const sufRegion = SUFFIX_REGION_ZH[suf];
+          const picked = sufRegion
+            ? cand.find((e) => e.region === sufRegion) ||
+              cand.find((e) => !e.region) ||
+              cand[0] ||
+              null
+            : cand.find((e) => !e.region) || null;
+          let cond = picked ? evoCondition(picked) : cand.length ? evoCondition(cand[0]!) : "进化";
+          /* 默认分支：条件文本一律剥掉地区后缀（PokeAPI 地区形态单行缺陷） */
+          if (!sufRegion) {
+            cond = cond.replace(/，?在[\u4e00-\u9fa5]+地区/g, "");
+          }
           const regionSuf = SUFFIX_REGION_ZH[suf] ? suf : SUFFIX_REGION_ZH[baseSuf] ? baseSuf : "";
-          if (regionSuf && (!r || !r.region) && !cond.includes(SUFFIX_REGION_ZH[regionSuf]!)) {
+          if (
+            regionSuf &&
+            (!picked || !picked.region) &&
+            !cond.includes(SUFFIX_REGION_ZH[regionSuf]!)
+          ) {
             const prefix = `在${SUFFIX_REGION_ZH[regionSuf]!}地区`;
             cond = cond && cond !== "进化" ? `${prefix}，${cond}` : `${prefix}进化`;
           }
@@ -348,19 +379,7 @@ export async function evolutionChain(
     }
   }
 
-  // 常规家族：根向下 BFS
-  const evolutions = await table("evolutions");
-  const family = new Set<number>([root]);
-  const queue = [root];
-  while (queue.length) {
-    const sid = queue.pop()!;
-    for (const r of evolutions) {
-      if (r.from_species === sid && !family.has(r.to_species)) {
-        family.add(r.to_species);
-        queue.push(r.to_species);
-      }
-    }
-  }
+  // 常规家族：根向下 BFS（evolutions/family 已在上方装载）
   const nodes: Record<number, any> = {},
     children: Record<number, number[]> = {},
     conds: Record<string, string> = {};
@@ -379,7 +398,28 @@ export async function evolutionChain(
       (children[r.from_species] = children[r.from_species] || []).push(r.to_species);
       const cond = evoCondition(r);
       const key = `${r.from_species}|${r.to_species}`;
-      if (conds[key] === undefined || cond.length > conds[key]!.length) conds[key] = cond;
+      /* 同一进化多行时（PokeAPI 地区形态行带 region）：优先无地区行，其次保留更长文本 */
+      if (
+        conds[key] === undefined ||
+        (conds[key]!.includes("地区") && !cond.includes("地区")) ||
+        (!cond.includes("地区") &&
+          !conds[key]!.includes("地区") &&
+          cond.length > conds[key]!.length)
+      ) {
+        conds[key] = cond;
+      }
+    }
+  }
+  /* 常规链（无 curated 分支）：当前物种节点按所选形态切图（一家鼠/土龙节节/鬃岩狼人等
+     同种多形态进化，进化前无对应形态） */
+  if (formSuffix) {
+    const f = formBySuffix(formsOf(speciesId), formSuffix);
+    if (f && nodes[speciesId]) {
+      nodes[speciesId] = {
+        ...nodes[speciesId],
+        form_id: f.id,
+        types: f.types || "",
+      };
     }
   }
   return { root, nodes, children, conds };

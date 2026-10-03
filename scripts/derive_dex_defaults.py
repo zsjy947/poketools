@@ -51,20 +51,27 @@ def derive(con: sqlite3.Connection) -> None:
     ddf_file = ROOT / "data" / "curated" / "dex_default_forms.json"
     if ddf_file.exists():
         manual = json.loads(ddf_file.read_text(encoding="utf-8"))
-        manual_pairs: set[tuple[str, int]] = set()
+        manual_rows: list[tuple[str, int, int]] = []
         for dex, m in manual.items():
             if dex.startswith("_") or not isinstance(m, dict):
                 continue
             for sid_s, suffix in m.items():
                 sid = int(sid_s)
-                row = con.execute(
-                    """SELECT id FROM forms WHERE species_id=? AND identifier LIKE '%-'||?
-                       ORDER BY id LIMIT 1""", (sid, suffix)).fetchone()
+                if suffix in ("", "base"):
+                    # 显式基础形态：52poke 图鉴列表无形态标注但自动派生会误选地区形态时使用
+                    # （如北上乡乌波——北上图鉴下一行是沼王，须配普通乌波而非帕底亚乌波）
+                    row = con.execute(
+                        "SELECT id FROM forms WHERE species_id=? AND is_default=1 ORDER BY id LIMIT 1",
+                        (sid,)).fetchone()
+                else:
+                    row = con.execute(
+                        """SELECT id FROM forms WHERE species_id=? AND identifier LIKE '%-'||?
+                           ORDER BY id LIMIT 1""", (sid, suffix)).fetchone()
                 if row:
-                    ddf_rows.append((dex, sid, row[0]))
-                    manual_pairs.add((dex, sid))
-        ddf_rows = [r for r in ddf_rows if (r[0], r[1]) not in manual_pairs] + \
-                   [r for r in ddf_rows if (r[0], r[1]) in manual_pairs]
+                    manual_rows.append((dex, sid, row[0]))
+        # 人工条目覆盖同键自动派生行（自动在前、人工在后，去重时人工保留）
+        auto_only = [r for r in ddf_rows if (r[0], r[1]) not in {(x[0], x[1]) for x in manual_rows}]
+        ddf_rows = auto_only + manual_rows
 
     # 一致性校验：默认形态必须在该游戏可用（hidden/未配置形态不校验）
     bad = []

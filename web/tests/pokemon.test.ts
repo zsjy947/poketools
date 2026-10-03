@@ -100,3 +100,53 @@ describe("招式表：战斗形态学习集回退", () => {
     expect(mzMoves.length).toBeGreaterThan(0);
   });
 });
+
+describe("进化链：地区行与形态图（U19 数据核对回归）", () => {
+  it("朱紫雷丘默认分支条件不带「在阿罗拉地区」（PokeAPI 单行 region 缺陷兜底）", async () => {
+    const { evolutionChain } = await import("../src/data/pokemon");
+    const evo = await evolutionChain(26, "");
+    expect(evo.conds["25|26"]).not.toContain("阿罗拉");
+    expect(evo.conds["25|26"]).toContain("雷之石");
+  });
+
+  it("阿罗拉分支条件保留地区标注", async () => {
+    const { evolutionChain } = await import("../src/data/pokemon");
+    const evo = await evolutionChain(26, "alola");
+    expect(evo.conds["25|26"]).toContain("阿罗拉");
+  });
+
+  it("常规链当前物种节点按所选形态切图（一家鼠三只家庭）", async () => {
+    const { evolutionChain } = await import("../src/data/pokemon");
+    const base = await evolutionChain(925, "");
+    const three = await evolutionChain(925, "family-of-three");
+    expect(three.nodes[925]!.form_id).toBe(10257);
+    expect(base.nodes[925]!.form_id).not.toBe(10257);
+  });
+
+  it("鬃岩狼人黄昏形态节点切图", async () => {
+    const { evolutionChain } = await import("../src/data/pokemon");
+    const evo = await evolutionChain(745, "dusk");
+    expect(evo.nodes[745]!.form_id).toBe(10152);
+  });
+});
+
+describe("图鉴默认形态：52poke 图鉴列表页核对修正", () => {
+  it("北上乡乌波=默认形态（下一行沼王），帕底亚乌波=帕底亚形态（下一行土王）", async () => {
+    const kitakami = await pokemonDetail(194, { game: "scarlet-violet", dex: "kitakami" });
+    expect(kitakami.selected_suffix).toBe("");
+    const paldea = await pokemonDetail(194, { game: "scarlet-violet", dex: "paldea" });
+    expect(paldea.selected_suffix).toBe("paldea");
+  });
+
+  it("蓝莓图鉴椰蛋树默认阿罗拉形态", async () => {
+    const d = await pokemonDetail(103, { game: "scarlet-violet", dex: "blueberry" });
+    expect(d.selected_suffix).toBe("alola");
+  });
+
+  it("朱紫爱管侍雌雄双形态均可见（原雌形态缺 SV 可用性）", async () => {
+    const d = await pokemonDetail(876, { game: "scarlet-violet" });
+    const idents = d.forms.map((f: any) => f.identifier);
+    expect(idents).toContain("indeedee-male");
+    expect(idents).toContain("indeedee-female");
+  });
+});
