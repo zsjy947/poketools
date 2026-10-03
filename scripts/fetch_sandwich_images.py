@@ -1,4 +1,4 @@
-"""下载 52poke 朱紫三明治食谱图 → app/static/dist/assets/sandwiches/sandwich_{no:03d}.webp
+"""下载 52poke 朱紫三明治食谱图 → web/public/assets/sandwiches/sandwich_{no:03d}.webp
 
 源文件是 1920×1080 游戏截图（每张 ~1.6MB，直接提交不可行），因此：
   1. 走 MediaWiki 缩略图服务（iiurlwidth=640 → 640×360，保持 16:9 原比例，**不裁剪**）；

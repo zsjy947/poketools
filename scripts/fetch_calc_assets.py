@@ -1,7 +1,7 @@
 """下载伤害计算器素材：
 - 全量道具图标：PokeAPI sprites items/{identifier}.png → data/sprites/items/
   （Z 纯晶不在 PokeAPI，回退 52poke Bag 模板图，再缺失则前端 CSS 徽章兜底）
-- 机制标记图标：52poke（imageinfo 直链）→ app/static/dist/assets/mechanism/
+- 机制标记图标：52poke（imageinfo 直链）→ web/public/assets/mechanism/
   极巨化标志 + 太晶 18 属性 icon + 星晶 icon（Z 标记直接用 Z 纯晶道具图标）。
 
 运行：python scripts/fetch_calc_assets.py（在 build_db.py 之后）

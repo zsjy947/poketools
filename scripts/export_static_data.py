@@ -22,9 +22,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from app.db import project_root  # noqa: E402
+ROOT = Path(__file__).resolve().parent.parent
 
-DB_PATH = project_root() / "data" / "poketools.db"
+DB_PATH = ROOT / "data" / "poketools.db"
 OUT_DIR = ROOT / "web" / "public" / "data"
 
 # 分片例外：这三张表不进 tables/ 全量文件

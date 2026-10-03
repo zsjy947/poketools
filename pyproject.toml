@@ -1,20 +1,19 @@
 [project]
 name = "poketools"
-version = "0.5.0"
-description = "Switch 宝可梦五作本地图鉴工具助手（FastAPI + Vue3 免构建 + SQLite）"
+version = "1.0.0"
+description = "Switch 宝可梦五作本地图鉴工具助手（构建期 Python 管线 + web/ React+TS 前端 + Tauri 2 壳）"
 requires-python = ">=3.10"
 
 [tool.ruff]
 line-length = 110
 target-version = "py310"
-exclude = ["app/static/dist/vendor", "tools/calib/node_modules", "data", "build", "release"]
+exclude = ["tools/calib/node_modules", "data", "web", "release"]
 
 [tool.ruff.lint]
-# M8.1 零告警基线：E/F(错误与未用) + I(导入排序) + B(常见坑) + UP(现代化) + SIM/PERF/PIE(风格)
+# 零告警基线：E/F(错误与未用) + I(导入排序) + B(常见坑) + UP(现代化) + SIM/PERF/PIE(风格)
 # BLE001 仅豁免 scripts/ 抓取脚本（网络容错按设计裸捕获）
 select = ["E", "F", "I", "B", "UP", "SIM", "PERF", "PIE", "RUF", "BLE"]
 ignore = [
-    "B008",    # FastAPI Body(...)/Query(...) 默认参数是框架惯例
     "SIM108",  # 三元改写不强制（可读性优先）
     "RUF001",  # 中文字符串中的全角标点告警
     "RUF002",  # 同上（docstring）
@@ -29,5 +28,4 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "scripts/*" = ["BLE001", "S110"]      # 抓取脚本：网络失败裸捕获/吞掉是设计行为
-"tools/calib/check.py" = ["E402"]     # sys.path 注入后的导入
 "tests/*" = ["E402"]

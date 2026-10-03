@@ -1,4 +1,4 @@
-"""下载特化功能页配图（52poke）到 app/static/dist/assets/。
+"""下载特化功能页配图（52poke）到 web/public/assets/。
 
 复用 scripts/wiki_client.py（imageinfo 直链 + Referer 下载）。
 - 属性图标雪碧图（MST_SV.webp，50×1050 = 2x，CSS 显示 20×420）
