@@ -60,6 +60,25 @@
     border-bottom-color: var(--accent);
   }
 
+  /* 游戏分区壳：竖屏下窄栏变底部横条，内容区占满并预留底部导航高度 */
+  .app-main:has(.game-shell) {
+    padding: 0;
+    overflow: visible;
+  }
+  .game-shell {
+    display: block;
+    height: auto;
+  }
+  .game-main {
+    padding: 10px 12px calc(86px + env(safe-area-inset-bottom));
+  }
+  .rail .game-icons {
+    flex-direction: row;
+  }
+  .rail .game-logo {
+    max-width: 60px;
+  }
+
   /* 首页/游戏中心/计算器页底部 Tab（桌面隐藏，仅竖屏显示） */
   .tab-bar {
     display: flex;

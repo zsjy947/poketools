@@ -1,6 +1,7 @@
 /* 宝可梦详情页（自 Vue detail.js 迁移；含 U4 修复语义、U6 攻击面徽章定宽、U7 能力卡移左栏） */
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, Fragment } from "react";
 import { apiGet } from "../data/api";
+import { TYPES, CHART } from "../data/damage";
 import {
   loadGames,
   loadTypeChart,
@@ -167,16 +168,18 @@ export function DetailPage({
     const ident = (f && f.identifier) || "";
     const suffix = f && f.is_default ? "" : ident.split("-").slice(1).join("-");
     const curSuffix = d.selected_suffix || "";
+    /* 无条件记录：同后缀跳过重载时也要更新，否则来回切换会被上面的守卫提前返回 */
+    appliedFormId.current = fid;
     if (suffix !== curSuffix) {
-      /* 形态专属内容重载（非冗余：过滤条件不同） */
+      /* 形态专属内容重载（非冗余：过滤条件不同）；基础形态传哨兵，
+         避免图鉴默认=地区形态时服务器把请求回落到地区形态 */
       void (async () => {
         const data = await apiGet(`/api/pokemon/${speciesId}`, {
           game: gameId || undefined,
-          form: suffix || undefined,
+          form: suffix || "base",
           dex: backParams.current.get("dex") || undefined,
         });
         setD(data);
-        appliedFormId.current = fid;
       })();
     }
     void loadMovesFor(speciesId, fid, gameId);
@@ -278,11 +281,11 @@ export function DetailPage({
     return order.filter((k) => groups[k]).map((k) => ({ m: k, types: groups[k]! }));
   }, [myTypes]);
   function atkGroupsOf(t: string) {
-    const chart = (window as any).__pktChart;
-    if (!chart) return [];
+    /* 攻击面：直接读 damage.ts 硬编码相性表（此前读未赋值的 window.__pktChart 导致恒空；
+       lookup.typechart 是 async 不能在渲染里同步解构） */
     const groups: Record<string, string[]> = {};
-    for (const def of chart.types) {
-      const m = (chart.chart[t] || {})[def] ?? 1;
+    for (const def of TYPES) {
+      const m = (CHART[t] || {})[def] ?? 1;
       const key = String(m);
       (groups[key] = groups[key] || []).push(def);
     }
@@ -399,15 +402,6 @@ export function DetailPage({
               {!f.is_default && <span className="fname">{formDisplayName(f)}</span>}
             </div>
           ))}
-          {curForm && !curForm.is_default && d.default_form && (
-            <button
-              className="pkt-btn pkt-btn-sm plain"
-              style={{ alignSelf: "center" }}
-              onClick={() => onFormChange(d.default_form.id)}
-            >
-              还原默认形态
-            </button>
-          )}
         </div>
       )}
 
@@ -678,7 +672,6 @@ export function DetailPage({
                         {(tab === "level" || tab === "evolution-recall") && (
                           <th style={{ width: 96 }}>等级</th>
                         )}
-                        {tab === "machine" && <th style={{ width: 44 }} />}
                         {tab === "machine" && <th style={{ width: 140 }}>编号</th>}
                         <th style={{ minWidth: 120 }}>招式</th>
                         <th style={{ width: 96 }}>属性</th>
@@ -692,48 +685,72 @@ export function DetailPage({
                     </thead>
                     <tbody>
                       {(moves.groups[tab] || []).map((row: any) => (
-                        <tr key={row.move_id}>
-                          {(tab === "level" || tab === "evolution-recall") && (
+                        <Fragment key={row.move_id}>
+                          <tr>
+                            {(tab === "level" || tab === "evolution-recall") && (
+                              <td>
+                                {row.recall ? (
+                                  <span className="mastery">回忆</span>
+                                ) : row.evolution ? (
+                                  <span className="mastery">进化</span>
+                                ) : (
+                                  <>
+                                    Lv.{row.level}
+                                    {row.mastery != null && (
+                                      <span className="mastery">精通+{row.mastery}</span>
+                                    )}
+                                  </>
+                                )}
+                              </td>
+                            )}
+                            {tab === "machine" && (
+                              <td>
+                                {/* 点击编号 chip 展开/收起获取方式（展开内容在下方独立行，招式行保持不动） */}
+                                {(row.tm || []).map((t2: any) => (
+                                  <span
+                                    key={t2.number}
+                                    className={
+                                      "pkt-chip tm-chip " + (t2.kind === "TR" ? "warning" : "info")
+                                    }
+                                    style={{ marginRight: 4 }}
+                                    onClick={() =>
+                                      setExpandedTm((s) => ({
+                                        ...s,
+                                        [row.move_id]: !s[row.move_id],
+                                      }))
+                                    }
+                                  >
+                                    {t2.kind}
+                                    {String(t2.number).padStart(3, "0")}
+                                  </span>
+                                ))}
+                              </td>
+                            )}
+                            <td>{row.name_zh}</td>
                             <td>
-                              {row.recall ? (
-                                <span className="mastery">回忆</span>
-                              ) : row.evolution ? (
-                                <span className="mastery">进化</span>
-                              ) : (
-                                <>
-                                  Lv.{row.level}
-                                  {row.mastery != null && (
-                                    <span className="mastery">精通+{row.mastery}</span>
-                                  )}
-                                </>
-                              )}
+                              <TypeBadge types={row.type_zh} />
                             </td>
-                          )}
-                          {tab === "machine" && (
                             <td>
-                              <button
-                                className="pkt-btn pkt-btn-sm"
-                                onClick={() =>
-                                  setExpandedTm((s) => ({ ...s, [row.move_id]: !s[row.move_id] }))
-                                }
-                              >
-                                {expandedTm[row.move_id] ? "▾" : "▸"}
-                              </button>
+                              <MoveClassBadge cls={row.damage_class} />
                             </td>
-                          )}
-                          {tab === "machine" && (
-                            <td>
-                              {(row.tm || []).map((t2: any) => (
-                                <span
-                                  key={t2.number}
-                                  className={"pkt-chip " + (t2.kind === "TR" ? "warning" : "info")}
-                                  style={{ marginRight: 4 }}
+                            <td>{row.power ?? "—"}</td>
+                            <td>{row.accuracy ?? "—"}</td>
+                            <td>{row.pp}</td>
+                            <td>{row.priority > 0 ? "+" + row.priority : row.priority}</td>
+                            {tab === "egg" && (
+                              <td>
+                                <button
+                                  className="pkt-btn pkt-btn-sm primary-plain"
+                                  onClick={() => void showChains(row)}
                                 >
-                                  {t2.kind}
-                                  {String(t2.number).padStart(3, "0")}
-                                </span>
-                              ))}
-                              {expandedTm[row.move_id] && (
+                                  计算繁殖链
+                                </button>
+                              </td>
+                            )}
+                          </tr>
+                          {tab === "machine" && expandedTm[row.move_id] && (
+                            <tr className="tm-how-row">
+                              <td colSpan={8}>
                                 <div className="tm-how-list">
                                   {(row.tm || []).map((t2: any) => (
                                     <div key={t2.number} className="tm-how">
@@ -764,31 +781,10 @@ export function DetailPage({
                                     <div className="tm-how">获取方式待补充</div>
                                   )}
                                 </div>
-                              )}
-                            </td>
+                              </td>
+                            </tr>
                           )}
-                          <td>{row.name_zh}</td>
-                          <td>
-                            <TypeBadge types={row.type_zh} />
-                          </td>
-                          <td>
-                            <MoveClassBadge cls={row.damage_class} />
-                          </td>
-                          <td>{row.power ?? "—"}</td>
-                          <td>{row.accuracy ?? "—"}</td>
-                          <td>{row.pp}</td>
-                          <td>{row.priority > 0 ? "+" + row.priority : row.priority}</td>
-                          {tab === "egg" && (
-                            <td>
-                              <button
-                                className="pkt-btn pkt-btn-sm primary-plain"
-                                onClick={() => void showChains(row)}
-                              >
-                                计算繁殖链
-                              </button>
-                            </td>
-                          )}
-                        </tr>
+                        </Fragment>
                       ))}
                     </tbody>
                   </table>

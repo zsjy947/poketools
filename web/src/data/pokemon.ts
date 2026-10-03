@@ -572,12 +572,29 @@ export async function pokemonDetail(speciesId: number, params?: any) {
     gm = gm.filter((x) => x.game === game);
   }
 
-  const selSuffix = form.trim() || dexDefaultSuffix;
-  gm = gm.filter(
-    (x) =>
-      !x.form ||
-      (FORM_MARKER_TO_SUFFIX[x.form] === selSuffix && FORM_MARKER_TO_SUFFIX[x.form] !== undefined),
-  );
+  /* form="base" 为显式基础形态哨兵（apiGet 会丢弃空串参数）：仅在不传时才回退图鉴默认形态 */
+  const selSuffix = form === "base" ? "" : form.trim() || dexDefaultSuffix;
+  /* 获取方式的 52poke 形态标记 → 本种形态后缀。同一字母在不同物种含义不同
+     （L=呆呆王 low-key / 铁废 limited-build；E=海兔 east-sea / 花叶蒂 eternal），
+     故先查全局映射，再按本种形态后缀精确/唯一前缀匹配；仍无法归属的行
+     （如 LA 头目、彩粉蝶花纹——PokeAPI 无对应形态行）在基础形态视图下保留，不静默丢弃 */
+  const speciesSuffixes = forms
+    .map((f) => (f.identifier || "").split("-").slice(1).join("-"))
+    .filter(Boolean);
+  const resolveMarker = (marker: string): string | null => {
+    const g = FORM_MARKER_TO_SUFFIX[marker];
+    if (g && speciesSuffixes.includes(g)) return g;
+    const low = marker.toLowerCase();
+    if (speciesSuffixes.includes(low)) return low;
+    const hits = speciesSuffixes.filter((s) => s.startsWith(low));
+    return hits.length === 1 ? hits[0]! : null;
+  };
+  gm = gm.filter((x) => {
+    if (!x.form) return true;
+    const suf = resolveMarker(x.form);
+    if (suf) return suf === selSuffix;
+    return selSuffix === "";
+  });
 
   const gamesWithGm = new Set(gm.map((x) => x.game));
   let enc: Row[] = [];
@@ -669,7 +686,15 @@ export async function pokemonMoves(speciesId: number, params?: any) {
 
   const movesRows = await table("moves");
   const moveById = new Map(movesRows.map((m) => [m.id, m]));
-  const lsRows = (await learnsetsByVg(vg)).filter((l) => l.form_id === form!.id);
+  /* 学习集按形态挂靠；战斗形态（超级进化/超极巨/原始回归等）无独立学习集时回落默认形态 */
+  const allLs = await learnsetsByVg(vg);
+  let lsRows = allLs.filter((l) => l.form_id === form!.id);
+  if (!lsRows.length && !form!.is_default) {
+    const defForm = forms.find((f) => f.is_default) || forms[0];
+    if (defForm && defForm.id !== form!.id) {
+      lsRows = allLs.filter((l) => l.form_id === defForm.id);
+    }
+  }
   const rows: any[] = lsRows
     .map((l) => {
       const m = moveById.get(l.move_id)!;

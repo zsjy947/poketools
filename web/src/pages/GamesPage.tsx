@@ -14,6 +14,9 @@ export function GamesPage(): JSX.Element {
   };
   return (
     <div className="pkt-page">
+      <button className="back-btn" onClick={() => (location.hash = "#/home")}>
+        ← 返回首页
+      </button>
       <div className="home-hero">
         <h1>游戏中心</h1>
       </div>

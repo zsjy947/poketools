@@ -622,6 +622,24 @@
   color: #6b5b1e;
 }
 
+/* TM 编号 chip 可点击展开；获取方式为表格下方独立行（招式行保持不动） */
+.tm-chip {
+  cursor: pointer;
+}
+.tm-chip:hover {
+  border-color: #b8c6e4;
+  filter: brightness(0.97);
+}
+.tm-how-row > td {
+  background: #fffdf5;
+  padding: 2px 10px 8px;
+}
+.tm-how-row .tm-how {
+  display: inline-block;
+  vertical-align: top;
+  margin: 6px 8px 2px 0;
+}
+
 /* 缺图隐藏：形态 tab / 进化链节点（PokeImg 三级回退全 404 时） */
 .form-chip img.img-missing,
 .evo-node img.img-missing {

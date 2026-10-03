@@ -43,9 +43,26 @@ body {
   min-width: 0;
 }
 
-/* ---- 64px 图标窄栏（进入游戏后出现；无文字，hover 用原生 title 提示） ---- */
+/* ---- 游戏分区壳：左侧窄栏 + 右侧内容（React 迁移补回的容器布局） ---- */
+.app-main:has(.game-shell) {
+  padding: 0;
+  overflow: hidden;
+}
+.game-shell {
+  display: flex;
+  height: 100%;
+}
+.game-main {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 18px 22px 40px;
+}
+
+/* ---- 84px 图标窄栏（进入游戏后出现；无文字，hover 用原生 title 提示） ---- */
 .rail {
-  width: 64px;
+  width: 84px;
   background: #1f2533;
   display: flex;
   flex-direction: column;
@@ -61,6 +78,17 @@ body {
   gap: 2px;
   padding: 4px 0 6px;
   cursor: pointer;
+  width: 100%;
+  min-width: 0;
+}
+/* U2：窄栏内双版本游戏商标竖排两枚防溢出 */
+.rail .game-icons {
+  flex-direction: column;
+  gap: 2px;
+  max-width: 100%;
+}
+.rail .game-logo {
+  max-width: 72px;
 }
 .rail-game:hover {
   opacity: 0.85;
@@ -113,6 +141,17 @@ body {
   border-color: #b8c6e4;
   color: #2a7be4;
   background: #f7fafd;
+}
+
+/* ---- 计算器编辑器：标签+控件成对包裹（防 flex-wrap 拆行；标签收窄为文字宽） ---- */
+.fld-row .fld-pair {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.fld-row .fld-pair > .lbl {
+  min-width: 0;
 }
 
 /* ---- 首页·功能宫格 ---- */

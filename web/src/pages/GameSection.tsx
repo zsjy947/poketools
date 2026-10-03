@@ -80,6 +80,9 @@ export function GameSection({ gameId, feature }: { gameId: string; feature: stri
         ))}
       </nav>
       <div className="game-main">
+        <button className="back-btn" onClick={() => navigate("#/games")}>
+          ← 返回游戏中心
+        </button>
         {!gamesLoaded && (
           <div className="empty-hint" style={{ padding: 30 }}>
             加载中…
