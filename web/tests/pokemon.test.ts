@@ -56,12 +56,15 @@ describe("图鉴详情：形态选择与图鉴默认形态", () => {
 });
 
 describe("图鉴详情：获取方式的形态标记解析", () => {
-  it("未映射标记不静默丢弃：基础形态视图下保留（彩粉蝶花纹等无对应形态行的行）", async () => {
-    const d = await pokemonDetail(666, { game: "scarlet-violet" });
-    const patternRows = d.get_methods.filter((x: any) =>
+  it("彩粉蝶花纹获取方式挂靠到花纹形态（U19 形态补齐后不再堆在基础视图）", async () => {
+    const base = await pokemonDetail(666, { game: "scarlet-violet" });
+    const baseRows = base.get_methods.filter((x: any) =>
       ["Fan", "Gar", "Mar", "Pok", "Pol"].includes(x.form),
     );
-    expect(patternRows.length).toBeGreaterThanOrEqual(1);
+    expect(baseRows.length).toBe(0);
+    const fancy = await pokemonDetail(666, { game: "scarlet-violet", form: "fancy" });
+    expect(fancy.selected_suffix).toBe("fancy");
+    expect(fancy.get_methods.some((x: any) => x.form === "Fan")).toBe(true);
   });
 });
 

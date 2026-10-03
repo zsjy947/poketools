@@ -5,9 +5,14 @@ import { apiGet, apiSend, TYPE_LIST, STAT_KEYS, STAT_ZH } from "../data/api";
 import { BATTLE_ITEM_IDS } from "../data/battle-items";
 import { TypeBadge, formDisplayName, koTextFromKo, toast } from "../pkt/shared";
 
-/* U17：对战相关道具置前（champions 合法可携带道具，静态清单见 data/battle-items.ts）；
- * 其余道具（GO/LGPE 杂项、Z 纯晶等）排后仍可搜索到 */
-const itemRank = (ident: string): number => (BATTLE_ITEM_IDS.has(ident) ? 0 : 1);
+/* U17/U20：下拉只列对战相关可携带道具（champions 合法，静态清单见 data/battle-items.ts），
+ * 超级进化石（随形态自动锁定）不进下拉；完整 items 表仍供 findStone/Z 纯晶自动装备查找 */
+/* showdown 的 item.id 为去连字符的 ID 形式（choiceband），比对前先归一 */
+const itemIdOf = (ident: string): string => ident.toLowerCase().replace(/[^a-z0-9]/g, "");
+/* 超级进化石随形态自动锁定、Z 纯晶随 Z 标记自动装备——均不进下拉 */
+const isAutoEquipStone = (ident: string): boolean =>
+  ident !== "eviolite" &&
+  (/ite(-[xyz])?$/.test(ident) || ident === "keystone" || ident.endsWith("-z"));
 
 /* ---- 模块级 meta 缓存 + 预热 ---- */
 interface MetaCache {
@@ -371,9 +376,7 @@ export function CalcPage(): JSX.Element {
 
   useEffect(() => {
     warmMeta("species").then(setSpeciesList);
-    warmMeta("items").then((rows) =>
-      setItems([...rows].sort((a, b) => itemRank(a.identifier) - itemRank(b.identifier))),
-    );
+    warmMeta("items").then(setItems);
     warmMeta("abilities").then(setAllAbilities);
     warmMeta("zMoves").then(setZMeta);
     warmMeta("maxMoves").then(setMaxMeta);
@@ -1065,6 +1068,14 @@ function SideEditor({
       .filter((a) => !ownAbilityNames.includes(a))
       .map((a) => ({ name: a, hidden: false, grp: "其他特性" })),
   ];
+  /* U20：下拉只列对战相关道具并剔除超级进化石（自动锁定）；items 完整表供自动装备查找 */
+  const itemOptions = useMemo(
+    () =>
+      items.filter(
+        (i) => BATTLE_ITEM_IDS.has(itemIdOf(i.identifier)) && !isAutoEquipStone(i.identifier),
+      ),
+    [items],
+  );
   const megaStone = (() => {
     const f = side.forms.find((x) => x.id === side.formId);
     if (!f || !isMegaForm(f) || (f.identifier || "").startsWith("rayquaza")) return "";
@@ -1276,11 +1287,12 @@ function SideEditor({
         </span>
         <span className="fld-pair" style={{ flex: 1, minWidth: 170 }}>
           <span className="lbl">道具</span>
-          {/* U10：道具下拉 = 过滤 + 上限 80 + 图标；U17：mega 锁图标内嵌框内右缘 */}
+          {/* U10/U20：道具下拉 = 对战相关可携带道具（无超级进化石）+ 过滤上限 80 + 图标 */}
           <FilterSelect
             value={side.item}
             onChange={onItemChange}
-            options={items}
+            options={itemOptions}
+            limit={600}
             placeholder="搜索道具"
             style={{ flex: 1, minWidth: 90 }}
             adornment={

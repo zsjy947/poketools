@@ -269,6 +269,7 @@ export interface EvolutionTree {
 export async function evolutionChain(
   speciesId: number,
   formSuffix: string,
+  game = "",
 ): Promise<EvolutionTree> {
   const speciesRows = await table("species");
   const byId = new Map(speciesRows.map((s) => [s.id, s]));
@@ -393,22 +394,44 @@ export async function evolutionChain(
       types: f ? f.types || "" : "",
     };
   }
+  /* 条件行按游戏选（伊布的叶/冰伊布：珍钻=苔藓/冰岩石的特殊地区进化，其余游戏=叶/冰之石）。
+     PokeAPI 对这类进化只留一行位置行且位置名取最新作（树荫丛林/拉纳基拉山），珍钻需校正回岩石名 */
+  const prefersLocation = game === "brilliant-diamond-shining-pearl";
+  const condRank = (row: Row): number =>
+    row.trigger === "use-item"
+      ? prefersLocation
+        ? 1
+        : 0
+      : prefersLocation && row.location
+        ? 0
+        : 1;
+  const best: Record<string, { rank: number; cond: string }> = {};
   for (const r of evolutions) {
     if (family.has(r.from_species) && family.has(r.to_species)) {
-      (children[r.from_species] = children[r.from_species] || []).push(r.to_species);
-      const cond = evoCondition(r);
       const key = `${r.from_species}|${r.to_species}`;
-      /* 同一进化多行时（PokeAPI 地区形态行带 region）：优先无地区行，其次保留更长文本 */
+      children[r.from_species] = children[r.from_species] || [];
+      if (!children[r.from_species]!.includes(r.to_species)) {
+        children[r.from_species]!.push(r.to_species);
+      }
+      const rank = condRank(r);
+      const cur = best[key];
       if (
-        conds[key] === undefined ||
-        (conds[key]!.includes("地区") && !cond.includes("地区")) ||
-        (!cond.includes("地区") &&
-          !conds[key]!.includes("地区") &&
-          cond.length > conds[key]!.length)
+        !cur ||
+        rank < cur.rank ||
+        (rank === cur.rank && evoCondition(r).length > cur.cond.length)
       ) {
-        conds[key] = cond;
+        best[key] = { rank, cond: evoCondition(r) };
       }
     }
+  }
+  for (const [key, v] of Object.entries(best)) {
+    conds[key] = prefersLocation
+      ? v.cond
+          .replace(/树荫丛林/g, "苔藓岩石")
+          .replace(/拉纳基拉山/g, "冰岩石")
+          .replace(/在苔藓岩石，在苔藓岩石附近/g, "在苔藓岩石附近")
+          .replace(/在冰岩石，在冰岩石附近/g, "在冰岩石附近")
+      : v.cond;
   }
   /* 常规链（无 curated 分支）：当前物种节点按所选形态切图（一家鼠/土龙节节/鬃岩狼人等
      同种多形态进化，进化前无对应形态） */
@@ -678,7 +701,7 @@ export async function pokemonDetail(speciesId: number, params?: any) {
         dexes.find((x) => x.id === a.dex_id)!.sort - dexes.find((x) => x.id === b.dex_id)!.sort,
     );
 
-  const evolution = await evolutionChain(speciesId, selSuffix);
+  const evolution = await evolutionChain(speciesId, selSuffix, game);
 
   if (defaultForm) {
     for (const f of forms) f.ability_list = await abilitiesOf(f);

@@ -372,8 +372,9 @@
   line-height: 1;
 }
 .evo-children {
-  display: flex;
-  flex-direction: column;
+  /* 伊布一家 8 分支等长链：网格折行避免拉成一长条 */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 10px;
 }
 .evo-child {
