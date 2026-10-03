@@ -15,9 +15,9 @@
 | 2 数据/状态层 TS 化 + calib vitest + golden | ✅ 已完成 | `3307568` |
 | 3 poketools 八页 React 迁移（U1-U14） | ✅ 已完成 | `9dfb34f` |
 | 4 模拟对战修复 B1-B10 | ✅ 已完成 | `76fd40f` |
-| 5 Tauri 桌面壳 | 🔶 **进行中**（构建已成功，验收未做） | 未提交（见 §3） |
-| 6 Python 运行时退役 + 门禁重建 | ⬜ 未开始 | — |
-| 7 文档沉淀 + 合并回 main + 发布 | ⬜ 未开始 | — |
+| 5 Tauri 桌面壳 | ✅ 已完成 | `a580321` |
+| 6 Python 运行时退役 + 门禁重建 | ✅ 已完成（524 终验 524/524 全绿后删除） | `020e31d` |
+| 7 文档沉淀 + 合并回 main + 发布 | ✅ 已完成（docs 三件套重写；merge --no-ff + tag v1.0.0 + release 产物） | merge commit |
 | 代码审查报告（不提交） | ⬜ 未开始 | 产物将落 `plans/CODE-REVIEW.md` |
 | ROADMAP 后续计划实施方法探索 | ⬜ 未开始 | 结论将并入 `plans/ROADMAP.md` |
 
@@ -51,7 +51,7 @@
 
 `battle/release/` 空目录仍被某进程句柄占用（历史遗留，非 git 跟踪内容，无碍；重启后可删）。
 
-## 4. 阶段 5 剩余步骤（从这里继续）
+## 4.（已全部完成——本节留档）阶段 5 曾剩余步骤
 
 1. exe 验收（MASTER-PLAN §8 5.3）：双击 `poketools-app.exe`（或装 NSIS 包）→
    断网全功能（本地模式自动接管）→ localStorage 持久（重开队伍/标记还在）→
