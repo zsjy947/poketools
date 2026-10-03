@@ -23,7 +23,7 @@ const CHECKS = [
   ["游戏商标(剑)", "/assets/games/sword.webp", () => true],
   ["三明治食谱图", "/assets/sandwiches/sandwich_001.webp", () => true],
   ["官方绘图#1", "/pkt/1.png", () => true],
-  ["道具图标(讲究头带)", "/pkt/items/leftovers.png", () => true],
+  ["道具图标(讲究头带)", "/assets/items/leftovers.png", () => true],
   ["对战精灵目录", "/sprites/manifest.json", (t) => JSON.parse(t).keepDirs !== undefined],
 ];
 

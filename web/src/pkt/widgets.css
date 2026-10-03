@@ -481,11 +481,11 @@
   }
 }
 
-/* ---- 计算器编辑面板（U11 等级列 / 表结构） ---- */
+/* ---- 计算器编辑面板（U16 表头对齐：努力值跨两列 / 等级变化移到末列） ---- */
 .stat-table .st-head,
 .stat-table .st-row {
   display: grid;
-  grid-template-columns: 44px 48px 1fr 44px 64px 66px;
+  grid-template-columns: 44px 48px 1fr 44px 64px 72px;
   gap: 8px;
   align-items: center;
 }
@@ -504,31 +504,42 @@
   font-size: 12px;
 }
 
-/* ---- 场地区（U12 击中要害整行 / U13 紧凑间距 / U14 加深描边） ---- */
+/* ---- 场地区（U16 三列等高对齐 / U14 加深描边） ---- */
 .fp-grid5 {
   gap: 8px !important;
 }
+/* 底部行（花之礼/重力）齐平：各列内容两端分布，三块等高 */
 .fp-col {
-  justify-content: flex-start !important;
+  justify-content: space-between !important;
   gap: 8px;
 }
 .fp-col .fp-row {
   margin: 0;
 }
 .fp-btn {
-  border-color: #c9d1de !important;
-  box-shadow: 0 1px 2px rgba(30, 41, 66, 0.08);
+  border: 1.5px solid #b3bfd4 !important;
+  box-shadow: 0 2px 4px rgba(30, 41, 66, 0.14);
 }
-.fp-btn.crit-row {
-  flex: 1 1 auto;
-  width: 100%;
-  min-height: 42px;
+.fp-btn.on {
+  border-color: #5f96ec !important;
+  box-shadow: 0 2px 5px rgba(47, 111, 216, 0.22);
 }
 .calc-editors .acc-item .acc-body > .block,
 .calc-editors .acc-body .side-editor,
 .calc-editors .field-wrap .field-panel {
   border: 1.5px solid #cfd6e4 !important;
   box-shadow: 0 2px 8px rgba(30, 41, 66, 0.07);
+}
+
+/* ---- 下拉分组头（U16 特性：自身特性/其他特性） ---- */
+.fselect-grp {
+  padding: 4px 10px;
+  font-size: 11px;
+  color: #8a93a8;
+  background: #f6f8fc;
+  border-top: 1px solid #eef1f6;
+  border-bottom: 1px solid #eef1f6;
+  cursor: default;
 }
 
 /* ---- 详情攻击面（U6：徽章定宽 70px 居中） ---- */

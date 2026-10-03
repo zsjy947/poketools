@@ -1,6 +1,6 @@
 /* 伤害计算器页（自 Vue calc.js 迁移；U10 下拉限流+首入占位、U11 表头等级列、
  * U12 击中要害撑满行、U13 场地区紧凑、U14 面板描边加深+轻投影） */
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, Fragment } from "react";
 import { apiGet, apiSend, TYPE_LIST, STAT_KEYS, STAT_ZH } from "../data/api";
 import { TypeBadge, formDisplayName, koTextFromKo, toast } from "../pkt/shared";
 
@@ -301,21 +301,25 @@ function FilterSelect({
       />
       {open && (
         <div className="fselect-list">
-          {filtered.map((o) => {
+          {/* 选项带 grp 字段时按组渲染非交互分组头（如特性：自身特性/其他特性） */}
+          {filtered.map((o, i) => {
             const r = render(o);
+            const showGrp = o.grp && (i === 0 || filtered[i - 1]!.grp !== o.grp);
             return (
-              <div
-                key={String(r.value)}
-                className={"fselect-opt" + (r.value === value ? " on" : "")}
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  onChange(r.value);
-                  setOpen(false);
-                  setQ("");
-                }}
-              >
-                {r.label}
-              </div>
+              <Fragment key={String(r.value)}>
+                {showGrp && <div className="fselect-grp">{o.grp}</div>}
+                <div
+                  className={"fselect-opt" + (r.value === value ? " on" : "")}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    onChange(r.value);
+                    setOpen(false);
+                    setQ("");
+                  }}
+                >
+                  {r.label}
+                </div>
+              </Fragment>
             );
           })}
           {!filtered.length && <div className="fselect-opt empty">无匹配项</div>}
@@ -622,6 +626,9 @@ export function CalcPage(): JSX.Element {
   return (
     <div className="pkt-page calc-page">
       <div className="page-head">
+        <button className="back-btn" onClick={() => (location.hash = "#/home")}>
+          ← 返回首页
+        </button>
         <span className="page-title">伤害计算器</span>
         <div className="spacer" />
       </div>
@@ -973,9 +980,9 @@ function MoveChip({
   })();
   const zIcon = (() => {
     if (!move) return "";
-    if (ex && ex.crystal_identifier) return `/pkt/items/${ex.crystal_identifier}.png`;
+    if (ex && ex.crystal_identifier) return `/assets/items/${ex.crystal_identifier}.png`;
     const g = ((zMeta && zMeta.generic) || []).find((x: any) => x.type === move.type_zh);
-    return g ? `/pkt/items/${g.crystal_identifier}.png` : "";
+    return g ? `/assets/items/${g.crystal_identifier}.png` : "";
   })();
   return (
     <div className={"move-chip" + (!move ? " empty" : "")}>
@@ -1039,6 +1046,14 @@ function SideEditor({
   ) => void;
 }): JSX.Element {
   const ownAbilities = side.forms.find((x) => x.id === side.formId)?.ability_list || [];
+  /* 特性下拉分组：自身特性在前，其余为「其他特性」（特性互换/复制等场景），去掉重复项 */
+  const ownAbilityNames = ownAbilities.map((a: any) => a.name);
+  const abilityOptions = [
+    ...ownAbilities.map((a: any) => ({ name: a.name, hidden: a.hidden, grp: "自身特性" })),
+    ...abilities
+      .filter((a) => !ownAbilityNames.includes(a))
+      .map((a) => ({ name: a, hidden: false, grp: "其他特性" })),
+  ];
   const megaStone = (() => {
     const f = side.forms.find((x) => x.id === side.formId);
     if (!f || !isMegaForm(f) || (f.identifier || "").startsWith("rayquaza")) return "";
@@ -1091,7 +1106,9 @@ function SideEditor({
       ? "Ｘ"
       : /mega-y$/.test(f.identifier || "")
         ? "Ｙ"
-        : "";
+        : /mega-z$/.test(f.identifier || "")
+          ? "Ｚ"
+          : "";
     const hit = (items || []).find(
       (i) => i.name_zh === sp + "进化石" + suf || (suf === "" && i.name_zh === sp + "进化石"),
     );
@@ -1143,6 +1160,7 @@ function SideEditor({
   return (
     <div className="block side-editor">
       <h3>{label}</h3>
+      {/* U15：宝可梦/性格/特性/等级 同一行（选择框收窄，flex-wrap 兜底） */}
       <div className="fld-row">
         {/* U10：物种下拉 = 过滤 + 上限 80 + 编号右浮 */}
         <FilterSelect
@@ -1151,6 +1169,7 @@ function SideEditor({
           options={speciesList}
           displayOf={(v) => speciesList.find((x) => x.id === v)?.name_zh ?? String(v ?? "")}
           placeholder="搜索宝可梦（全图鉴）"
+          style={{ flex: "1 1 150px", minWidth: 140 }}
           render={(s) => ({
             value: s.id,
             search: `${s.name_zh} ${s.id}`,
@@ -1164,88 +1183,118 @@ function SideEditor({
             ),
           })}
         />
-      </div>
-      {side.forms.length > 1 && (
-        <div className="fld-row">
-          <span className="lbl">形态</span>
+        <span className="fld-pair">
+          <span className="lbl">性格</span>
           <select
-            className="pkt-select flex1"
-            value={side.formId ?? undefined}
-            onChange={(e) => onForm(Number(e.target.value))}
+            className="pkt-select"
+            style={{ width: 110 }}
+            value={side.nature}
+            onChange={(e) => setSide(which, { nature: e.target.value })}
           >
-            {side.forms.map((f) => (
-              <option key={f.id} value={f.id}>
-                {formLabel(f)}
+            {natures.map((n) => (
+              <option key={n.identifier} value={n.identifier}>
+                {n.name_zh}
+                {n.up && n.up !== n.down ? `（+${STAT_ZH[n.up]} -${STAT_ZH[n.down]}）` : ""}
               </option>
             ))}
           </select>
-          {megaStone && (
-            <span className="stone-lock" title={`超级进化形态自动装备：${megaStone}`}>
-              🔒 {megaStone}
-            </span>
-          )}
-        </div>
-      )}
-
-      <div className="fld-row">
-        <span className="lbl">特性</span>
-        {/* U10：全量特性下拉 = 过滤 + 上限 80 */}
-        <FilterSelect
-          value={side.ability}
-          onChange={(v) => setSide(which, { ability: v })}
-          options={[
-            ...ownAbilities.map((a: any) => ({ name: a.name, hidden: a.hidden, grp: "自身特性" })),
-            ...abilities.map((a) => ({ name: a, hidden: false, grp: "全部特性" })),
-          ]}
-          placeholder="搜索特性"
-          render={(a: any) => ({
-            value: a.name,
-            search: a.name,
-            label: `${a.grp === "自身特性" && a.hidden ? a.name + "（隐藏）" : a.name}${a.grp === "自身特性" ? "" : ""}`,
-          })}
-        />
-      </div>
-      <div className="fld-row">
-        <span className="lbl">太晶属性</span>
-        <select
-          className="pkt-select"
-          style={{ width: 110 }}
-          value={side.teraType}
-          onChange={(e) => setSide(which, { teraType: e.target.value })}
-        >
-          {TYPE_LIST.map((t) => (
-            <option key={t} value={t}>
-              {t}
-            </option>
-          ))}
-          <option value="星晶">星晶</option>
-        </select>
-        <span className="lbl" style={{ marginLeft: 8 }}>
-          道具
         </span>
-        {/* U10：道具下拉 = 过滤 + 上限 80 + 图标 */}
-        <FilterSelect
-          value={side.item}
-          onChange={onItemChange}
-          options={items}
-          placeholder="搜索道具（含图标）"
-          render={(i) => ({
-            value: i.name_zh,
-            search: `${i.name_zh} ${i.identifier}`,
-            label: (
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                <img
-                  className="item-icon"
-                  src={`/pkt/items/${i.identifier}.png`}
-                  width={18}
-                  height={18}
-                  onError={(e) => ((e.target as HTMLElement).style.visibility = "hidden")}
-                />
-                {i.name_zh}
-              </span>
-            ),
-          })}
-        />
+        <span className="fld-pair">
+          <span className="lbl">特性</span>
+          {/* U10：全量特性下拉 = 过滤 + 上限 80；U15：自身特性/其他特性分组 */}
+          <FilterSelect
+            value={side.ability}
+            onChange={(v) => setSide(which, { ability: v })}
+            options={abilityOptions}
+            placeholder="搜索特性"
+            style={{ width: 120 }}
+            render={(a: any) => ({
+              value: a.name,
+              search: a.name,
+              label: a.grp === "自身特性" && a.hidden ? a.name + "（隐藏）" : a.name,
+            })}
+          />
+        </span>
+        <span className="fld-pair">
+          <span className="lbl">等级</span>
+          <input
+            type="number"
+            className="pkt-input"
+            style={{ width: 64 }}
+            min={1}
+            max={100}
+            value={side.level}
+            onChange={(e) => setSide(which, { level: Number(e.target.value) })}
+          />
+        </span>
+      </div>
+      {/* U15：形态/太晶属性/道具 同一行 */}
+      <div className="fld-row">
+        {side.forms.length > 1 && (
+          <span className="fld-pair">
+            <span className="lbl">形态</span>
+            <select
+              className="pkt-select"
+              style={{ flex: 1, minWidth: 130 }}
+              value={side.formId ?? undefined}
+              onChange={(e) => onForm(Number(e.target.value))}
+            >
+              {side.forms.map((f) => (
+                <option key={f.id} value={f.id}>
+                  {formLabel(f)}
+                </option>
+              ))}
+            </select>
+          </span>
+        )}
+        {megaStone && (
+          <span className="stone-lock" title={`超级进化形态自动装备：${megaStone}`}>
+            🔒 {megaStone}
+          </span>
+        )}
+        <span className="fld-pair">
+          <span className="lbl">太晶属性</span>
+          <select
+            className="pkt-select"
+            style={{ width: 110 }}
+            value={side.teraType}
+            onChange={(e) => setSide(which, { teraType: e.target.value })}
+          >
+            {TYPE_LIST.map((t) => (
+              <option key={t} value={t}>
+                {t}
+              </option>
+            ))}
+            <option value="星晶">星晶</option>
+          </select>
+        </span>
+        <span className="fld-pair" style={{ flex: 1, minWidth: 170 }}>
+          <span className="lbl">道具</span>
+          {/* U10：道具下拉 = 过滤 + 上限 80 + 图标 */}
+          <FilterSelect
+            value={side.item}
+            onChange={onItemChange}
+            options={items}
+            placeholder="搜索道具"
+            style={{ flex: 1, minWidth: 90 }}
+            render={(i) => ({
+              value: i.name_zh,
+              search: `${i.name_zh} ${i.identifier}`,
+              label: (
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                  <img
+                    className="item-icon"
+                    src={`/assets/items/${i.identifier}.png`}
+                    width={18}
+                    height={18}
+                    onError={(e) => ((e.target as HTMLElement).style.visibility = "hidden")}
+                  />
+                  {i.name_zh}
+                </span>
+              ),
+            })}
+          />
+        </span>
       </div>
 
       <div className="editor-moves">
@@ -1262,6 +1311,9 @@ function SideEditor({
                 })
               }
               options={side.moveOptions}
+              displayOf={(v) =>
+                side.moveOptions.find((x) => x.move_id === v)?.name_zh ?? String(v ?? "")
+              }
               placeholder="搜索招式（含变化招式）"
               render={(m) => ({
                 value: m.move_id,
@@ -1308,13 +1360,13 @@ function SideEditor({
         ))}
       </div>
 
-      {/* U11：能力值表 —— 表头加「等级」列；升降并入该列；HP/速度 显示「—」 */}
+      {/* U16：能力值表 —— 表头与单元格对齐（努力值跨滑条+数字两列）；等级变化列移到最后 */}
       <div className="stat-table">
         <div className="st-head">
           <span /> <span>种族</span>
-          <span>努力值</span>
-          <span>等级</span>
+          <span style={{ gridColumn: "3 / span 2" }}>努力值</span>
           <span>实际值</span>
+          <span>等级变化</span>
         </div>
         {STAT_KEYS.map((k) => (
           <div key={k} className="st-row">
@@ -1333,6 +1385,7 @@ function SideEditor({
               }
             />
             <span className="st-ev">{side.evs[k]}</span>
+            <span className="st-actual">{side.lastStats ? side.lastStats[k] : "—"}</span>
             {k === "atk" || k === "spa" || k === "def" || k === "spd" ? (
               <select
                 className="pkt-select st-boost"
@@ -1350,38 +1403,9 @@ function SideEditor({
             ) : (
               <span className="st-boost">—</span>
             )}
-            <span className="st-actual">{side.lastStats ? side.lastStats[k] : "—"}</span>
           </div>
         ))}
         <div className="ev-left">剩余努力值 {evLeft}/510</div>
-      </div>
-
-      <div className="fld-row">
-        <span className="lbl">性格</span>
-        <select
-          className="pkt-select flex1"
-          value={side.nature}
-          onChange={(e) => setSide(which, { nature: e.target.value })}
-        >
-          {natures.map((n) => (
-            <option key={n.identifier} value={n.identifier}>
-              {n.name_zh}
-              {n.up && n.up !== n.down ? `（+${STAT_ZH[n.up]} -${STAT_ZH[n.down]}）` : ""}
-            </option>
-          ))}
-        </select>
-        <span className="lbl" style={{ marginLeft: 8 }}>
-          等级
-        </span>
-        <input
-          type="number"
-          className="pkt-input"
-          style={{ width: 92 }}
-          min={1}
-          max={100}
-          value={side.level}
-          onChange={(e) => setSide(which, { level: Number(e.target.value) })}
-        />
       </div>
     </div>
   );
@@ -1594,10 +1618,10 @@ function SideStatusCol({
           友情防守
         </button>
       </div>
-      {/* U12：击中要害横向撑满所在状态列整行（保留纵向弹性） */}
-      <div className="fp-row grow">
+      {/* U16：击中要害回归普通按钮（弹性撑高会让三列高度失衡） */}
+      <div className="fp-row">
         <button
-          className={"fp-btn fp-grow crit-row" + (s.crit ? " on" : "")}
+          className={"fp-btn" + (s.crit ? " on" : "")}
           onClick={() => set(which, (cur: SideState) => ({ crit: !cur.crit }))}
         >
           击中要害
