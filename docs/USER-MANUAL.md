@@ -2,36 +2,42 @@
 
 ## Android 版（APK，暂缓）
 
-- 安卓端（poketools APK 与 battle APK）开发已暂缓：apk 壳与双端构建链已迁移 `dev/android` 分支，
-  待桌面 exe（含统一化嵌入）完善后恢复。
-- 已发布产物的安装方式记录保留在 `docs/BATTLE.md` §3.1（历史）；本地 release/ 目录留存既有 exe/APK。
+- 安卓端开发已暂缓：apk 壳与双端构建链在 `archived/android` 分支，待桌面版完善后
+  在同一 Tauri 壳上加 android target 恢复（见 plans/ROADMAP.md RM-18）。
 
-## 启动
+## 启动与安装
 
-| 方式 | 命令 | 说明 |
+| 方式 | 命令/产物 | 说明 |
 |---|---|---|
-| 开发 | `python -m app.main` | 浏览器打开 http://127.0.0.1:8734 |
-| 桌面 | `pythonw launcher.pyw` | pywebview 原生窗口（需 WebView2） |
-| 打包 | `./build_exe.bat` | 生成 `release/poketools/Poketools.exe`，与 data 文件夹放一起双击 |
+| 开发 | `cd web && pnpm dev` | 浏览器开发服务器（本地数据引擎自动接管，无后端） |
+| 桌面安装包 | `web/src-tauri/target/release/bundle/nsis/宝可梦工具助手_1.0.0_x64-setup.exe` | NSIS 安装器（简中），双击安装 |
+| 桌面便携版 | `web/src-tauri/target/release/poketools-app.exe` | 单文件直接双击（WebView2 需系统自带） |
+| 打包 | `cd web && npx tauri build` | 先 `pnpm install` 后执行；产出上面两种 |
 
-数据/图片重建：`build_db.py → build_z_moves.py → build_db.py → scrape_52poke.py → fetch_sprites.py → fetch_calc_assets.py → fetch_feature_images.py`
-（首次需 `git clone --depth 1 https://github.com/PokeAPI/pokeapi data/raw/pokeapi`；详见 ARCHITECTURE §2）。
+- 运行完全离线：数据/资产全部内嵌，无需任何后端与网络。
+- **桌面老版用户数据迁移**：老版数据在 `data/userstate.db` → 运行
+  `python scripts/export_userstate.py` 生成 `data/userstate_export.json` →
+  在新版控制台执行 `importAll(JSON.parse(...))`（详见 ARCHITECTURE）。
+- 数据/图片重建：`build_db.py → build_z_moves.py → build_db.py → scrape_52poke.py →
+  export_static_data.py → fetch_sprites.py → fetch_calc_assets.py → fetch_feature_images.py →
+  fetch_sandwich_images.py → make_icon.py → check_web_assets.py`
+  （首次需 `git clone --depth 1 https://github.com/PokeAPI/pokeapi data/raw/pokeapi`；详见 ARCHITECTURE §2）。
 
 ## 界面结构
 
 ```
-首页·功能宫格
- ├─ 游戏中心
+首页·功能宫格（#/home）
+ ├─ 游戏中心（#/games）
  │    ├─ 剑／盾 ──── 地区图鉴 · 努力值查询 · 咖喱图鉴
  │    ├─ 晶灿钻石／明亮珍珠 ─ 地区图鉴 · 努力值查询
  │    ├─ 传说 阿尔宙斯 ─ 地区图鉴 · 努力值查询
  │    ├─ 朱／紫 ──── 地区图鉴 · 努力值查询 · 三明治食谱
  │    └─ 传说 Z-A ── 地区图鉴 · 努力值查询 · 甜甜圈工房
- ├─ 伤害计算器（全画面）
- └─ 模拟对战（建设中，置灰）
+ ├─ 伤害计算器（#/calc，全局入口）
+ └─ 模拟对战（#/battle，宝可梦冠军｜朱紫｜自由对战 三大类赛制）
 ```
 
-- **首页**：功能宫格三张卡（游戏中心 / 伤害计算器 / 模拟对战预留）。
+- **首页**：功能宫格三张卡（游戏中心 / 伤害计算器 / 模拟对战）。
 - **游戏中心**（#/games）：五作游戏卡片；进入游戏后左侧出现**无文字图标窄栏**
   （顶部=游戏官方商标，点击回该游戏图鉴；下方=功能图标，悬停显示名称，金色高亮=当前功能）。
 - **返回**：页面左上角「返回首页 / 返回游戏中心」按钮按层级返回；详情页用自带「返回图鉴」。
@@ -47,8 +53,8 @@
   单列卡片 + 「筛选」底部抽屉；计算器对战场纵向堆叠、编辑区折叠为「我方/对手/场地」手风琴；
   弹窗近全屏。
 - **触控**：交互热区 ≥40px；≤480 小屏进一步收紧（图标/字号/间距）。
-- **数据模式**：无 Python 后端（本地静态托管等场景）时自动切换本地数据引擎（见 ARCHITECTURE §2 静态化管线），
-  功能与桌面完全一致；用户数据（捕捉标记/自定义食谱）存于本地存储。
+- **数据模式**：统一本地数据引擎（静态分片，见 ARCHITECTURE §2），无任何后端；
+  用户数据（捕捉标记/自定义食谱）存于浏览器 localStorage，重开应用不丢。
 
 ## 图鉴追踪
 

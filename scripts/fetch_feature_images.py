@@ -1,4 +1,4 @@
-"""下载特化功能页配图（52poke）到 app/static/dist/assets/。
+"""下载特化功能页配图（52poke）到 web/public/assets/。
 
 复用 scripts/wiki_client.py（imageinfo 直链 + Referer 下载）。
 - 属性图标雪碧图（MST_SV.webp，50×1050 = 2x，CSS 显示 20×420）
@@ -15,7 +15,7 @@ from pathlib import Path
 
 import wiki_client as wc
 
-OUT = wc.ROOT / "app" / "static" / "dist" / "assets"
+OUT = wc.ROOT / "web" / "public" / "assets"
 
 # 固定直链资产（File 标题 → 保存相对路径）；商标图另需缩放
 TYPE_SPRITE = {"File:MST SV.webp": "type_sprite.webp"}

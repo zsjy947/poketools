@@ -1,11 +1,11 @@
 """测试公共配置：sys.path 注入 + DB 存在性 skipif。
 
-分层要求（写入 docs/ARCHITECTURE.md §8）：
+分层要求（终态）：
 ① test_db    数据完整性（行数护栏、新表覆盖率）
-② test_api   API 集成（每新增/修改端点必须带正反用例）
-③ test_damage/test_breeding 纯函数
-④ 公式改动铁律：扩 tools/calib 案例并重跑 node harness.mjs → python check.py 逐 roll 全绿
-⑤ 数据管线回归：build_db → build_z_moves → build_db → scrape_52poke → fetch_* 后跑 pytest
+② test_parsers wikitext/特性解析器单测
+③ 公式与领域逻辑（伤害/生蛋链/状态端点）在 web/tests（vitest：
+   calib.test.ts 51+41 对拍 + damage/breeding/state golden）
+④ 数据管线回归：build_db → build_z_moves → build_db → scrape_52poke → fetch_* 后跑 pytest
 """
 import sys
 from pathlib import Path

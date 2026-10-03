@@ -1,0 +1,584 @@
+/* React 版轻量控件（替代 Element Plus 的按钮/选择/输入/表格/弹层/Toast） */
+
+/* ---- 按钮 / 输入 ---- */
+.pkt-btn {
+  background: #fff;
+  border: 1px solid #dcdfe6;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 13.5px;
+  cursor: pointer;
+  color: #606266;
+  font-family: inherit;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.pkt-btn:hover {
+  border-color: #b8c6e4;
+  color: #409eff;
+}
+.pkt-btn:disabled {
+  background: #f5f7fa;
+  color: #c0c4cc;
+  cursor: not-allowed;
+}
+.pkt-btn.primary {
+  background: #409eff;
+  border-color: #409eff;
+  color: #fff;
+}
+.pkt-btn.primary:hover {
+  background: #66b1ff;
+}
+.pkt-btn.primary-plain {
+  background: #ecf5ff;
+  border-color: #b3d8ff;
+  color: #409eff;
+}
+.pkt-btn.pkt-btn-sm {
+  padding: 4px 10px;
+  font-size: 12.5px;
+  border-radius: 5px;
+}
+.pkt-btn.danger-text {
+  color: #f56c6c;
+  border-color: transparent;
+  background: transparent;
+}
+.pkt-btn.danger-text:hover {
+  background: #fef0f0;
+}
+.pkt-btn.link {
+  color: #409eff;
+  border: none;
+  background: transparent;
+  padding: 4px 6px;
+}
+
+.pkt-input,
+.pkt-select {
+  border: 1px solid #dcdfe6;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  background: #fff;
+  color: #606266;
+  height: 32px;
+  outline: none;
+}
+.pkt-input:focus,
+.pkt-select:focus {
+  border-color: #409eff;
+}
+.pkt-select {
+  padding-right: 24px;
+}
+
+/* ---- 单选组（分段按钮） ---- */
+.pkt-radio-group {
+  display: inline-flex;
+}
+.pkt-radio {
+  border: 1px solid #dcdfe6;
+  background: #f5f7fa;
+  padding: 5px 12px;
+  font-size: 12.5px;
+  cursor: pointer;
+  color: #606266;
+  margin-left: -1px;
+}
+.pkt-radio:first-child {
+  border-radius: 5px 0 0 5px;
+  margin-left: 0;
+}
+.pkt-radio:last-child {
+  border-radius: 0 5px 5px 0;
+}
+.pkt-radio.on {
+  background: #409eff;
+  border-color: #409eff;
+  color: #fff;
+}
+
+/* ---- chip / alert ---- */
+.pkt-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px;
+  border-radius: 4px;
+  font-size: 12px;
+  background: #f4f4f5;
+  color: #909399;
+  border: 1px solid #e9e9eb;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+.pkt-chip.warning {
+  background: #fdf6ec;
+  color: #e6a23c;
+  border-color: #faecd8;
+}
+.pkt-chip.success {
+  background: #f0f9eb;
+  color: #67c23a;
+  border-color: #e1f3d8;
+}
+.pkt-chip.info {
+  background: #f4f4f5;
+  color: #909399;
+}
+.pkt-chip.dark {
+  background: #409eff;
+  border-color: #409eff;
+  color: #fff;
+}
+.pkt-chip.dark.t-danger {
+  background: #f56c6c;
+  border-color: #f56c6c;
+}
+.pkt-chip.dark.t-warning {
+  background: #e6a23c;
+  border-color: #e6a23c;
+}
+.pkt-alert {
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 8px 0 12px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.pkt-alert.info {
+  background: #ecf5ff;
+  border: 1px solid #d9ecff;
+  color: #409eff;
+}
+.pkt-alert.info > div {
+  color: #6ea2e0;
+}
+.pkt-alert.warn {
+  background: #fdf6ec;
+  border: 1px solid #faecd8;
+  color: #e6a23c;
+}
+
+/* ---- Tabs ---- */
+.pkt-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 2px solid #e4e7ed;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.pkt-tab {
+  border: none;
+  background: transparent;
+  padding: 8px 14px;
+  font-size: 13.5px;
+  color: #909399;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  font-family: inherit;
+}
+.pkt-tab:hover {
+  color: #409eff;
+}
+.pkt-tab.on {
+  color: #409eff;
+  border-bottom-color: #409eff;
+  font-weight: 600;
+}
+
+/* ---- 表格 ---- */
+.pkt-table-wrap {
+  overflow: auto;
+  border: 1px solid #ebeef5;
+  border-radius: 8px;
+  background: #fff;
+}
+.pkt-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.pkt-table th,
+.pkt-table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid #ebeef5;
+  text-align: left;
+  font-size: 13px;
+}
+.pkt-table th {
+  background: #f5f7fa;
+  color: #909399;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.pkt-table.pkt-table-sm th,
+.pkt-table.pkt-table-sm td {
+  padding: 5px 8px;
+  font-size: 12.5px;
+}
+.pkt-table tbody tr:hover {
+  background: #f5f7fa;
+}
+
+/* ---- 过滤选择器（U10：过滤 + 可见上限） ---- */
+.fselect {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+.fselect-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 30;
+  background: #fff;
+  border: 1px solid #dcdfe6;
+  border-radius: 6px;
+  max-height: 300px;
+  overflow-y: auto;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+.fselect-opt {
+  padding: 7px 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.fselect-opt:hover {
+  background: #f5f7fa;
+}
+.fselect-opt.on {
+  color: #409eff;
+  font-weight: 600;
+}
+.fselect-opt.empty {
+  color: #c0c4cc;
+  cursor: default;
+}
+
+/* ---- 搜索添加选择器 ---- */
+.item-picker {
+  position: relative;
+}
+.item-picker-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 30;
+  background: #fff;
+  border: 1px solid #dcdfe6;
+  border-radius: 6px;
+  max-height: 240px;
+  overflow-y: auto;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+.item-picker-opt {
+  padding: 7px 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.item-picker-opt:hover {
+  background: #f5f7fa;
+}
+.item-picker-more {
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #c0c4cc;
+}
+
+/* ---- 弹层 ---- */
+.pkt-modal-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pkt-modal {
+  background: #fff;
+  border-radius: 10px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+.pkt-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid #ebeef5;
+  font-weight: 600;
+  font-size: 15px;
+}
+.pkt-modal-x {
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  cursor: pointer;
+  color: #909399;
+}
+.pkt-modal-body {
+  padding: 16px 18px;
+  overflow-y: auto;
+}
+.pkt-modal-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 18px;
+  border-top: 1px solid #ebeef5;
+}
+.pkt-form .pkt-form-row {
+  display: flex;
+  align-items: flex-start;
+  margin: 10px 0;
+}
+.pkt-form .lbl {
+  min-width: 64px;
+  color: #556;
+  font-size: 13px;
+  padding-top: 6px;
+}
+
+/* ---- Toast ---- */
+.pkt-toast-host {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  pointer-events: none;
+}
+.pkt-toast {
+  background: #f4f4f5;
+  color: #909399;
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-size: 13px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+}
+.pkt-toast.t-success {
+  background: #f0f9eb;
+  color: #67c23a;
+}
+.pkt-toast.t-warning {
+  background: #fdf6ec;
+  color: #e6a23c;
+}
+.pkt-toast.t-error {
+  background: #fef0f0;
+  color: #f56c6c;
+}
+
+/* ---- 下拉菜单（批量操作） ---- */
+.pkt-dropdown {
+  position: relative;
+}
+.pkt-dropdown:hover .pkt-dropdown-menu {
+  display: block;
+}
+.pkt-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 30;
+  background: #fff;
+  border: 1px solid #dcdfe6;
+  border-radius: 6px;
+  min-width: 220px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  padding: 4px 0;
+}
+.pkt-dropdown-menu > div {
+  padding: 7px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.pkt-dropdown-menu > div:hover {
+  background: #f5f7fa;
+  color: #409eff;
+}
+.pkt-dropdown-menu > div.divided {
+  border-top: 1px solid #ebeef5;
+  margin-top: 4px;
+  padding-top: 10px;
+}
+
+/* ---- 开关 ---- */
+.pkt-switch {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+}
+.pkt-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.pkt-switch .slider {
+  position: absolute;
+  inset: 0;
+  background: #dcdfe6;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.pkt-switch .slider::before {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  left: 3px;
+  top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: 0.2s;
+}
+.pkt-switch input:checked + .slider {
+  background: #409eff;
+}
+.pkt-switch input:checked + .slider::before {
+  transform: translateX(16px);
+}
+
+/* ---- 计算器首入占位（U10） ---- */
+.calc-first-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 90px 0;
+  color: #98a1b3;
+  font-size: 13.5px;
+}
+.spinner {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 3px solid #e4e8f0;
+  border-top-color: #409eff;
+  animation: pkt-spin 0.9s linear infinite;
+}
+@keyframes pkt-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---- 计算器编辑面板（U11 等级列 / 表结构） ---- */
+.stat-table .st-head,
+.stat-table .st-row {
+  display: grid;
+  grid-template-columns: 44px 48px 1fr 44px 64px 66px;
+  gap: 8px;
+  align-items: center;
+}
+.stat-table .st-head {
+  color: #98a1b3;
+  font-size: 12px;
+  padding: 4px 0;
+}
+.stat-table .st-slider {
+  width: 100%;
+  margin: 0;
+}
+.stat-table .st-boost {
+  height: 26px;
+  padding: 2px 4px;
+  font-size: 12px;
+}
+
+/* ---- 场地区（U12 击中要害整行 / U13 紧凑间距 / U14 加深描边） ---- */
+.fp-grid5 {
+  gap: 8px !important;
+}
+.fp-col {
+  justify-content: flex-start !important;
+  gap: 8px;
+}
+.fp-col .fp-row {
+  margin: 0;
+}
+.fp-btn {
+  border-color: #c9d1de !important;
+  box-shadow: 0 1px 2px rgba(30, 41, 66, 0.08);
+}
+.fp-btn.crit-row {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 42px;
+}
+.calc-editors .acc-item .acc-body > .block,
+.calc-editors .acc-body .side-editor,
+.calc-editors .field-wrap .field-panel {
+  border: 1.5px solid #cfd6e4 !important;
+  box-shadow: 0 2px 8px rgba(30, 41, 66, 0.07);
+}
+
+/* ---- 详情攻击面（U6：徽章定宽 70px 居中） ---- */
+.eff-m.atk-src {
+  width: 70px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* ---- 加载态 ---- */
+.loading {
+  opacity: 0.55;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.pkt-loading {
+  color: #98a1b3;
+}
+
+/* ---- 通用 ---- */
+.w96 {
+  width: 96px;
+}
+.w100 {
+  width: 100px;
+}
+.w110 {
+  width: 110px;
+}
+.w130 {
+  width: 130px;
+}
+.w160 {
+  width: 160px;
+}
+.w170 {
+  width: 170px;
+}
+.w200 {
+  width: 200px;
+}
+.w-full {
+  width: 100%;
+}
+.flex1 {
+  flex: 1;
+  min-width: 0;
+}
+.w-full {
+  width: 100%;
+}

@@ -41,6 +41,7 @@ from parsers.wikitext import (  # noqa: F401
     find_template,
     parse_params,
     split_params,
+    unknown_sup_weather,
     wikitables,
 )
 from pokemondb_client import fetch_html as pdb_fetch_html
@@ -855,7 +856,8 @@ def main() -> None:
             "ability_parse_failed": ability_failed,
             "form_flavor_unparsed_markers": form_marker_unknown,
             "za_learnset_issues": za_missing,
-            "za_tm_corrections": za_tm_corrections}
+            "za_tm_corrections": za_tm_corrections,
+            "sup_weather_unmapped": sorted(unknown_sup_weather)}
     (CURATED / "TODO.json").write_text(json.dumps(todo, ensure_ascii=False, indent=1),
                                        encoding="utf-8")
 

@@ -89,7 +89,7 @@ _RE_SIMPLE = [
     (re.compile(r"\{\{rt\|([^|{}]+)\|[^{}]*\}\}"), r"\1号道路"),
     (re.compile(r"\{\{par\|([^|{}]+)\|([^|{}]+)\}\}"), r"\1（\2）"),
     (re.compile(r"\{\{E\|([^|{}]+)\}\}"), r"\1"),
-    (re.compile(r"\{\{(?:GameIconzh/\d+|game4?|MS\w*|sup[/\d]*)[^{}]*\}\}"), ""),
+    (re.compile(r"\{\{(?:GameIconzh/\d+|game4?|MS\w*|[sS]up(?:/[a-zA-Z0-9]*)?)[^{}]*\}\}"), ""),
     (re.compile(r"\[\[File:[^\]]*\]\]"), ""),
     (re.compile(r"<!--.*?-->", re.DOTALL), ""),
     (re.compile(r"<ref[^>]*>.*?</ref>", re.DOTALL), ""),
@@ -99,6 +99,46 @@ _RE_LINK = re.compile(r"\[\[([^\]|]*)\|([^\]]*)\]\]")
 _RE_LINK2 = re.compile(r"\[\[([^\]]*)\]\]")
 _RE_TAIL = re.compile(r"<small>（[^<]*）</small>")
 
+# {{[sS]up/W|X}}：天气/星期上标模板 → 中文括注。取值经 data/raw/52poke-cache/ 全量枚举人工核定；
+# 未能识别的取值由 scrape_52poke 收集落 data/curated/TODO.json（sup_weather_unmapped）。
+SUP_WEATHER_ZH: dict[str, str] = {
+    # 天气（单字图标缩写 → 通用天气名；剑盾旷野 9 种 + 传说 阿尔宙斯全词直传）
+    "晴": "晴朗", "阴": "阴天", "雨": "雨天", "雷": "雷雨", "雪": "下雪",
+    "冰": "暴风雪", "沙": "沙暴", "雾": "大雾", "曝": "烈日",
+    "冰雹": "冰雹", "下雨": "下雨", "沙暴": "沙暴", "暴风雪": "暴风雪",
+    # 星期（获取方式按星期几限定：捕虫大赛/传说定点/阿罗拉按星期变化的天气）
+    "一": "星期一", "二": "星期二", "三": "星期三", "四": "星期四",
+    "五": "星期五", "六": "星期六", "日": "星期日",
+    "1": "星期一", "2": "星期二", "3": "星期三", "4": "星期四",
+    "5": "星期五", "6": "星期六", "7": "星期日",
+}
+unknown_sup_weather: set[str] = set()
+
+_RE_SUPW_ONE = re.compile(r"\{\{[sS]up/W\|([^{}|]+)\}\}")
+_RE_SUPW_RUN = re.compile(r"(?:\{\{[sS]up/W\|[^{}|]+\}\})+")
+_RE_INNER_TEMPLATE = re.compile(r"\{\{([^{}]*)\}\}")
+
+
+def _annotate_weather(s: str) -> str:
+    """连续的天气上标模板合并为一处「（值、值）」括注；未识别取值保留原文并登记。"""
+    def _run(m: re.Match[str]) -> str:
+        zh = []
+        for raw in _RE_SUPW_ONE.findall(m.group(0)):
+            v = raw.strip()
+            if v in SUP_WEATHER_ZH:
+                zh.append(SUP_WEATHER_ZH[v])
+            else:
+                unknown_sup_weather.add(v)
+                zh.append(v)
+        return f"（{'、'.join(zh)}）" if zh else ""
+    return _RE_SUPW_RUN.sub(_run, s)
+
+
+def _fold_inner(m: re.Match[str]) -> str:
+    """内层（无嵌套）模板折叠：取最后一个非空参数。"""
+    last = [p for p in m.group(1).split("|") if p.strip()]
+    return last[-1] if last else ""
+
 
 def clean_wt(s: str | None) -> str:
     if not s:
@@ -107,18 +147,20 @@ def clean_wt(s: str | None) -> str:
     s = _RE_SIMPLE[9][0].sub("", s)  # <ref>...
     s = _RE_SIMPLE[10][0].sub("", s)  # <ref/>
     s = _RE_SIMPLE[7][0].sub("", s)  # [[File:...]]
+    s = _annotate_weather(s)  # sup/W 先于折叠与剥除（否则会散落成裸字/残留）
     s = _RE_ZH2.sub(lambda m: m.group(1), s)
     s = _RE_ZH.sub(lambda m: m.group(1), s)
-    for _ in range(4):
-        s = _RE_LINK.sub(lambda m: m.group(2), s)
-        s = _RE_LINK2.sub(lambda m: m.group(1), s)
-        s = _RE_TT.sub(r"\1", s)
-        for rx, rep in _RE_SIMPLE[:7]:
-            s = rx.sub(rep, s)
-        inner = re.search(r"\{\{([^{}]*)\}\}", s)
-        if inner:
-            last = [p for p in inner.group(1).split("|") if p.strip()]
-            s = s[:inner.start()] + (last[-1] if last else "") + s[inner.end():]
+    while True:  # 全量折叠：每轮替换当轮全部最内层模板，直至无变化
+        for _ in range(4):
+            s = _RE_LINK.sub(lambda m: m.group(2), s)
+            s = _RE_LINK2.sub(lambda m: m.group(1), s)
+            s = _RE_TT.sub(r"\1", s)
+            for rx, rep in _RE_SIMPLE[:7]:
+                s = rx.sub(rep, s)
+        folded = _RE_INNER_TEMPLATE.sub(_fold_inner, s)
+        if folded == s:
+            break
+        s = folded
     s = s.replace("<br>", "；").replace("<br/>", "；").replace("<br />", "；")
     s = re.sub(r"<[^>]+>", "", s)
     s = s.replace("''", "")

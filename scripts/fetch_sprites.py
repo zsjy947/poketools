@@ -17,7 +17,7 @@ import requests
 
 ROOT = Path(__file__).resolve().parent.parent
 DB = ROOT / "data" / "poketools.db"
-OUT = ROOT / "data" / "sprites"
+OUT = ROOT / "web" / "public" / "pkt"
 MANIFEST = OUT / ".manifest.json"
 UA = "poketools/0.3 (one-shot asset build)"
 

@@ -831,7 +831,7 @@
   "species_id": 11,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "煦丽草原",
+  "location": "煦丽草原（晴朗、阴天、雨天、雷雨、大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -840,7 +840,7 @@
   "species_id": 11,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "煦丽草原",
+  "location": "煦丽草原（阴天、雨天、雷雨、大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -894,7 +894,7 @@
   "species_id": 12,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原，牙牙湖东岸所有天气；巨人镜池",
+  "location": "煦丽草原，牙牙湖东岸所有天气；巨人镜池（阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -1596,7 +1596,7 @@
   "species_id": 25,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨石原野",
+  "location": "巨石原野（雨天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -1605,7 +1605,7 @@
   "species_id": 25,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "4所有天气；巨石原野",
+  "location": "4所有天气；巨石原野（雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -1614,7 +1614,7 @@
   "species_id": 25,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原",
+  "location": "煦丽草原（雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -1650,7 +1650,7 @@
   "species_id": 25,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野，清凉湿原，专注森林晴阴雨雷",
+  "location": "揖礼原野（雷雨），清凉湿原（雷雨），专注森林（晴朗、阴天、雨天、雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -1812,7 +1812,7 @@
   "species_id": 26,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "挑战海滩雷，清凉湿原雷，专注森林雷",
+  "location": "挑战海滩（雷雨），清凉湿原（雷雨），专注森林（雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -2145,7 +2145,7 @@
   "species_id": 28,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "专注森林沙，锅底沙漠沙",
+  "location": "专注森林（沙暴），锅底沙漠（沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -2298,7 +2298,7 @@
   "species_id": 29,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "冰点雪原晴阴曝雪{{Sup/W|冰}}，巨人睡榻{{Sup/W|晴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}",
+  "location": "冰点雪原（晴朗、阴天、烈日、下雪、暴风雪），巨人睡榻（晴朗、雨天、雷雨、烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -2424,7 +2424,7 @@
   "species_id": 31,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻晴阴雨曝{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|雾}}",
+  "location": "巨人睡榻（晴朗、阴天、雨天、烈日、下雪、暴风雪、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -2496,7 +2496,7 @@
   "species_id": 32,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "冰点雪原晴阴曝雪{{Sup/W|冰}}，巨人睡榻{{Sup/W|阴}}{{Sup/W|雪}}{{Sup/W|冰}}",
+  "location": "冰点雪原（晴朗、阴天、烈日、下雪、暴风雪），巨人睡榻（阴天、下雪、暴风雪）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -2622,7 +2622,7 @@
   "species_id": 34,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻晴阴雨雷{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|雾}}",
+  "location": "巨人睡榻（晴朗、阴天、雨天、雷雨、下雪、暴风雪、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -2676,7 +2676,7 @@
   "species_id": 35,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "机擎河岸，巨人帽岩",
+  "location": "机擎河岸（大雾），巨人帽岩（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -2694,7 +2694,7 @@
   "species_id": 35,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "登顶隧道所有天气；巨人睡榻雾，雪中溪谷雾",
+  "location": "登顶隧道所有天气；巨人睡榻（大雾），雪中溪谷（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -2811,7 +2811,7 @@
   "species_id": 36,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "机擎河岸",
+  "location": "机擎河岸（大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -2829,7 +2829,7 @@
   "species_id": 36,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "登顶隧道所有天气；巨人睡榻，雪中溪谷",
+  "location": "登顶隧道所有天气；巨人睡榻（大雾），雪中溪谷（大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -2928,7 +2928,7 @@
   "species_id": 37,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "煦丽草原，沐光森林，瞭望塔旧址，牙牙湖西岸，牙牙湖东岸，美纳斯湖南岸，牙牙湖之眼",
+  "location": "煦丽草原（烈日），沐光森林（烈日），瞭望塔旧址（烈日），牙牙湖西岸（烈日），牙牙湖东岸（烈日），美纳斯湖南岸（烈日），牙牙湖之眼（烈日）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -2937,7 +2937,7 @@
   "species_id": 37,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "3号道路所有天气；煦丽草原，沐光森林，瞭望塔旧址，牙牙湖西岸，牙牙湖东岸，美纳斯湖南岸，美纳斯湖北岸，牙牙湖之眼，巨人凳岩",
+  "location": "3号道路所有天气；煦丽草原（烈日），沐光森林（烈日），瞭望塔旧址（烈日），牙牙湖西岸（烈日），牙牙湖东岸（烈日），美纳斯湖南岸（烈日），美纳斯湖北岸（烈日），牙牙湖之眼（烈日），巨人凳岩（烈日）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -2955,7 +2955,7 @@
   "species_id": 37,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "拳关丘陵",
+  "location": "拳关丘陵（烈日）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -2964,7 +2964,7 @@
   "species_id": 37,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "沙尘洼地，巨人镜池",
+  "location": "沙尘洼地（烈日），巨人镜池（烈日）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -3117,7 +3117,7 @@
   "species_id": 38,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "逆鳞湖曝",
+  "location": "逆鳞湖（烈日）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -3297,7 +3297,7 @@
   "species_id": 39,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野雾",
+  "location": "揖礼原野（大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -3405,7 +3405,7 @@
   "species_id": 40,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野，清涼濕原，专注森林，挑战海滩，圓環海灣，鍛鍊平原",
+  "location": "揖礼原野（大雾），清涼濕原（大雾），专注森林（大雾），挑战海滩（大雾），圓環海灣（大雾），鍛鍊平原（大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -3702,7 +3702,7 @@
   "species_id": 43,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖东岸晴阴雨雷，煦丽草原{{Sup/W|阴}}",
+  "location": "牙牙湖东岸（晴朗、阴天、雨天、雷雨），煦丽草原（阴天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -3711,7 +3711,7 @@
   "species_id": 43,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖东岸晴阴雷雾，沐光森林{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}，瞭望塔旧址{{Sup/W|阴}}",
+  "location": "牙牙湖东岸（晴朗、阴天、雷雨、大雾），沐光森林（晴朗、阴天、雨天、雷雨），瞭望塔旧址（阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -3792,7 +3792,7 @@
   "species_id": 44,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖之眼阴",
+  "location": "牙牙湖之眼（阴天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -3801,7 +3801,7 @@
   "species_id": 44,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人镜池晴阴雨雷{{Sup/W|曝}}{{Sup/W|雾}}，美纳斯湖北岸{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}，巨人帽岩{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}",
+  "location": "巨人镜池（晴朗、阴天、雨天、雷雨、烈日、大雾），美纳斯湖北岸（晴朗、阴天、雨天、雷雨），巨人帽岩（阴天、雨天、雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -3891,7 +3891,7 @@
   "species_id": 45,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "沐光森林晴阴雾，拳关丘陵晴{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|沙}}，巨人镜池{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|沙}}",
+  "location": "沐光森林（晴朗、阴天、大雾），拳关丘陵（晴朗、雨天、雷雨、烈日、沙暴），巨人镜池（阴天、雨天、雷雨、下雪、暴风雪、沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -4188,7 +4188,7 @@
   "species_id": 50,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "伽勒尔矿山所有天气；巨人镜池",
+  "location": "伽勒尔矿山所有天气；巨人镜池（烈日）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -4341,7 +4341,7 @@
   "species_id": 51,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "沙尘洼地沙，拳关丘陵沙，巨人帽岩曝，逆鳞湖沙",
+  "location": "沙尘洼地（沙暴），拳关丘陵（沙暴），巨人帽岩（烈日），逆鳞湖（沙暴）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -4881,7 +4881,7 @@
   "species_id": 54,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "挑战海滩所有天气；战斗洞窟沙雾",
+  "location": "挑战海滩所有天气；战斗洞窟（沙暴、大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -4971,7 +4971,7 @@
   "species_id": 55,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "战斗洞窟所有天气；专注森林雨，挑战海滩雷曝，锻炼平原晴{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}",
+  "location": "战斗洞窟所有天气；专注森林（雨天），挑战海滩（雷雨、烈日），锻炼平原（晴朗、阴天、雨天、雷雨、烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -5214,7 +5214,7 @@
   "species_id": 58,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "拳关丘陵曝",
+  "location": "拳关丘陵（烈日）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -5223,7 +5223,7 @@
   "species_id": 58,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "沙尘洼地曝，巨人镜池曝",
+  "location": "沙尘洼地（烈日），巨人镜池（烈日）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -5232,7 +5232,7 @@
   "species_id": 58,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "煦丽草原曝，沐光森林曝，瞭望塔旧址曝，牙牙湖西岸曝，牙牙湖东岸{{Sup/W|曝}}，美纳斯湖南岸{{Sup/W|曝}}，牙牙湖之眼{{Sup/W|曝}}",
+  "location": "煦丽草原（烈日），沐光森林（烈日），瞭望塔旧址（烈日），牙牙湖西岸（烈日），牙牙湖东岸（烈日），美纳斯湖南岸（烈日），牙牙湖之眼（烈日）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -5241,7 +5241,7 @@
   "species_id": 58,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "3号道路所有天气；煦丽草原曝，沐光森林曝，瞭望塔旧址曝，牙牙湖西岸曝，牙牙湖东岸{{Sup/W|曝}}，美纳斯湖南岸{{Sup/W|曝}}，美纳斯湖北岸{{Sup/W|曝}}，牙牙湖之眼{{Sup/W|曝}}，巨人凳岩{{Sup/W|曝}}",
+  "location": "3号道路所有天气；煦丽草原（烈日），沐光森林（烈日），瞭望塔旧址（烈日），牙牙湖西岸（烈日），牙牙湖东岸（烈日），美纳斯湖南岸（烈日），美纳斯湖北岸（烈日），牙牙湖之眼（烈日），巨人凳岩（烈日）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -5394,7 +5394,7 @@
   "species_id": 59,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "逆鳞湖曝",
+  "location": "逆鳞湖（烈日）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -5547,7 +5547,7 @@
   "species_id": 60,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "战斗洞窟晴阴雨雷{{Sup/W|曝}}",
+  "location": "战斗洞窟（晴朗、阴天、雨天、雷雨、烈日）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -5664,7 +5664,7 @@
   "species_id": 61,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "清凉湿原雨雷雾",
+  "location": "清凉湿原（雨天、雷雨、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -5934,7 +5934,7 @@
   "species_id": 64,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野雾，清凉湿原雾",
+  "location": "揖礼原野（大雾），清凉湿原（大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -6024,7 +6024,7 @@
   "species_id": 65,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "圆环海湾晴雨沙，离岛海域雾",
+  "location": "圆环海湾（晴朗、雨天、沙暴），离岛海域（大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -6087,7 +6087,7 @@
   "species_id": 66,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "3号道路，巨人镜池所有天气；瞭望塔旧址，美纳斯湖南岸，美纳斯湖北岸",
+  "location": "3号道路，巨人镜池所有天气；瞭望塔旧址（阴天），美纳斯湖南岸（晴朗、阴天、雨天、雷雨、下雪、暴风雪、大雾），美纳斯湖北岸（阴天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -6096,7 +6096,7 @@
   "species_id": 66,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "美纳斯湖南岸所有天气；巨人凳岩，巨石原野",
+  "location": "美纳斯湖南岸所有天气；巨人凳岩（晴朗、阴天、下雪、沙暴），巨石原野（晴朗、阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -6186,7 +6186,7 @@
   "species_id": 67,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人凳岩阴，拳关丘陵阴",
+  "location": "巨人凳岩（阴天），拳关丘陵（阴天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -6195,7 +6195,7 @@
   "species_id": 67,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖之眼晴阴，拳关丘陵晴阴{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|冰}}{{Sup/W|沙}}，巨石原野{{Sup/W|阴}}",
+  "location": "牙牙湖之眼（晴朗、阴天），拳关丘陵（晴朗、阴天、雨天、雷雨、烈日、暴风雪、沙暴），巨石原野（阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -6231,7 +6231,7 @@
   "species_id": 67,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "巨人凳岩晴",
+  "location": "巨人凳岩（晴朗）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -6312,7 +6312,7 @@
   "species_id": 68,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人镜池晴阴雷曝{{Sup/W|冰}}{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "巨人镜池（晴朗、阴天、雷雨、烈日、暴风雪、沙暴、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -6654,7 +6654,7 @@
   "species_id": 72,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野，斗志洞窟，健身之海，列岛海域，离岛海域，蜂巢海，蜂巢岛所有天气；挑战海滩晴阴雨雷{{Sup/W|曝}}{{Sup/W|沙}}，圆环海湾{{Sup/W|雾}}",
+  "location": "揖礼原野，斗志洞窟，健身之海，列岛海域，离岛海域，蜂巢海，蜂巢岛所有天气；挑战海滩（晴朗、阴天、雨天、雷雨、烈日、沙暴），圆环海湾（大雾）",
   "method": "冲浪可见",
   "note": "",
   "form": ""
@@ -6753,7 +6753,7 @@
   "species_id": 73,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野阴，挑战海滩阴，健身之海阴，列岛海域阴，离岛海域{{Sup/W|阴}}，蜂巢海{{Sup/W|阴}}，蜂巢岛{{Sup/W|阴}}",
+  "location": "揖礼原野（阴天），挑战海滩（阴天），健身之海（阴天），列岛海域（阴天），离岛海域（阴天），蜂巢海（阴天），蜂巢岛（阴天）",
   "method": "冲浪可见",
   "note": "",
   "form": ""
@@ -6762,7 +6762,7 @@
   "species_id": 73,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "斗志洞窟所有天气；挑战海滩晴阴雨曝{{Sup/W|沙}}，圆环海湾{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|曝}}{{Sup/W|沙}}",
+  "location": "斗志洞窟所有天气；挑战海滩（晴朗、阴天、雨天、烈日、沙暴），圆环海湾（晴朗、阴天、雨天、烈日、沙暴）",
   "method": "冲浪定点",
   "note": "",
   "form": ""
@@ -7284,7 +7284,7 @@
   "species_id": 77,
   "game": "sword-shield",
   "version_label": "盾·扩展票",
-  "location": "远古墓地雾",
+  "location": "远古墓地（大雾）",
   "method": "可见",
   "note": "",
   "form": "G"
@@ -7365,7 +7365,7 @@
   "species_id": 78,
   "game": "sword-shield",
   "version_label": "盾·扩展票",
-  "location": "远古墓地雾",
+  "location": "远古墓地（大雾）",
   "method": "定点",
   "note": "",
   "form": "G"
@@ -7833,7 +7833,7 @@
   "species_id": 82,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "挑战海滩雷，挑战之路雷，锻炼平原雷",
+  "location": "挑战海滩（雷雨），挑战之路（雷雨），锻炼平原（雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -7977,7 +7977,7 @@
   "species_id": 83,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "5号道路所有天气；巨人镜池阴",
+  "location": "5号道路所有天气；巨人镜池（阴天）",
   "method": "可见",
   "note": "",
   "form": "G"
@@ -8535,7 +8535,7 @@
   "species_id": 90,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖东岸所有天气；牙牙湖西岸雪",
+  "location": "牙牙湖东岸所有天气；牙牙湖西岸（下雪）",
   "method": "冲浪可见",
   "note": "",
   "form": ""
@@ -8643,7 +8643,7 @@
   "species_id": 91,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖西岸晴雾，牙牙湖东岸晴雾",
+  "location": "牙牙湖西岸（晴朗、大雾），牙牙湖东岸（晴朗、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -8670,7 +8670,7 @@
   "species_id": 91,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "挑战海滩雨雾，圆环海湾雨",
+  "location": "挑战海滩（雨天、大雾），圆环海湾（雨天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -8742,7 +8742,7 @@
   "species_id": 92,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "瞭望塔旧址阴，美纳斯湖北岸阴",
+  "location": "瞭望塔旧址（阴天），美纳斯湖北岸（阴天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -8751,7 +8751,7 @@
   "species_id": 92,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "瞭望塔旧址阴雨雷冰{{Sup/W|沙}}{{Sup/W|雾}}，巨人凳岩{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|曝}}{{Sup/W|雾}}，拳关丘陵{{Sup/W|雾}}",
+  "location": "瞭望塔旧址（阴天、雨天、雷雨、暴风雪、沙暴、大雾），巨人凳岩（阴天、雨天、烈日、大雾），拳关丘陵（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -8868,7 +8868,7 @@
   "species_id": 93,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "8号道路所有天气；巨人凳岩阴",
+  "location": "8号道路所有天气；巨人凳岩（阴天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -8877,7 +8877,7 @@
   "species_id": 93,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "瞭望塔旧址阴雨雷冰{{Sup/W|沙}}{{Sup/W|雾}}，煦丽草原{{Sup/W|雨}}{{Sup/W|雷}}",
+  "location": "瞭望塔旧址（阴天、雨天、雷雨、暴风雪、沙暴、大雾），煦丽草原（雨天、雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -9021,7 +9021,7 @@
   "species_id": 94,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人帽岩晴阴雷曝{{Sup/W|冰}}{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "巨人帽岩（晴朗、阴天、雷雨、烈日、暴风雪、沙暴、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -9156,7 +9156,7 @@
   "species_id": 95,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖东岸曝沙，巨人凳岩晴阴{{Sup/W|曝}}{{Sup/W|沙}}，机擎河岸{{Sup/W|沙}}",
+  "location": "牙牙湖东岸（烈日、沙暴），巨人凳岩（晴朗、阴天、烈日、沙暴），机擎河岸（沙暴）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -9381,7 +9381,7 @@
   "species_id": 98,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖西岸晴阴雨雷{{Sup/W|雾}}",
+  "location": "牙牙湖西岸（晴朗、阴天、雨天、雷雨、大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -9390,7 +9390,7 @@
   "species_id": 98,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖西岸晴雨冰，美纳斯湖南岸晴{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|雪}}",
+  "location": "牙牙湖西岸（晴朗、雨天、暴风雪），美纳斯湖南岸（晴朗、阴天、雨天、雷雨、下雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -9417,7 +9417,7 @@
   "species_id": 98,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野雨雷，圆环海湾雨雷",
+  "location": "揖礼原野（雨天、雷雨），圆环海湾（雨天、雷雨）",
   "method": "随机／可见",
   "note": "",
   "form": ""
@@ -9489,7 +9489,7 @@
   "species_id": 99,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖之眼晴阴雷",
+  "location": "牙牙湖之眼（晴朗、阴天、雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -9498,7 +9498,7 @@
   "species_id": 99,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖西岸晴，美纳斯湖南岸晴雷",
+  "location": "牙牙湖西岸（晴朗），美纳斯湖南岸（晴朗、雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -9525,7 +9525,7 @@
   "species_id": 99,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野晴阴雨雷{{Sup/W|曝}}{{Sup/W|沙}}，挑战海滩{{Sup/W|晴}}{{Sup/W|雨}}{{Sup/W|曝}}{{Sup/W|沙}}，锻炼平原{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|沙}}",
+  "location": "揖礼原野（晴朗、阴天、雨天、雷雨、烈日、沙暴），挑战海滩（晴朗、雨天、烈日、沙暴），锻炼平原（晴朗、阴天、雨天、雷雨、烈日、沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -9903,7 +9903,7 @@
   "species_id": 103,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "健身之海晴曝，离岛海域晴雨{{Sup/W|曝}}{{Sup/W|沙}}",
+  "location": "健身之海（晴朗、烈日），离岛海域（晴朗、雨天、烈日、沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -10083,7 +10083,7 @@
   "species_id": 104,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "专注森林沙",
+  "location": "专注森林（沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -10182,7 +10182,7 @@
   "species_id": 105,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "锅底沙漠晴曝雾",
+  "location": "锅底沙漠（晴朗、烈日、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -10344,7 +10344,7 @@
   "species_id": 106,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "沙尘洼地阴，巨人镜池阴",
+  "location": "沙尘洼地（阴天），巨人镜池（阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -10434,7 +10434,7 @@
   "species_id": 107,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "沙尘洼地阴，巨人镜池阴",
+  "location": "沙尘洼地（阴天），巨人镜池（阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -10596,7 +10596,7 @@
   "species_id": 109,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "机擎市郊外所有天气；机擎河岸阴，沙尘洼地晴雨，巨人镜池晴{{Sup/W|雨}}",
+  "location": "机擎市郊外所有天气；机擎河岸（阴天），沙尘洼地（晴朗、雨天），巨人镜池（晴朗、雨天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -10740,7 +10740,7 @@
   "species_id": 110,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "机擎市郊外所有天气；机擎河岸阴，沙尘洼地晴雨，巨人镜池晴{{Sup/W|雨}}",
+  "location": "机擎市郊外所有天气；机擎河岸（阴天），沙尘洼地（晴朗、雨天），巨人镜池（晴朗、雨天）",
   "method": "可见",
   "note": "",
   "form": "G"
@@ -10848,7 +10848,7 @@
   "species_id": 111,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "8号道路所有天气；机擎河岸曝沙，桥间空地沙，巨石原野沙",
+  "location": "8号道路所有天气；机擎河岸（烈日、沙暴），桥间空地（沙暴），巨石原野（沙暴）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -10857,7 +10857,7 @@
   "species_id": 111,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人帽岩所有天气；机擎河岸曝沙，巨人镜池沙",
+  "location": "巨人帽岩所有天气；机擎河岸（烈日、沙暴），巨人镜池（沙暴）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -10875,7 +10875,7 @@
   "species_id": 111,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "锅底沙漠晴阴雨曝{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "锅底沙漠（晴朗、阴天、雨天、烈日、沙暴、大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -10956,7 +10956,7 @@
   "species_id": 112,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "10号道路所有天气；沙尘洼地曝，逆鳞湖曝",
+  "location": "10号道路所有天气；沙尘洼地（烈日），逆鳞湖（烈日）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -10965,7 +10965,7 @@
   "species_id": 112,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨石原野所有天气机擎河岸曝沙，巨人凳岩晴，沙尘洼地雨{{Sup/W|雷}}{{Sup/W|雪}}，桥间空地{{Sup/W|曝}}{{Sup/W|沙}}，逆鳞湖{{Sup/W|沙}}",
+  "location": "巨石原野所有天气机擎河岸（烈日、沙暴），巨人凳岩（晴朗），沙尘洼地（雨天、雷雨、下雪），桥间空地（烈日、沙暴），逆鳞湖（沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -10983,7 +10983,7 @@
   "species_id": 112,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "锅底沙漠晴曝沙",
+  "location": "锅底沙漠（晴朗、烈日、沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -11091,7 +11091,7 @@
   "species_id": 113,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野晴阴雨雷{{Sup/W|曝}}{{Sup/W|沙}}，清凉湿原{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|沙}}，专注森林{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|沙}}，挑战海滩{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|沙}}，战斗洞窟{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|沙}}，挑战之路{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|沙}}，斗志洞窟{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|沙}}，圆环海湾{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|沙}}，锻炼平原{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|沙}}，热身洞穴{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|沙}}，锅底沙漠{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|沙}}，健身之海{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|沙}}，列岛海域{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|沙}}，蜂巢岛{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|沙}}",
+  "location": "揖礼原野（晴朗、阴天、雨天、雷雨、烈日、沙暴），清凉湿原（晴朗、阴天、雨天、雷雨、烈日、沙暴），专注森林（晴朗、阴天、雨天、雷雨、烈日、沙暴），挑战海滩（晴朗、阴天、雨天、雷雨、烈日、沙暴），战斗洞窟（晴朗、阴天、雨天、雷雨、烈日、沙暴），挑战之路（晴朗、阴天、雨天、雷雨、烈日、沙暴），斗志洞窟（晴朗、阴天、雨天、雷雨、烈日、沙暴），圆环海湾（晴朗、阴天、雨天、雷雨、烈日、沙暴），锻炼平原（晴朗、阴天、雨天、雷雨、烈日、沙暴），热身洞穴（晴朗、阴天、雨天、雷雨、烈日、沙暴），锅底沙漠（晴朗、阴天、雨天、雷雨、烈日、沙暴），健身之海（晴朗、阴天、雨天、雷雨、烈日、沙暴），列岛海域（晴朗、阴天、雨天、雷雨、烈日、沙暴），蜂巢岛（晴朗、阴天、雨天、雷雨、烈日、沙暴）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -11271,7 +11271,7 @@
   "species_id": 115,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "锻炼平原晴阴",
+  "location": "锻炼平原（晴朗、阴天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -11478,7 +11478,7 @@
   "species_id": 117,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "蜂巢海晴阴雨曝{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "蜂巢海（晴朗、阴天、雨天、烈日、沙暴、大雾）",
   "method": "冲浪定点",
   "note": "",
   "form": ""
@@ -11586,7 +11586,7 @@
   "species_id": 118,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "桥间空地，美纳斯湖南岸所有天气；牙牙湖东岸冰沙雾，美纳斯湖北岸，牙牙湖西岸冰{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "桥间空地，美纳斯湖南岸所有天气；牙牙湖东岸（晴朗、阴天、雨天、雷雨、烈日、暴风雪、沙暴、大雾），美纳斯湖北岸（雨天、雷雨、沙暴），牙牙湖西岸（晴朗、阴天、雨天、雷雨、烈日、暴风雪、沙暴、大雾）",
   "method": "冲浪",
   "note": "",
   "form": ""
@@ -11640,7 +11640,7 @@
   "species_id": 119,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "美纳斯湖南岸晴阴雨雷{{Sup/W|沙}}，美纳斯湖北岸{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|沙}}，牙牙湖西岸{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|沙}}，牙牙湖东岸{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|曝}}{{Sup/W|沙}}，桥间空地{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|沙}}，逆鳞湖{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "美纳斯湖南岸（晴朗、阴天、雨天、雷雨、沙暴），美纳斯湖北岸（雨天、雷雨、沙暴），牙牙湖西岸（晴朗、阴天、沙暴），牙牙湖东岸（晴朗、阴天、烈日、沙暴），桥间空地（晴朗、阴天、沙暴），逆鳞湖（晴朗、阴天、雷雨、烈日、沙暴、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -11937,7 +11937,7 @@
   "species_id": 122,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖随机",
+  "location": "逆鳞湖（下雪）随机",
   "method": "",
   "note": "",
   "form": "G"
@@ -12081,7 +12081,7 @@
   "species_id": 123,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "锻炼平原晴曝",
+  "location": "锻炼平原（晴朗、烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -12234,7 +12234,7 @@
   "species_id": 124,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原雪冰雾，冰点雪原雪{{Sup/W|雾}}",
+  "location": "起橇雪原（下雪、暴风雪、大雾），冰点雪原（下雪、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -12297,7 +12297,7 @@
   "species_id": 125,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻雷，远古墓地雷，巨人鞋底雷，冻海雷，三岔平原{{Sup/W|雷}}，球湖湖畔{{Sup/W|雷}}",
+  "location": "巨人睡榻（雷雨），远古墓地（雷雨），巨人鞋底（雷雨），冻海（雷雨），三岔平原（雷雨），球湖湖畔（雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -12306,7 +12306,7 @@
   "species_id": 125,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻雷，巨人鞋底雷，球湖湖畔雷",
+  "location": "巨人睡榻（雷雨），巨人鞋底（雷雨），球湖湖畔（雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -12405,7 +12405,7 @@
   "species_id": 126,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原曝，冰点雪原曝，巨人睡榻曝，远古墓地曝，雪中溪谷{{Sup/W|曝}}，巨人鞋底{{Sup/W|曝}}，三岔平原{{Sup/W|曝}}，球湖湖畔{{Sup/W|曝}}",
+  "location": "起橇雪原（烈日），冰点雪原（烈日），巨人睡榻（烈日），远古墓地（烈日），雪中溪谷（烈日），巨人鞋底（烈日），三岔平原（烈日），球湖湖畔（烈日）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -12414,7 +12414,7 @@
   "species_id": 126,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原曝，冰点雪原曝，巨人睡榻曝，雪中溪谷曝，巨人鞋底{{Sup/W|曝}}，球湖湖畔{{Sup/W|曝}}",
+  "location": "起橇雪原（烈日），冰点雪原（烈日），巨人睡榻（烈日），雪中溪谷（烈日），巨人鞋底（烈日），球湖湖畔（烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -12522,7 +12522,7 @@
   "species_id": 127,
   "game": "sword-shield",
   "version_label": "剑·扩展票",
-  "location": "专注森林曝，挑战之路曝，锻炼平原晴曝",
+  "location": "专注森林（烈日），挑战之路（烈日），锻炼平原（晴朗、烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -12819,7 +12819,7 @@
   "species_id": 129,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "美纳斯湖南岸",
+  "location": "美纳斯湖南岸（雨天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -12873,7 +12873,7 @@
   "species_id": 129,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人鞋底，海鸣洞窟所有天气；巨人睡榻晴阴雨雷{{Sup/W|曝}}{{Sup/W|雪}}，球湖湖畔{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|雾}}",
+  "location": "巨人鞋底，海鸣洞窟所有天气；巨人睡榻（晴朗、阴天、雨天、雷雨、烈日、下雪），球湖湖畔（晴朗、阴天、雨天、雷雨、烈日、下雪、大雾）",
   "method": "冲浪可见",
   "note": "",
   "form": ""
@@ -12963,7 +12963,7 @@
   "species_id": 130,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖西岸，牙牙湖东岸，沙尘洼地，桥间空地所有天气；美纳斯湖北岸，美纳斯湖南岸晴阴雨雷{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|沙}}，逆鳞湖{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|沙}}",
+  "location": "牙牙湖西岸，牙牙湖东岸，沙尘洼地，桥间空地所有天气；美纳斯湖北岸（阴天、沙暴），美纳斯湖南岸（晴朗、阴天、雨天、雷雨、烈日、下雪、暴风雪、沙暴），逆鳞湖（晴朗、阴天、雨天、雷雨、烈日、下雪、暴风雪、沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -13026,7 +13026,7 @@
   "species_id": 130,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "挑战海滩晴雨曝沙，圆环海湾{{Sup/W|晴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|沙}}，巨人睡榻{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|冰}}",
+  "location": "挑战海滩（晴朗、雨天、烈日、沙暴），圆环海湾（晴朗、雨天、雷雨、烈日、沙暴），巨人睡榻（晴朗、阴天、雨天、雷雨、烈日、下雪、暴风雪）",
   "method": "冲浪定点",
   "note": "",
   "form": ""
@@ -13161,7 +13161,7 @@
   "species_id": 131,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "美纳斯湖北岸晴雨雷雪{{Sup/W|冰}}{{Sup/W|雾}}，牙牙湖西岸{{Sup/W|晴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|雾}}，逆鳞湖{{Sup/W|晴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|雾}}",
+  "location": "美纳斯湖北岸（晴朗、雨天、雷雨、下雪、暴风雪、大雾），牙牙湖西岸（晴朗、雨天、雷雨、下雪、暴风雪、大雾），逆鳞湖（晴朗、雨天、雷雨、下雪、暴风雪、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -13188,7 +13188,7 @@
   "species_id": 131,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "冻海雪冰",
+  "location": "冻海（下雪、暴风雪）",
   "method": "冲浪可见",
   "note": "",
   "form": ""
@@ -13296,7 +13296,7 @@
   "species_id": 132,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖晴",
+  "location": "逆鳞湖（晴朗）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -13422,7 +13422,7 @@
   "species_id": 133,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻晴，球湖湖畔晴",
+  "location": "巨人睡榻（晴朗），球湖湖畔（晴朗）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -13431,7 +13431,7 @@
   "species_id": 133,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "冰点雪原冰，巨人睡榻晴",
+  "location": "冰点雪原（暴风雪），巨人睡榻（晴朗）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -13566,7 +13566,7 @@
   "species_id": 134,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖雨",
+  "location": "逆鳞湖（雨天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -13584,7 +13584,7 @@
   "species_id": 134,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻雨",
+  "location": "巨人睡榻（雨天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -13683,7 +13683,7 @@
   "species_id": 135,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖雷",
+  "location": "逆鳞湖（雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -13701,7 +13701,7 @@
   "species_id": 135,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻雷",
+  "location": "巨人睡榻（雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -13800,7 +13800,7 @@
   "species_id": 136,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖曝",
+  "location": "逆鳞湖（烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -13818,7 +13818,7 @@
   "species_id": 136,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻曝",
+  "location": "巨人睡榻（烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -14331,7 +14331,7 @@
   "species_id": 143,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "机擎河岸晴阴雨雷{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|沙}}",
+  "location": "机擎河岸（晴朗、阴天、雨天、雷雨、烈日、下雪、暴风雪、沙暴）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -14358,7 +14358,7 @@
   "species_id": 143,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原晴曝，冰点雪原晴阴{{Sup/W|曝}}",
+  "location": "起橇雪原（晴朗、烈日），冰点雪原（晴朗、阴天、烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -14799,7 +14799,7 @@
   "species_id": 147,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "球湖湖畔晴阴雨雷{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|雾}}",
+  "location": "球湖湖畔（晴朗、阴天、雨天、雷雨、烈日、下雪、大雾）",
   "method": "冲浪可见",
   "note": "",
   "form": ""
@@ -14808,7 +14808,7 @@
   "species_id": 147,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "球湖湖畔雨雾",
+  "location": "球湖湖畔（雨天、大雾）",
   "method": "冲浪定点",
   "note": "",
   "form": ""
@@ -14898,7 +14898,7 @@
   "species_id": 148,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "球湖湖畔雷雾",
+  "location": "球湖湖畔（雷雨、大雾）",
   "method": "冲浪定点",
   "note": "",
   "form": ""
@@ -14988,7 +14988,7 @@
   "species_id": 149,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "球湖湖畔雨雷",
+  "location": "球湖湖畔（雨天、雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -15843,7 +15843,7 @@
   "species_id": 163,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人帽岩，沐光森林",
+  "location": "巨人帽岩（晴朗、阴天、雨天、雷雨、下雪、烈日、沙暴、大雾），沐光森林（晴朗、阴天、下雪、沙暴、大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -15942,7 +15942,7 @@
   "species_id": 164,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "机擎河岸晴阴曝雪{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "机擎河岸（晴朗、阴天、烈日、下雪、沙暴、大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -15951,7 +15951,7 @@
   "species_id": 164,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "机擎市郊外所有天气；巨人帽岩晴阴雨雷{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "机擎市郊外所有天气；巨人帽岩（晴朗、阴天、雨天、雷雨、烈日、下雪、沙暴、大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -15960,7 +15960,7 @@
   "species_id": 164,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "桥间空地雪",
+  "location": "桥间空地（下雪）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -16374,7 +16374,7 @@
   "species_id": 170,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖东岸，牙牙湖西岸",
+  "location": "牙牙湖东岸（雷雨），牙牙湖西岸（雷雨）",
   "method": "冲浪",
   "note": "",
   "form": ""
@@ -16401,7 +16401,7 @@
   "species_id": 170,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "健身之海雷，列岛海域雷，离岛海域雷，蜂巢海雷，蜂巢岛{{Sup/W|雷}}",
+  "location": "健身之海（雷雨），列岛海域（雷雨），离岛海域（雷雨），蜂巢海（雷雨），蜂巢岛（雷雨）",
   "method": "冲浪可见",
   "note": "",
   "form": ""
@@ -16491,7 +16491,7 @@
   "species_id": 171,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "美纳斯湖南岸雷，牙牙湖东岸晴雷雾，牙牙湖西岸{{Sup/W|雷}}，桥间空地{{Sup/W|雷}}，逆鳞湖{{Sup/W|晴}}{{Sup/W|雷}}",
+  "location": "美纳斯湖南岸（雷雨），牙牙湖东岸（晴朗、雷雨、大雾），牙牙湖西岸（雷雨），桥间空地（雷雨），逆鳞湖（晴朗、雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -16518,7 +16518,7 @@
   "species_id": 171,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "健身之海雷，列岛海域雷，离岛海域雷，蜂巢海雷，蜂巢岛{{Sup/W|雷}}",
+  "location": "健身之海（雷雨），列岛海域（雷雨），离岛海域（雷雨），蜂巢海（雷雨），蜂巢岛（雷雨）",
   "method": "冲浪可见",
   "note": "",
   "form": ""
@@ -16527,7 +16527,7 @@
   "species_id": 171,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "挑战海滩雷雾，圆环海湾雷",
+  "location": "挑战海滩（雷雨、大雾），圆环海湾（雷雨）",
   "method": "冲浪定点",
   "note": "",
   "form": ""
@@ -16644,7 +16644,7 @@
   "species_id": 172,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "专注森林雷",
+  "location": "专注森林（雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -16896,7 +16896,7 @@
   "species_id": 175,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "桥间空地",
+  "location": "桥间空地（晴朗、阴天、大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -16968,7 +16968,7 @@
   "species_id": 176,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨石原野雾",
+  "location": "巨石原野（大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -17031,7 +17031,7 @@
   "species_id": 177,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原雾，牙牙湖西岸雾，美纳斯湖北岸雾，美纳斯湖南岸雾",
+  "location": "煦丽草原（大雾），牙牙湖西岸（大雾），美纳斯湖北岸（大雾），美纳斯湖南岸（大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -17040,7 +17040,7 @@
   "species_id": 177,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖西岸雾，巨人镜池雨雷雪{{Sup/W|冰}}{{Sup/W|雾}}，巨人凳岩{{Sup/W|雾}}",
+  "location": "牙牙湖西岸（大雾），巨人镜池（雨天、雷雨、下雪、暴风雪、大雾），巨人凳岩（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -17103,7 +17103,7 @@
   "species_id": 178,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人凳岩雾",
+  "location": "巨人凳岩（大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -17112,7 +17112,7 @@
   "species_id": 178,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖东岸晴阴曝雪{{Sup/W|冰}}{{Sup/W|沙}}{{Sup/W|雾}}，美纳斯湖北岸{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|沙}}{{Sup/W|雾}}，巨人镜池{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "牙牙湖东岸（晴朗、阴天、烈日、下雪、暴风雪、沙暴、大雾），美纳斯湖北岸（晴朗、阴天、烈日、下雪、暴风雪、沙暴、大雾），巨人镜池（雨天、雷雨、下雪、暴风雪、沙暴、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -17373,7 +17373,7 @@
   "species_id": 182,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人镜池晴",
+  "location": "巨人镜池（晴朗）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -17463,7 +17463,7 @@
   "species_id": 183,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野雨，清凉湿原雨，挑战海滩晴沙",
+  "location": "揖礼原野（雨天），清凉湿原（雨天），挑战海滩（晴朗、沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -17544,7 +17544,7 @@
   "species_id": 184,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "专注森林雾，清凉湿原雾，挑战海滩雾，锻炼平原雾",
+  "location": "专注森林（大雾），清凉湿原（大雾），挑战海滩（大雾），锻炼平原（大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -17634,7 +17634,7 @@
   "species_id": 185,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "桥间空地沙，沙尘洼地沙",
+  "location": "桥间空地（沙暴），沙尘洼地（沙暴）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -17643,7 +17643,7 @@
   "species_id": 185,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "机擎市郊外所有天气；机擎河岸沙，拳关丘陵晴雷曝{{Sup/W|沙}}",
+  "location": "机擎市郊外所有天气；机擎河岸（沙暴），拳关丘陵（晴朗、雷雨、烈日、沙暴）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -17652,7 +17652,7 @@
   "species_id": 185,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "沙尘洼地晴阴曝冰{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "沙尘洼地（晴朗、阴天、烈日、暴风雪、沙暴、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -17769,7 +17769,7 @@
   "species_id": 186,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "清凉湿原雨雷",
+  "location": "清凉湿原（雨天、雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -18282,7 +18282,7 @@
   "species_id": 194,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖西岸晴阴雨沙，美纳斯湖南岸{{Sup/W|沙}}",
+  "location": "牙牙湖西岸（晴朗、阴天、雨天、沙暴），美纳斯湖南岸（沙暴）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -18291,7 +18291,7 @@
   "species_id": 194,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖西岸晴雨雷雾，巨人帽岩{{Sup/W|雨}}{{Sup/W|雷}}，巨人凳岩{{Sup/W|雨}}",
+  "location": "牙牙湖西岸（晴朗、雨天、雷雨、大雾），巨人帽岩（雨天、雷雨），巨人凳岩（雨天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -18444,7 +18444,7 @@
   "species_id": 195,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人凳岩雨，逆鳞湖雨",
+  "location": "巨人凳岩（雨天），逆鳞湖（雨天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -18453,7 +18453,7 @@
   "species_id": 195,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人帽岩雨雷",
+  "location": "巨人帽岩（雨天、雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -18588,7 +18588,7 @@
   "species_id": 196,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖阴",
+  "location": "逆鳞湖（阴天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -18606,7 +18606,7 @@
   "species_id": 196,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻雪",
+  "location": "巨人睡榻（下雪）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -18696,7 +18696,7 @@
   "species_id": 197,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖沙",
+  "location": "逆鳞湖（沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -18714,7 +18714,7 @@
   "species_id": 197,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻阴",
+  "location": "巨人睡榻（阴天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -19119,7 +19119,7 @@
   "species_id": 202,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "桥间空地晴",
+  "location": "桥间空地（晴朗）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -19128,7 +19128,7 @@
   "species_id": 202,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "5号道路所有天气；机擎河岸雾，桥间空地晴曝，沙尘洼地雾，巨人镜池{{Sup/W|雾}}，拳关丘陵{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|沙}}，逆鳞湖{{Sup/W|雾}}",
+  "location": "5号道路所有天气；机擎河岸（大雾），桥间空地（晴朗、烈日），沙尘洼地（大雾），巨人镜池（大雾），拳关丘陵（晴朗、阴天、雨天、雷雨、烈日、下雪、暴风雪、沙暴），逆鳞湖（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -19920,7 +19920,7 @@
   "species_id": 212,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "挑战之路沙，锻炼平原沙",
+  "location": "挑战之路（沙暴），锻炼平原（沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -20019,7 +20019,7 @@
   "species_id": 213,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "第二矿山所有天气；巨石原野沙",
+  "location": "第二矿山所有天气；巨石原野（沙暴）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -20028,7 +20028,7 @@
   "species_id": 213,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "第二矿山所有天气；瞭望塔旧址曝沙，沙尘洼地沙，巨人帽岩沙，巨人镜池{{Sup/W|沙}}",
+  "location": "第二矿山所有天气；瞭望塔旧址（烈日、沙暴），沙尘洼地（沙暴），巨人帽岩（沙暴），巨人镜池（沙暴）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -20055,7 +20055,7 @@
   "species_id": 213,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "球湖湖畔晴曝",
+  "location": "球湖湖畔（晴朗、烈日）",
   "method": "可见／定点",
   "note": "",
   "form": ""
@@ -20118,7 +20118,7 @@
   "species_id": 214,
   "game": "sword-shield",
   "version_label": "盾·扩展票",
-  "location": "专注森林曝，挑战之路曝，锻炼平原晴曝",
+  "location": "专注森林（烈日），挑战之路（烈日），锻炼平原（晴朗、烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -20235,7 +20235,7 @@
   "species_id": 215,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "泉烟小路所有天气；机擎河岸雪冰，桥间空地雪冰，巨石原野{{Sup/W|雪}}{{Sup/W|冰}}",
+  "location": "泉烟小路所有天气；机擎河岸（下雪、暴风雪），桥间空地（下雪、暴风雪），巨石原野（下雪、暴风雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -20244,7 +20244,7 @@
   "species_id": 215,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "10号道路，泉烟小路所有天气；机擎河岸雪冰，桥间空地雪冰，巨石原野{{Sup/W|雪}}{{Sup/W|冰}}，沙尘洼地{{Sup/W|雪}}，拳关丘陵{{Sup/W|雪}}{{Sup/W|冰}}，巨人帽岩{{Sup/W|雪}}{{Sup/W|冰}},巨人镜池{{Sup/W|雪}}",
+  "location": "10号道路，泉烟小路所有天气；机擎河岸（下雪、暴风雪），桥间空地（下雪、暴风雪），巨石原野（下雪、暴风雪），沙尘洼地（下雪），拳关丘陵（下雪、暴风雪），巨人帽岩（下雪、暴风雪）,巨人镜池（下雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -20271,7 +20271,7 @@
   "species_id": 215,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原阴，冰点雪原阴，雪中溪谷阴，冻海阴",
+  "location": "起橇雪原（阴天），冰点雪原（阴天），雪中溪谷（阴天），冻海（阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -20676,7 +20676,7 @@
   "species_id": 220,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原雪冰，巨人凳岩雪冰，巨人镜池{{Sup/W|雪}}{{Sup/W|冰}}，拳关丘陵{{Sup/W|雪}}",
+  "location": "煦丽草原（下雪、暴风雪），巨人凳岩（下雪、暴风雪），巨人镜池（下雪、暴风雪），拳关丘陵（下雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -20694,7 +20694,7 @@
   "species_id": 220,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "沙尘洼地冰，巨人镜池冰",
+  "location": "沙尘洼地（暴风雪），巨人镜池（暴风雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -20784,7 +20784,7 @@
   "species_id": 221,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "沙尘洼地雪，逆鳞湖雪",
+  "location": "沙尘洼地（下雪），逆鳞湖（下雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -20793,7 +20793,7 @@
   "species_id": 221,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原雪冰，牙牙湖东岸雪冰，沙尘洼地{{Sup/W|雪}}{{Sup/W|冰}}",
+  "location": "煦丽草原（下雪、暴风雪），牙牙湖东岸（下雪、暴风雪），沙尘洼地（下雪、暴风雪）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -20946,7 +20946,7 @@
   "species_id": 222,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "巨人镜池阴",
+  "location": "巨人镜池（阴天）",
   "method": "可见",
   "note": "",
   "form": "G"
@@ -20991,7 +20991,7 @@
   "species_id": 223,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "战竞湾所有天气；牙牙湖西岸晴阴雨雷{{Sup/W|曝}}{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "战竞湾所有天气；牙牙湖西岸（晴朗、阴天、雨天、雷雨、烈日、沙暴、大雾）",
   "method": "冲浪可见",
   "note": "",
   "form": ""
@@ -21090,7 +21090,7 @@
   "species_id": 224,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "美纳斯湖南岸晴曝沙雾",
+  "location": "美纳斯湖南岸（晴朗、烈日、沙暴、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -21126,7 +21126,7 @@
   "species_id": 224,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "挑战海滩晴曝沙，圆环海湾晴{{Sup/W|曝}}{{Sup/W|沙}}",
+  "location": "挑战海滩（晴朗、烈日、沙暴），圆环海湾（晴朗、烈日、沙暴）",
   "method": "冲浪定点",
   "note": "",
   "form": ""
@@ -21189,7 +21189,7 @@
   "species_id": 225,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "泉烟小路所有天气；煦丽草原冰，牙牙湖西岸雪冰，牙牙湖之眼冰，美纳斯湖北岸{{Sup/W|冰}}，巨人凳岩{{Sup/W|雪}}{{Sup/W|冰}}，拳关丘陵{{Sup/W|雪}}，巨人帽岩{{Sup/W|雪}}{{Sup/W|冰}}",
+  "location": "泉烟小路所有天气；煦丽草原（暴风雪），牙牙湖西岸（下雪、暴风雪），牙牙湖之眼（暴风雪），美纳斯湖北岸（暴风雪），巨人凳岩（下雪、暴风雪），拳关丘陵（下雪），巨人帽岩（下雪、暴风雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -21198,7 +21198,7 @@
   "species_id": 225,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原冰，沐光森林雪冰，牙牙湖之眼雪，瞭望塔旧址{{Sup/W|雪}}{{Sup/W|冰}}，美纳斯湖南岸{{Sup/W|雪}}，巨人凳岩{{Sup/W|冰}}，美纳斯湖北岸{{Sup/W|雪}}，巨人镜池{{Sup/W|雪}}，沙尘洼地{{Sup/W|雪}}",
+  "location": "煦丽草原（暴风雪），沐光森林（下雪、暴风雪），牙牙湖之眼（下雪），瞭望塔旧址（下雪、暴风雪），美纳斯湖南岸（下雪），巨人凳岩（暴风雪），美纳斯湖北岸（下雪），巨人镜池（下雪），沙尘洼地（下雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -21243,7 +21243,7 @@
   "species_id": 225,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "雪中溪谷雪",
+  "location": "雪中溪谷（下雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -21441,7 +21441,7 @@
   "species_id": 227,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "挑战之路晴雨曝沙，锻炼平原{{Sup/W|沙}}",
+  "location": "挑战之路（晴朗、雨天、烈日、沙暴），锻炼平原（沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -21747,7 +21747,7 @@
   "species_id": 230,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "蜂巢海雷",
+  "location": "蜂巢海（雷雨）",
   "method": "冲浪定点",
   "note": "",
   "form": ""
@@ -22143,7 +22143,7 @@
   "species_id": 236,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖西岸，美纳斯湖南岸",
+  "location": "牙牙湖西岸（阴天），美纳斯湖南岸（阴天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -22152,7 +22152,7 @@
   "species_id": 236,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "3号道路，煦丽草原，美纳斯湖南岸所有天气；沐光森林，巨人凳岩，巨石原野",
+  "location": "3号道路，煦丽草原，美纳斯湖南岸所有天气；沐光森林（阴天），巨人凳岩（阴天），巨石原野（晴朗）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -22242,7 +22242,7 @@
   "species_id": 237,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖阴",
+  "location": "逆鳞湖（阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -22404,7 +22404,7 @@
   "species_id": 239,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻雷，远古墓地雷，巨人鞋底雷，冻海雷，三岔平原{{Sup/W|雷}}，球湖湖畔{{Sup/W|雷}}",
+  "location": "巨人睡榻（雷雨），远古墓地（雷雨），巨人鞋底（雷雨），冻海（雷雨），三岔平原（雷雨），球湖湖畔（雷雨）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -22503,7 +22503,7 @@
   "species_id": 240,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原曝，冰点雪原曝，巨人睡榻曝，远古墓地曝，雪中溪谷{{Sup/W|曝}}，巨人鞋底{{Sup/W|曝}}，三岔平原{{Sup/W|曝}}，球湖湖畔{{Sup/W|曝}}",
+  "location": "起橇雪原（烈日），冰点雪原（烈日），巨人睡榻（烈日），远古墓地（烈日），雪中溪谷（烈日），巨人鞋底（烈日），三岔平原（烈日），球湖湖畔（烈日）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -22611,7 +22611,7 @@
   "species_id": 241,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "锻炼平原晴阴曝",
+  "location": "锻炼平原（晴朗、阴天、烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -22683,7 +22683,7 @@
   "species_id": 242,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野，清凉湿原，专注森林，挑战海滩，战斗洞窟，挑战之路，斗志洞窟，圆环海湾，锻炼平原，热身洞穴，锅底沙漠，健身之海，列岛海域，蜂巢岛",
+  "location": "揖礼原野（大雾），清凉湿原（大雾），专注森林（大雾），挑战海滩（大雾），战斗洞窟（大雾），挑战之路（大雾），斗志洞窟（大雾），圆环海湾（大雾），锻炼平原（大雾），热身洞穴（大雾），锅底沙漠（大雾），健身之海（大雾），列岛海域（大雾），蜂巢岛（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -22692,7 +22692,7 @@
   "species_id": 242,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "清凉湿原",
+  "location": "清凉湿原（大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -22962,7 +22962,7 @@
   "species_id": 246,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "逆鳞湖阴曝",
+  "location": "逆鳞湖（阴天、烈日）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -23088,7 +23088,7 @@
   "species_id": 247,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "逆鳞湖沙",
+  "location": "逆鳞湖（沙暴）",
   "method": "随机，可见",
   "note": "",
   "form": ""
@@ -23187,7 +23187,7 @@
   "species_id": 248,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "沙尘洼地晴曝雪冰{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "沙尘洼地（晴朗、烈日、下雪、暴风雪、沙暴、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -24303,7 +24303,7 @@
   "species_id": 263,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "3，桥间空地所有天气；巨石原野晴阴雨{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|沙}}{{Sup/W|雾}}，巨人帽岩{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "3，桥间空地所有天气；巨石原野（晴朗、阴天、雨天、烈日、下雪、暴风雪、沙暴、大雾），巨人帽岩（晴朗、阴天、雨天、雷雨、烈日、下雪、沙暴、大雾）",
   "method": "可见",
   "note": "",
   "form": "G"
@@ -24375,7 +24375,7 @@
   "species_id": 264,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人帽岩晴阴雨雪{{Sup/W|冰}}{{Sup/W|雾}}",
+  "location": "巨人帽岩（晴朗、阴天、雨天、下雪、暴风雪、大雾）",
   "method": "可见",
   "note": "",
   "form": "G"
@@ -24384,7 +24384,7 @@
   "species_id": 264,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "桥间空地晴阴雨雷{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|雾}}",
+  "location": "桥间空地（晴朗、阴天、雨天、雷雨、烈日、下雪、暴风雪、大雾）",
   "method": "定点",
   "note": "",
   "form": "G"
@@ -24411,7 +24411,7 @@
   "species_id": 264,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻阴，球湖湖畔阴",
+  "location": "巨人睡榻（阴天），球湖湖畔（阴天）",
   "method": "可见",
   "note": "",
   "form": "G"
@@ -24726,7 +24726,7 @@
   "species_id": 270,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "2号道路所有天气；煦丽草原，沐光森林",
+  "location": "2号道路所有天气；煦丽草原（雨天），沐光森林（晴朗、阴天、雨天、雷雨、大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -24735,7 +24735,7 @@
   "species_id": 270,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "牙牙湖西岸",
+  "location": "牙牙湖西岸（阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -24834,7 +24834,7 @@
   "species_id": 271,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "5号道路所有天气；巨人凳岩雨，巨人帽岩晴",
+  "location": "5号道路所有天气；巨人凳岩（雨天），巨人帽岩（晴朗）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -24843,7 +24843,7 @@
   "species_id": 271,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "沐光森林所有天气；美纳斯湖南岸晴阴，巨人凳岩晴雨",
+  "location": "沐光森林所有天气；美纳斯湖南岸（晴朗、阴天），巨人凳岩（晴朗、雨天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -24942,7 +24942,7 @@
   "species_id": 272,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "沐光森林晴阴雨雷{{Sup/W|雾}}",
+  "location": "沐光森林（晴朗、阴天、雨天、雷雨、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -25014,7 +25014,7 @@
   "species_id": 273,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "2号道路所有天气；煦丽草原，沐光森林",
+  "location": "2号道路所有天气；煦丽草原（雨天），沐光森林（晴朗、阴天、雨天、雷雨、大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -25023,7 +25023,7 @@
   "species_id": 273,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "牙牙湖西岸",
+  "location": "牙牙湖西岸（阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -25122,7 +25122,7 @@
   "species_id": 274,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "5号道路所有天气；巨人凳岩雨，煦丽草原雨，巨人帽岩晴",
+  "location": "5号道路所有天气；巨人凳岩（雨天），煦丽草原（雨天），巨人帽岩（晴朗）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -25131,7 +25131,7 @@
   "species_id": 274,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "沐光森林所有天气；美纳斯湖南岸晴阴，巨人凳岩晴雨",
+  "location": "沐光森林所有天气；美纳斯湖南岸（晴朗、阴天），巨人凳岩（晴朗、雨天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -25230,7 +25230,7 @@
   "species_id": 275,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "沐光森林晴阴雨雷{{Sup/W|雾}}",
+  "location": "沐光森林（晴朗、阴天、雨天、雷雨、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -25365,7 +25365,7 @@
   "species_id": 278,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原雨，瞭望塔旧址雨，牙牙湖东岸雨，牙牙湖西岸晴{{Sup/W|雨}}{{Sup/W|雪}}{{Sup/W|雾}}，美纳斯湖南岸{{Sup/W|晴}}{{Sup/W|雨}}",
+  "location": "煦丽草原（雨天），瞭望塔旧址（雨天），牙牙湖东岸（雨天），牙牙湖西岸（晴朗、雨天、下雪、大雾），美纳斯湖南岸（晴朗、雨天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -25374,7 +25374,7 @@
   "species_id": 278,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原雨雷，瞭望塔旧址雨，牙牙湖东岸雨，牙牙湖西岸{{Sup/W|雨}}{{Sup/W|雷}}，美纳斯湖南岸{{Sup/W|晴}}",
+  "location": "煦丽草原（雨天、雷雨），瞭望塔旧址（雨天），牙牙湖东岸（雨天），牙牙湖西岸（雨天、雷雨），美纳斯湖南岸（晴朗）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -25383,7 +25383,7 @@
   "species_id": 278,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖东岸所有天气；美纳斯湖南岸晴阴雨雷{{Sup/W|曝}}{{Sup/W|沙}}{{Sup/W|雾}}，美纳斯湖北岸{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|雾}}",
+  "location": "牙牙湖东岸所有天气；美纳斯湖南岸（晴朗、阴天、雨天、雷雨、烈日、沙暴、大雾），美纳斯湖北岸（晴朗、阴天、雨天、烈日、下雪、大雾）",
   "method": "冲浪可见",
   "note": "",
   "form": ""
@@ -25428,7 +25428,7 @@
   "species_id": 278,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野，健身之海，列岛海域，离岛海域，蜂巢海，蜂巢岛所有天气；挑战海滩晴阴雨雷{{Sup/W|曝}}{{Sup/W|沙}}，圆环海湾{{Sup/W|雾}}",
+  "location": "揖礼原野，健身之海，列岛海域，离岛海域，蜂巢海，蜂巢岛所有天气；挑战海滩（晴朗、阴天、雨天、雷雨、烈日、沙暴），圆环海湾（大雾）",
   "method": "冲浪可见",
   "note": "",
   "form": ""
@@ -25509,7 +25509,7 @@
   "species_id": 279,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖之眼雨，沙尘洼地雨，拳关丘陵雨，逆鳞湖雨",
+  "location": "牙牙湖之眼（雨天），沙尘洼地（雨天），拳关丘陵（雨天），逆鳞湖（雨天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -25527,7 +25527,7 @@
   "species_id": 279,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原雨，美纳斯湖北岸雨雷，牙牙湖东岸雨{{Sup/W|雷}}，牙牙湖西岸{{Sup/W|雨}}{{Sup/W|雷}}",
+  "location": "煦丽草原（雨天），美纳斯湖北岸（雨天、雷雨），牙牙湖东岸（雨天、雷雨），牙牙湖西岸（雨天、雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -25536,7 +25536,7 @@
   "species_id": 279,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "美纳斯湖南岸阴雨雷曝，美纳斯湖北岸{{Sup/W|雨}}{{Sup/W|曝}}，牙牙湖东岸{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}，桥间空地{{Sup/W|曝}}，逆鳞湖{{Sup/W|曝}}",
+  "location": "美纳斯湖南岸（阴天、雨天、雷雨、烈日），美纳斯湖北岸（雨天、烈日），牙牙湖东岸（晴朗、阴天、雨天、雷雨、烈日），桥间空地（烈日），逆鳞湖（烈日）",
   "method": "冲浪定点",
   "note": "",
   "form": ""
@@ -25563,7 +25563,7 @@
   "species_id": 279,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野雨雷，挑战海滩雨雷，健身之海{{Sup/W|雨}}{{Sup/W|雷}}，列岛海域{{Sup/W|雨}}{{Sup/W|雷}}，离岛海域{{Sup/W|雨}}{{Sup/W|雷}}，蜂巢海{{Sup/W|雨}}{{Sup/W|雷}}，蜂巢岛{{Sup/W|雨}}{{Sup/W|雷}}",
+  "location": "揖礼原野（雨天、雷雨），挑战海滩（雨天、雷雨），健身之海（雨天、雷雨），列岛海域（雨天、雷雨），离岛海域（雨天、雷雨），蜂巢海（雨天、雷雨），蜂巢岛（雨天、雷雨）",
   "method": "冲浪可见",
   "note": "",
   "form": ""
@@ -25572,7 +25572,7 @@
   "species_id": 279,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "挑战海滩所有天气；圆环海湾雨，锻炼平原雨，离岛海域阴雨{{Sup/W|雷}}",
+  "location": "挑战海滩所有天气；圆环海湾（雨天），锻炼平原（雨天），离岛海域（阴天、雨天、雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -25653,7 +25653,7 @@
   "species_id": 280,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "沐光森林，牙牙湖西岸，美纳斯湖北岸，美纳斯湖南岸",
+  "location": "沐光森林（大雾），牙牙湖西岸（大雾），美纳斯湖北岸（大雾），美纳斯湖南岸（大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -25662,7 +25662,7 @@
   "species_id": 280,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原，沐光森林，瞭望塔旧址，美纳斯湖北岸，美纳斯湖南岸",
+  "location": "煦丽草原（阴天、大雾），沐光森林（大雾），瞭望塔旧址（大雾），美纳斯湖北岸（大雾），美纳斯湖南岸（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -25689,7 +25689,7 @@
   "species_id": 280,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野",
+  "location": "揖礼原野（大雾）",
   "method": "随机，可见",
   "note": "",
   "form": ""
@@ -25779,7 +25779,7 @@
   "species_id": 281,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原",
+  "location": "煦丽草原（大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -25914,7 +25914,7 @@
   "species_id": 282,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "沙尘洼地，逆鳞湖",
+  "location": "沙尘洼地（大雾），逆鳞湖（大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -25923,7 +25923,7 @@
   "species_id": 282,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原，逆鳞湖",
+  "location": "煦丽草原（大雾），逆鳞湖（晴朗、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -25950,7 +25950,7 @@
   "species_id": 282,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "专注森林，锻炼平原",
+  "location": "专注森林（大雾），锻炼平原（大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -26445,7 +26445,7 @@
   "species_id": 290,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "5号道路所有天气；牙牙湖西岸沙，美纳斯湖南岸曝沙",
+  "location": "5号道路所有天气；牙牙湖西岸（沙暴），美纳斯湖南岸（烈日、沙暴）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -26499,7 +26499,7 @@
   "species_id": 291,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨石原野晴雨",
+  "location": "巨石原野（晴朗、雨天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -27093,7 +27093,7 @@
   "species_id": 302,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "沙尘洼地雾，巨人镜池雾",
+  "location": "沙尘洼地（大雾），巨人镜池（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -27228,7 +27228,7 @@
   "species_id": 303,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "桥间空地冰",
+  "location": "桥间空地（暴风雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -27237,7 +27237,7 @@
   "species_id": 303,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "沙尘洼地冰，巨人镜池冰",
+  "location": "沙尘洼地（暴风雪），巨人镜池（暴风雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -27768,7 +27768,7 @@
   "species_id": 309,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原，瞭望塔旧址，牙牙湖西岸，牙牙湖东岸，美纳斯湖南岸",
+  "location": "煦丽草原（雷雨），瞭望塔旧址（雷雨），牙牙湖西岸（雷雨），牙牙湖东岸（雷雨），美纳斯湖南岸（雷雨）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -27777,7 +27777,7 @@
   "species_id": 309,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "4号道路所有天气；煦丽草原，沐光森林，牙牙湖西岸，牙牙湖东岸，巨人凳岩，沙尘洼地，巨人镜池",
+  "location": "4号道路所有天气；煦丽草原（雷雨），沐光森林（雷雨），牙牙湖西岸（雷雨），牙牙湖东岸（雷雨），巨人凳岩（雷雨），沙尘洼地（雨天、雷雨），巨人镜池（雨天、雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -27849,7 +27849,7 @@
   "species_id": 310,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖之眼雷，巨人凳岩雷",
+  "location": "牙牙湖之眼（雷雨），巨人凳岩（雷雨）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -27858,7 +27858,7 @@
   "species_id": 310,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人帽岩雷",
+  "location": "巨人帽岩（雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -27867,7 +27867,7 @@
   "species_id": 310,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原雷",
+  "location": "煦丽草原（雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -28209,7 +28209,7 @@
   "species_id": 315,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "美纳斯湖南岸阴曝，牙牙湖之眼阴，沙尘洼地阴，巨人镜池{{Sup/W|阴}}",
+  "location": "美纳斯湖南岸（阴天、烈日），牙牙湖之眼（阴天），沙尘洼地（阴天），巨人镜池（阴天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -28218,7 +28218,7 @@
   "species_id": 315,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原晴阴雨曝{{Sup/W|雪}}{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "煦丽草原（晴朗、阴天、雨天、烈日、下雪、沙暴、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -28965,7 +28965,7 @@
   "species_id": 324,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "6号道路所有天气；巨人镜池",
+  "location": "6号道路所有天气；巨人镜池（烈日）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -28974,7 +28974,7 @@
   "species_id": 324,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "机擎河岸，巨人帽岩",
+  "location": "机擎河岸（烈日），巨人帽岩（烈日）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -29001,7 +29001,7 @@
   "species_id": 324,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "热身洞穴所有天气；锅底沙漠晴阴雨曝{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "热身洞穴所有天气；锅底沙漠（晴朗、阴天、雨天、烈日、沙暴、大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -29010,7 +29010,7 @@
   "species_id": 324,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "锅底沙漠曝雾",
+  "location": "锅底沙漠（烈日、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -29307,7 +29307,7 @@
   "species_id": 328,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "拳关丘陵沙",
+  "location": "拳关丘陵（沙暴）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -29478,7 +29478,7 @@
   "species_id": 330,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖曝",
+  "location": "逆鳞湖（烈日）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -29487,7 +29487,7 @@
   "species_id": 330,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "沙尘洼地晴沙",
+  "location": "沙尘洼地（晴朗、沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -29703,7 +29703,7 @@
   "species_id": 333,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原阴，冰点雪原阴，巨人睡榻阴",
+  "location": "起橇雪原（阴天），冰点雪原（阴天），巨人睡榻（阴天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -29712,7 +29712,7 @@
   "species_id": 333,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原阴，冰点雪原阴，巨人睡榻阴，通顶雪道阴，巨人鞋底{{Sup/W|阴}}，冻海{{Sup/W|阴}}，三岔平原{{Sup/W|阴}}，球湖湖畔{{Sup/W|阴}}",
+  "location": "起橇雪原（阴天），冰点雪原（阴天），巨人睡榻（阴天），通顶雪道（阴天），巨人鞋底（阴天），冻海（阴天），三岔平原（阴天），球湖湖畔（阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -29721,7 +29721,7 @@
   "species_id": 333,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原阴雪，冰点雪原阴，巨人睡榻阴",
+  "location": "起橇雪原（阴天、下雪），冰点雪原（阴天），巨人睡榻（阴天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -29847,7 +29847,7 @@
   "species_id": 334,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人鞋底阴，通顶雪道阴，巨人睡榻阴，冻海阴，球湖湖畔{{Sup/W|阴}}",
+  "location": "巨人鞋底（阴天），通顶雪道（阴天），巨人睡榻（阴天），冻海（阴天），球湖湖畔（阴天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -30216,7 +30216,7 @@
   "species_id": 339,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "美纳斯湖南岸所有天气；美纳斯湖北岸晴阴雨雷{{Sup/W|曝}}{{Sup/W|冰}}{{Sup/W|沙}}{{Sup/W|雾}}，巨石原野{{Sup/W|雨}}",
+  "location": "美纳斯湖南岸所有天气；美纳斯湖北岸（晴朗、阴天、雨天、雷雨、烈日、暴风雪、沙暴、大雾），巨石原野（雨天）",
   "method": "冲浪",
   "note": "",
   "form": ""
@@ -30252,7 +30252,7 @@
   "species_id": 339,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "战斗洞窟，巨人鞋底，海鸣洞窟所有天气；巨人睡榻晴阴雨雷{{Sup/W|曝}}{{Sup/W|雪}}，球湖湖畔{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|雾}}",
+  "location": "战斗洞窟，巨人鞋底，海鸣洞窟所有天气；巨人睡榻（晴朗、阴天、雨天、雷雨、烈日、下雪），球湖湖畔（晴朗、阴天、雨天、雷雨、烈日、下雪、大雾）",
   "method": "冲浪可见",
   "note": "",
   "form": ""
@@ -30360,7 +30360,7 @@
   "species_id": 340,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "美纳斯湖北岸晴阴雷曝{{Sup/W|沙}}，美纳斯湖南岸{{Sup/W|晴}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|沙}}",
+  "location": "美纳斯湖北岸（晴朗、阴天、雷雨、烈日、沙暴），美纳斯湖南岸（晴朗、雷雨、烈日、沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -30396,7 +30396,7 @@
   "species_id": 340,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "斗志洞窟，战斗洞窟，巨人睡榻所有天气；专注森林晴阴曝沙",
+  "location": "斗志洞窟，战斗洞窟，巨人睡榻所有天气；专注森林（晴朗、阴天、烈日、沙暴）",
   "method": "冲浪定点",
   "note": "",
   "form": ""
@@ -30504,7 +30504,7 @@
   "species_id": 341,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "美纳斯湖南岸晴阴雨雷{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|雾}}",
+  "location": "美纳斯湖南岸（晴朗、阴天、雨天、雷雨、下雪、暴风雪、大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -30513,7 +30513,7 @@
   "species_id": 341,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "美纳斯湖南岸晴阴雨雷{{Sup/W|雪}}{{Sup/W|雾}}",
+  "location": "美纳斯湖南岸（晴朗、阴天、雨天、雷雨、下雪、大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -30549,7 +30549,7 @@
   "species_id": 341,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "清凉湿原，专注森林雨雷",
+  "location": "清凉湿原，专注森林（雨天、雷雨）",
   "method": "随机，可见",
   "note": "",
   "form": ""
@@ -30639,7 +30639,7 @@
   "species_id": 342,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖之眼，巨人凳岩",
+  "location": "牙牙湖之眼（雷雨），巨人凳岩（雷雨）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -30648,7 +30648,7 @@
   "species_id": 342,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖之眼",
+  "location": "牙牙湖之眼（雨天、雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -30657,7 +30657,7 @@
   "species_id": 342,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "草路镇所有天气；美纳斯湖南岸",
+  "location": "草路镇所有天气；美纳斯湖南岸（晴朗、雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -30684,7 +30684,7 @@
   "species_id": 342,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "专注森林阴雨雷，挑战海滩阴{{Sup/W|雨}}{{Sup/W|雷}}",
+  "location": "专注森林（阴天、雨天、雷雨），挑战海滩（阴天、雨天、雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -30693,7 +30693,7 @@
   "species_id": 342,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "锻炼平原阴，挑战海滩阴",
+  "location": "锻炼平原（阴天），挑战海滩（阴天）",
   "method": "冲浪定点",
   "note": "",
   "form": ""
@@ -30783,7 +30783,7 @@
   "species_id": 343,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原曝沙，沐光森林沙，牙牙湖东岸沙，牙牙湖西岸{{Sup/W|曝}}{{Sup/W|沙}}，牙牙湖之眼{{Sup/W|沙}}，美纳斯湖南岸{{Sup/W|曝}}{{Sup/W|沙}}，美纳斯湖北岸{{Sup/W|曝}}{{Sup/W|沙}}，拳关丘陵{{Sup/W|曝}}，巨人帽岩{{Sup/W|曝}}",
+  "location": "煦丽草原（烈日、沙暴），沐光森林（沙暴），牙牙湖东岸（沙暴），牙牙湖西岸（烈日、沙暴），牙牙湖之眼（沙暴），美纳斯湖南岸（烈日、沙暴），美纳斯湖北岸（烈日、沙暴），拳关丘陵（烈日），巨人帽岩（烈日）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -30792,7 +30792,7 @@
   "species_id": 343,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原沙，沐光森林曝沙，牙牙湖东岸沙，桥间空地{{Sup/W|曝}}{{Sup/W|沙}}，巨石原野{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|曝}}{{Sup/W|沙}}",
+  "location": "煦丽草原（沙暴），沐光森林（烈日、沙暴），牙牙湖东岸（沙暴），桥间空地（烈日、沙暴），巨石原野（晴朗、阴天、烈日、沙暴）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -30855,7 +30855,7 @@
   "species_id": 344,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖雾",
+  "location": "逆鳞湖（大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -30864,7 +30864,7 @@
   "species_id": 344,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖之眼沙雾",
+  "location": "牙牙湖之眼（沙暴、大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -30873,7 +30873,7 @@
   "species_id": 344,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "沐光森林曝沙，沙尘洼地阴曝{{Sup/W|沙}}{{Sup/W|雾}}，巨石原野{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|曝}}{{Sup/W|沙}}，桥间空地{{Sup/W|沙}}",
+  "location": "沐光森林（烈日、沙暴），沙尘洼地（阴天、烈日、沙暴、大雾），巨石原野（晴朗、阴天、烈日、沙暴），桥间空地（沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -30900,7 +30900,7 @@
   "species_id": 344,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人鞋底阴雨雷曝{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|雾}}",
+  "location": "巨人鞋底（阴天、雨天、雷雨、烈日、下雪、暴风雪、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -31080,7 +31080,7 @@
   "species_id": 347,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "球湖湖畔晴阴雨雷{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|雾}}",
+  "location": "球湖湖畔（晴朗、阴天、雨天、雷雨、烈日、下雪、大雾）",
   "method": "冲浪可见",
   "note": "",
   "form": ""
@@ -31152,7 +31152,7 @@
   "species_id": 348,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "球湖湖畔雨雷定点",
+  "location": "球湖湖畔（雨天、雷雨）定点",
   "method": "",
   "note": "",
   "form": ""
@@ -31233,7 +31233,7 @@
   "species_id": 349,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人鞋底，海鸣洞窟所有天气；巨人睡榻晴阴雨雷{{Sup/W|曝}}{{Sup/W|雪}}",
+  "location": "巨人鞋底，海鸣洞窟所有天气；巨人睡榻（晴朗、阴天、雨天、雷雨、烈日、下雪）",
   "method": "冲浪可见",
   "note": "",
   "form": ""
@@ -31323,7 +31323,7 @@
   "species_id": 350,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "美纳斯湖南岸雾、逆鳞湖雾",
+  "location": "美纳斯湖南岸（大雾）、逆鳞湖（大雾）",
   "method": "定点",
   "note": "male",
   "form": ""
@@ -31341,7 +31341,7 @@
   "species_id": 350,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻雾",
+  "location": "巨人睡榻（大雾）",
   "method": "冲浪定点",
   "note": "",
   "form": ""
@@ -31620,7 +31620,7 @@
   "species_id": 355,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "沙尘洼地雾",
+  "location": "沙尘洼地（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -31629,7 +31629,7 @@
   "species_id": 355,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "6所有天气；瞭望塔旧址阴雨雷{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|沙}}{{Sup/W|雾}}巨人帽岩{{Sup/W|雾}}",
+  "location": "6所有天气；瞭望塔旧址（阴天、雨天、雷雨、烈日、下雪、暴风雪、沙暴、大雾）巨人帽岩（大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -31638,7 +31638,7 @@
   "species_id": 355,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "瞭望塔旧址晴阴雨雷{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|雾}}，巨人凳岩{{Sup/W|雾}}，机擎河岸{{Sup/W|雾}}",
+  "location": "瞭望塔旧址（晴朗、阴天、雨天、雷雨、烈日、下雪、大雾），巨人凳岩（大雾），机擎河岸（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -31737,7 +31737,7 @@
   "species_id": 356,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人凳岩雾，瞭望塔旧址阴雨雷{{Sup/W|沙}}",
+  "location": "巨人凳岩（大雾），瞭望塔旧址（阴天、雨天、雷雨、沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -31989,7 +31989,7 @@
   "species_id": 359,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻冰，远古墓地冰，雪中溪谷冰，通顶雪道冰，巨人鞋底{{Sup/W|冰}}，冻海{{Sup/W|冰}}，三岔平原{{Sup/W|冰}}",
+  "location": "巨人睡榻（暴风雪），远古墓地（暴风雪），雪中溪谷（暴风雪），通顶雪道（暴风雪），巨人鞋底（暴风雪），冻海（暴风雪），三岔平原（暴风雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -31998,7 +31998,7 @@
   "species_id": 359,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "冰点雪原冰，巨人睡榻冰，雪中溪谷冰，通顶雪道冰，巨人鞋底{{Sup/W|冰}}",
+  "location": "冰点雪原（暴风雪），巨人睡榻（暴风雪），雪中溪谷（暴风雪），通顶雪道（暴风雪），巨人鞋底（暴风雪）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -32142,7 +32142,7 @@
   "species_id": 361,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原冰，沐光森林雪冰，瞭望塔旧址雪{{Sup/W|冰}}，牙牙湖东岸{{Sup/W|雪}}；牙牙湖西岸{{Sup/W|雪}}，美纳斯湖南岸{{Sup/W|雪}}，美纳斯湖北岸{{Sup/W|雪}}{{Sup/W|冰}}，拳关丘陵{{Sup/W|冰}}，巨人帽岩{{Sup/W|雪}}{{Sup/W|冰}}",
+  "location": "煦丽草原（暴风雪），沐光森林（下雪、暴风雪），瞭望塔旧址（下雪、暴风雪），牙牙湖东岸（下雪）；牙牙湖西岸（下雪），美纳斯湖南岸（下雪），美纳斯湖北岸（下雪、暴风雪），拳关丘陵（暴风雪），巨人帽岩（下雪、暴风雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -32151,7 +32151,7 @@
   "species_id": 361,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "泉烟小路所有天气；牙牙湖东岸雪冰，牙牙湖西岸雪，美纳斯湖北岸雪{{Sup/W|冰}}，巨人凳岩{{Sup/W|雪}}{{Sup/W|冰}}，拳关丘陵{{Sup/W|雪}}{{Sup/W|冰}}",
+  "location": "泉烟小路所有天气；牙牙湖东岸（下雪、暴风雪），牙牙湖西岸（下雪），美纳斯湖北岸（下雪、暴风雪），巨人凳岩（下雪、暴风雪），拳关丘陵（下雪、暴风雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -32187,7 +32187,7 @@
   "species_id": 361,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "登顶隧道所有天气；巨人睡榻雪冰，雪中溪谷雪冰，巨人鞋底{{Sup/W|雪}}{{Sup/W|冰}}",
+  "location": "登顶隧道所有天气；巨人睡榻（下雪、暴风雪），雪中溪谷（下雪、暴风雪），巨人鞋底（下雪、暴风雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -32286,7 +32286,7 @@
   "species_id": 362,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "10号道路所有天气；逆鳞湖雪",
+  "location": "10号道路所有天气；逆鳞湖（下雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -32295,7 +32295,7 @@
   "species_id": 362,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "9号道路所有天气；瞭望塔旧址雪冰，巨人凳岩雪冰，巨人帽岩{{Sup/W|雪}}{{Sup/W|冰}}",
+  "location": "9号道路所有天气；瞭望塔旧址（下雪、暴风雪），巨人凳岩（下雪、暴风雪），巨人帽岩（下雪、暴风雪）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -32331,7 +32331,7 @@
   "species_id": 362,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原冰，巨人睡榻雪冰，雪中溪谷雪{{Sup/W|冰}}",
+  "location": "起橇雪原（暴风雪），巨人睡榻（下雪、暴风雪），雪中溪谷（下雪、暴风雪）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -32430,7 +32430,7 @@
   "species_id": 363,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "冻海晴阴雨雷{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|雾}}",
+  "location": "冻海（晴朗、阴天、雨天、雷雨、下雪、暴风雪、大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -32592,7 +32592,7 @@
   "species_id": 365,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "冻海晴阴雪冰{{Sup/W|雾}}",
+  "location": "冻海（晴朗、阴天、下雪、暴风雪、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -32736,7 +32736,7 @@
   "species_id": 369,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "球湖湖畔晴阴雨雷{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|雾}}",
+  "location": "球湖湖畔（晴朗、阴天、雨天、雷雨、烈日、下雪、大雾）",
   "method": "冲浪可见",
   "note": "",
   "form": ""
@@ -32745,7 +32745,7 @@
   "species_id": 369,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "球湖湖畔晴阴雨雷{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|冰}}",
+  "location": "球湖湖畔（晴朗、阴天、雨天、雷雨、烈日、下雪、暴风雪）",
   "method": "冲浪定点",
   "note": "",
   "form": ""
@@ -33051,7 +33051,7 @@
   "species_id": 373,
   "game": "sword-shield",
   "version_label": "剑·扩展票",
-  "location": "登顶隧道所有天气；通顶雪道晴",
+  "location": "登顶隧道所有天气；通顶雪道（晴朗）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -34995,7 +34995,7 @@
   "species_id": 403,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "挑战海滩雨雷，挑战之路雨雷，锻炼平原{{Sup/W|雨}}{{Sup/W|雷}}",
+  "location": "挑战海滩（雨天、雷雨），挑战之路（雨天、雷雨），锻炼平原（雨天、雷雨）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -35004,7 +35004,7 @@
   "species_id": 403,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "挑战海滩雨雷，挑战之路雨雷，锻炼平原{{Sup/W|雨}}{{Sup/W|雷}}，锅底沙漠{{Sup/W|雨}}",
+  "location": "挑战海滩（雨天、雷雨），挑战之路（雨天、雷雨），锻炼平原（雨天、雷雨），锅底沙漠（雨天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -35103,7 +35103,7 @@
   "species_id": 404,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野雷，清凉湿原雷，圆环海湾雷，锻炼平原雷",
+  "location": "揖礼原野（雷雨），清凉湿原（雷雨），圆环海湾（雷雨），锻炼平原（雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -35202,7 +35202,7 @@
   "species_id": 405,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "专注森林雷，清凉湿原雷，挑战海滩雷，圆环海湾雷，锻炼平原{{Sup/W|雷}}",
+  "location": "专注森林（雷雨），清凉湿原（雷雨），挑战海滩（雷雨），圆环海湾（雷雨），锻炼平原（雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -35292,7 +35292,7 @@
   "species_id": 406,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "4号道路所有天气；沐光森林晴阴雨雷{{Sup/W|曝}}{{Sup/W|雾}}，煦丽草原{{Sup/W|阴}}，牙牙湖东岸{{Sup/W|阴}}，巨人镜池{{Sup/W|晴}}",
+  "location": "4号道路所有天气；沐光森林（晴朗、阴天、雨天、雷雨、烈日、大雾），煦丽草原（阴天），牙牙湖东岸（阴天），巨人镜池（晴朗）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -35301,7 +35301,7 @@
   "species_id": 406,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖西岸阴",
+  "location": "牙牙湖西岸（阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -35391,7 +35391,7 @@
   "species_id": 407,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "拳关丘陵阴雾",
+  "location": "拳关丘陵（阴天、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -35841,7 +35841,7 @@
   "species_id": 415,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原晴",
+  "location": "煦丽草原（晴朗）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -35868,7 +35868,7 @@
   "species_id": 415,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "蜂巢岛阴雨雷",
+  "location": "蜂巢岛（阴天、雨天、雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -35958,7 +35958,7 @@
   "species_id": 416,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原晴",
+  "location": "煦丽草原（晴朗）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -36426,7 +36426,7 @@
   "species_id": 422,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "第二矿山所有天气；机擎河岸雷，桥间空地雨雷，巨石原野雨，巨人镜池{{Sup/W|雨}}，巨人帽岩{{Sup/W|雨}}{{Sup/W|雷}}",
+  "location": "第二矿山所有天气；机擎河岸（雷雨），桥间空地（雨天、雷雨），巨石原野（雨天），巨人镜池（雨天），巨人帽岩（雨天、雷雨）",
   "method": "随机",
   "note": "",
   "form": "E"
@@ -36768,7 +36768,7 @@
   "species_id": 425,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "瞭望塔旧址晴曝雪冰",
+  "location": "瞭望塔旧址（晴朗、烈日、下雪、暴风雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -36777,7 +36777,7 @@
   "species_id": 425,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "5号道路所有天气；瞭望塔旧址晴阴雷曝{{Sup/W|雪}}，美纳斯湖北岸{{Sup/W|雾}}，美纳斯湖南岸{{Sup/W|晴}}{{Sup/W|雾}}",
+  "location": "5号道路所有天气；瞭望塔旧址（晴朗、阴天、雷雨、烈日、下雪），美纳斯湖北岸（大雾），美纳斯湖南岸（晴朗、大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -36786,7 +36786,7 @@
   "species_id": 425,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "美纳斯湖南岸所有天气；美纳斯湖北岸晴阴雷曝{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "美纳斯湖南岸所有天气；美纳斯湖北岸（晴朗、阴天、雷雨、烈日、下雪、暴风雪、沙暴、大雾）",
   "method": "冲浪可见",
   "note": "",
   "form": ""
@@ -36813,7 +36813,7 @@
   "species_id": 425,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "圆环海湾雾",
+  "location": "圆环海湾（大雾）",
   "method": "随机，可见",
   "note": "",
   "form": ""
@@ -36822,7 +36822,7 @@
   "species_id": 425,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野雾，圆环海湾雾，健身之海雾，离岛海域雾，列岛海域{{Sup/W|雾}}，蜂巢海{{Sup/W|雾}}，蜂巢岛{{Sup/W|雾}}",
+  "location": "揖礼原野（大雾），圆环海湾（大雾），健身之海（大雾），离岛海域（大雾），列岛海域（大雾），蜂巢海（大雾），蜂巢岛（大雾）",
   "method": "冲浪可见",
   "note": "",
   "form": ""
@@ -36840,7 +36840,7 @@
   "species_id": 425,
   "game": "brilliant-diamond-shining-pearl",
   "version_label": "晶灿钻石/明亮珍珠",
-  "location": "山谷发电厂门外",
+  "location": "山谷发电厂门外（星期五）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -36894,7 +36894,7 @@
   "species_id": 426,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖之眼雾",
+  "location": "牙牙湖之眼（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -36903,7 +36903,7 @@
   "species_id": 426,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "瞭望塔旧址晴曝雪，美纳斯湖北岸雾，美纳斯湖南岸{{Sup/W|雾}}",
+  "location": "瞭望塔旧址（晴朗、烈日、下雪），美纳斯湖北岸（大雾），美纳斯湖南岸（大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -36912,7 +36912,7 @@
   "species_id": 426,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "美纳斯湖南岸晴阴冰雾",
+  "location": "美纳斯湖南岸（晴朗、阴天、暴风雪、大雾）",
   "method": "冲浪定点",
   "note": "",
   "form": ""
@@ -36939,7 +36939,7 @@
   "species_id": 426,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "挑战海滩阴雾，挑战之路雾，锻炼平原雾",
+  "location": "挑战海滩（阴天、大雾），挑战之路（大雾），锻炼平原（大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -37119,7 +37119,7 @@
   "species_id": 428,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野晴曝沙，清凉湿原晴{{Sup/W|沙}}，挑战海滩{{Sup/W|晴}}{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "揖礼原野（晴朗、烈日、沙暴），清凉湿原（晴朗、沙暴），挑战海滩（晴朗、沙暴、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -37542,7 +37542,7 @@
   "species_id": 434,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "美纳斯湖北岸所有天气；沐光森林阴，巨人帽岩晴",
+  "location": "美纳斯湖北岸所有天气；沐光森林（阴天），巨人帽岩（晴朗）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -37551,7 +37551,7 @@
   "species_id": 434,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "3所有天气；美纳斯湖南岸晴阴雨{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|沙}}，美纳斯湖北岸{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|曝}}{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "3所有天气；美纳斯湖南岸（晴朗、阴天、雨天、雷雨、烈日、沙暴），美纳斯湖北岸（晴朗、阴天、烈日、沙暴、大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -37650,7 +37650,7 @@
   "species_id": 435,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "沙尘洼地阴，逆鳞湖阴",
+  "location": "沙尘洼地（阴天），逆鳞湖（阴天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -37659,7 +37659,7 @@
   "species_id": 435,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "美纳斯湖南岸晴阴雪冰{{Sup/W|沙}}{{Sup/W|雾}}，美纳斯湖北岸{{Sup/W|雨}}{{Sup/W|曝}}{{Sup/W|沙}}，沙尘洼地{{Sup/W|阴}}",
+  "location": "美纳斯湖南岸（晴朗、阴天、下雪、暴风雪、沙暴、大雾），美纳斯湖北岸（雨天、烈日、沙暴），沙尘洼地（阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -37776,7 +37776,7 @@
   "species_id": 436,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "美纳斯湖南岸雾，桥间空地雨雷，巨石原野雨{{Sup/W|雷}}{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|雾}}，巨人凳岩{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|沙}}",
+  "location": "美纳斯湖南岸（大雾），桥间空地（雨天、雷雨），巨石原野（雨天、雷雨、下雪、暴风雪、大雾），巨人凳岩（晴朗、阴天、雨天、雷雨、烈日、下雪、暴风雪、沙暴）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -37893,7 +37893,7 @@
   "species_id": 437,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "8号道路所有天气；沙尘洼地冰，逆鳞湖雾",
+  "location": "8号道路所有天气；沙尘洼地（暴风雪），逆鳞湖（大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -37902,7 +37902,7 @@
   "species_id": 437,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖之眼冰",
+  "location": "牙牙湖之眼（暴风雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -37911,7 +37911,7 @@
   "species_id": 437,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人凳岩阴雨雷，沙尘洼地晴{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|雪}}{{Sup/W|冰}}，巨石原野{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|雾}}，牙牙湖东岸{{Sup/W|雾}}，桥间空地{{Sup/W|雨}}{{Sup/W|雷}}",
+  "location": "巨人凳岩（阴天、雨天、雷雨），沙尘洼地（晴朗、雨天、雷雨、下雪、暴风雪），巨石原野（雨天、雷雨、下雪、暴风雪、大雾），牙牙湖东岸（大雾），桥间空地（雨天、雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -37947,7 +37947,7 @@
   "species_id": 437,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻所有天气；巨人鞋底晴阴",
+  "location": "巨人睡榻所有天气；巨人鞋底（晴朗、阴天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -38055,7 +38055,7 @@
   "species_id": 438,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "桥间空地沙，巨石原野沙",
+  "location": "桥间空地（沙暴），巨石原野（沙暴）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -38154,7 +38154,7 @@
   "species_id": 439,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原冰",
+  "location": "煦丽草原（暴风雪）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -38649,7 +38649,7 @@
   "species_id": 445,
   "game": "sword-shield",
   "version_label": "盾·扩展票",
-  "location": "登顶隧道所有天气；通顶雪道曝",
+  "location": "登顶隧道所有天气；通顶雪道（烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -38712,7 +38712,7 @@
   "species_id": 446,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "机擎河岸晴",
+  "location": "机擎河岸（晴朗）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -38739,7 +38739,7 @@
   "species_id": 446,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "球湖湖畔晴阴雨雷{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|雾}}",
+  "location": "球湖湖畔（晴朗、阴天、雨天、雷雨、烈日、下雪、大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -38856,7 +38856,7 @@
   "species_id": 447,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人帽岩冰",
+  "location": "巨人帽岩（暴风雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -38982,7 +38982,7 @@
   "species_id": 448,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "美纳斯湖北岸晴",
+  "location": "美纳斯湖北岸（晴朗）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -39099,7 +39099,7 @@
   "species_id": 449,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "沙尘洼地曝沙，巨人镜池曝沙",
+  "location": "沙尘洼地（烈日、沙暴），巨人镜池（烈日、沙暴）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -39180,7 +39180,7 @@
   "species_id": 450,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "8号道路所有天气；巨人镜池沙，逆鳞湖沙",
+  "location": "8号道路所有天气；巨人镜池（沙暴），逆鳞湖（沙暴）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -39252,7 +39252,7 @@
   "species_id": 451,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "6号道路所有天气；机擎河岸阴，巨人镜池晴阴雨{{Sup/W|雷}}{{Sup/W|曝}}",
+  "location": "6号道路所有天气；机擎河岸（阴天），巨人镜池（晴朗、阴天、雨天、雷雨、烈日）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -39261,7 +39261,7 @@
   "species_id": 451,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "机擎河岸晴雨雷曝{{Sup/W|沙}}",
+  "location": "机擎河岸（晴朗、雨天、雷雨、烈日、沙暴）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -39351,7 +39351,7 @@
   "species_id": 452,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖阴",
+  "location": "逆鳞湖（阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -39360,7 +39360,7 @@
   "species_id": 452,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "桥间空地阴，机擎河岸晴雨雷{{Sup/W|曝}}",
+  "location": "桥间空地（阴天），机擎河岸（晴朗、雨天、雷雨、烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -39387,7 +39387,7 @@
   "species_id": 452,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "清凉湿原晴阴雨沙，挑战海滩{{Sup/W|阴}}{{Sup/W|雨}}，锻炼平原{{Sup/W|阴}}{{Sup/W|曝}}",
+  "location": "清凉湿原（晴朗、阴天、雨天、沙暴），挑战海滩（阴天、雨天），锻炼平原（阴天、烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -39459,7 +39459,7 @@
   "species_id": 453,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "第二矿山所有天气；桥间空地阴沙，巨石原野阴，巨人镜池晴{{Sup/W|阴}}，巨人镜池{{Sup/W|晴}}{{Sup/W|阴}}，巨人帽岩{{Sup/W|晴}}{{Sup/W|阴}}",
+  "location": "第二矿山所有天气；桥间空地（阴天、沙暴），巨石原野（阴天），巨人镜池（晴朗、阴天），巨人镜池（晴朗、阴天），巨人帽岩（晴朗、阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -39486,7 +39486,7 @@
   "species_id": 453,
   "game": "sword-shield",
   "version_label": "盾·扩展票",
-  "location": "清凉湿原阴，专注森林阴",
+  "location": "清凉湿原（阴天），专注森林（阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -39495,7 +39495,7 @@
   "species_id": 453,
   "game": "sword-shield",
   "version_label": "盾·扩展票",
-  "location": "清凉湿原阴",
+  "location": "清凉湿原（阴天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -39576,7 +39576,7 @@
   "species_id": 454,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "巨石原野阴",
+  "location": "巨石原野（阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -39603,7 +39603,7 @@
   "species_id": 454,
   "game": "sword-shield",
   "version_label": "盾·扩展票",
-  "location": "挑战之路雨雷，锻炼平原雨雷",
+  "location": "挑战之路（雨天、雷雨），锻炼平原（雨天、雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -39882,7 +39882,7 @@
   "species_id": 458,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野，健身之海所有天气；列岛海域晴沙，离岛海域晴沙，蜂巢海{{Sup/W|晴}}{{Sup/W|沙}}，蜂巢岛{{Sup/W|晴}}{{Sup/W|沙}}",
+  "location": "揖礼原野，健身之海所有天气；列岛海域（晴朗、沙暴），离岛海域（晴朗、沙暴），蜂巢海（晴朗、沙暴），蜂巢岛（晴朗、沙暴）",
   "method": "冲浪可见",
   "note": "",
   "form": ""
@@ -39927,7 +39927,7 @@
   "species_id": 459,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "泉烟小路所有天气；沐光森林雪，瞭望塔旧址雪冰，牙牙湖东岸雪{{Sup/W|冰}}，牙牙湖之眼{{Sup/W|雪}}{{Sup/W|冰}}，美纳斯湖南岸{{Sup/W|冰}}，美纳斯湖北岸{{Sup/W|雪}}{{Sup/W|冰}}，巨人镜池{{Sup/W|雪}}{{Sup/W|冰}}，巨人帽岩{{Sup/W|雪}}",
+  "location": "泉烟小路所有天气；沐光森林（下雪），瞭望塔旧址（下雪、暴风雪），牙牙湖东岸（下雪、暴风雪），牙牙湖之眼（下雪、暴风雪），美纳斯湖南岸（暴风雪），美纳斯湖北岸（下雪、暴风雪），巨人镜池（下雪、暴风雪），巨人帽岩（下雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -39936,7 +39936,7 @@
   "species_id": 459,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "10号道路所有天气；牙牙湖东岸雪，牙牙湖之眼雪冰，美纳斯湖南岸雪{{Sup/W|冰}}，沙尘洼地{{Sup/W|冰}}，巨人凳岩{{Sup/W|雪}}{{Sup/W|冰}}，巨人镜池{{Sup/W|冰}}",
+  "location": "10号道路所有天气；牙牙湖东岸（下雪），牙牙湖之眼（下雪、暴风雪），美纳斯湖南岸（下雪、暴风雪），沙尘洼地（暴风雪），巨人凳岩（下雪、暴风雪），巨人镜池（暴风雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -40044,7 +40044,7 @@
   "species_id": 460,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "10号道路所有天气；沙尘洼地雪",
+  "location": "10号道路所有天气；沙尘洼地（下雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -40053,7 +40053,7 @@
   "species_id": 460,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖雪",
+  "location": "逆鳞湖（下雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -40062,7 +40062,7 @@
   "species_id": 460,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "10所有天气；牙牙湖之眼雪冰，拳关丘陵雪{{Sup/W|冰}}，巨人镜池{{Sup/W|雪}}，巨人凳岩{{Sup/W|雪}}{{Sup/W|冰}}",
+  "location": "10所有天气；牙牙湖之眼（下雪、暴风雪），拳关丘陵（下雪、暴风雪），巨人镜池（下雪），巨人凳岩（下雪、暴风雪）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -40089,7 +40089,7 @@
   "species_id": 460,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "冰点雪原晴阴曝雪，起橇雪原{{Sup/W|雪}}",
+  "location": "冰点雪原（晴朗、阴天、烈日、下雪），起橇雪原（下雪）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -40188,7 +40188,7 @@
   "species_id": 461,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "桥间空地冰",
+  "location": "桥间空地（暴风雪）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -40215,7 +40215,7 @@
   "species_id": 461,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原阴，冰点雪原阴，雪中溪谷阴",
+  "location": "起橇雪原（阴天），冰点雪原（阴天），雪中溪谷（阴天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -40296,7 +40296,7 @@
   "species_id": 462,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "離島海域，挑戰海灘，圆环海湾",
+  "location": "離島海域（雷雨），挑戰海灘（雷雨），圆环海湾（雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -40377,7 +40377,7 @@
   "species_id": 463,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "清凉湿原晴雨沙",
+  "location": "清凉湿原（晴朗、雨天、沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -40440,7 +40440,7 @@
   "species_id": 464,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "锅底沙漠晴曝沙雾",
+  "location": "锅底沙漠（晴朗、烈日、沙暴、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -40512,7 +40512,7 @@
   "species_id": 465,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "专注森林晴曝",
+  "location": "专注森林（晴朗、烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -40566,7 +40566,7 @@
   "species_id": 466,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻雷，冻海雷，三岔平原雷，球湖湖畔雷",
+  "location": "巨人睡榻（雷雨），冻海（雷雨），三岔平原（雷雨），球湖湖畔（雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -40638,7 +40638,7 @@
   "species_id": 467,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原曝，巨人睡榻曝，雪中溪谷曝，冻海曝，球湖湖畔{{Sup/W|曝}}",
+  "location": "起橇雪原（烈日），巨人睡榻（烈日），雪中溪谷（烈日），冻海（烈日），球湖湖畔（烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -40701,7 +40701,7 @@
   "species_id": 468,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "沙尘洼地雾",
+  "location": "沙尘洼地（大雾）",
   "method": "空中",
   "note": "",
   "form": ""
@@ -40809,7 +40809,7 @@
   "species_id": 470,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖晴",
+  "location": "逆鳞湖（晴朗）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -40827,7 +40827,7 @@
   "species_id": 470,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻晴",
+  "location": "巨人睡榻（晴朗）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -40917,7 +40917,7 @@
   "species_id": 471,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖雪冰",
+  "location": "逆鳞湖（下雪、暴风雪）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -40935,7 +40935,7 @@
   "species_id": 471,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻冰",
+  "location": "巨人睡榻（暴风雪）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -41088,7 +41088,7 @@
   "species_id": 473,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原晴阴曝雪{{Sup/W|冰}}",
+  "location": "起橇雪原（晴朗、阴天、烈日、下雪、暴风雪）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -41232,7 +41232,7 @@
   "species_id": 475,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "桥间空地",
+  "location": "桥间空地（晴朗、阴天、雨天、雷雨、烈日、沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -41250,7 +41250,7 @@
   "species_id": 475,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "挑战之路雾",
+  "location": "挑战之路（大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -41466,7 +41466,7 @@
   "species_id": 478,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "登顶隧道所有天气；起橇雪原冰，巨人睡榻雪冰，远古墓地雪{{Sup/W|冰}}，雪中溪谷{{Sup/W|雪}}{{Sup/W|冰}}",
+  "location": "登顶隧道所有天气；起橇雪原（暴风雪），巨人睡榻（下雪、暴风雪），远古墓地（下雪、暴风雪），雪中溪谷（下雪、暴风雪）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -41556,7 +41556,7 @@
   "species_id": 479,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖",
+  "location": "逆鳞湖（雨天、雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -43023,7 +43023,7 @@
   "species_id": 507,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "锻炼平原晴雾",
+  "location": "锻炼平原（晴朗、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -43068,7 +43068,7 @@
   "species_id": 508,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "锻炼平原晴",
+  "location": "锻炼平原（晴朗）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -43113,7 +43113,7 @@
   "species_id": 509,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "2号道路所有天气；沐光森林，瞭望塔旧址，牙牙湖东岸",
+  "location": "2号道路所有天气；沐光森林（大雾），瞭望塔旧址（大雾），牙牙湖东岸（大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -43122,7 +43122,7 @@
   "species_id": 509,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "机擎河岸所有天气；沐光森林，牙牙湖西岸，瞭望塔旧址，美纳斯湖北岸",
+  "location": "机擎河岸所有天气；沐光森林（大雾），牙牙湖西岸（晴朗、阴天、烈日、下雪、沙暴、大雾），瞭望塔旧址（雨天、雷雨、暴风雪、沙暴、大雾），美纳斯湖北岸（阴天、雨天、雷雨、下雪、暴风雪、大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -43176,7 +43176,7 @@
   "species_id": 510,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "7号道路、尖钉镇郊外所有天气；牙牙湖之眼雾，巨人凳岩雾，桥间空地晴",
+  "location": "7号道路、尖钉镇郊外所有天气；牙牙湖之眼（大雾），巨人凳岩（大雾），桥间空地（晴朗）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -43185,7 +43185,7 @@
   "species_id": 510,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "7号道路所有天气；巨人帽岩晴",
+  "location": "7号道路所有天气；巨人帽岩（晴朗）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -43491,7 +43491,7 @@
   "species_id": 517,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "微寐森林所有天气；煦丽草原雾，牙牙湖东岸雾，牙牙湖之眼雾，巨人帽岩阴{{Sup/W|雾}}",
+  "location": "微寐森林所有天气；煦丽草原（大雾），牙牙湖东岸（大雾），牙牙湖之眼（大雾），巨人帽岩（阴天、大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -43500,7 +43500,7 @@
   "species_id": 517,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "微寐森林所有天气；牙牙湖东岸雾，桥间空地雾，巨石原野雾，巨人凳岩雾",
+  "location": "微寐森林所有天气；牙牙湖东岸（大雾），桥间空地（大雾），巨石原野（大雾），巨人凳岩（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -43554,7 +43554,7 @@
   "species_id": 518,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "桥间空地雾，巨人凳岩雾",
+  "location": "桥间空地（大雾），巨人凳岩（大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -43626,7 +43626,7 @@
   "species_id": 519,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖东岸晴，瞭望塔旧址晴雨雷{{Sup/W|沙}}{{Sup/W|雾}}，美纳斯湖北岸{{Sup/W|晴}}",
+  "location": "牙牙湖东岸（晴朗），瞭望塔旧址（晴朗、雨天、雷雨、沙暴、大雾），美纳斯湖北岸（晴朗）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -43689,7 +43689,7 @@
   "species_id": 520,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人凳岩晴",
+  "location": "巨人凳岩（晴朗）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -43752,7 +43752,7 @@
   "species_id": 521,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖之眼晴阴雨雷{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|雾}}",
+  "location": "牙牙湖之眼（晴朗、阴天、雨天、雷雨、烈日、下雪、大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -43770,7 +43770,7 @@
   "species_id": 521,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨石原野阴，巨人镜池晴阴曝",
+  "location": "巨石原野（阴天），巨人镜池（晴朗、阴天、烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -43923,7 +43923,7 @@
   "species_id": 524,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "伽勒尔矿山，煦丽草原所有天气；巨石原野沙",
+  "location": "伽勒尔矿山，煦丽草原所有天气；巨石原野（沙暴）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -43986,7 +43986,7 @@
   "species_id": 525,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨石原野晴雷曝雪{{Sup/W|沙}}",
+  "location": "巨石原野（晴朗、雷雨、烈日、下雪、沙暴）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -43995,7 +43995,7 @@
   "species_id": 525,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "8号道路，巨人镜池，巨人帽岩所有天气；逆鳞湖沙",
+  "location": "8号道路，巨人镜池，巨人帽岩所有天气；逆鳞湖（沙暴）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -44049,7 +44049,7 @@
   "species_id": 526,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "沙尘洼地晴曝",
+  "location": "沙尘洼地（晴朗、烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -44112,7 +44112,7 @@
   "species_id": 527,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "伽勒尔矿山，瞭望塔旧址，桥间空地所有天气；巨人镜池晴",
+  "location": "伽勒尔矿山，瞭望塔旧址，桥间空地所有天气；巨人镜池（晴朗）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -44202,7 +44202,7 @@
   "species_id": 528,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "战斗洞窟，斗志洞窟所有天气；锻炼平原阴，挑战海滩阴",
+  "location": "战斗洞窟，斗志洞窟所有天气；锻炼平原（阴天），挑战海滩（阴天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -44256,7 +44256,7 @@
   "species_id": 529,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "伽勒尔矿山所有天气；巨石原野曝沙，拳关丘陵沙，巨人帽岩曝{{Sup/W|沙}}",
+  "location": "伽勒尔矿山所有天气；巨石原野（烈日、沙暴），拳关丘陵（沙暴），巨人帽岩（烈日、沙暴）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -44265,7 +44265,7 @@
   "species_id": 529,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "伽勒尔矿山所有天气；沙尘洼地曝沙，巨人镜池曝沙",
+  "location": "伽勒尔矿山所有天气；沙尘洼地（烈日、沙暴），巨人镜池（烈日、沙暴）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -44364,7 +44364,7 @@
   "species_id": 530,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人镜池所有天气；逆鳞湖沙",
+  "location": "巨人镜池所有天气；逆鳞湖（沙暴）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -44373,7 +44373,7 @@
   "species_id": 530,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人帽岩曝沙",
+  "location": "巨人帽岩（烈日、沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -44463,7 +44463,7 @@
   "species_id": 531,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原，冰点雪原，巨人睡榻，远古墓地，雪中溪谷，登顶隧道，通顶雪道，巨人鞋底，海鸣洞窟，； 冻海，三岔平原，湖畔洞窟所有天气，球湖湖畔晴阴雨雷{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "起橇雪原，冰点雪原，巨人睡榻，远古墓地，雪中溪谷，登顶隧道，通顶雪道，巨人鞋底，海鸣洞窟，； 冻海，三岔平原，湖畔洞窟所有天气，球湖湖畔（晴朗、阴天、雨天、雷雨、烈日、下雪、沙暴、大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -44598,7 +44598,7 @@
   "species_id": 533,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "巨石原野晴雷曝雪",
+  "location": "巨石原野（晴朗、雷雨、烈日、下雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -44607,7 +44607,7 @@
   "species_id": 533,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "沙尘洼地雪",
+  "location": "沙尘洼地（下雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -44634,7 +44634,7 @@
   "species_id": 533,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻晴，巨人鞋底晴",
+  "location": "巨人睡榻（晴朗），巨人鞋底（晴朗）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -44706,7 +44706,7 @@
   "species_id": 534,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "机擎河岸晴阴雨雷{{Sup/W|雪}}{{Sup/W|雾}}",
+  "location": "机擎河岸（晴朗、阴天、雨天、雷雨、下雪、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -44724,7 +44724,7 @@
   "species_id": 534,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻晴，巨人鞋底晴",
+  "location": "巨人睡榻（晴朗），巨人鞋底（晴朗）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -44769,7 +44769,7 @@
   "species_id": 535,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "沐光森林雨，瞭望塔旧址雨，牙牙湖西岸雨雷，美纳斯湖南岸{{Sup/W|晴}}{{Sup/W|雨}}{{Sup/W|沙}}，美纳斯湖北岸{{Sup/W|雨}}",
+  "location": "沐光森林（雨天），瞭望塔旧址（雨天），牙牙湖西岸（雨天、雷雨），美纳斯湖南岸（晴朗、雨天、沙暴），美纳斯湖北岸（雨天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -44778,7 +44778,7 @@
   "species_id": 535,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "沐光森林雨雷，牙牙湖西岸晴阴{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|雾}}，美纳斯湖南岸{{Sup/W|雨}}{{Sup/W|雷}}",
+  "location": "沐光森林（雨天、雷雨），牙牙湖西岸（晴朗、阴天、雨天、雷雨、下雪、暴风雪、大雾），美纳斯湖南岸（雨天、雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -44823,7 +44823,7 @@
   "species_id": 536,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "桥间空地所有天气；巨人帽岩雨",
+  "location": "桥间空地所有天气；巨人帽岩（雨天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -44832,7 +44832,7 @@
   "species_id": 536,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人凳岩雷，沙尘洼地雨雷，美纳斯湖北岸雨{{Sup/W|雷}}，巨人镜池{{Sup/W|雨}}{{Sup/W|雷}}，拳关丘陵{{Sup/W|雨}}",
+  "location": "巨人凳岩（雷雨），沙尘洼地（雨天、雷雨），美纳斯湖北岸（雨天、雷雨），巨人镜池（雨天、雷雨），拳关丘陵（雨天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -44841,7 +44841,7 @@
   "species_id": 536,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖西岸阴雪冰沙{{Sup/W|雾}}，美纳斯湖南岸{{Sup/W|雨}}{{Sup/W|雷}}",
+  "location": "牙牙湖西岸（阴天、下雪、暴风雪、沙暴、大雾），美纳斯湖南岸（雨天、雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -44913,7 +44913,7 @@
   "species_id": 537,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖之眼雨雷，逆鳞湖雨",
+  "location": "牙牙湖之眼（雨天、雷雨），逆鳞湖（雨天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -44922,7 +44922,7 @@
   "species_id": 537,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "沐光森林雨雷，牙牙湖之眼雷，美纳斯湖北岸阴{{Sup/W|雷}}，沙尘洼地{{Sup/W|雨}}{{Sup/W|雷}}，桥间空地{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|雾}}，巨人帽岩{{Sup/W|雨}}，巨人镜池{{Sup/W|雨}}",
+  "location": "沐光森林（雨天、雷雨），牙牙湖之眼（雷雨），美纳斯湖北岸（阴天、雷雨），沙尘洼地（雨天、雷雨），桥间空地（晴朗、阴天、雨天、雷雨、大雾），巨人帽岩（雨天），巨人镜池（雨天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -44994,7 +44994,7 @@
   "species_id": 538,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "泉煙小路，機擎市郊外所有天气；桥间空地，機擎河岸，巨人鏡池",
+  "location": "泉煙小路，機擎市郊外所有天气；桥间空地（阴天），機擎河岸（阴天），巨人鏡池（阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -45057,7 +45057,7 @@
   "species_id": 539,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "泉煙小路，機擎市郊外所有天气；桥间空地，機擎河岸，巨人鏡池",
+  "location": "泉煙小路，機擎市郊外所有天气；桥间空地（阴天），機擎河岸（阴天），巨人鏡池（阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -45399,7 +45399,7 @@
   "species_id": 545,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "专注森林阴",
+  "location": "专注森林（阴天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -45489,7 +45489,7 @@
   "species_id": 546,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨石原野",
+  "location": "巨石原野（阴天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -45516,7 +45516,7 @@
   "species_id": 546,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "球湖湖畔晴雨",
+  "location": "球湖湖畔（晴朗、雨天）",
   "method": "随机，可见",
   "note": "",
   "form": ""
@@ -45588,7 +45588,7 @@
   "species_id": 547,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "球湖湖畔晴雨",
+  "location": "球湖湖畔（晴朗、雨天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -45732,7 +45732,7 @@
   "species_id": 549,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "清凉湿原曝，挑战海滩曝，锻炼平原曝，蜂巢岛晴{{Sup/W|曝}}{{Sup/W|沙}}",
+  "location": "清凉湿原（烈日），挑战海滩（烈日），锻炼平原（烈日），蜂巢岛（晴朗、烈日、沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -45876,7 +45876,7 @@
   "species_id": 550,
   "game": "sword-shield",
   "version_label": "剑·扩展票",
-  "location": "巨人鞋底，海鸣洞窟，球湖湖畔所有天气；巨人睡榻晴阴雨雷{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|冰}}",
+  "location": "巨人鞋底，海鸣洞窟，球湖湖畔所有天气；巨人睡榻（晴朗、阴天、雨天、雷雨、烈日、下雪、暴风雪）",
   "method": "冲浪可见",
   "note": "",
   "form": ""
@@ -45984,7 +45984,7 @@
   "species_id": 550,
   "game": "sword-shield",
   "version_label": "盾·扩展票",
-  "location": "巨人鞋底，海鸣洞窟，球湖湖畔所有天气；巨人睡榻晴阴雨雷{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|冰}}",
+  "location": "巨人鞋底，海鸣洞窟，球湖湖畔所有天气；巨人睡榻（晴朗、阴天、雨天、雷雨、烈日、下雪、暴风雪）",
   "method": "冲浪可见",
   "note": "",
   "form": "B"
@@ -46119,7 +46119,7 @@
   "species_id": 551,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "锅底沙漠晴阴雨曝{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "锅底沙漠（晴朗、阴天、雨天、烈日、沙暴、大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -46200,7 +46200,7 @@
   "species_id": 552,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "锅底沙漠阴雨",
+  "location": "锅底沙漠（阴天、雨天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -46281,7 +46281,7 @@
   "species_id": 553,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "锅底沙漠阴雨",
+  "location": "锅底沙漠（阴天、雨天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -46425,7 +46425,7 @@
   "species_id": 554,
   "game": "sword-shield",
   "version_label": "剑·扩展票",
-  "location": "雪中溪谷冰",
+  "location": "雪中溪谷（暴风雪）",
   "method": "可见",
   "note": "",
   "form": "G"
@@ -46506,7 +46506,7 @@
   "species_id": 555,
   "game": "sword-shield",
   "version_label": "剑·扩展票",
-  "location": "雪中溪谷冰",
+  "location": "雪中溪谷（暴风雪）",
   "method": "定点",
   "note": "",
   "form": "G"
@@ -46533,7 +46533,7 @@
   "species_id": 556,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "6号道路所有天气；桥间空地曝，巨石原野曝，拳关丘陵曝",
+  "location": "6号道路所有天气；桥间空地（烈日），巨石原野（烈日），拳关丘陵（烈日）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -46596,7 +46596,7 @@
   "species_id": 557,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原沙，瞭望塔旧址沙，牙牙湖东岸沙，巨人凳岩曝{{Sup/W|沙}}，美纳斯湖北岸{{Sup/W|沙}}，拳关丘陵{{Sup/W|沙}}",
+  "location": "煦丽草原（沙暴），瞭望塔旧址（沙暴），牙牙湖东岸（沙暴），巨人凳岩（烈日、沙暴），美纳斯湖北岸（沙暴），拳关丘陵（沙暴）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -46605,7 +46605,7 @@
   "species_id": 557,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖西岸曝沙，美纳斯湖南岸沙，美纳斯湖北岸曝{{Sup/W|沙}}，巨石原野{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "牙牙湖西岸（烈日、沙暴），美纳斯湖南岸（沙暴），美纳斯湖北岸（烈日、沙暴），巨石原野（晴朗、阴天、雨天、烈日、下雪、暴风雪、沙暴、大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -46677,7 +46677,7 @@
   "species_id": 558,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖之眼沙",
+  "location": "牙牙湖之眼（沙暴）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -46686,7 +46686,7 @@
   "species_id": 558,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖之眼曝沙",
+  "location": "牙牙湖之眼（烈日、沙暴）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -46695,7 +46695,7 @@
   "species_id": 558,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "8号道路所有天气；煦丽草原沙，巨石原野晴阴曝{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|沙}}{{Sup/W|雾}}，美纳斯湖南岸{{Sup/W|曝}}",
+  "location": "8号道路所有天气；煦丽草原（沙暴），巨石原野（晴朗、阴天、烈日、下雪、暴风雪、沙暴、大雾），美纳斯湖南岸（烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -46722,7 +46722,7 @@
   "species_id": 558,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "斗志洞窟所有天气；挑战之路沙，锻炼平原沙",
+  "location": "斗志洞窟所有天气；挑战之路（沙暴），锻炼平原（沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -46785,7 +46785,7 @@
   "species_id": 559,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "第二矿山所有天气；桥间空地阴沙，巨石原野阴，沙尘洼地晴{{Sup/W|阴}}，巨人帽岩{{Sup/W|晴}}{{Sup/W|阴}}，巨人镜池{{Sup/W|晴}}{{Sup/W|阴}}",
+  "location": "第二矿山所有天气；桥间空地（阴天、沙暴），巨石原野（阴天），沙尘洼地（晴朗、阴天），巨人帽岩（晴朗、阴天），巨人镜池（晴朗、阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -46821,7 +46821,7 @@
   "species_id": 559,
   "game": "sword-shield",
   "version_label": "剑·扩展票",
-  "location": "挑战之路沙，锅底沙漠沙",
+  "location": "挑战之路（沙暴），锅底沙漠（沙暴）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -46830,7 +46830,7 @@
   "species_id": 559,
   "game": "sword-shield",
   "version_label": "剑·扩展票",
-  "location": "清凉湿原阴",
+  "location": "清凉湿原（阴天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -46938,7 +46938,7 @@
   "species_id": 560,
   "game": "sword-shield",
   "version_label": "剑·扩展票",
-  "location": "挑战之路雨雷，锻炼平原雨雷",
+  "location": "挑战之路（雨天、雷雨），锻炼平原（雨天、雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -47019,7 +47019,7 @@
   "species_id": 561,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨石原野所有天气；逆鳞湖晴",
+  "location": "巨石原野所有天气；逆鳞湖（晴朗）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -47028,7 +47028,7 @@
   "species_id": 561,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "机擎河岸所有天气；巨石原野晴雨雷曝{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|沙}}{{Sup/W|雾}}，沙尘洼地{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|雾}}",
+  "location": "机擎河岸所有天气；巨石原野（晴朗、雨天、雷雨、烈日、下雪、暴风雪、沙暴、大雾），沙尘洼地（阴天、雨天、雷雨、烈日、下雪、暴风雪、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -47262,7 +47262,7 @@
   "species_id": 564,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "冻海晴阴雨雷{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|雾}}",
+  "location": "冻海（晴朗、阴天、雨天、雷雨、下雪、暴风雪、大雾）",
   "method": "可见，冲浪可见",
   "note": "",
   "form": ""
@@ -47271,7 +47271,7 @@
   "species_id": 564,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "冻海晴阴雨雷{{Sup/W|曝}}{{Sup/W|雾}}",
+  "location": "冻海（晴朗、阴天、雨天、雷雨、烈日、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -47307,7 +47307,7 @@
   "species_id": 565,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "冻海晴雨雷曝",
+  "location": "冻海（晴朗、雨天、雷雨、烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -47478,7 +47478,7 @@
   "species_id": 569,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖阴",
+  "location": "逆鳞湖（阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -47487,7 +47487,7 @@
   "species_id": 569,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "桥间空地所有天气；牙牙湖东岸晴阴雨雷",
+  "location": "桥间空地所有天气；牙牙湖东岸（晴朗、阴天、雨天、雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -47613,7 +47613,7 @@
   "species_id": 570,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "专注森林雾",
+  "location": "专注森林（大雾）",
   "method": "随机，可见",
   "note": "",
   "form": ""
@@ -47622,7 +47622,7 @@
   "species_id": 570,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野阴雾，清凉湿原阴雾，专注森林{{Sup/W|雾}}",
+  "location": "揖礼原野（阴天、大雾），清凉湿原（阴天、大雾），专注森林（大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -47703,7 +47703,7 @@
   "species_id": 571,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "圆环海湾阴雾，离岛海域阴",
+  "location": "圆环海湾（阴天、大雾），离岛海域（阴天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -47784,7 +47784,7 @@
   "species_id": 572,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原晴雪，牙牙湖东岸阴曝{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "煦丽草原（晴朗、下雪），牙牙湖东岸（阴天、烈日、下雪、暴风雪、沙暴、大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -47847,7 +47847,7 @@
   "species_id": 573,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人帽岩晴阴雾",
+  "location": "巨人帽岩（晴朗、阴天、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -47910,7 +47910,7 @@
   "species_id": 574,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "巨人帽岩雾",
+  "location": "巨人帽岩（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -47937,7 +47937,7 @@
   "species_id": 574,
   "game": "sword-shield",
   "version_label": "剑·扩展票",
-  "location": "起橇雪原雾，冰点雪原雾",
+  "location": "起橇雪原（大雾），冰点雪原（大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -47991,7 +47991,7 @@
   "species_id": 575,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "巨人帽岩雾，巨人镜池雾，沙尘洼地雾",
+  "location": "巨人帽岩（大雾），巨人镜池（大雾），沙尘洼地（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -48018,7 +48018,7 @@
   "species_id": 575,
   "game": "sword-shield",
   "version_label": "剑·扩展票",
-  "location": "起橇雪原雾，冰点雪原雾",
+  "location": "起橇雪原（大雾），冰点雪原（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -48072,7 +48072,7 @@
   "species_id": 576,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "逆鳞湖雾",
+  "location": "逆鳞湖（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -48099,7 +48099,7 @@
   "species_id": 576,
   "game": "sword-shield",
   "version_label": "剑·扩展票",
-  "location": "起橇雪原雾，冰点雪原雾",
+  "location": "起橇雪原（大雾），冰点雪原（大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -48162,7 +48162,7 @@
   "species_id": 577,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "巨人帽岩雾",
+  "location": "巨人帽岩（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -48180,7 +48180,7 @@
   "species_id": 577,
   "game": "sword-shield",
   "version_label": "盾·扩展票",
-  "location": "起橇雪原雾，冰点雪原雾",
+  "location": "起橇雪原（大雾），冰点雪原（大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -48243,7 +48243,7 @@
   "species_id": 578,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "沙尘洼地雾，巨人镜池雾",
+  "location": "沙尘洼地（大雾），巨人镜池（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -48261,7 +48261,7 @@
   "species_id": 578,
   "game": "sword-shield",
   "version_label": "盾·扩展票",
-  "location": "起橇雪原雾，冰点雪原雾",
+  "location": "起橇雪原（大雾），冰点雪原（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -48324,7 +48324,7 @@
   "species_id": 579,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "逆鳞湖雾",
+  "location": "逆鳞湖（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -48342,7 +48342,7 @@
   "species_id": 579,
   "game": "sword-shield",
   "version_label": "盾·扩展票",
-  "location": "起橇雪原雾，冰点雪原雾",
+  "location": "起橇雪原（大雾），冰点雪原（大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -48477,7 +48477,7 @@
   "species_id": 582,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原雪冰，沐光森林冰，牙牙湖西岸雪{{Sup/W|冰}}，美纳斯湖北岸{{Sup/W|雪}}{{Sup/W|冰}}，美纳斯湖南岸{{Sup/W|雪}}{{Sup/W|冰}}，机擎河岸{{Sup/W|雪}}{{Sup/W|冰}}；桥间空地{{Sup/W|雪}}{{Sup/W|冰}}，巨人帽岩{{Sup/W|雪}}{{Sup/W|冰}}，巨人镜池{{Sup/W|雪}}{{Sup/W|冰}}",
+  "location": "煦丽草原（下雪、暴风雪），沐光森林（暴风雪），牙牙湖西岸（下雪、暴风雪），美纳斯湖北岸（下雪、暴风雪），美纳斯湖南岸（下雪、暴风雪），机擎河岸（下雪、暴风雪）；桥间空地（下雪、暴风雪），巨人帽岩（下雪、暴风雪），巨人镜池（下雪、暴风雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -48486,7 +48486,7 @@
   "species_id": 582,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖西岸雪冰，牙牙湖东岸雪冰，美纳斯湖北岸{{Sup/W|雪}}{{Sup/W|冰}}，美纳斯湖南岸{{Sup/W|雪}}{{Sup/W|冰}}，机擎河岸{{Sup/W|雪}}{{Sup/W|冰}}，桥间空地{{Sup/W|雪}}{{Sup/W|冰}}；巨人镜池{{Sup/W|雪}}{{Sup/W|冰}}，沙尘洼地{{Sup/W|雪}}{{Sup/W|冰}}，逆鳞湖{{Sup/W|雪}}{{Sup/W|冰}}",
+  "location": "牙牙湖西岸（下雪、暴风雪），牙牙湖东岸（下雪、暴风雪），美纳斯湖北岸（下雪、暴风雪），美纳斯湖南岸（下雪、暴风雪），机擎河岸（下雪、暴风雪），桥间空地（下雪、暴风雪）；巨人镜池（下雪、暴风雪），沙尘洼地（下雪、暴风雪），逆鳞湖（下雪、暴风雪）",
   "method": "冲浪可见",
   "note": "",
   "form": ""
@@ -48513,7 +48513,7 @@
   "species_id": 582,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "煦丽草原雪，沐光森林雪冰，牙牙湖西岸雪{{Sup/W|冰}}，牙牙湖东岸{{Sup/W|冰}}，美纳斯湖南岸{{Sup/W|雪}}，机擎河岸{{Sup/W|雪}}，桥间空地{{Sup/W|雪}}，拳关丘陵{{Sup/W|冰}}",
+  "location": "煦丽草原（下雪），沐光森林（下雪、暴风雪），牙牙湖西岸（下雪、暴风雪），牙牙湖东岸（暴风雪），美纳斯湖南岸（下雪），机擎河岸（下雪），桥间空地（下雪），拳关丘陵（暴风雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -48522,7 +48522,7 @@
   "species_id": 582,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "煦丽草原雪，沐光森林雪冰，牙牙湖西岸雪{{Sup/W|冰}}，牙牙湖东岸{{Sup/W|冰}}，美纳斯湖南岸{{Sup/W|雪}}，机擎河岸{{Sup/W|雪}}，桥间空地{{Sup/W|冰}}，拳关丘陵{{Sup/W|冰}}",
+  "location": "煦丽草原（下雪），沐光森林（下雪、暴风雪），牙牙湖西岸（下雪、暴风雪），牙牙湖东岸（暴风雪），美纳斯湖南岸（下雪），机擎河岸（下雪），桥间空地（暴风雪），拳关丘陵（暴风雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -48540,7 +48540,7 @@
   "species_id": 582,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "冰点雪原雪冰，巨人睡榻雪冰，远古墓地{{Sup/W|雪}}{{Sup/W|冰}}，雪中溪谷{{Sup/W|雪}}{{Sup/W|冰}}，巨人鞋底{{Sup/W|雪}}{{Sup/W|冰}}，冻海{{Sup/W|雪}}{{Sup/W|冰}}，三岔平原{{Sup/W|雪}}{{Sup/W|冰}}，球湖湖畔{{Sup/W|雪}}",
+  "location": "冰点雪原（下雪、暴风雪），巨人睡榻（下雪、暴风雪），远古墓地（下雪、暴风雪），雪中溪谷（下雪、暴风雪），巨人鞋底（下雪、暴风雪），冻海（下雪、暴风雪），三岔平原（下雪、暴风雪），球湖湖畔（下雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -48585,7 +48585,7 @@
   "species_id": 583,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "10号道路所有天气；牙牙湖之眼雪",
+  "location": "10号道路所有天气；牙牙湖之眼（下雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -48594,7 +48594,7 @@
   "species_id": 583,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "泉烟小路所有天气；牙牙湖之眼雪冰，沙尘洼地雪，巨人镜池雪",
+  "location": "泉烟小路所有天气；牙牙湖之眼（下雪、暴风雪），沙尘洼地（下雪），巨人镜池（下雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -48603,7 +48603,7 @@
   "species_id": 583,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "沐光森林雪冰，美纳斯湖北岸雪冰",
+  "location": "沐光森林（下雪、暴风雪），美纳斯湖北岸（下雪、暴风雪）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -48630,7 +48630,7 @@
   "species_id": 583,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "冰点雪原雪冰，巨人睡榻雪冰，远古墓地{{Sup/W|雪}}{{Sup/W|冰}}，雪中溪谷{{Sup/W|雪}}{{Sup/W|冰}}，巨人鞋底{{Sup/W|雪}}{{Sup/W|冰}}，冻海{{Sup/W|雪}}{{Sup/W|冰}}，三岔平原{{Sup/W|雪}}{{Sup/W|冰}}，球湖湖畔{{Sup/W|雪}}",
+  "location": "冰点雪原（下雪、暴风雪），巨人睡榻（下雪、暴风雪），远古墓地（下雪、暴风雪），雪中溪谷（下雪、暴风雪），巨人鞋底（下雪、暴风雪），冻海（下雪、暴风雪），三岔平原（下雪、暴风雪），球湖湖畔（下雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -48639,7 +48639,7 @@
   "species_id": 583,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻雪，巨人鞋底雪冰，海鸣洞窟雪{{Sup/W|冰}}，冻海{{Sup/W|雪}}{{Sup/W|冰}}，球湖湖畔{{Sup/W|雪}}",
+  "location": "巨人睡榻（下雪），巨人鞋底（下雪、暴风雪），海鸣洞窟（下雪、暴风雪），冻海（下雪、暴风雪），球湖湖畔（下雪）",
   "method": "冲浪可见",
   "note": "",
   "form": ""
@@ -48693,7 +48693,7 @@
   "species_id": 584,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "10号道路所有天气；逆鳞湖雪冰",
+  "location": "10号道路所有天气；逆鳞湖（下雪、暴风雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -48702,7 +48702,7 @@
   "species_id": 584,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖西岸雪冰，牙牙湖东岸雪冰，美纳斯湖北岸{{Sup/W|雪}}{{Sup/W|冰}}，美纳斯湖南岸{{Sup/W|雪}}{{Sup/W|冰}}，桥间空地{{Sup/W|雪}}{{Sup/W|冰}}，逆鳞湖{{Sup/W|雪}}{{Sup/W|冰}}",
+  "location": "牙牙湖西岸（下雪、暴风雪），牙牙湖东岸（下雪、暴风雪），美纳斯湖北岸（下雪、暴风雪），美纳斯湖南岸（下雪、暴风雪），桥间空地（下雪、暴风雪），逆鳞湖（下雪、暴风雪）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -48738,7 +48738,7 @@
   "species_id": 584,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "冰点雪原雪冰，巨人睡榻雪冰，雪中溪谷{{Sup/W|雪}}{{Sup/W|冰}}，球湖湖畔{{Sup/W|雪}}{{Sup/W|冰}}",
+  "location": "冰点雪原（下雪、暴风雪），巨人睡榻（下雪、暴风雪），雪中溪谷（下雪、暴风雪），球湖湖畔（下雪、暴风雪）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -49044,7 +49044,7 @@
   "species_id": 588,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "巨人帽岩阴，拳关丘陵雷",
+  "location": "巨人帽岩（阴天），拳关丘陵（雷雨）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -49053,7 +49053,7 @@
   "species_id": 588,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "7号道路所有天气；机擎河岸雨，桥间空地阴，拳关丘陵雨",
+  "location": "7号道路所有天气；机擎河岸（雨天），桥间空地（阴天），拳关丘陵（雨天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -49080,7 +49080,7 @@
   "species_id": 588,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "锻炼平原阴",
+  "location": "锻炼平原（阴天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -49125,7 +49125,7 @@
   "species_id": 589,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "专注森林沙，锻炼平原沙",
+  "location": "专注森林（沙暴），锻炼平原（沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -49251,7 +49251,7 @@
   "species_id": 591,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "专注森林晴阴雨曝",
+  "location": "专注森林（晴朗、阴天、雨天、烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -49386,7 +49386,7 @@
   "species_id": 595,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "伽勒尔所有天气；煦丽草原，沐光森林，牙牙湖西岸，牙牙湖东岸，美纳斯湖南岸，美纳斯湖北岸，巨人镜池，巨人帽岩",
+  "location": "伽勒尔所有天气；煦丽草原（雷雨），沐光森林（雷雨），牙牙湖西岸（雷雨），牙牙湖东岸（雷雨），美纳斯湖南岸（雷雨），美纳斯湖北岸（雷雨），巨人镜池（雷雨），巨人帽岩（雷雨）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -49395,7 +49395,7 @@
   "species_id": 595,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "美纳斯湖南岸，巨人镜池",
+  "location": "美纳斯湖南岸（雷雨），巨人镜池（雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -49476,7 +49476,7 @@
   "species_id": 596,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "伽勒尔所有天气；逆鳞湖雷",
+  "location": "伽勒尔所有天气；逆鳞湖（雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -49485,7 +49485,7 @@
   "species_id": 596,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "美纳斯湖南岸所有天气；巨人帽岩雷，巨人凳岩雨雷",
+  "location": "美纳斯湖南岸所有天气；巨人帽岩（雷雨），巨人凳岩（雨天、雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -49512,7 +49512,7 @@
   "species_id": 596,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻雷，远古墓地雷，巨人鞋底雷，三岔平原雷，球湖湖畔{{Sup/W|雷}}",
+  "location": "巨人睡榻（雷雨），远古墓地（雷雨），巨人鞋底（雷雨），三岔平原（雷雨），球湖湖畔（雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -49521,7 +49521,7 @@
   "species_id": 596,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻雷，球湖湖畔雷",
+  "location": "巨人睡榻（雷雨），球湖湖畔（雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -49593,7 +49593,7 @@
   "species_id": 597,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "伽勒尔，桥间空地所有天气；机擎河岸",
+  "location": "伽勒尔，桥间空地所有天气；机擎河岸（暴风雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -49602,7 +49602,7 @@
   "species_id": 597,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨石原野",
+  "location": "巨石原野（暴风雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -49656,7 +49656,7 @@
   "species_id": 598,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "沙尘洼地冰",
+  "location": "沙尘洼地（暴风雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -49728,7 +49728,7 @@
   "species_id": 599,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "伽勒尔，拳关丘陵所有天气；沐光森林，牙牙湖西岸，牙牙湖之眼，美纳斯湖南岸",
+  "location": "伽勒尔，拳关丘陵所有天气；沐光森林（暴风雪），牙牙湖西岸（暴风雪），牙牙湖之眼（暴风雪），美纳斯湖南岸（暴风雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -49737,7 +49737,7 @@
   "species_id": 599,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖西岸，美纳斯湖南岸，美纳斯湖北岸",
+  "location": "牙牙湖西岸（暴风雪），美纳斯湖南岸（暴风雪），美纳斯湖北岸（暴风雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -49782,7 +49782,7 @@
   "species_id": 600,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "伽勒尔所有天气；沙尘洼地冰",
+  "location": "伽勒尔所有天气；沙尘洼地（暴风雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -49791,7 +49791,7 @@
   "species_id": 600,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "拳关丘陵晴阴雨雪",
+  "location": "拳关丘陵（晴朗、阴天、雨天、下雪）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -49845,7 +49845,7 @@
   "species_id": 601,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖冰",
+  "location": "逆鳞湖（暴风雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -49854,7 +49854,7 @@
   "species_id": 601,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "拳关丘陵雷曝冰沙{{Sup/W|雾}}",
+  "location": "拳关丘陵（雷雨、烈日、暴风雪、沙暴、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -50088,7 +50088,7 @@
   "species_id": 605,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "机擎河岸雾，桥间空地雾",
+  "location": "机擎河岸（大雾），桥间空地（大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -50097,7 +50097,7 @@
   "species_id": 605,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "桥间空地晴阴雾",
+  "location": "桥间空地（晴朗、阴天、大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -50142,7 +50142,7 @@
   "species_id": 606,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖晴",
+  "location": "逆鳞湖（晴朗）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -50151,7 +50151,7 @@
   "species_id": 606,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "桥间空地晴阴雪冰{{Sup/W|雾}}",
+  "location": "桥间空地（晴朗、阴天、下雪、暴风雪、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -50196,7 +50196,7 @@
   "species_id": 607,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "机擎河岸曝，桥间空地曝雾",
+  "location": "机擎河岸（烈日），桥间空地（烈日、大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -50304,7 +50304,7 @@
   "species_id": 608,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖曝",
+  "location": "逆鳞湖（烈日）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -50331,7 +50331,7 @@
   "species_id": 608,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻阴雾，远古墓地阴雾",
+  "location": "巨人睡榻（阴天、大雾），远古墓地（阴天、大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -50421,7 +50421,7 @@
   "species_id": 609,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖曝",
+  "location": "逆鳞湖（烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -50448,7 +50448,7 @@
   "species_id": 609,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻阴雾",
+  "location": "巨人睡榻（阴天、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -50520,7 +50520,7 @@
   "species_id": 610,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "拳关丘陵沙",
+  "location": "拳关丘陵（沙暴）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -50529,7 +50529,7 @@
   "species_id": 610,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "6号道路所有天气；牙牙湖之眼晴阴雨雾",
+  "location": "6号道路所有天气；牙牙湖之眼（晴朗、阴天、雨天、大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -50673,7 +50673,7 @@
   "species_id": 612,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖雷",
+  "location": "逆鳞湖（雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -50682,7 +50682,7 @@
   "species_id": 612,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖之眼晴阴雨曝{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "牙牙湖之眼（晴朗、阴天、雨天、烈日、沙暴、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -50727,7 +50727,7 @@
   "species_id": 613,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "桥间空地雪",
+  "location": "桥间空地（下雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -50745,7 +50745,7 @@
   "species_id": 613,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "桥间空地冰，巨石原野雪冰，巨人镜池雪{{Sup/W|冰}}",
+  "location": "桥间空地（暴风雪），巨石原野（下雪、暴风雪），巨人镜池（下雪、暴风雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -50754,7 +50754,7 @@
   "species_id": 613,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "10号道路所有天气；桥间空地雪冰，巨石原野雪冰，沙尘洼地{{Sup/W|雪}}{{Sup/W|冰}}，巨人镜池{{Sup/W|雪}}{{Sup/W|冰}}，拳关丘陵{{Sup/W|雪}}",
+  "location": "10号道路所有天气；桥间空地（下雪、暴风雪），巨石原野（下雪、暴风雪），沙尘洼地（下雪、暴风雪），巨人镜池（下雪、暴风雪），拳关丘陵（下雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -50826,7 +50826,7 @@
   "species_id": 614,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "10号道路所有天气；桥间空地雪，巨人帽岩雪",
+  "location": "10号道路所有天气；桥间空地（下雪），巨人帽岩（下雪）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -50844,7 +50844,7 @@
   "species_id": 614,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "雪中溪谷雪冰，冻海雪冰",
+  "location": "雪中溪谷（下雪、暴风雪），冻海（下雪、暴风雪）",
   "method": "可见，定点",
   "note": "",
   "form": ""
@@ -50934,7 +50934,7 @@
   "species_id": 615,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原雪冰，冰点雪原雪冰，巨人睡榻{{Sup/W|雪}}{{Sup/W|冰}}，远古墓地{{Sup/W|雪}}{{Sup/W|冰}}，雪中溪谷{{Sup/W|雪}}{{Sup/W|冰}}，巨人鞋底{{Sup/W|雪}}{{Sup/W|冰}}，三岔平原{{Sup/W|雪}}{{Sup/W|冰}}，球湖湖畔{{Sup/W|雪}}",
+  "location": "起橇雪原（下雪、暴风雪），冰点雪原（下雪、暴风雪），巨人睡榻（下雪、暴风雪），远古墓地（下雪、暴风雪），雪中溪谷（下雪、暴风雪），巨人鞋底（下雪、暴风雪），三岔平原（下雪、暴风雪），球湖湖畔（下雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -50943,7 +50943,7 @@
   "species_id": 615,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "冻海雪冰",
+  "location": "冻海（下雪、暴风雪）",
   "method": "冲浪可见",
   "note": "",
   "form": ""
@@ -50952,7 +50952,7 @@
   "species_id": 615,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原雪冰，冰点雪原雪冰，巨人睡榻{{Sup/W|雪}}{{Sup/W|冰}}，雪中溪谷{{Sup/W|雪}}{{Sup/W|冰}}，巨人鞋底{{Sup/W|雪}}{{Sup/W|冰}}，球湖湖畔{{Sup/W|雪}}{{Sup/W|冰}}",
+  "location": "起橇雪原（下雪、暴风雪），冰点雪原（下雪、暴风雪），巨人睡榻（下雪、暴风雪），雪中溪谷（下雪、暴风雪），巨人鞋底（下雪、暴风雪），球湖湖畔（下雪、暴风雪）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -51024,7 +51024,7 @@
   "species_id": 616,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "巨人帽岩阴，拳关丘陵雷",
+  "location": "巨人帽岩（阴天），拳关丘陵（雷雨）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -51033,7 +51033,7 @@
   "species_id": 616,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "7号道路所有天气；机擎河岸雨，桥间空地阴，拳关丘陵雨",
+  "location": "7号道路所有天气；机擎河岸（雨天），桥间空地（阴天），拳关丘陵（雨天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -51051,7 +51051,7 @@
   "species_id": 616,
   "game": "sword-shield",
   "version_label": "剑·扩展票",
-  "location": "专注森林雨雷",
+  "location": "专注森林（雨天、雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -51069,7 +51069,7 @@
   "species_id": 616,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "锻炼平原雨",
+  "location": "锻炼平原（雨天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -51105,7 +51105,7 @@
   "species_id": 617,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "专注森林雨，锻炼平原雷",
+  "location": "专注森林（雨天），锻炼平原（雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -51186,7 +51186,7 @@
   "species_id": 618,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "微寐森林，第二矿山所有天气；沙尘洼地曝，逆鳞湖沙",
+  "location": "微寐森林，第二矿山所有天气；沙尘洼地（烈日），逆鳞湖（沙暴）",
   "method": "随机",
   "note": "",
   "form": "G"
@@ -51384,7 +51384,7 @@
   "species_id": 620,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "挑战之路晴",
+  "location": "挑战之路（晴朗）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -51447,7 +51447,7 @@
   "species_id": 621,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "雪中溪谷晴曝，通顶雪道晴曝，三岔平原{{Sup/W|曝}}",
+  "location": "雪中溪谷（晴朗、烈日），通顶雪道（晴朗、烈日），三岔平原（烈日）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -51456,7 +51456,7 @@
   "species_id": 621,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "战斗洞窟，斗志洞窟，登顶隧道所有天气；雪中溪谷晴曝，通顶雪道晴",
+  "location": "战斗洞窟，斗志洞窟，登顶隧道所有天气；雪中溪谷（晴朗、烈日），通顶雪道（晴朗）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -51510,7 +51510,7 @@
   "species_id": 622,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原沙，瞭望塔旧址晴曝沙，沐光森林{{Sup/W|沙}}，巨人帽岩{{Sup/W|曝}}{{Sup/W|沙}}",
+  "location": "煦丽草原（沙暴），瞭望塔旧址（晴朗、烈日、沙暴），沐光森林（沙暴），巨人帽岩（烈日、沙暴）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -51519,7 +51519,7 @@
   "species_id": 622,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "8，巨石原野所有天气；瞭望塔旧址晴，美纳斯湖北岸沙，巨人凳岩沙",
+  "location": "8，巨石原野所有天气；瞭望塔旧址（晴朗），美纳斯湖北岸（沙暴），巨人凳岩（沙暴）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -51627,7 +51627,7 @@
   "species_id": 623,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨石原野所有天气；瞭望塔旧址晴曝沙，沙尘洼地阴{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|沙}}{{Sup/W|雾}}，巨人凳岩{{Sup/W|沙}}",
+  "location": "巨石原野所有天气；瞭望塔旧址（晴朗、烈日、沙暴），沙尘洼地（阴天、雨天、雷雨、下雪、暴风雪、沙暴、大雾），巨人凳岩（沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -51654,7 +51654,7 @@
   "species_id": 623,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "三岔平原晴雾",
+  "location": "三岔平原（晴朗、大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -51762,7 +51762,7 @@
   "species_id": 624,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "机擎市郊外所有天气；机擎河岸，巨石原野冰，巨人帽岩冰",
+  "location": "机擎市郊外所有天气；机擎河岸（暴风雪），巨石原野（暴风雪），巨人帽岩（暴风雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -51771,7 +51771,7 @@
   "species_id": 624,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "8号道路所有天气；机擎河岸冰，巨人镜池冰",
+  "location": "8号道路所有天气；机擎河岸（暴风雪），巨人镜池（暴风雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -51798,7 +51798,7 @@
   "species_id": 624,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "清凉湿原阴，专注森林阴，挑战之路阴",
+  "location": "清凉湿原（阴天），专注森林（阴天），挑战之路（阴天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -51807,7 +51807,7 @@
   "species_id": 624,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "清凉湿原阴，专注森林阴，挑战之路阴，锅底沙漠阴",
+  "location": "清凉湿原（阴天），专注森林（阴天），挑战之路（阴天），锅底沙漠（阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -51861,7 +51861,7 @@
   "species_id": 625,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖冰",
+  "location": "逆鳞湖（暴风雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -51897,7 +51897,7 @@
   "species_id": 625,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "挑战之路阴，锻炼平原阴",
+  "location": "挑战之路（阴天），锻炼平原（阴天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -51987,7 +51987,7 @@
   "species_id": 626,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "清凉湿原晴阴雨雷{{Sup/W|曝}}{{Sup/W|沙}}",
+  "location": "清凉湿原（晴朗、阴天、雨天、雷雨、烈日、沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -52032,7 +52032,7 @@
   "species_id": 627,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "桥间空地沙",
+  "location": "桥间空地（沙暴）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -52068,7 +52068,7 @@
   "species_id": 627,
   "game": "sword-shield",
   "version_label": "剑·扩展票",
-  "location": "锅底沙漠晴阴雨曝{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "锅底沙漠（晴朗、阴天、雨天、烈日、沙暴、大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -52140,7 +52140,7 @@
   "species_id": 628,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "沙尘洼地所有天气；逆鳞湖晴",
+  "location": "沙尘洼地所有天气；逆鳞湖（晴朗）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -52176,7 +52176,7 @@
   "species_id": 628,
   "game": "sword-shield",
   "version_label": "剑·扩展票",
-  "location": "挑战之路阴，锅底沙漠晴阴雨{{Sup/W|曝}}{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "挑战之路（阴天），锅底沙漠（晴朗、阴天、雨天、烈日、沙暴、大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -52275,7 +52275,7 @@
   "species_id": 629,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "桥间空地沙",
+  "location": "桥间空地（沙暴）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -52311,7 +52311,7 @@
   "species_id": 629,
   "game": "sword-shield",
   "version_label": "盾·扩展票",
-  "location": "锅底沙漠晴阴雨曝{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "锅底沙漠（晴朗、阴天、雨天、烈日、沙暴、大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -52374,7 +52374,7 @@
   "species_id": 630,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "沙尘洼地所有天气；逆鳞湖晴",
+  "location": "沙尘洼地所有天气；逆鳞湖（晴朗）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -52401,7 +52401,7 @@
   "species_id": 630,
   "game": "sword-shield",
   "version_label": "盾·扩展票",
-  "location": "挑战之路阴，锅底沙漠晴阴雨{{Sup/W|曝}}{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "挑战之路（阴天），锅底沙漠（晴朗、阴天、雨天、烈日、沙暴、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -52464,7 +52464,7 @@
   "species_id": 631,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人镜池曝，逆鳞湖曝",
+  "location": "巨人镜池（烈日），逆鳞湖（烈日）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -52491,7 +52491,7 @@
   "species_id": 631,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻曝，远古墓地曝，三岔平原曝",
+  "location": "巨人睡榻（烈日），远古墓地（烈日），三岔平原（烈日）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -52500,7 +52500,7 @@
   "species_id": 631,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻曝",
+  "location": "巨人睡榻（烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -52554,7 +52554,7 @@
   "species_id": 632,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人镜池曝，逆鳞湖曝",
+  "location": "巨人镜池（烈日），逆鳞湖（烈日）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -52581,7 +52581,7 @@
   "species_id": 632,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻曝，远古墓地曝，三岔平原曝",
+  "location": "巨人睡榻（烈日），远古墓地（烈日），三岔平原（烈日）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -52590,7 +52590,7 @@
   "species_id": 632,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻曝",
+  "location": "巨人睡榻（烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -52635,7 +52635,7 @@
   "species_id": 633,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "逆鳞湖雨",
+  "location": "逆鳞湖（雨天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -52707,7 +52707,7 @@
   "species_id": 634,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "逆鳞湖雷",
+  "location": "逆鳞湖（雷雨）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -52716,7 +52716,7 @@
   "species_id": 634,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "逆鳞湖沙",
+  "location": "逆鳞湖（沙暴）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -52851,7 +52851,7 @@
   "species_id": 636,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "专注森林曝，圆环海湾曝沙",
+  "location": "专注森林（烈日），圆环海湾（烈日、沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -52905,7 +52905,7 @@
   "species_id": 637,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "挑战海滩曝，离岛海域曝，锅底沙漠曝",
+  "location": "挑战海滩（烈日），离岛海域（烈日），锅底沙漠（烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -53139,7 +53139,7 @@
   "species_id": 641,
   "game": "legends-arceus",
   "version_label": "传说 阿尔宙斯",
-  "location": "酷寒荒地冰",
+  "location": "酷寒荒地（暴风雪）",
   "method": "定点",
   "note": "Q94进行中",
   "form": ""
@@ -53184,7 +53184,7 @@
   "species_id": 642,
   "game": "legends-arceus",
   "version_label": "传说 阿尔宙斯",
-  "location": "群青海岸雷",
+  "location": "群青海岸（雷雨）",
   "method": "定点",
   "note": "Q94进行中",
   "form": ""
@@ -54012,7 +54012,7 @@
   "species_id": 659,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原所有天气；沐光森林晴曝雪冰{{Sup/W|沙}}，牙牙湖西岸{{Sup/W|曝}}{{Sup/W|冰}}，牙牙湖东岸{{Sup/W|晴}}",
+  "location": "煦丽草原所有天气；沐光森林（晴朗、烈日、下雪、暴风雪、沙暴），牙牙湖西岸（烈日、暴风雪），牙牙湖东岸（晴朗）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -54021,7 +54021,7 @@
   "species_id": 659,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原晴阴雨曝{{Sup/W|雪}}{{Sup/W|沙}}{{Sup/W|雾}}，沐光森林{{Sup/W|晴}}{{Sup/W|雨}}{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|沙}}，牙牙湖西岸{{Sup/W|曝}}{{Sup/W|沙}}，美纳斯湖北岸{{Sup/W|晴}}{{Sup/W|曝}}{{Sup/W|沙}}，巨人帽岩{{Sup/W|沙}}",
+  "location": "煦丽草原（晴朗、阴天、雨天、烈日、下雪、沙暴、大雾），沐光森林（晴朗、雨天、烈日、下雪、暴风雪、沙暴），牙牙湖西岸（烈日、沙暴），美纳斯湖北岸（晴朗、烈日、沙暴），巨人帽岩（沙暴）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -54102,7 +54102,7 @@
   "species_id": 660,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖之眼所有天气；巨人凳岩晴，美纳斯湖北岸晴，桥间空地阴，巨人镜池沙",
+  "location": "牙牙湖之眼所有天气；巨人凳岩（晴朗），美纳斯湖北岸（晴朗），桥间空地（阴天），巨人镜池（沙暴）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -54111,7 +54111,7 @@
   "species_id": 660,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人帽岩曝沙",
+  "location": "巨人帽岩（烈日、沙暴）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -54120,7 +54120,7 @@
   "species_id": 660,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原所有天气；牙牙湖西岸曝雪冰沙",
+  "location": "煦丽草原所有天气；牙牙湖西岸（烈日、下雪、暴风雪、沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -54210,7 +54210,7 @@
   "species_id": 661,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "挑战之路曝，圆环海湾曝",
+  "location": "挑战之路（烈日），圆环海湾（烈日）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -54219,7 +54219,7 @@
   "species_id": 661,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "挑战之路曝，圆环海湾曝，锅底沙漠曝",
+  "location": "挑战之路（烈日），圆环海湾（烈日），锅底沙漠（烈日）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -54336,7 +54336,7 @@
   "species_id": 662,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "健身之海曝，列岛海域曝，离岛海域曝，蜂巢海曝，蜂巢岛{{Sup/W|曝}}",
+  "location": "健身之海（烈日），列岛海域（烈日），离岛海域（烈日），蜂巢海（烈日），蜂巢岛（烈日）",
   "method": "冲浪可见",
   "note": "",
   "form": ""
@@ -54345,7 +54345,7 @@
   "species_id": 662,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野曝，清凉湿原曝，挑战海滩曝，锻炼平原曝",
+  "location": "揖礼原野（烈日），清凉湿原（烈日），挑战海滩（烈日），锻炼平原（烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -54453,7 +54453,7 @@
   "species_id": 663,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "清凉湿原曝，圆环海湾曝，锻炼平原曝",
+  "location": "清凉湿原（烈日），圆环海湾（烈日），锻炼平原（烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -55101,7 +55101,7 @@
   "species_id": 674,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "3号道路所有天气；牙牙湖西岸",
+  "location": "3号道路所有天气；牙牙湖西岸（阴天、烈日）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -55110,7 +55110,7 @@
   "species_id": 674,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原所有天气；牙牙湖东岸阴雷曝雪{{Sup/W|冰}}{{Sup/W|沙}}",
+  "location": "煦丽草原所有天气；牙牙湖东岸（阴天、雷雨、烈日、下雪、暴风雪、沙暴）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -55173,7 +55173,7 @@
   "species_id": 675,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖阴",
+  "location": "逆鳞湖（阴天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -55182,7 +55182,7 @@
   "species_id": 675,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原晴阴雨雷{{Sup/W|曝}}，沐光森林{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|沙}}，桥间空地{{Sup/W|阴}}{{Sup/W|曝}}",
+  "location": "煦丽草原（晴朗、阴天、雨天、雷雨、烈日），沐光森林（烈日、下雪、暴风雪、沙暴），桥间空地（阴天、烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -55308,7 +55308,7 @@
   "species_id": 677,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "5号道路所有天气；机擎河岸雾，拳关丘陵晴阴雷{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|雾}}",
+  "location": "5号道路所有天气；机擎河岸（大雾），拳关丘陵（晴朗、阴天、雷雨、烈日、下雪、暴风雪、大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -55380,7 +55380,7 @@
   "species_id": 678,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "7号道路所有天气；沙尘洼地雾",
+  "location": "7号道路所有天气；沙尘洼地（大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -55425,7 +55425,7 @@
   "species_id": 678,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "7号道路所有天气；沙尘洼地雾",
+  "location": "7号道路所有天气；沙尘洼地（大雾）",
   "method": "随机",
   "note": "",
   "form": "F"
@@ -55560,7 +55560,7 @@
   "species_id": 679,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "拳关丘陵冰",
+  "location": "拳关丘陵（暴风雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -55569,7 +55569,7 @@
   "species_id": 679,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "拳关丘陵雾",
+  "location": "拳关丘陵（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -55632,7 +55632,7 @@
   "species_id": 680,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖冰",
+  "location": "逆鳞湖（暴风雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -55641,7 +55641,7 @@
   "species_id": 680,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人帽岩晴阴雨雷{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|沙}}",
+  "location": "巨人帽岩（晴朗、阴天、雨天、雷雨、烈日、下雪、暴风雪、沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -55713,7 +55713,7 @@
   "species_id": 681,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人帽岩雾",
+  "location": "巨人帽岩（大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -55776,7 +55776,7 @@
   "species_id": 682,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "5号道路，迷光森林所有天气；巨石原野阴",
+  "location": "5号道路，迷光森林所有天气；巨石原野（阴天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -55785,7 +55785,7 @@
   "species_id": 682,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "5号道路所有天气；巨人镜池雾",
+  "location": "5号道路所有天气；巨人镜池（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -55911,7 +55911,7 @@
   "species_id": 684,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "5号道路，迷光森林所有天气；巨石原野阴",
+  "location": "5号道路，迷光森林所有天气；巨石原野（阴天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -55920,7 +55920,7 @@
   "species_id": 684,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "5号道路所有天气；巨人镜池雾",
+  "location": "5号道路所有天气；巨人镜池（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -56055,7 +56055,7 @@
   "species_id": 686,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "战竞湾所有天气；桥间空地晴雨雷曝{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|沙}}，拳关丘陵{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|雾}}",
+  "location": "战竞湾所有天气；桥间空地（晴朗、雨天、雷雨、烈日、下雪、暴风雪、沙暴），拳关丘陵（晴朗、阴天、雨天、烈日、下雪、暴风雪、大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -56064,7 +56064,7 @@
   "species_id": 686,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "7，桥间空地所有天气；沙尘洼地雪，巨人镜池雪",
+  "location": "7，桥间空地所有天气；沙尘洼地（下雪），巨人镜池（下雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -56091,7 +56091,7 @@
   "species_id": 686,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野阴，挑战海滩阴，圆环海湾阴，锻炼平原阴",
+  "location": "揖礼原野（阴天），挑战海滩（阴天），圆环海湾（阴天），锻炼平原（阴天）",
   "method": "随机，可见",
   "note": "",
   "form": ""
@@ -56190,7 +56190,7 @@
   "species_id": 687,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野阴雨，清凉湿原阴雨，挑战海滩{{Sup/W|阴}}{{Sup/W|雨}}，圆环海湾{{Sup/W|阴}}{{Sup/W|雨}}，锻炼平原{{Sup/W|阴}}{{Sup/W|雨}}",
+  "location": "揖礼原野（阴天、雨天），清凉湿原（阴天、雨天），挑战海滩（阴天、雨天），圆环海湾（阴天、雨天），锻炼平原（阴天、雨天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -56262,7 +56262,7 @@
   "species_id": 688,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "第二矿山所有天气；机擎河岸雨，桥间空地雨雷",
+  "location": "第二矿山所有天气；机擎河岸（雨天），桥间空地（雨天、雷雨）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -56361,7 +56361,7 @@
   "species_id": 689,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "沙尘洼地雨，逆鳞湖雨",
+  "location": "沙尘洼地（雨天），逆鳞湖（雨天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -56379,7 +56379,7 @@
   "species_id": 689,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "沙尘洼地阴雨雷",
+  "location": "沙尘洼地（阴天、雨天、雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -56811,7 +56811,7 @@
   "species_id": 694,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "6号道路所有天气；巨人镜池雷",
+  "location": "6号道路所有天气；巨人镜池（雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -56955,7 +56955,7 @@
   "species_id": 696,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "球湖湖畔晴阴雨雷{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|雾}}",
+  "location": "球湖湖畔（晴朗、阴天、雨天、雷雨、烈日、下雪、大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -57126,7 +57126,7 @@
   "species_id": 698,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原阴雪冰，冰点雪原晴{{Sup/W|雪}}{{Sup/W|冰}}，雪中溪谷{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雾}}",
+  "location": "起橇雪原（阴天、下雪、暴风雪），冰点雪原（晴朗、下雪、暴风雪），雪中溪谷（晴朗、阴天、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -57207,7 +57207,7 @@
   "species_id": 699,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "雪中溪谷晴阴雪冰{{Sup/W|雾}}",
+  "location": "雪中溪谷（晴朗、阴天、下雪、暴风雪、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -57279,7 +57279,7 @@
   "species_id": 700,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖雾",
+  "location": "逆鳞湖（大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -57297,7 +57297,7 @@
   "species_id": 700,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻雾",
+  "location": "巨人睡榻（大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -57387,7 +57387,7 @@
   "species_id": 701,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "6号道路所有天气；拳关丘陵阴",
+  "location": "6号道路所有天气；拳关丘陵（阴天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -57531,7 +57531,7 @@
   "species_id": 702,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "挑战海滩晴雨雷沙",
+  "location": "挑战海滩（晴朗、雨天、雷雨、沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -57765,7 +57765,7 @@
   "species_id": 704,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "逆鳞湖雨",
+  "location": "逆鳞湖（雨天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -57783,7 +57783,7 @@
   "species_id": 704,
   "game": "sword-shield",
   "version_label": "盾·扩展票",
-  "location": "清凉湿原雨雷，专注森林雷",
+  "location": "清凉湿原（雨天、雷雨），专注森林（雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -57792,7 +57792,7 @@
   "species_id": 704,
   "game": "sword-shield",
   "version_label": "盾·扩展票",
-  "location": "专注森林雨雷",
+  "location": "专注森林（雨天、雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -57900,7 +57900,7 @@
   "species_id": 705,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "逆鳞湖雷",
+  "location": "逆鳞湖（雷雨）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -58287,7 +58287,7 @@
   "species_id": 708,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "远古墓地阴，雪中溪谷阴，巨人鞋底阴，三岔平原阴",
+  "location": "远古墓地（阴天），雪中溪谷（阴天），巨人鞋底（阴天），三岔平原（阴天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -58296,7 +58296,7 @@
   "species_id": 708,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原阴，远古墓地阴，雪中溪谷阴，巨人鞋底阴，三岔平原{{Sup/W|阴}}",
+  "location": "起橇雪原（阴天），远古墓地（阴天），雪中溪谷（阴天），巨人鞋底（阴天），三岔平原（阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -58395,7 +58395,7 @@
   "species_id": 709,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原阴，远古墓地阴，雪中溪谷阴",
+  "location": "起橇雪原（阴天），远古墓地（阴天），雪中溪谷（阴天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -58494,7 +58494,7 @@
   "species_id": 710,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "4号道路，拳关丘陵所有天气；巨人镜池",
+  "location": "4号道路，拳关丘陵所有天气；巨人镜池（晴朗）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -58647,7 +58647,7 @@
   "species_id": 712,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "战竞湾，尖钉镇郊外所有天气；逆鳞湖雪",
+  "location": "战竞湾，尖钉镇郊外所有天气；逆鳞湖（下雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -58683,7 +58683,7 @@
   "species_id": 712,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "三岔平原所有天气；冻海晴阴雨雷{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|雾}}",
+  "location": "三岔平原所有天气；冻海（晴朗、阴天、雨天、雷雨、下雪、暴风雪、大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -58773,7 +58773,7 @@
   "species_id": 713,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖雪冰",
+  "location": "逆鳞湖（下雪、暴风雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -58818,7 +58818,7 @@
   "species_id": 713,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "冻海晴雨冰",
+  "location": "冻海（晴朗、雨天、暴风雪）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -58971,7 +58971,7 @@
   "species_id": 714,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "第二矿山所有天气；桥间空地雷",
+  "location": "第二矿山所有天气；桥间空地（雷雨）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -59070,7 +59070,7 @@
   "species_id": 715,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖雷",
+  "location": "逆鳞湖（雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -59079,7 +59079,7 @@
   "species_id": 715,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "桥间空地晴阴雨雷{{Sup/W|曝}}{{Sup/W|冰}}{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "桥间空地（晴朗、阴天、雨天、雷雨、烈日、暴风雪、沙暴、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -59097,7 +59097,7 @@
   "species_id": 715,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "湖畔洞窟所有天气；球湖湖畔阴雨",
+  "location": "湖畔洞窟所有天气；球湖湖畔（阴天、雨天）",
   "method": "可见，定点",
   "note": "",
   "form": ""
@@ -59988,7 +59988,7 @@
   "species_id": 736,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "1，微寐森林所有天气；沐光森林，美纳斯湖北岸，瞭望塔旧址，牙牙湖东岸",
+  "location": "1，微寐森林所有天气；沐光森林（雨天、雷雨），美纳斯湖北岸（雨天、雷雨），瞭望塔旧址（雷雨），牙牙湖东岸（雨天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -59997,7 +59997,7 @@
   "species_id": 736,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "微寐森林所有天气；牙牙湖东岸",
+  "location": "微寐森林所有天气；牙牙湖东岸（雨天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -60051,7 +60051,7 @@
   "species_id": 737,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖之眼雨，沙尘洼地雷，拳关丘陵雷",
+  "location": "牙牙湖之眼（雨天），沙尘洼地（雷雨），拳关丘陵（雷雨）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -60114,7 +60114,7 @@
   "species_id": 738,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人凳岩晴阴曝沙",
+  "location": "巨人凳岩（晴朗、阴天、烈日、沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -60393,7 +60393,7 @@
   "species_id": 742,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "机擎河岸，桥间空地，巨人镜池",
+  "location": "机擎河岸（阴天、下雪、暴风雪、大雾），桥间空地（晴朗、阴天、烈日、大雾），巨人镜池（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -60465,7 +60465,7 @@
   "species_id": 743,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨石原野晴阴",
+  "location": "巨石原野（晴朗、阴天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -60474,7 +60474,7 @@
   "species_id": 743,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "机擎河岸阴雪冰沙{{Sup/W|雾}}，桥间空地{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|曝}}{{Sup/W|雾}}",
+  "location": "机擎河岸（阴天、下雪、暴风雪、沙暴、大雾），桥间空地（晴朗、阴天、烈日、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -60573,7 +60573,7 @@
   "species_id": 744,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野晴阴，清凉湿原晴，挑战之路晴{{Sup/W|阴}}{{Sup/W|曝}}{{Sup/W|雾}}，圆环海湾{{Sup/W|晴}}",
+  "location": "揖礼原野（晴朗、阴天），清凉湿原（晴朗），挑战之路（晴朗、阴天、烈日、大雾），圆环海湾（晴朗）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -60708,7 +60708,7 @@
   "species_id": 745,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "挑战之路晴阴",
+  "location": "挑战之路（晴朗、阴天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -60753,7 +60753,7 @@
   "species_id": 745,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "挑战之路晴阴",
+  "location": "挑战之路（晴朗、阴天）",
   "method": "定点",
   "note": "",
   "form": "Mn"
@@ -60942,7 +60942,7 @@
   "species_id": 747,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "机擎河岸雷",
+  "location": "机擎河岸（雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -61059,7 +61059,7 @@
   "species_id": 748,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "战竞湾所有天气；尖钉镇郊外晴",
+  "location": "战竞湾所有天气；尖钉镇郊外（晴朗）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -61086,7 +61086,7 @@
   "species_id": 748,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野晴阴雾，挑战海滩阴{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|雾}}，圆环海湾{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雾}}",
+  "location": "揖礼原野（晴朗、阴天、大雾），挑战海滩（阴天、雨天、雷雨、大雾），圆环海湾（阴天、雨天、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -61131,7 +61131,7 @@
   "species_id": 749,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "3所有天气；煦丽草原，沐光森林，牙牙湖东岸，牙牙湖西岸，美纳斯湖北岸，巨人帽岩",
+  "location": "3所有天气；煦丽草原（烈日），沐光森林（烈日），牙牙湖东岸（烈日），牙牙湖西岸（沙暴），美纳斯湖北岸（烈日、沙暴），巨人帽岩（沙暴）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -61140,7 +61140,7 @@
   "species_id": 749,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖东岸，美纳斯湖南岸，巨人凳岩",
+  "location": "牙牙湖东岸（烈日、沙暴），美纳斯湖南岸（烈日、沙暴），巨人凳岩（烈日）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -61203,7 +61203,7 @@
   "species_id": 750,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖之眼，巨人凳岩，沙尘洼地",
+  "location": "牙牙湖之眼（烈日、沙暴），巨人凳岩（烈日、沙暴），沙尘洼地（烈日）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -61212,7 +61212,7 @@
   "species_id": 750,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖之眼",
+  "location": "牙牙湖之眼（烈日、沙暴）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -61221,7 +61221,7 @@
   "species_id": 750,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原晴阴曝沙{{Sup/W|雾}}，牙牙湖东岸，巨人凳岩，沙尘洼地{{Sup/W|晴}}{{Sup/W|曝}}{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "煦丽草原（晴朗、阴天、烈日、沙暴、大雾），牙牙湖东岸（烈日、沙暴），巨人凳岩（烈日），沙尘洼地（晴朗、烈日、沙暴、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -61293,7 +61293,7 @@
   "species_id": 751,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "机擎河岸雨，巨石原野雨雷",
+  "location": "机擎河岸（雨天），巨石原野（雨天、雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -61320,7 +61320,7 @@
   "species_id": 751,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻雨雷，远古墓地雨雷，巨人鞋底{{Sup/W|雨}}{{Sup/W|雷}}，冻海{{Sup/W|雨}}{{Sup/W|雷}}，三岔平原{{Sup/W|雨}}{{Sup/W|雷}}，球湖湖畔{{Sup/W|雨}}{{Sup/W|雷}}",
+  "location": "巨人睡榻（雨天、雷雨），远古墓地（雨天、雷雨），巨人鞋底（雨天、雷雨），冻海（雨天、雷雨），三岔平原（雨天、雷雨），球湖湖畔（雨天、雷雨）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -61374,7 +61374,7 @@
   "species_id": 752,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖雨",
+  "location": "逆鳞湖（雨天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -61383,7 +61383,7 @@
   "species_id": 752,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨石原野雨雷",
+  "location": "巨石原野（雨天、雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -61410,7 +61410,7 @@
   "species_id": 752,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻雨雷，远古墓地雨雷，巨人鞋底{{Sup/W|雨}}{{Sup/W|雷}}，冻海{{Sup/W|雨}}{{Sup/W|雷}}，三岔平原{{Sup/W|雨}}{{Sup/W|雷}}，球湖湖畔{{Sup/W|雨}}{{Sup/W|雷}}",
+  "location": "巨人睡榻（雨天、雷雨），远古墓地（雨天、雷雨），巨人鞋底（雨天、雷雨），冻海（雨天、雷雨），三岔平原（雨天、雷雨），球湖湖畔（雨天、雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -61419,7 +61419,7 @@
   "species_id": 752,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻雨雷，巨人鞋底雨，球湖湖畔雨",
+  "location": "巨人睡榻（雨天、雷雨），巨人鞋底（雨天），球湖湖畔（雨天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -61500,7 +61500,7 @@
   "species_id": 753,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野曝，清涼濕原曝，挑戰海灘曝，专注森林曝，鍛鍊平原{{Sup/W|曝}}",
+  "location": "揖礼原野（烈日），清涼濕原（烈日），挑戰海灘（烈日），专注森林（烈日），鍛鍊平原（烈日）",
   "method": "随机，可见",
   "note": "",
   "form": ""
@@ -61572,7 +61572,7 @@
   "species_id": 754,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "专注森林曝，挑战海滩曝",
+  "location": "专注森林（烈日），挑战海滩（烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -61671,7 +61671,7 @@
   "species_id": 755,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人镜池雾，拳关丘陵雾",
+  "location": "巨人镜池（大雾），拳关丘陵（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -61734,7 +61734,7 @@
   "species_id": 756,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖阴雨雷",
+  "location": "逆鳞湖（阴天、雨天、雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -61797,7 +61797,7 @@
   "species_id": 757,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "机擎市郊外所有天气；机擎河岸曝",
+  "location": "机擎市郊外所有天气；机擎河岸（烈日）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -61815,7 +61815,7 @@
   "species_id": 757,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨石原野曝",
+  "location": "巨石原野（烈日）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -61941,7 +61941,7 @@
   "species_id": 758,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "挑战之路曝",
+  "location": "挑战之路（烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -62004,7 +62004,7 @@
   "species_id": 759,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖东岸所有天气；沐光森林阴，美纳斯湖北岸晴阴雨{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|雾}}",
+  "location": "牙牙湖东岸所有天气；沐光森林（阴天），美纳斯湖北岸（晴朗、阴天、雨天、雷雨、烈日、下雪、大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -62013,7 +62013,7 @@
   "species_id": 759,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "5，牙牙湖东岸所有天气；巨人凳岩晴沙，桥间空地雨{{Sup/W|雷}}{{Sup/W|雪}}{{Sup/W|沙}}{{Sup/W|雾}}，拳关丘陵{{Sup/W|晴}}{{Sup/W|阴}}",
+  "location": "5，牙牙湖东岸所有天气；巨人凳岩（晴朗、沙暴），桥间空地（雨天、雷雨、下雪、沙暴、大雾），拳关丘陵（晴朗、阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -62076,7 +62076,7 @@
   "species_id": 760,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人凳岩所有天气；牙牙湖之眼晴，逆鳞湖晴",
+  "location": "巨人凳岩所有天气；牙牙湖之眼（晴朗），逆鳞湖（晴朗）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -62094,7 +62094,7 @@
   "species_id": 760,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "沐光森林所有天气；桥间空地晴雨雷曝{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "沐光森林所有天气；桥间空地（晴朗、雨天、雷雨、烈日、下雪、暴风雪、沙暴、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -62157,7 +62157,7 @@
   "species_id": 761,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "煦丽草原晴，沐光森林晴沙，瞭望塔旧址晴{{Sup/W|阴}}，牙牙湖西岸{{Sup/W|晴}}",
+  "location": "煦丽草原（晴朗），沐光森林（晴朗、沙暴），瞭望塔旧址（晴朗、阴天），牙牙湖西岸（晴朗）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -62166,7 +62166,7 @@
   "species_id": 761,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨石原野所有天气；牙牙湖东岸晴",
+  "location": "巨石原野所有天气；牙牙湖东岸（晴朗）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -62220,7 +62220,7 @@
   "species_id": 762,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "牙牙湖之眼晴",
+  "location": "牙牙湖之眼（晴朗）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -62292,7 +62292,7 @@
   "species_id": 763,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨石原野晴阴曝雪{{Sup/W|冰}}{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "巨石原野（晴朗、阴天、烈日、下雪、暴风雪、沙暴、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -62373,7 +62373,7 @@
   "species_id": 764,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野晴沙，清凉湿原晴曝{{Sup/W|沙}}{{Sup/W|雾}}，专注森林{{Sup/W|曝}}{{Sup/W|雾}}，挑战海滩{{Sup/W|晴}}{{Sup/W|曝}}{{Sup/W|雾}}，锻炼平原{{Sup/W|雾}}，离岛海域{{Sup/W|雾}}，蜂巢岛{{Sup/W|雾}}",
+  "location": "揖礼原野（晴朗、沙暴），清凉湿原（晴朗、烈日、沙暴、大雾），专注森林（烈日、大雾），挑战海滩（晴朗、烈日、大雾），锻炼平原（大雾），离岛海域（大雾），蜂巢岛（大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -62481,7 +62481,7 @@
   "species_id": 765,
   "game": "sword-shield",
   "version_label": "盾·扩展票",
-  "location": "专注森林晴",
+  "location": "专注森林（晴朗）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -62580,7 +62580,7 @@
   "species_id": 766,
   "game": "sword-shield",
   "version_label": "剑·扩展票",
-  "location": "专注森林晴",
+  "location": "专注森林（晴朗）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -62643,7 +62643,7 @@
   "species_id": 767,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "第二矿山所有天气；机擎河岸雷，桥间空地雨",
+  "location": "第二矿山所有天气；机擎河岸（雷雨），桥间空地（雨天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -62652,7 +62652,7 @@
   "species_id": 767,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "第二矿山所有天气；机擎河岸雨，巨人镜池雨，拳关丘陵雷",
+  "location": "第二矿山所有天气；机擎河岸（雨天），巨人镜池（雨天），拳关丘陵（雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -62670,7 +62670,7 @@
   "species_id": 767,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "斗志洞窟晴雨雷曝{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "斗志洞窟（晴朗、雨天、雷雨、烈日、沙暴、大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -62724,7 +62724,7 @@
   "species_id": 768,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖雨",
+  "location": "逆鳞湖（雨天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -62733,7 +62733,7 @@
   "species_id": 768,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人帽岩雨，桥间空地晴雨雷",
+  "location": "巨人帽岩（雨天），桥间空地（晴朗、雨天、雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -62751,7 +62751,7 @@
   "species_id": 768,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "斗志洞窟所有天气；挑战海滩雨",
+  "location": "斗志洞窟所有天气；挑战海滩（雨天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -62895,7 +62895,7 @@
   "species_id": 770,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "圆环海湾阴沙雾",
+  "location": "圆环海湾（阴天、沙暴、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -62967,7 +62967,7 @@
   "species_id": 771,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "9所有天气；美纳斯湖南岸雷",
+  "location": "9所有天气；美纳斯湖南岸（雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -63147,7 +63147,7 @@
   "species_id": 776,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "逆鳞湖曝",
+  "location": "逆鳞湖（烈日）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -63210,7 +63210,7 @@
   "species_id": 777,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖冰",
+  "location": "逆鳞湖（暴风雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -63273,7 +63273,7 @@
   "species_id": 778,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人镜池雾",
+  "location": "巨人镜池（大雾）",
   "method": "随机",
   "note": "黄色草丛",
   "form": ""
@@ -63282,7 +63282,7 @@
   "species_id": 778,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "桥间空地雾",
+  "location": "桥间空地（大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -63300,7 +63300,7 @@
   "species_id": 778,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原雾，冰点雪原雾，巨人睡榻雾，远古墓地雾，雪中溪谷{{Sup/W|雾}}，巨人鞋底{{Sup/W|雾}}，冻海{{Sup/W|雾}}，三岔平原{{Sup/W|雾}}，球湖湖畔{{Sup/W|雾}}",
+  "location": "起橇雪原（大雾），冰点雪原（大雾），巨人睡榻（大雾），远古墓地（大雾），雪中溪谷（大雾），巨人鞋底（大雾），冻海（大雾），三岔平原（大雾），球湖湖畔（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -63309,7 +63309,7 @@
   "species_id": 778,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原雾，冰点雪原雾，巨人睡榻雾，远古墓地雾，雪中溪谷{{Sup/W|雾}}，巨人鞋底{{Sup/W|雾}}，球湖湖畔{{Sup/W|雾}}",
+  "location": "起橇雪原（大雾），冰点雪原（大雾），巨人睡榻（大雾），远古墓地（大雾），雪中溪谷（大雾），巨人鞋底（大雾），球湖湖畔（大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -63444,7 +63444,7 @@
   "species_id": 780,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "逆鳞湖雷",
+  "location": "逆鳞湖（雷雨）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -63579,7 +63579,7 @@
   "species_id": 782,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "逆鳞湖阴曝",
+  "location": "逆鳞湖（阴天、烈日）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -63606,7 +63606,7 @@
   "species_id": 782,
   "game": "sword-shield",
   "version_label": "剑·扩展票",
-  "location": "挑战之路阴，锅底沙漠阴",
+  "location": "挑战之路（阴天），锅底沙漠（阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -63615,7 +63615,7 @@
   "species_id": 782,
   "game": "sword-shield",
   "version_label": "剑·扩展票",
-  "location": "挑战之路曝沙雾，锻炼平原沙",
+  "location": "挑战之路（烈日、沙暴、大雾），锻炼平原（沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -63687,7 +63687,7 @@
   "species_id": 783,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "逆鳞湖雷",
+  "location": "逆鳞湖（雷雨）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -63777,7 +63777,7 @@
   "species_id": 784,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "沙尘洼地晴曝雪冰{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "沙尘洼地（晴朗、烈日、下雪、暴风雪、沙暴、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -65226,7 +65226,7 @@
   "species_id": 819,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "列岛海域所有天气；球湖湖畔晴阴雨雷{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|雾}}",
+  "location": "列岛海域所有天气；球湖湖畔（晴朗、阴天、雨天、雷雨、烈日、下雪、大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -65334,7 +65334,7 @@
   "species_id": 820,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "球湖湖畔，巨树丘陵所有天气；巨人睡榻晴阴雨雷{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|雾}}",
+  "location": "球湖湖畔，巨树丘陵所有天气；巨人睡榻（晴朗、阴天、雨天、雷雨、下雪、暴风雪、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -65442,7 +65442,7 @@
   "species_id": 821,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "2，微寐森林所有天气；机擎河岸",
+  "location": "2，微寐森林所有天气；机擎河岸（阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -65514,7 +65514,7 @@
   "species_id": 822,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "机擎河岸所有天气；拳关丘陵",
+  "location": "机擎河岸所有天气；拳关丘陵（晴朗）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -65559,7 +65559,7 @@
   "species_id": 822,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "球湖湖畔晴雪",
+  "location": "球湖湖畔（晴朗、下雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -65631,7 +65631,7 @@
   "species_id": 823,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "7，微寐森林，逆鳞湖所有天气；沙尘洼地雪",
+  "location": "7，微寐森林，逆鳞湖所有天气；沙尘洼地（下雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -65649,7 +65649,7 @@
   "species_id": 823,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人帽岩，拳关丘陵，瞭望塔旧址，美纳斯湖北岸所有天气；机擎河岸雨雷曝雪{{Sup/W|冰}}{{Sup/W|沙}}",
+  "location": "巨人帽岩，拳关丘陵，瞭望塔旧址，美纳斯湖北岸所有天气；机擎河岸（雨天、雷雨、烈日、下雪、暴风雪、沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -65676,7 +65676,7 @@
   "species_id": 823,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "球湖湖畔晴雪冰",
+  "location": "球湖湖畔（晴朗、下雪、暴风雪）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -65784,7 +65784,7 @@
   "species_id": 824,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "2，微寐森林所有天气；巨人帽岩",
+  "location": "2，微寐森林所有天气；巨人帽岩（晴朗）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -65856,7 +65856,7 @@
   "species_id": 825,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "5号道路所有天气；巨人帽岩晴阴雨雷{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|沙}}{{Sup/W|雾}}，巨人镜池，巨石原野",
+  "location": "5号道路所有天气；巨人帽岩（晴朗、阴天、雨天、雷雨、下雪、暴风雪、沙暴、大雾），巨人镜池（晴朗、阴天、雨天、沙暴），巨石原野（大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -65937,7 +65937,7 @@
   "species_id": 826,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "微寐森林所有天气；逆鳞湖",
+  "location": "微寐森林所有天气；逆鳞湖（晴朗）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -66045,7 +66045,7 @@
   "species_id": 827,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "2所有天气；巨人镜池，沙尘洼地，巨石原野",
+  "location": "2所有天气；巨人镜池（晴朗、阴天、雨天、雷雨、烈日），沙尘洼地（晴朗、阴天、雨天、雷雨、烈日），巨石原野（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -66108,7 +66108,7 @@
   "species_id": 828,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "尖钉镇郊外所有天气；桥间空地晴阴曝雪{{Sup/W|雾}}，巨石原野{{Sup/W|雾}}，拳关丘陵{{Sup/W|阴}}",
+  "location": "尖钉镇郊外所有天气；桥间空地（晴朗、阴天、烈日、下雪、大雾），巨石原野（大雾），拳关丘陵（阴天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -66216,7 +66216,7 @@
   "species_id": 829,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "3所有天气；机擎河岸",
+  "location": "3所有天气；机擎河岸（晴朗）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -66243,7 +66243,7 @@
   "species_id": 829,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "球湖湖畔晴曝",
+  "location": "球湖湖畔（晴朗、烈日）",
   "method": "随机，可见",
   "note": "",
   "form": ""
@@ -66279,7 +66279,7 @@
   "species_id": 830,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "机擎河岸晴，巨石原野晴，沙尘洼地晴阴{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|沙}}{{Sup/W|雾}}，巨人帽岩{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|雾}}",
+  "location": "机擎河岸（晴朗），巨石原野（晴朗），沙尘洼地（晴朗、阴天、雨天、雷雨、沙暴、大雾），巨人帽岩（晴朗、阴天、雨天、大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -66315,7 +66315,7 @@
   "species_id": 830,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "球湖湖畔晴雨",
+  "location": "球湖湖畔（晴朗、雨天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -66369,7 +66369,7 @@
   "species_id": 831,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "1所有天气；机擎河岸",
+  "location": "1所有天气；机擎河岸（晴朗、下雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -66396,7 +66396,7 @@
   "species_id": 831,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原，冰点雪原，巨人睡榻，雪中溪谷，三岔平原曝",
+  "location": "起橇雪原，冰点雪原，巨人睡榻，雪中溪谷，三岔平原（晴朗、烈日）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -66432,7 +66432,7 @@
   "species_id": 832,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "机擎河岸晴阴，沙尘洼地晴，拳关丘陵晴",
+  "location": "机擎河岸（晴朗、阴天），沙尘洼地（晴朗），拳关丘陵（晴朗）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -66468,7 +66468,7 @@
   "species_id": 832,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原晴曝，冰点雪原晴曝，巨人睡榻{{Sup/W|晴}}{{Sup/W|曝}}，雪中溪谷{{Sup/W|晴}}{{Sup/W|曝}}，三岔平原{{Sup/W|晴}}{{Sup/W|曝}}",
+  "location": "起橇雪原（晴朗、烈日），冰点雪原（晴朗、烈日），巨人睡榻（晴朗、烈日），雪中溪谷（晴朗、烈日），三岔平原（晴朗、烈日）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -66477,7 +66477,7 @@
   "species_id": 832,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原晴曝，冰点雪原晴曝，巨人睡榻{{Sup/W|晴}}，雪中溪谷{{Sup/W|晴}}{{Sup/W|曝}}",
+  "location": "起橇雪原（晴朗、烈日），冰点雪原（晴朗、烈日），巨人睡榻（晴朗），雪中溪谷（晴朗、烈日）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -66531,7 +66531,7 @@
   "species_id": 833,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "机擎河岸",
+  "location": "机擎河岸（雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -66549,7 +66549,7 @@
   "species_id": 833,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "2，第二矿山，巨人帽岩所有天气；机擎河岸，巨人镜池",
+  "location": "2，第二矿山，巨人帽岩所有天气；机擎河岸（雨天），巨人镜池（雨天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -66666,7 +66666,7 @@
   "species_id": 834,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖，沙尘洼地",
+  "location": "逆鳞湖（雷雨），沙尘洼地（雷雨）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -66675,7 +66675,7 @@
   "species_id": 834,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人帽岩",
+  "location": "巨人帽岩（雨天、雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -66711,7 +66711,7 @@
   "species_id": 834,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "斗志洞窟所有天气；揖礼原野晴，清凉湿原晴阴曝{{Sup/W|沙}}，挑战海滩{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|沙}}，圆环海湾{{Sup/W|晴}}{{Sup/W|曝}}{{Sup/W|沙}}",
+  "location": "斗志洞窟所有天气；揖礼原野（晴朗），清凉湿原（晴朗、阴天、烈日、沙暴），挑战海滩（晴朗、阴天、雷雨、烈日、沙暴），圆环海湾（晴朗、烈日、沙暴）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -66810,7 +66810,7 @@
   "species_id": 835,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "4所有天气；机擎河岸，巨石原野，巨人镜池",
+  "location": "4所有天气；机擎河岸（雷雨），巨石原野（雷雨），巨人镜池（雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -66846,7 +66846,7 @@
   "species_id": 835,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "球湖湖畔晴阴雨雷{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|雾}}",
+  "location": "球湖湖畔（晴朗、阴天、雨天、雷雨、烈日、下雪、大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -66873,7 +66873,7 @@
   "species_id": 836,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "机擎河岸雷，沙尘洼地雷，逆鳞湖雷",
+  "location": "机擎河岸（雷雨），沙尘洼地（雷雨），逆鳞湖（雷雨）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -66909,7 +66909,7 @@
   "species_id": 836,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "球湖湖畔晴阴雨雷{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|雾}}",
+  "location": "球湖湖畔（晴朗、阴天、雨天、雷雨、烈日、下雪、大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -66918,7 +66918,7 @@
   "species_id": 836,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "球湖湖畔晴雨雷雪{{Sup/W|冰}}{{Sup/W|雾}}",
+  "location": "球湖湖畔（晴朗、雨天、雷雨、下雪、暴风雪、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -66990,7 +66990,7 @@
   "species_id": 837,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "3，伽勒尔矿山，巨人帽岩所有天气；机擎河岸",
+  "location": "3，伽勒尔矿山，巨人帽岩所有天气；机擎河岸（烈日、沙暴）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -67062,7 +67062,7 @@
   "species_id": 838,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "桥间空地曝，巨石原野曝",
+  "location": "桥间空地（烈日），巨石原野（烈日）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -67071,7 +67071,7 @@
   "species_id": 838,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨人帽岩曝沙",
+  "location": "巨人帽岩（烈日、沙暴）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -67116,7 +67116,7 @@
   "species_id": 838,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "湖畔洞窟所有天气；球湖湖畔曝",
+  "location": "湖畔洞窟所有天气；球湖湖畔（烈日）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -67170,7 +67170,7 @@
   "species_id": 839,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "沙尘洼地曝，逆鳞湖曝",
+  "location": "沙尘洼地（烈日），逆鳞湖（烈日）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -67215,7 +67215,7 @@
   "species_id": 839,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "湖畔洞窟所有天气；球湖湖畔晴雷曝雪{{Sup/W|冰}}{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "湖畔洞窟所有天气；球湖湖畔（晴朗、雷雨、烈日、下雪、暴风雪、沙暴、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -67296,7 +67296,7 @@
   "species_id": 840,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "5号道路所有天气；巨石原野，沙尘洼地，巨人镜池",
+  "location": "5号道路所有天气；巨石原野（雷雨），沙尘洼地（晴朗），巨人镜池（雷雨）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -67647,7 +67647,7 @@
   "species_id": 843,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "专注森林沙，挑战之路沙，锻炼平原沙",
+  "location": "专注森林（沙暴），挑战之路（沙暴），锻炼平原（沙暴）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -67656,7 +67656,7 @@
   "species_id": 843,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "专注森林沙，挑战之路沙，锻炼平原沙，锅底沙漠沙",
+  "location": "专注森林（沙暴），挑战之路（沙暴），锻炼平原（沙暴），锅底沙漠（沙暴）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -67701,7 +67701,7 @@
   "species_id": 844,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "8号道路所有天气；逆鳞湖曝",
+  "location": "8号道路所有天气；逆鳞湖（烈日）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -67728,7 +67728,7 @@
   "species_id": 844,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "锅底沙漠晴曝雾",
+  "location": "锅底沙漠（晴朗、烈日、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -67809,7 +67809,7 @@
   "species_id": 845,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "9号道路所有天气；逆鳞湖雨",
+  "location": "9号道路所有天气；逆鳞湖（雨天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -67818,7 +67818,7 @@
   "species_id": 845,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "巨石原野雨，桥间空地雨",
+  "location": "巨石原野（雨天），桥间空地（雨天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -67863,7 +67863,7 @@
   "species_id": 845,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "专注森林晴雨曝雾，挑战海滩{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|曝}}{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "专注森林（晴朗、雨天、烈日、大雾），挑战海滩（晴朗、阴天、雨天、烈日、沙暴、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -68070,7 +68070,7 @@
   "species_id": 847,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "专注森林雨雷雾，挑战海滩晴{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|沙}}{{Sup/W|雾}}，锻炼平原{{Sup/W|晴}}{{Sup/W|雨}}{{Sup/W|雷}}{{Sup/W|曝}}{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "专注森林（雨天、雷雨、大雾），挑战海滩（晴朗、雨天、雷雨、烈日、沙暴、大雾），锻炼平原（晴朗、雨天、雷雨、烈日、沙暴、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -68151,7 +68151,7 @@
   "species_id": 848,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "7所有天气；巨石原野雷，巨人帽岩雷，拳关丘陵雷",
+  "location": "7所有天气；巨石原野（雷雨），巨人帽岩（雷雨），拳关丘陵（雷雨）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -68160,7 +68160,7 @@
   "species_id": 848,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "机擎河岸雷，桥间空地晴雨雷，巨石原野{{Sup/W|雷}}",
+  "location": "机擎河岸（雷雨），桥间空地（晴朗、雨天、雷雨），巨石原野（雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -68466,7 +68466,7 @@
   "species_id": 850,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人鞋底晴曝",
+  "location": "巨人鞋底（晴朗、烈日）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -68520,7 +68520,7 @@
   "species_id": 851,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人鞋底晴曝",
+  "location": "巨人鞋底（晴朗、烈日）",
   "method": "可见，定点",
   "note": "",
   "form": ""
@@ -68673,7 +68673,7 @@
   "species_id": 853,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "战竞湾，逆鳞湖所有天气；牙牙湖西岸晴阴曝雪{{Sup/W|冰}}{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "战竞湾，逆鳞湖所有天气；牙牙湖西岸（晴朗、阴天、烈日、下雪、暴风雪、沙暴、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -68691,7 +68691,7 @@
   "species_id": 853,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "圆环海湾晴阴曝沙{{Sup/W|雾}}",
+  "location": "圆环海湾（晴朗、阴天、烈日、沙暴、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -68907,7 +68907,7 @@
   "species_id": 855,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "远古墓地晴雨雷曝{{Sup/W|冰}}{{Sup/W|雾}}",
+  "location": "远古墓地（晴朗、雨天、雷雨、烈日、暴风雪、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -68952,7 +68952,7 @@
   "species_id": 856,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "拳关丘陵",
+  "location": "拳关丘陵（大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -68961,7 +68961,7 @@
   "species_id": 856,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "机擎市郊外所有天气；巨石原野",
+  "location": "机擎市郊外所有天气；巨石原野（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -68988,7 +68988,7 @@
   "species_id": 856,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原，冰点雪原，巨人睡榻，远古墓地，巨人鞋底，冻海，三岔平原，球湖湖畔",
+  "location": "起橇雪原（大雾），冰点雪原（大雾），巨人睡榻（大雾），远古墓地（大雾），巨人鞋底（大雾），冻海（大雾），三岔平原（大雾），球湖湖畔（大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -68997,7 +68997,7 @@
   "species_id": 856,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原",
+  "location": "起橇雪原（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -69069,7 +69069,7 @@
   "species_id": 857,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "迷光森林所有天气；沙尘洼地晴阴雨冰{{Sup/W|沙}}{{Sup/W|雾}}",
+  "location": "迷光森林所有天气；沙尘洼地（晴朗、阴天、雨天、暴风雪、沙暴、大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -69096,7 +69096,7 @@
   "species_id": 857,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "冰点雪原，巨人睡榻，远古墓地，巨人鞋底，冻海，三岔平原，球湖湖畔",
+  "location": "冰点雪原（大雾），巨人睡榻（大雾），远古墓地（大雾），巨人鞋底（大雾），冻海（大雾），三岔平原（大雾），球湖湖畔（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -69105,7 +69105,7 @@
   "species_id": 857,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原",
+  "location": "起橇雪原（大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -69168,7 +69168,7 @@
   "species_id": 858,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖雾",
+  "location": "逆鳞湖（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -69204,7 +69204,7 @@
   "species_id": 858,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "冰点雪原雾，巨人睡榻雾，冻海雾，球湖湖畔雾",
+  "location": "冰点雪原（大雾），巨人睡榻（大雾），冻海（大雾），球湖湖畔（大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -69285,7 +69285,7 @@
   "species_id": 859,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "机擎市郊外所有天气；巨石原野晴阴雨雷{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|雾}}，巨人镜池，拳关丘陵",
+  "location": "机擎市郊外所有天气；巨石原野（晴朗、阴天、雨天、雷雨、烈日、下雪、暴风雪、大雾），巨人镜池（大雾），拳关丘陵（大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -69321,7 +69321,7 @@
   "species_id": 859,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原雾",
+  "location": "起橇雪原（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -69402,7 +69402,7 @@
   "species_id": 860,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻雾，雪中溪谷雾，巨人鞋底雾",
+  "location": "巨人睡榻（大雾），雪中溪谷（大雾），巨人鞋底（大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -69456,7 +69456,7 @@
   "species_id": 861,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖阴",
+  "location": "逆鳞湖（阴天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -69492,7 +69492,7 @@
   "species_id": 861,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻雾，雪中溪谷雾，起橇雪原雾",
+  "location": "巨人睡榻（大雾），雪中溪谷（大雾），起橇雪原（大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -69564,7 +69564,7 @@
   "species_id": 862,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖",
+  "location": "逆鳞湖（晴朗、沙暴）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -69600,7 +69600,7 @@
   "species_id": 862,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人睡榻阴雨，球湖湖畔阴",
+  "location": "巨人睡榻（阴天、雨天），球湖湖畔（阴天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -69645,7 +69645,7 @@
   "species_id": 863,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "尖钉镇郊外所有天气；逆鳞湖冰",
+  "location": "尖钉镇郊外所有天气；逆鳞湖（暴风雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -70005,7 +70005,7 @@
   "species_id": 868,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "4所有天气；桥间空地，巨人镜池",
+  "location": "4所有天气；桥间空地（大雾），巨人镜池（大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -70158,7 +70158,7 @@
   "species_id": 870,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "8号道路所有天气；逆鳞湖阴",
+  "location": "8号道路所有天气；逆鳞湖（阴天）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -70302,7 +70302,7 @@
   "species_id": 871,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "斗志洞窟，圆环海湾所有天气；冻海雷",
+  "location": "斗志洞窟，圆环海湾所有天气；冻海（雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -70311,7 +70311,7 @@
   "species_id": 871,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "圆环海湾晴雨雷雾，冻海{{Sup/W|雷}}",
+  "location": "圆环海湾（晴朗、雨天、雷雨、大雾），冻海（雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -70374,7 +70374,7 @@
   "species_id": 872,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "泉烟小路，10号道路所有天气；逆鳞湖雪",
+  "location": "泉烟小路，10号道路所有天气；逆鳞湖（下雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -70428,7 +70428,7 @@
   "species_id": 872,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "起橇雪原晴雾，雪中溪谷晴阴",
+  "location": "起橇雪原（晴朗、大雾），雪中溪谷（晴朗、阴天）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -70554,7 +70554,7 @@
   "species_id": 874,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "10号道路所有天气；逆鳞湖曝沙",
+  "location": "10号道路所有天气；逆鳞湖（烈日、沙暴）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -70653,7 +70653,7 @@
   "species_id": 875,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "10号道路所有天气；逆鳞湖雪冰",
+  "location": "10号道路所有天气；逆鳞湖（下雪、暴风雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -70680,7 +70680,7 @@
   "species_id": 875,
   "game": "sword-shield",
   "version_label": "盾·扩展票",
-  "location": "冻海晴阴雨雷{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|雾}}",
+  "location": "冻海（晴朗、阴天、雨天、雷雨、下雪、暴风雪、大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -70743,7 +70743,7 @@
   "species_id": 876,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "迷光森林所有天气；逆鳞湖雾",
+  "location": "迷光森林所有天气；逆鳞湖（大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -70779,7 +70779,7 @@
   "species_id": 876,
   "game": "sword-shield",
   "version_label": "剑·扩展票",
-  "location": "球湖湖畔晴雾",
+  "location": "球湖湖畔（晴朗、大雾）",
   "method": "可见，定点",
   "note": "",
   "form": ""
@@ -70833,7 +70833,7 @@
   "species_id": 876,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "迷光森林所有天气；逆鳞湖雾",
+  "location": "迷光森林所有天气；逆鳞湖（大雾）",
   "method": "随机",
   "note": "",
   "form": "F"
@@ -70860,7 +70860,7 @@
   "species_id": 876,
   "game": "sword-shield",
   "version_label": "盾·扩展票",
-  "location": "球湖湖畔晴雾",
+  "location": "球湖湖畔（晴朗、大雾）",
   "method": "可见，定点",
   "note": "",
   "form": "F"
@@ -70905,7 +70905,7 @@
   "species_id": 877,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "7号道路所有天气；逆鳞湖雷",
+  "location": "7号道路所有天气；逆鳞湖（雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -70932,7 +70932,7 @@
   "species_id": 877,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "挑战海滩所有天气；球湖湖畔阴雷",
+  "location": "挑战海滩所有天气；球湖湖畔（阴天、雷雨）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -70941,7 +70941,7 @@
   "species_id": 877,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "挑战海滩晴阴雨雷，球湖湖畔{{Sup/W|阴}}{{Sup/W|雷}}",
+  "location": "挑战海滩（晴朗、阴天、雨天、雷雨），球湖湖畔（阴天、雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -71022,7 +71022,7 @@
   "species_id": 878,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "桥间空地晴阴曝冰",
+  "location": "桥间空地（晴朗、阴天、烈日、暴风雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -71076,7 +71076,7 @@
   "species_id": 879,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖冰",
+  "location": "逆鳞湖（暴风雪）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -71121,7 +71121,7 @@
   "species_id": 879,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "巨人鞋底阴雨雷雪{{Sup/W|冰}}{{Sup/W|雾}}",
+  "location": "巨人鞋底（阴天、雨天、雷雨、下雪、暴风雪、大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -71346,7 +71346,7 @@
   "species_id": 884,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖",
+  "location": "逆鳞湖（暴风雪）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -71472,7 +71472,7 @@
   "species_id": 885,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖阴雷雾",
+  "location": "逆鳞湖（阴天、雷雨、大雾）",
   "method": "随机",
   "note": "",
   "form": ""
@@ -71544,7 +71544,7 @@
   "species_id": 886,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "逆鳞湖阴雨雷雾",
+  "location": "逆鳞湖（阴天、雨天、雷雨、大雾）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -71652,7 +71652,7 @@
   "species_id": 887,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "远古墓地晴阴雨雷{{Sup/W|曝}}{{Sup/W|雪}}，三岔平原{{Sup/W|晴}}{{Sup/W|阴}}{{Sup/W|雨}}{{Sup/W|曝}}{{Sup/W|雪}}{{Sup/W|冰}}{{Sup/W|雾}}",
+  "location": "远古墓地（晴朗、阴天、雨天、雷雨、烈日、下雪），三岔平原（晴朗、阴天、雨天、烈日、下雪、暴风雪、大雾）",
   "method": "定点",
   "note": "",
   "form": ""

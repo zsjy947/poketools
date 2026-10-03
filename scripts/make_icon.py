@@ -1,6 +1,6 @@
 """生成应用图标（精灵球风格）到 app/static/dist/assets/。
 
-产物：appicon.ico（多尺寸，供 PyInstaller / Windows 窗口使用）+ appicon.png（favicon）。
+产物：appicon.ico（多尺寸）与 appicon.png（favicon + Tauri 图标基图）+ appicon.png（favicon）。
 """
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT = ROOT / "app" / "static" / "dist" / "assets"
+OUT = ROOT / "web" / "public" / "assets"
 SIZE = 256
 
 RED = (237, 73, 77, 255)

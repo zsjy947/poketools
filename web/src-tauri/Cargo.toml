@@ -1,0 +1,17 @@
+[package]
+name = "poketools-app"
+version = "0.1.0"
+description = "宝可梦工具助手——五作图鉴/努力值/特化功能/伤害计算器/模拟对战，完全本地离线（仅限个人使用）"
+edition = "2021"
+
+[lib]
+name = "poketools_app_lib"
+crate-type = ["staticlib", "cdylib", "lib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
