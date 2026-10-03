@@ -2,6 +2,19 @@
 
 版本号 SemVer；发布门禁与产物规范见 plans/00-项目规划文档.md §6.8/§7。
 
+## [1.0.0] —— 2026-10-03
+
+统一壳首发：poketools（五作图鉴/努力值/三明治/甜甜圈/咖喱/伤害计算器）与模拟对战并入同一
+Tauri 2 桌面应用；数据/伤害/生蛋等领域逻辑全部 TS 单实现，运行时完全离线。
+
+- 统一壳：#/home #/games #/game/:id/:feature #/pokemon/:id #/calc #/battle 分区路由；
+  对战与计算器 keep-alive 常驻。
+- 数据层：33 表静态分片 + 本地引擎（calib 51+41 基准全绿）；桌面老用户 userstate.db
+  可经 scripts/export_userstate.py 一次性导出导入。
+- 模拟对战：有序上阵（幻觉伪装随顺位）、冠军赛制 4+4 可开局、全中文化（含 Mega/Gmax/
+  进化石派生与校验文案）。
+- 打包：NSIS 安装包 + 便携 exe（宝可梦工具助手_1.0.0_x64-setup.exe）。
+
 ## [0.1.0] —— 2026-10-02
 
 首个可用版本（里程碑 M0-M8，tag `battle-v1.0.0`）。功能说明与过程记录见 `docs/BATTLE.md`。

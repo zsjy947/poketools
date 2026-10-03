@@ -1,8 +1,8 @@
 {
-  "name": "pkmn-solo-battle",
+  "name": "poketools",
   "private": true,
-  "version": "0.1.0",
-  "description": "宝可梦模拟对战（Pokémon Solo Battle）——完全本地、单人操控双方的对战练功工具",
+  "version": "1.0.0",
+  "description": "宝可梦工具助手——五作图鉴/努力值/特化功能/伤害计算器/模拟对战（完全本地离线）",
   "type": "module",
   "engines": {
     "node": ">=22"
