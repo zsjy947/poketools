@@ -4,7 +4,7 @@
  * 覆盖：Gmax/Mega 形态名、超级石等道具名、无特性、champions mod 新增条目。
  */
 import { Dex } from "../engine-adapter";
-import type { NamedText } from "./index";
+import type { NamedText } from "./names";
 
 /** 常用对战道具中文说明（itemView.desc 优先取此表；其余回退英文，缺口见 docs/BATTLE.md 数据缺口节） */
 export const ZH_ITEM_DESC: Record<string, string> = {

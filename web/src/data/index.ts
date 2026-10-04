@@ -51,12 +51,8 @@ export interface AbilityView {
   desc: string;
 }
 
-export interface NamedText {
-  Pokedex: Record<string, { name?: string }>;
-  Moves: Record<string, { name?: string; shortDesc?: string; desc?: string }>;
-  Abilities: Record<string, { name?: string }>;
-  Items: Record<string, { name?: string }>;
-}
+import type { NamedText } from "./names";
+export type { NamedText } from "./names";
 
 export const TYPE_ZH: Record<string, string> = {
   Normal: "一般",
