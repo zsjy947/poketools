@@ -433,6 +433,11 @@ export async function evolutionChain(
           .replace(/在冰岩石，在冰岩石附近/g, "在冰岩石附近")
       : v.cond;
   }
+  /* U25：传说阿尔宙斯的叶/冰伊布双途径（道具或洗翠定点岩石）——PokeAPI 无 LA 专属行，条件级覆盖 */
+  if (game === "legends-arceus") {
+    if (conds["133|470"]) conds["133|470"] = "使用叶之石，或在苔藓岩石附近升级";
+    if (conds["133|471"]) conds["133|471"] = "使用冰之石，或在冰岩石附近升级";
+  }
   /* 常规链（无 curated 分支）：当前物种节点按所选形态切图（一家鼠/土龙节节/鬃岩狼人等
      同种多形态进化，进化前无对应形态） */
   if (formSuffix) {

@@ -343,6 +343,17 @@ web/
 数据类缺口仍以 `DATA-GAPS.md` 为准（无源待补与变体建模两项仍开放，ROADMAP §5 仅索引）。
 
 ## §10 变更历史
+- **2026-10-04 模拟对战/计算器收尾三批（U23-U25）**：模拟对战——赛制大类分组头样式补齐（U23）、
+  队伍新增默认与选择框一致（species 归一为小写 id，store 装载/写入双端清理同名昵称）、
+  合规性校验消息全中文（清漏扫描 22 种消息逐条映射 + translateValidatorError 前置剥离
+  「昵称 (英文真名)」括号 + 回归测试 battle-validate-zh）、宝可梦/道具选择列表全中文
+  （zh-gen.ts 生成表：形态种 85 键 = toID(pokemon_forms.identifier)，值 = 52poke curated
+  形态中文名 + 物种官方名 + 22 条手工补名；道具 44 键 = 本库 items 表；zhOf 链生成表优先于
+  补丁表；回归测试 battle-list-zh）、昵称固定为中文种名随物种切换重置；
+  计算器——Z 招式自动装备纯晶时道具框显示 🔒（mega 优先）、种族/实际值列宽加宽
+  （44/64/1fr/44/64/76）修 3 位数贴边；伊布进化链——传说阿尔宙斯叶/冰伊布双途径
+  （道具或洗翠定点岩石，条件级覆盖）。精灵图：fetch_sprites 增 jsdelivr 镜像兜底
+  （代理拦 raw.githubusercontent 时可用），新形态 229 张待网络可用重跑（DATA-GAPS §一.6）。
 - **2026-10-03 收尾二批（U20）**：图鉴——纯外观形态补齐（PokeAPI 新建模只存 pokemon_forms 的
   四季/花色/字母/花纹/蛋糕等 228 行，合成行 id=900000 段、属性继承基础行；form_meta 改取
   is_default 行修复 label 覆盖；FORM_MARKERS 补全中文形态名→后缀映射，276 段未挂靠清零；

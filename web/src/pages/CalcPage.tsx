@@ -756,6 +756,7 @@ export function CalcPage(): JSX.Element {
                   abilities={allAbilities}
                   natures={natures}
                   setSide={sideSet}
+                  zMeta={zMeta}
                 />
               </div>
             </div>
@@ -774,6 +775,7 @@ export function CalcPage(): JSX.Element {
                   abilities={allAbilities}
                   natures={natures}
                   setSide={sideSet}
+                  zMeta={zMeta}
                 />
               </div>
             </div>
@@ -1046,6 +1048,7 @@ function SideEditor({
   abilities,
   natures,
   setSide,
+  zMeta,
 }: {
   side: SideState;
   which: "A" | "D";
@@ -1058,8 +1061,20 @@ function SideEditor({
     which: "A" | "D",
     patch: Partial<SideState> | ((s: SideState) => Partial<SideState>),
   ) => void;
+  zMeta: any;
 }): JSX.Element {
   const ownAbilities = side.forms.find((x) => x.id === side.formId)?.ability_list || [];
+  /* U21：Z 招式点亮时自动装备的纯晶名（道具框锁标记用） */
+  const zMarkIdx = side.zMarks.findIndex(Boolean);
+  const zCrystalName =
+    zMarkIdx >= 0
+      ? zCrystalFor(
+          side,
+          side.moveOptions.find((m) => m.move_id === side.moves[zMarkIdx]),
+          items,
+          zMeta,
+        )
+      : "";
   /* 特性下拉分组：自身特性在前，其余为「其他特性」（特性互换/复制等场景），去掉重复项 */
   const ownAbilityNames = ownAbilities.map((a: any) => a.name);
   const abilityOptions = [
@@ -1298,6 +1313,10 @@ function SideEditor({
             adornment={
               megaStone ? (
                 <span className="fselect-lock" title={`超级进化形态自动装备：${megaStone}`}>
+                  🔒
+                </span>
+              ) : zCrystalName ? (
+                <span className="fselect-lock" title={`Z 招式已自动装备：${zCrystalName}`}>
                   🔒
                 </span>
               ) : null

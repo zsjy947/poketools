@@ -115,6 +115,17 @@ const VALIDATOR_MSG_ZH: Array<[RegExp, string]> = [
   [/(.+?) has an illegal move combination/, "$1 存在不合法的招式组合"],
   [/(.+?) is not legal/, "$1 不合法"],
   [
+    /(.+?) \((.+?)\) must not be nicknamed a different Pokémon species than what it actually is/,
+    "$1 的昵称与实际种名不符（实际为 $2）——请修改昵称或清除昵称",
+  ],
+  [
+    /(.+?) has exactly 0 Stat Points - did you forget to invest it\? If this was intentional, change its Nature to a different neutral Nature, which won't change its stats but will tell us that it wasn't a mistake\./,
+    "$1 努力值合计为 0——是否忘记分配？（如确有意为之，请把性格改为其他中立性格，效果不变但能表明非遗漏）",
+  ],
+  [/^You are limited to 1 of each item by Item Clause\.$/, "道具条款：每种道具限 1 个"],
+  [/^\(You have more than 1 (.+?)\)$/, "「$1」重复了（道具条款）"],
+  [/(.+?) is an invalid move\./, "招式「$1」无效"],
+  [
     /You are limited to one of each Pokémon by Species Clause\. \(You have more than one (.+?)\)/,
     "同种条款：每种宝可梦限 1 只（「$1」重复了）",
   ],
@@ -138,7 +149,10 @@ const STAT_KEY_ZH: Record<string, string> = {
   defense: "防御",
 };
 
-function translateValidatorError(msg: string): string {
+export function translateValidatorError(input: string): string {
+  /* 校验器把「昵称 (英文真名)」连写（如 "雷丘 (Garchomp) has …"）——先剥掉英文真名括号，
+     消息主体即可被下述模式命中；昵称违规消息的括号内是中文名，不受此影响 */
+  const msg = input.replace(/ \([A-Za-z][A-Za-z0-9 -]*\)(?= (?:has |needs |is |can't|must ))/g, "");
   for (const [re, zh] of VALIDATOR_MSG_ZH) {
     const m = msg.match(re);
     if (m) {

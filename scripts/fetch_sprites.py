@@ -25,6 +25,10 @@ SOURCES = [
     ("art", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork"),
     ("home", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home"),
     ("pixel", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon"),
+    # jsdelivr 镜像兜底：环境代理拦 raw.githubusercontent 时可用（2026-10-04）
+    ("art-cdn", "https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/other/official-artwork"),
+    ("home-cdn", "https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/other/home"),
+    ("pixel-cdn", "https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon"),
 ]
 MAX_SIZE = 256
 

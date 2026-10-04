@@ -118,6 +118,15 @@ describe("进化链：地区行与形态图（U19 数据核对回归）", () => 
     expect(evo.conds["25|26"]).toContain("阿罗拉");
   });
 
+  it("传说阿尔宙斯的叶/冰伊布=道具或定点双途径（U25）", async () => {
+    const { evolutionChain } = await import("../src/data/pokemon");
+    const evo = await evolutionChain(133, "", "legends-arceus");
+    expect(evo.conds["133|470"]).toContain("叶之石");
+    expect(evo.conds["133|470"]).toContain("苔藓岩石");
+    expect(evo.conds["133|471"]).toContain("冰之石");
+    expect(evo.conds["133|471"]).toContain("冰岩石");
+  });
+
   it("常规链当前物种节点按所选形态切图（一家鼠三只家庭）", async () => {
     const { evolutionChain } = await import("../src/data/pokemon");
     const base = await evolutionChain(925, "");

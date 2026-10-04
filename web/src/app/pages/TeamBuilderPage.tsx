@@ -238,17 +238,13 @@ export function TeamBuilderPage(): JSX.Element {
               <select
                 value={currentSpecies?.id ?? current.species}
                 onChange={(e) => {
-                  const oldZh = currentSpecies.zhName;
-                  const oldEn = currentSpecies.name;
-                  const nick = current.name ?? "";
-                  // 昵称为空或等于旧种名（中/英）才跟随新物种；自定义昵称不覆盖
-                  const follow = !nick || nick === oldZh || nick === oldEn;
+                  // U22：昵称固定为中文种名，随物种切换一律重置（官方语义：昵称跨物种无意义）
                   const next = speciesView(dex, e.target.value);
                   patchSet({
                     species: e.target.value,
                     ability: "",
                     moves: ["", "", "", ""],
-                    name: follow ? (next?.zhName ?? "") : nick,
+                    name: next?.zhName ?? "",
                   });
                 }}
               >
@@ -266,7 +262,7 @@ export function TeamBuilderPage(): JSX.Element {
               <input
                 value={current.name ?? ""}
                 onChange={(e) => patchSet({ name: e.target.value })}
-                placeholder="默认为中文种名"
+                placeholder="默认=中文种名（切换宝可梦时重置）"
               />
               <label>等级</label>
               <input

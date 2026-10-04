@@ -5,6 +5,7 @@
 import { Dex } from "../engine-adapter";
 import type { AbilityData, ItemData, SpeciesData } from "../engine-adapter";
 import { zhOfPatched, zhTable, ZH_ITEM_DESC } from "./zh-patch";
+import { ZH_ITEMS_GEN, ZH_SPECIES_GEN } from "./zh-gen";
 
 export { zhLine } from "./zh-patch";
 
@@ -142,6 +143,9 @@ function zhOf(table: Record<string, { name?: string }>, id: string, fallback: st
   // 引擎 zh-cn 优先；缺失或值仍是英文占位（Gmax/Mega 形态、进化石、champions 新条目）走补丁表
   const engine = table[id]?.name;
   if (engine && /[一-鿿]/.test(engine)) return engine;
+  /* U24：生成表优先于补丁表（补丁表可能残留引擎英文名，如 florges=Florges-Red） */
+  const gen = ZH_SPECIES_GEN[id] ?? ZH_ITEMS_GEN[id];
+  if (gen) return gen;
   const patched = zhOfPatched(zhTable(zhText()), id, "");
   if (patched) return patched;
   return engine || fallback;

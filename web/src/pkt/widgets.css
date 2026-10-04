@@ -485,7 +485,7 @@
 .stat-table .st-head,
 .stat-table .st-row {
   display: grid;
-  grid-template-columns: 44px 48px 1fr 44px 64px 72px;
+  grid-template-columns: 44px 64px 1fr 44px 64px 76px;
   gap: 8px;
   align-items: center;
 }
