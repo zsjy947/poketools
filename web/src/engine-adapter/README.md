@@ -1,8 +1,9 @@
-# engine-adapter（M2 落地）
+# engine-adapter（对战引擎适配层）
 
-@pkmn/sim 适配层：阵营输入路由（同一进程持有 p1/p2 两条输入流）、日志解析、对局状态机。
+引擎来源对上层透明的薄层——**当前为供应商化上游引擎**（`vendor/ps-engine.js`，含 champions mod，gitignore；`web/scripts/build-engine.mjs` 从 `data/raw/pokemon-showdown` 重建，锁定 commit 记录于 `web/scripts/config.json`）。若未来 @pkmn/sim 官方发布含 champions 的版本，仅需改 `index.ts` 的重导出来源，UI 与测试不感知。
 
-- 差异全部封装在本层：`@pkmn/sim` 官方发布不含 `champions` mod 时，切换到供应商化
-  原版 sim（esbuild 打包），对上层暴露一致接口（plans/00 §4.4 三级策略）。
-- 分层约束：不得向 UI 泄漏引擎内部类型；数据访问一律经 `src/data/` 层。
-- M2 DoD：单打+双打可脚本驱动完整跑通一局；金标准对拍框架 ≥3 条官方 replay 用例。
+- `index.ts`：重导出 + 对外类型重声明（引擎内部类型不泄漏给 UI）。
+- `session.ts`：对局会话（同一进程持有 p1/p2 两条输入流、request/choice 协议）。
+- `parse.ts`：协议行 → 结构化事件（含 `-damage`/`-heal`/`-mega`/`-zpower`/`-weather` 等虚线次要事件；未识别类型透传 raw）。
+
+分层约束：数据访问一律经 `src/data/` 层，本层不直接做 UI 查询。

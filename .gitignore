@@ -18,7 +18,7 @@ venv/
 node_modules/
 web/dist/
 
-# --- 遗留壳（已退役：apk → archived/android 分支；app/ Vue 栈已删除）---
+# --- 遗留壳（已退役：apk → archived/android 分支；app/ 旧导出目录已随 v1.0.0 清理删除）---
 apk/dist/
 apk/src-tauri/target/
 apk/src-tauri/gen/

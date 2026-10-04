@@ -68,16 +68,17 @@ describe("M5 动画演出", () => {
   });
 
   it("受击/濒死/换人/回复/异常/机制事件各有专属演出", () => {
+    // 虚线形态 = 引擎真实输出（vendor 仅 add("-damage"...) 等；faint 为无虚线特例）
     const lines = [
-      "|damage|p2a: Foe|50/100",
+      "|-damage|p2a: Foe|50/100",
       "|faint|p2a: Foe",
       "|switch|p1a: Newmon|Garchomp, L50, M|100/100",
-      "|heal|p1a: Newmon|80/100",
+      "|-heal|p1a: Newmon|80/100",
       "|-status|p1a: Newmon|brn",
       "|-terastallize|p1a: Newmon|Water",
-      "|mega|p1a: Newmon|Mega Garchomp",
-      "|max|p1a: Newmon",
-      "|zpower|p1a: Newmon",
+      "|-mega|p1a: Newmon|Mega Garchomp",
+      "|-max|p1a: Newmon",
+      "|-zpower|p1a: Newmon",
     ];
     const kinds = linesToSteps(lines).map((s) => s.kind);
     expect(kinds).toEqual([
@@ -91,6 +92,27 @@ describe("M5 动画演出", () => {
       "max",
       "zmove",
     ]);
+  });
+
+  it("真实 replay 的虚线次要事件解析为结构化事件（不再落 raw）", () => {
+    const replayDir = join(ROOT, "tests", "replays");
+    const counts = new Map<string, number>();
+    for (const f of readdirSync(replayDir).filter((x) => x.endsWith(".log"))) {
+      for (const line of readFileSync(join(replayDir, f), "utf8").split("\n")) {
+        if (!line.startsWith("|-")) continue;
+        const tag = line.split("|")[1]!;
+        if (!["-damage", "-heal", "-weather", "-mega", "-zpower", "-zmove", "-max"].includes(tag)) {
+          continue;
+        }
+        const ev = parseLogLine(line);
+        expect(ev.kind, `应解析：${line}`).not.toBe("raw");
+        counts.set(tag, (counts.get(tag) ?? 0) + 1);
+      }
+    }
+    // 样本覆盖下限：replay 语料实测 -damage≈198 / -heal≈35 / -weather≈32
+    expect(counts.get("-damage") ?? 0).toBeGreaterThan(10);
+    expect(counts.get("-heal") ?? 0).toBeGreaterThan(3);
+    expect(counts.get("-weather") ?? 0).toBeGreaterThan(3);
   });
 
   it("速度倍率缩放演出时长（speed=2 减半）", () => {

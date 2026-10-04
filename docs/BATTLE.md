@@ -1,6 +1,6 @@
 # BATTLE —— 模拟对战功能说明
 
-> battle/ 子应用的**单文档**（架构 / 环境 / 数据 / 使用 / 过程记录）。
+> 模拟对战功能的**单文档**（架构 / 环境 / 数据 / 使用 / 过程记录）。原 battle/ 独立子应用已在 v1.0.0 终态统一时整体 `git mv` 并入 `web/`，本文路径已按终态更新；历史过程记录（§里程碑等）保留当时路径。
 > 历史规划（原 plans/00-项目规划文档.md，2026-10-02 归档删除）未完成项见 `plans/ROADMAP.md`（本地维护，不入 git）；
 > 本文只沉淀**已实现**结论，随里程碑更新。
 
@@ -10,13 +10,13 @@
 | --- | --- |
 | 文档编号 | docs/BATTLE |
 | 适用版本 | battle 0.1.0（M0-M8，tag `battle-v1.0.0`） |
-| 上游仓库 | github.com/pokemon-showdown/pokemon-showdown（`data/raw/pokemon-showdown`，锁定 commit 见 `battle/scripts/config.json`） |
+| 上游仓库 | github.com/pokemon-showdown/pokemon-showdown（`data/raw/pokemon-showdown`，锁定 commit 见 `web/scripts/config.json`） |
 | 引擎许可 | 上游 MIT（sim/ + data/）；供应商化打包产物 `src/engine-adapter/vendor/ps-engine.js` 为 gitignore 可重建物 |
 
 ## 合规立场（权威，原 plans/00 §2.3）
 
 - 本应用及其产物**仅供本人本地学习研究使用，不公开分发、不商用**。
-- Showdown 素材（精灵图/图标/叫声）为**个人本地使用的素材副本**，属 Nintendo/Creatures/GAME FREAK/The Pokémon Company 版权资产；来源与下载记录见 `battle/NOTICE` 与素材 manifest。
+- Showdown 素材（精灵图/图标/叫声）为**个人本地使用的素材副本**，属 Nintendo/Creatures/GAME FREAK/The Pokémon Company 版权资产；来源与下载记录见 `web/NOTICE` 与素材 manifest。
 - 若未来出现任何公开分发计划，必须**先整体移除素材与游戏数据并重新评审**。
 - 协议边界：运行时仅引入上游 MIT 部分（引擎/数据），严禁 AGPL 文件进入（M5 隔离审查通过，见 §6 M5）。
 
@@ -34,7 +34,7 @@
 ## 2. 架构
 
 ```
-battle/
+web/
 ├─ src/
 │  ├─ app/                  # 应用层（React 18 + zustand）
 │  │  ├─ App.tsx            # 应用壳 + ErrorBoundary（渲染异常兜底，不整树卸载）
@@ -93,7 +93,7 @@ battle/
 | pnpm | ≥9（实测 12） | `pnpm install`；esbuild 构建许可已写 `pnpm.onlyBuiltDependencies` |
 
 ```bash
-cd battle
+cd web
 pnpm install
 node scripts/build-engine.mjs      # 重建供应商化引擎（需 data/raw/pokemon-showdown）
 node scripts/fetch-sprites.mjs     # 选择性下载精灵图（zip 中央目录 Range 解析，约 454MB → public/sprites，gitignore）

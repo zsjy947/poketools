@@ -1,6 +1,6 @@
 """数据静态化导出：poketools.db 读侧 → JSON 分片（路线 B / APK 基座，UPDATE-PLAN §3.2/§4.1）。
 
-产物（app/static/data/，随 gitignore，可重复执行重建）：
+产物（web/public/data/，可重复执行重建）：
 - tables/{表名}.json        —— 常规表全量（{rows:[...]}，保持 SQL 读序）
 - learnsets/vg{id}.json     —— learnsets 按 vg 分片（详情招式表/生蛋链按需载入）
 - learnsets_all/{sid}.json  —— learnsets_all 按物种分片（计算器招式并集懒加载）

@@ -78,6 +78,7 @@ export function parseLogLine(line: string): BattleEvent {
     case "replace":
       return ev({ kind: "switch", side: sideOf(p[0]), from: p[0], value: p[1] });
     case "damage":
+    case "-damage":
       return ev({
         kind: "damage",
         side: sideOf(p[0]),
@@ -85,6 +86,7 @@ export function parseLogLine(line: string): BattleEvent {
         amount: Number(p[1]) || undefined,
       });
     case "heal":
+    case "-heal":
       return ev({
         kind: "heal",
         side: sideOf(p[0]),
@@ -94,16 +96,21 @@ export function parseLogLine(line: string): BattleEvent {
     case "faint":
       return ev({ kind: "faint", side: sideOf(p[0]), from: p[0] });
     case "mega":
+    case "-mega":
       return ev({ kind: "mega", side: sideOf(p[0]), from: p[0], value: p[1] });
     case "zpower":
+    case "-zpower":
     case "zmove":
+    case "-zmove":
       return ev({ kind: "zmove", side: sideOf(p[0]), from: p[0] });
     case "max":
+    case "-max":
       return ev({ kind: "max", side: sideOf(p[0]), from: p[0] });
     case "terastallize":
     case "-terastallize":
       return ev({ kind: "tera", side: sideOf(p[0]), from: p[0], value: p[1] });
     case "weather":
+    case "-weather":
       return ev({ kind: "weather", value: p[0] });
     case "-fieldstart":
     case "fieldstart":
@@ -143,7 +150,8 @@ export function parseLogLine(line: string): BattleEvent {
     case "inactive":
       return ev({ kind: "inactive", value: p[0] });
     default:
-      // '-damage'/'-heal' 等带 - 前缀的已在上方；其余（-ability/-item/-enditem 等）透传
+      // 未识别的次要事件（-ability/-item/-enditem/-activate 等）透传为 raw；
+      // 已识别的虚线形态（-damage/-heal/-mega/-zpower/-weather 等）在上方各 case。
       return ev({ kind: "raw" });
   }
 }

@@ -1,5 +1,4 @@
-# team（M3 队伍构建器）
+# team（队伍构建）
 
-双队伍槽位（阵营 A/B）、编辑器（等级/个体值/努力值/性格/特性/道具/招式/太晶/Mega 标记）、
-Showdown 队伍文本导入导出、按赛制合法性校验（plans/00 FR-02~05）。
-存档经 Tauri fs / plugin-store 本地持久化（与主仓 poketools 的 userstate.db 完全隔离）。
+- `showdown.ts`：Showdown 队伍文本导入/导出/剪贴板与按赛制合法性校验（错误文案翻译简中）；解析/序列化复用引擎 `Teams`/`TeamValidator`（经 `engine-adapter`）。
+- 队伍槽位与对局记录持久化在 `app/storage.ts`（localStorage，Web 与 Tauri 双端一致；原 battle 时代设想的 Tauri fs/plugin-store 已弃用，与主应用用户数据（`state/user.ts` 的 `pkt.*` 键）互不干扰）。

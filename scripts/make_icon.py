@@ -1,4 +1,4 @@
-"""生成应用图标（精灵球风格）到 app/static/dist/assets/。
+"""生成应用图标（精灵球风格）到 web/public/assets/。
 
 产物：appicon.ico（多尺寸）与 appicon.png（favicon + Tauri 图标基图）+ appicon.png（favicon）。
 """

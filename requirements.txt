@@ -1,8 +1,4 @@
-fastapi
-uvicorn[standard]
-pywebview
-pyinstaller
+# 构建期数据管线依赖（运行时为 Tauri 2 桌面壳 + web/ 前端，无 Python 运行时依赖）
 requests
-pytest
-httpx2
 Pillow
+pytest
