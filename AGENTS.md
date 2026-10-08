@@ -76,14 +76,15 @@ node tools/smoke.mjs               # 冒烟：web 构建产物静态托管逐资
   **文档命名规范：内容描述 + 全大写**。
 - **文档分层（2026-10-02 归档修订）**：`docs/` = 说明文档（入库），只沉淀**已实现**的功能结论
   （架构/操作/设计决策；模拟对战功能说明 = `docs/BATTLE.md` 单文档；未实现/延后/否决项统一追踪于 `plans/ROADMAP.md`，本地不入 git）；
-  `plans/` = 计划文档（**gitignore 不入 git**，本地仅维护活动计划 `MASTER-PLAN.md`（终态统一改造总执行手册，
-  阶段 0-7，执行分支 dev）与 `KEYSTORE.md`（签名 keystore 口令备忘，敏感信息不入 git）；
-  `plans/PROGRESS.md` 为断点续作手册（本地维护，不入 git）。
-  历史计划（00/UPDATE-PLAN/MASTER-PLAN/PROGRESS/CALC-FIX-PLAN/REFACTOR-PLAN/OPTIMIZE-PLAN）已于 2026-10-02 归档删除：
-  实现结论沉淀 docs/，未完成项迁 plans/ROADMAP.md（本地维护）。计划实现后按序把有效结论并入 docs/ 对应文档并随代码提交。
+  `plans/` = 计划文档（**gitignore 不入 git**），仅维护 `plans/ROADMAP.md`（未完成/延后/否决项）与
+  `plans/KEYSTORE.md`（签名 keystore 口令备忘，敏感信息不入 git）。
+  历史计划已随项目收官删除（2026-10-02：00/UPDATE-PLAN/CALC-FIX-PLAN/REFACTOR-PLAN/OPTIMIZE-PLAN；
+  2026-10-08：MASTER-PLAN/PROGRESS/FOLLOWUP-PLAN-2026-10-04/CODE-REVIEW/REF-* 三件——终态统一改造已随
+  v1.0.0 完结，实现结论沉淀 docs/，未完成项在 plans/ROADMAP.md）。计划实现后按序把有效结论并入 docs/ 对应文档并随代码提交。
 - 伤害计算器：`web/src/data/damage.ts`（唯一实现，对齐 @smogon/calc gen9 修正链）+
   `web/src/data/calc.ts`（机制 mega/Z/极巨/太晶互斥校验；batch 一次算双方×4 招）+
-  `web/src/pages/CalcPage.tsx`（太晶/极巨顶部标记、每招 Z 纯晶标记单选自动装备、场地区按钮网格）。
+  `web/src/pages/CalcPage.tsx`（页面装配与状态；六组件与共享模型在 `web/src/pages/calc/`，
+  2026-10-08 纯位移拆分；太晶/极巨顶部标记、每招 Z 纯晶标记单选自动装备、场地区按钮网格）。
   - 公式与 @smogon/calc 逐 roll 校准：`web/tests/calib.test.ts`（vitest 读 `tools/static-check/cases.json` +
     `tools/calib/smogon_baseline.json`，51 案例 + 41 行威力表，**改公式后必须重跑**）；
     基准再生成用 `tools/calib/harness.mjs`（node + @smogon/calc）。
@@ -122,4 +123,6 @@ node tools/smoke.mjs               # 冒烟：web 构建产物静态托管逐资
   PokeAPI 是旧名（鬼火/祸不单行/空气斩/死缠烂打/舌舔），`scrape_52poke.py` 的 `MOVE_NAME_ALIASES`
   与 calib `EN2ZH` 做映射，新增差异往里补。
 - Windows 下 Tauri 依赖 WebView2 运行时（Win10/11 一般自带）；图标全套在 `web/src-tauri/icons/`（`npx tauri icon` 生成）。
+- pnpm ≥10 不再读 package.json 的 `pnpm.onlyBuiltDependencies`（v12 会硬报 ERR_PNPM_IGNORED_BUILDS）：
+  构建脚本审批配置在 `web/pnpm-workspace.yaml`（`allowBuilds: esbuild: true`），新依赖需 postinstall 时在此追加。
 - sqlite3.Row 迭代产出**值**而非键（`for k in row` 是坑），取键要用 `row.keys()` 或 `dict(row).items()`。

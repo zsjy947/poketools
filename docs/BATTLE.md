@@ -189,3 +189,15 @@ M5/M6 期间发现并修复：
 - 全中文化（B6）：zh-patch.ts 静态补丁 + Mega/Gmax 形态与进化石**派生补丁**（引擎 zh-cn 的英文占位
   值视为缺失）+ zhLine 整行最长匹配兜底；常用对战道具中文说明表（其余 desc 回退英文，
   数据缺口按需增补 ZH_ITEM_DESC）。单人双控在成功下达后自动切到另一待办侧。
+
+
+## 8. v1.0.0 后修复与重构记录
+
+- **parse.ts 虚线协议事件（2026-10-04 审查轮修复，`5d658a3`）**：引擎实际以 `.add("-damage"/"-heal"/
+  "-weather"/"-mega"/"-zpower"/"-zmove"/"-max")` 发出次要事件（`|faint|` 为无虚线特例），此前 7 类全部落
+  raw——mega/max/zmove 徽标永不显示、专属动画不触发、HP 靠回合快照跳变；测试 fixture 曾喂不存在的无虚线
+  形态（自证错位）。修复：补 7 类虚线 case + fixture 改真实形态 + replay 语料回归断言不落 raw。
+- **依赖环破除与 CalcPage 拆分（2026-10-08，`ef1c201`/`06b1d24`）**：`NamedText` 下沉叶子模块
+  `web/src/data/names.ts`，`data/index ↔ zh-patch` 类型级环清零（index 保留 re-export，调用方零改动）；
+  `CalcPage.tsx` 1786 行拆为页面装配 468 行 + `web/src/pages/calc/` 七模块（纯位移，行为零变更，
+  calib 123 全绿护航）。

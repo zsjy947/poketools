@@ -155,7 +155,9 @@ main 保留纯前端能力：本地模式降级（api.js，无后端自动切本
 
 ## §5 伤害计算器
 
-引擎 `web/src/data/damage.ts` + 装配校验 `web/src/data/calc.ts` + 界面 `web/src/pages/CalcPage.tsx`。
+引擎 `web/src/data/damage.ts` + 装配校验 `web/src/data/calc.ts` + 界面 `web/src/pages/CalcPage.tsx`（页面装配与状态）+
+`web/src/pages/calc/`（2026-10-08 自 CalcPage 纯位移拆出，行为零变更：`model.ts` 共享模型与缓存预热 +
+`FilterSelect`/`SideEditor`/`SummaryCard`/`FieldPanel`/`SideStatusCol`/`MoveChip` 六组件）。
 只保留现代公式（阿尔策斯/Z-A 公式已随四期 P4-1 移除）。对齐 `@smogon/calc` gen9 修正链全量扩展。
 
 ### 公式与取整语义（勿改顺序）
