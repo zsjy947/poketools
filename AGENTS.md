@@ -34,6 +34,7 @@ pnpm dev                           # 开发服务器（本地引擎自动接管�
 pnpm test                          # vitest（含 calib 51+41 对拍 + damage/breeding/state golden）
 pnpm build                         # tsc --noEmit + vite build -> web/dist
 npx tauri build                    # 桌面打包 -> src-tauri/target/release/bundle/nsis/（NSIS + 便携 exe）
+python scripts/package_release.py  # 发布归档：Tauri 产物拷到仓库 release/（setup 原名 + portable 改名 _x64-portable.exe）并重算 SHA256SUMS；发布必跑，产物一律以 release/ 为准
 pnpm lint                          # eslint + prettier（零错误基线）
 
 # 仓库级门禁（python 侧）

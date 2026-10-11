@@ -248,12 +248,19 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  align-items: start;
+  align-items: stretch;
 }
-@media (max-width: 1280px) {
-  .calc-editors {
-    grid-template-columns: 1fr;
-  }
+/* 左右编辑栏同高：手风琴项纵向弹性布局，面板撑满剩余高度（≤768 由 mobile.css 单列堆叠） */
+.calc-editors > .acc-item {
+  display: flex;
+  flex-direction: column;
+}
+.calc-editors .acc-item > .acc-body {
+  flex: 1 1 auto;
+}
+.calc-editors .acc-body .side-editor {
+  height: 100%;
+  margin-bottom: 0;
 }
 .mech-row {
   display: flex;
