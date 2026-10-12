@@ -75,8 +75,8 @@
 ### 4. 风味力量 / Z 招式表
 
 - 风味力量为人工整理（wiki rowspan 布局不规则勿程序化解析）。
-- Z 招式泛用 18 + 专属 22 来自 52poke「Ｚ招式」页（`build_z_moves.py` **重跑会冲掉 caps 脏行等手工修复，
-  curated 修复后勿盲目重跑**——合并保留逻辑见 plans/ROADMAP.md RM-17），
+- Z 招式泛用 18 + 专属 22 来自 52poke「Ｚ招式」页（`build_z_moves.py` 可重跑——caps 脏行等人工修复
+  已编入脚本 `POKEMON_COL_MAP`/`NOTE_APPEND`，重跑幂等；再有人工修复须同样编入脚本，勿只手改 JSON），
   威力与 smogon data 对拍（zTable 41 项全绿）。
 
 ### 5. mega-z（Z-A 异次元超进化）数据修正账

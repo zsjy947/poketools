@@ -2,6 +2,20 @@
 
 版本号 SemVer；发布门禁与产物规范见 plans/00-项目规划文档.md §6.8/§7。
 
+## [未发布]
+
+- 目录架构标准化（纯内部重构，行为零变更）：`src/pkt/` → `src/components/`；模拟对战分区自包含
+  （`app/{BattleApp,store,storage,pages}` → `battle/`，消除 feature→壳反向依赖）；`app/main.tsx` →
+  `src/main.tsx`；hash 路由独立 `lib/router.ts`；领域常量三处副本收敛 `data/constants.ts` 单源；
+  对战样式（909 行）拆分 `battle/battle.css`。构建期管线：`build_z_moves` 直连 parsers 并把人工修复
+  编入脚本（重跑幂等）；门禁依赖拆分 `requirements-dev.txt`。
+
+## [1.0.1] —— 2026-10-08
+
+发布准备（版本号升级、文档沉淀、esbuild 构建审批配置从 package.json pnpm 字段迁 `pnpm-workspace.yaml`
+——pnpm v12 硬报 ERR_PNPM_IGNORED_BUILDS）；伤害计算器编辑栏左右并排等高（≤1280px 单列折叠移除，
+交还移动端手风琴断点）。
+
 ## [1.0.0] —— 2026-10-03
 
 统一壳首发：poketools（五作图鉴/努力值/三明治/甜甜圈/咖喱/伤害计算器）与模拟对战并入同一

@@ -10,7 +10,7 @@
 | 方式 | 命令/产物 | 说明 |
 |---|---|---|
 | 开发 | `cd web && pnpm dev` | 浏览器开发服务器（本地数据引擎自动接管，无后端） |
-| 桌面安装包 | `web/src-tauri/target/release/bundle/nsis/宝可梦工具助手_1.0.0_x64-setup.exe` | NSIS 安装器（简中），双击安装 |
+| 桌面安装包 | `web/src-tauri/target/release/bundle/nsis/宝可梦工具助手_1.0.1_x64-setup.exe` | NSIS 安装器（简中），双击安装 |
 | 桌面便携版 | `web/src-tauri/target/release/poketools-app.exe` | 单文件直接双击（WebView2 需系统自带） |
 | 打包 | `cd web && npx tauri build` | 先 `pnpm install` 后执行；产出上面两种 |
 

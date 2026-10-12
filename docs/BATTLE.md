@@ -90,7 +90,7 @@ web/
 | 依赖 | 版本 | 说明 |
 | --- | --- | --- |
 | Node | ≥22（实测 24） | package.json engines 锁定 |
-| pnpm | ≥9（实测 12） | `pnpm install`；esbuild 构建许可已写 `pnpm.onlyBuiltDependencies` |
+| pnpm | ≥9（实测 12） | `pnpm install`；esbuild 构建许可已写 `pnpm-workspace.yaml` allowBuilds（pnpm ≥10 不读 package.json 的 pnpm 字段） |
 
 ```bash
 cd web
@@ -105,11 +105,11 @@ pnpm build                         # tsc + vite 产物
 
 **桌面/安卓打包（已迁移）**：Tauri 2 壳（`src-tauri/`，Windows NSIS exe + Android APK 共用的完整构建链——
 custom-protocol feature、NDK 交叉编译、gradle 手动链与签名流程）已于 2026-10-02 自 main 移除，
-迁移至 `dev/android` 分支维护；main 聚焦应用本体与统一化嵌入（vite 产物由主应用静态托管）。
+迁移至 `archived/android` 分支维护（文档成文时记作 dev/android，实为该存档分支）；main 聚焦应用本体与统一化嵌入（vite 产物由主应用静态托管）。
 
 ### 3.1 安装指南与演练记录
 
-> 历史产物安装记录（battle v0.1.0 发布版；构建链已迁 `dev/android` 分支）。
+> 历史产物安装记录（battle v0.1.0 发布版；构建链已迁 `archived/android` 存档分支）。
 
 - **Windows**：双击 `release/宝可梦模拟对战_0.1.0_x64-setup.exe`（NSIS 安装器）安装；卸载走系统「应用」或 Uninstall 入口；升级直接覆盖安装（同版本覆盖装即升级路径验证）。
 - **Android（arm64）**：`adb install -r release/宝可梦模拟对战_0.1.0_arm64.apk`；卸载 `adb uninstall <包名>` 或桌面长按卸载；升级沿用 `adb install -r`（同 keystore 签名才可覆盖）。

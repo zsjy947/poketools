@@ -37,8 +37,8 @@ npx tauri build                    # 桌面打包 -> src-tauri/target/release/bu
 python scripts/package_release.py  # 发布归档：Tauri 产物拷到仓库 release/（setup 原名 + portable 改名 _x64-portable.exe）并重算 SHA256SUMS；发布必跑，产物一律以 release/ 为准
 pnpm lint                          # eslint + prettier（零错误基线）
 
-# 仓库级门禁（python 侧）
-pytest tests/ -q                   # test_db（数据完整性）+ test_parsers（解析器）
+# 仓库级门禁（python 侧；依赖装 requirements-dev.txt，含 pytest+ruff）
+pytest -q                          # test_db（数据完整性）+ test_parsers（解析器；testpaths 已配 pyproject）
 ruff check scripts/ tests/         # 静态检查（零告警基线，配置 pyproject.toml）
 node tools/smoke.mjs               # 冒烟：web 构建产物静态托管逐资源断言（先 pnpm build）
 ```
@@ -58,7 +58,7 @@ node tools/smoke.mjs               # 冒烟：web 构建产物静态托管逐资
   `TODO.json` 记录解析失败/数据缺口（`ability_parse_failed` 特性 64 项、`form_flavor_unparsed_markers` 276 段）；
   `za_learnsets_pokemondb.json`/`tm_locations_za_pokemondb.json` 为 PokemonDB 兜底数据；
   `evo_branches.json`（地区形态分支进化链 29 族）、`form_game_availability.json`（形态×游戏可用性）、
-  `dex_default_forms.json`（图鉴默认形态人工增补）、`z_moves.json`（Z 纯晶/专属 Z）为五期新 curated；
+  `dex_default_forms.json`（图鉴默认形态人工增补）、`z_moves.json`（Z 纯晶/专属 Z，build_z_moves 生成——人工修复须编入脚本 `POKEMON_COL_MAP`/`NOTE_APPEND` 保持重跑幂等，勿只手改 JSON）为五期新 curated；
   风味力量为人工整理（`flavor_powers_manual.json`，wiki 表格 rowspan 布局不规则勿尝试程序化解析）。
 - 版本组（vg）映射：sword-shield=20/21/22、**bdsp=23**（图鉴用 DP 神奥图鉴 151 编号 original-sinnoh；
   TM001-100 由 52poke 补全）、legends-arceus=24、scarlet-violet=25/26/27（**machines 只导 vg25**）、
@@ -71,6 +71,12 @@ node tools/smoke.mjs               # 冒烟：web 构建产物静态托管逐资
   level=0=进化招式同入该组；其他游戏 level=0 置顶升级组标「进化」）；Z-A 仅 升级/学习器。
 - 语言：PokeAPI CSV 中 zh-Hans=12，en=9。`learnsets` 保留 level=0 进化语义。
 - 生蛋链算法在 `web/src/data/lookup.ts`（breedChains）：多源 BFS，节点=能学会该招式的物种，边=共享蛋组。
+- **web/src 分层（2026-10-12 目录标准化）**：入口 `src/main.tsx`；壳层 `app/`（App.tsx hash 分区 +
+  calc/battle keep-alive）；通用层 `lib/`（hash 路由）+ `state/`（game.ts 游戏上下文 / user.ts 用户数据）；
+  组件库 `components/`（shared.tsx + 设计系统 CSS，`pkt-` 前缀类名）；feature 层 = `pages/`（hash 路由页 +
+  `pages/calc/`）与 `battle/`（自包含：BattleApp/pages/store/storage/BattleView/battle.css）。
+  约束：feature 只向下依赖 data/components/lib/state，壳层单向挂载 feature；领域常量单源
+  `data/constants.ts`（api.ts/index.ts re-export 维持旧路径）。
 - **设计总纲：`docs/ARCHITECTURE.md`**（技术栈/数据管线/Schema/API/伤害计算器/前端架构/设计决策记录/规范/Roadmap/变更历史）；
   数据缺口清单 `docs/DATA-GAPS.md`（三档：无源待补/curated 已知账/明确取舍）；操作手册 `docs/USER-MANUAL.md`；
   未完成/延后/否决项 `plans/ROADMAP.md`（本地维护，不入 git）。
@@ -109,7 +115,7 @@ node tools/smoke.mjs               # 冒烟：web 构建产物静态托管逐资
 
 - PokeAPI 没有朱紫/阿尔宙斯/Z-A/BDSP 的捕捉地点（encounters 表仅剑盾）→ 由 52poke 抓取补充
   （**带形态标记的行**已保留：pos1 形如 `0037A`，`get_methods.form` 存标记字母，
-  `pokemon.py FORM_MARKER_TO_SUFFIX` 映射后缀）。
+  `web/src/data/pokemon.ts` 的 `FORM_MARKER_TO_SUFFIX` 映射后缀——TS 单实现唯一权威）。
 - PokeAPI 图鉴描述的简体中文只到剑盾 → 朱紫等由 52poke 补充（`Swdex/Shdex` 首字母大写；BDSP 用 `bdspdex`，
   DP 原生种分 `bddex`/`spdex`）。特性页标题多为 `{名}（特性）`（部分名无重定向，两种标题都抓）。
 - 52poke 是 MediaWiki：批量取 wikitext 用 `api.php?action=query&prop=revisions&rvprop=content&titles=A|B`

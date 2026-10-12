@@ -15,10 +15,10 @@ Switch 宝可梦游戏（剑／盾、晶灿钻石／明亮珍珠、传说 阿尔
 4. **三明治食谱（朱／紫）** —— 食力/属性/等级筛选排序；**食材与调味料表**（获得方式与价格）；**我的食谱**自由录入（食材/调味料可搜索多选）。
 5. **甜甜圈工房（传说 Z-A）** —— 特殊配方（风味数值/食材/失控超级进化对象/扭洞位置）、基础甜甜圈、**树果效果图鉴**、**风味力量说明**、自定义配方录入。
 6. **咖喱图鉴（剑／盾）** —— 151 种咖喱图鉴与介绍，搜索与关键食材筛选。
-7. **伤害计算器** —— 对战场 + 编辑面板 + 场地三区布局：四招式即点即算（伤害占比/16 档随机/OHKO 与 2 回合击倒概率）、**超级进化/Z招式/极巨化/太晶化** 互斥点亮、帮助/极光幕/青草场地/天气、六项能力值与实际值覆盖、全形态对比。现代公式与 Pokémon Showdown 引擎逐 roll 校准一致（`tools/calib/` 10 案例）。
+7. **伤害计算器** —— 对战场 + 编辑面板 + 场地三区布局：四招式即点即算（伤害占比/16 档随机/OHKO 与 2 回合击倒概率）、**超级进化/Z招式/极巨化/太晶化** 互斥点亮、帮助/极光幕/青草场地/天气、六项能力值与实际值覆盖、全形态对比。现代公式与 Pokémon Showdown 引擎逐 roll 校准一致（calib 51 案例 + 41 行威力表对拍）。
 8. **模拟对战** —— 供应商化 Showdown 引擎驱动的本机对战：双队伍构建（Showdown 文本导入导出 + 合法性校验）、单人操控双方、信息流 + 动画演出、完整日志与对局记录回看。详见 `docs/BATTLE.md`。
 
-## 技术栈（v1.0.0 终态）
+## 技术栈（v1.0.1）
 
 - **前端/应用**：React 18 + TypeScript（strict）+ Vite + zustand，`web/` 单实现；桌面壳为 **Tauri 2**（`web/src-tauri/`）。
 - **数据管线（构建期 Python）**：`scripts/build_db.py`（PokeAPI CSV → SQLite）、`scrape_52poke.py`（中文维基 → `data/curated/*.json`）、`fetch_sprites.py` / `fetch_feature_images.py` / `make_icon.py`（素材与图标）、`export_static_data.py`（DB → `web/public/data/*.json` 静态分片）；旧 FastAPI/pywebview/PyInstaller 运行时已退役。
@@ -63,8 +63,10 @@ Python 管线测试：`pytest`（仓库根，`tests/test_db.py` + `tests/test_pa
 ```
 poketools/
 ├─ web/                    # React 18 + TS + Vite 应用（唯一前端实现）
-│  ├─ src/                 #   pages/ 图鉴工具页面；app/ 对战子应用；data/ 数据访问层；engine-adapter/ 引擎适配
-│  ├─ public/              #   data/*.json 静态分片、精灵图、素材（产物，部分 gitignore）
+│  ├─ src/                 #   main.tsx 入口；app/ 壳层；lib/ 路由；state/ 全局态；components/ 组件库；
+│  │                       #   pages/ 图鉴工具页面（+calc/）；battle/ 模拟对战自包含 feature；
+│  │                       #   data/ 领域数据层；team/ 队伍文本；engine-adapter/ 引擎适配
+│  ├─ public/              #   data/*.json 静态分片、精灵图、素材（产物，gitignore）
 │  ├─ src-tauri/           #   Tauri 2 桌面壳
 │  └─ scripts/             #   引擎重建 / 素材抓取（Node 侧）
 ├─ scripts/                # 构建期数据管线（Python：build_db / scrape_52poke / export_static_data / fetch_* / make_icon）
@@ -72,9 +74,10 @@ poketools/
 │  ├─ raw/                 # PokeAPI / pokemon-showdown 离线克隆（gitignore）
 │  ├─ curated/             # 52poke 抓取与人工整理数据（JSON，已提交）
 │  └─ poketools.db         # 静态数据（构建产物）
-├─ tools/calib/            # 伤害计算对拍门禁（calib-js，基准 cases.json）
-├─ tests/                  # pytest（管线测试）
-└─ docs/                   # DATA-GAPS 数据缺口 / BATTLE 模拟对战 / USER-MANUAL 使用手册 / ARCHITECTURE 架构
+├─ tools/                  # calib/ 对拍基准与 harness、smoke.mjs 构建产物冒烟
+├─ tests/                  # pytest（管线测试；配置在 pyproject.toml）
+├─ requirements-dev.txt    # 门禁依赖（pytest + ruff）
+└─ docs/                   # ARCHITECTURE 架构 / BATTLE 模拟对战 / DATA-GAPS 数据缺口 / USER-MANUAL 使用手册
 ```
 
 ## 数据来源与致谢

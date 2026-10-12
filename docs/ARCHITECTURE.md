@@ -19,7 +19,7 @@
 架构原则：
 
 - 静态库由脚本重建，应用代码**绝不**改写管线产物；数据只经管线（build_db → export_static_data）。
-- **单一实现**：Python 侧 damage/breeding/routers 已退役；calib-js（vitest 读 tools 基准）为公式层唯一对拍门禁。
+- **单一实现**：Python 侧 damage/breeding/routers 已退役；公式层唯一对拍门禁 = `web/tests/calib.test.ts`（vitest 读 tools/ 基准）。
 - 功能入口**按游戏组织**（`games.features`），伤害计算器与模拟对战为全局独立入口。
 - 静态检查：web 侧 `tsc --noEmit + eslint + prettier`；python 侧 `ruff check scripts/ tests/`（零告警基线）。
 
@@ -31,13 +31,13 @@ python scripts/build_db.py            # PokeAPI CSV -> data/poketools.db（可�
 python scripts/build_z_moves.py       # 52poke「Ｚ招式」页 -> data/curated/z_moves.json（需先跑一次 build_db）
 python scripts/build_db.py            # 二次执行装入 Z 纯晶 items 与 z_exclusive
 python scripts/scrape_52poke.py       # 52poke wiki -> data/curated/*.json + 合并入库
-python scripts/fetch_sprites.py       # 官方绘图（三级回退）-> data/sprites/
-python scripts/fetch_calc_assets.py   # 全量道具图标 + 机制图标（极巨/太晶19种）-> sprites/items + assets/mechanism
+python scripts/fetch_sprites.py       # 官方绘图（三级回退）-> web/public/pkt/
+python scripts/fetch_calc_assets.py   # 全量道具图标 + 机制图标（极巨/太晶19种）-> assets/items + assets/mechanism
 python scripts/fetch_feature_images.py / fetch_sandwich_images.py   # 特化页配图 -> dist/assets
 python scripts/make_icon.py           # 精灵球应用图标
 python scripts/export_static_data.py  # db 读侧 -> web/public/data/ JSON 分片（本地模式数据源；含全表 diff 硬门禁）
-python scripts/verify_static_equivalence.py  # 真实 API vs 本地 JS 引擎逐字段等价性验证（524 调用门禁）
-node tools/static-check/calib-js.mjs  # JS 伤害引擎 vs smogon 基准（calib 双语言门禁之二）
+python scripts/check_web_assets.py    # web/public 资产清单核对（表行数 vs DB/绘图/精灵图/资产族）
+cd web && pnpm test                   # 公式对拍门禁：calib.test.ts 读 tools 基准（51 案例 + 41 威力表）
 ```
 
 build_db 重建采用**连接内就地 DROP 重建**：Windows 下直接删除 `poketools.db` 可能遇 unlink 幻影锁
@@ -57,11 +57,11 @@ build_db 重建采用**连接内就地 DROP 重建**：Windows 下直接删除 `
   （等价性验证做序无关规范化）；字典整数键迭代序差异用 Map（插入序）规避；
   字符串排序是码点序（localeCompare 不等价）；表缓存行不可变异（detail 挂 ability_list 曾污染缓存）。
 
-### 安卓端（暂缓，已迁移 dev/android 分支）
+### 安卓端（暂缓，已迁移 archived/android 分支）
 
 poketools 安卓壳（`apk/` Tauri 2 壳 + `build_apk_assets.py` 资产组装）与 battle 双端壳
 （`battle/src-tauri/`，Windows NSIS exe + Android APK 共用，含 Rust 工具链锁定）
-已于 2026-10-02 自 main 移除，完整工作区迁移至 `dev/android` 分支；待桌面 exe（含统一化嵌入）完善后在该分支恢复。
+已于 2026-10-02 自 main 移除，完整工作区迁移至 `archived/android` 分支；待桌面 exe（含统一化嵌入）完善后在该分支恢复。
 main 保留纯前端能力：本地模式降级（api.js，无后端自动切本地引擎）与 ≤768 竖屏适配层；变更历史见 §10。
 
 ### PokeAPI（离线整包 CSV）
@@ -197,29 +197,29 @@ main 保留纯前端能力：本地模式降级（api.js，无后端自动切本
 - **Z/极巨/超极巨官方招式名**：显示层查表替换（对齐 @smogon/calc move.ts）——极巨=属性→`moves`
   表官方名（变化招=极巨防壁）、gmax 形态属性命中→`gmax_moves` 官方名、Z（伤害招）=专属命中→专属名
   否则泛用属性名（`z_generic`）；不改威力档位与取整链。
-- **力量戏法** = 场地区两侧标记（静态语义：至切换者下次下场）：router 装配后
-  `_swap_atk_def` 互换该侧 `stats.atk/def` 实际值（能力升降仍按能力名生效），**不触碰 damage.py
-  公式与取整链**，calib 基准不受影响；batch 为 sides per-side flag，单招端点为
-  `power_trick`/`defender_power_trick`。
+- **力量戏法** = 场地区两侧标记（静态语义：至切换者下次下场）：请求装配后
+  `data/calc.ts` `swapAtkDef` 互换该侧 `stats.atk/def` 实际值（能力升降仍按能力名生效），
+  **不触碰 damage.ts 公式与取整链**，calib 基准不受影响；batch 为 sides per-side flag
+  （`power_trick`/`defender_power_trick`）。
 - **「切换」= 换下场状态**（per-side `switching`，对齐参考站 switchingOut）：唯一计算效果为
   攻方对其**追打**威力 ×2（引擎 `is_switching_out` 分支）；单招端点对等字段 `defender_switching_out`。
 - **气势披带 = 道具派生**（与参考站一致，场地区无此按钮）：`side.item === "气势披带"` 自动
   派生 defender_sash，KO 判定满血首击残留 1 HP 不变。
 - **场地区完全复刻参考站**：左右状态列 8 行 × 中间场地 7 行逐行逐键一致（`SIDE_ROWS` 单源配置，
-  `views/calc.js`）；无列标题/组名/说明文字/攻守标识——左右列固定绑定左右宝可梦，攻守由上方
+  `pages/calc/SideStatusCol.tsx` + `FieldPanel.tsx`）；无列标题/组名/说明文字/攻守标识——左右列固定绑定左右宝可梦，攻守由上方
   招式选择决定；原生 `fp-btn` 白底描边按钮（选中浅蓝）、撒菱连体分段、灾祸四件套两行按钮、
   三列 `space-between` 同高底边对齐；壁与撒菱为单选语义，其余多选；
   中毒/剧毒/冰冻/睡眠/麻痹/顺风为展示态（速度序不在伤害模型内）。
-- **计算器视图常驻无痕切换**：`calc-view` 首次挂载后 `v-show` 常驻（app.js `visited` 标记），
-  切走仅 display:none——状态保留、零请求、图片不回源；meta/每物种 forms·moves 为模块级缓存
+- **计算器视图常驻无痕切换**：分区首次进入后 keep-alive 常驻（`app/App.tsx` `visited` 标记，
+  切走仅 `hidden`）——状态保留、零请求、图片不回源；meta/每物种 forms·moves 为模块级缓存
   （启动预热 + Promise 共享 + FIFO 24），两侧初始化 `Promise.all` 并行，机制图标 20 张预加载。
 
 ### 校准流程（改公式后必须重跑，AGENTS 铁律）
 
 ```bash
-cd tools/calib && npm install          # @smogon/calc
+cd tools/calib && npm install          # @smogon/calc（仅再生成基准时需要）
 node harness.mjs > smogon_baseline.json
-python check.py                        # 需先完成数据管线
+cd web && pnpm test                    # calib.test.ts 对拍门禁（51 案例 + 41 威力表）
 ```
 
 51 个基准案例逐 roll 比对 + 41 项 Z/极巨**威力表对拍**（zTable 输出自 smogon move data），全绿才可提交。
@@ -236,22 +236,31 @@ python check.py                        # 需先完成数据管线
 
 ```
 web/
-  index.html
-  src/app/            统一壳：router.ts(hash 路由) / App.tsx(分区+keep-alive) / BattleApp.tsx(对战分区)
-                      pktStore.ts(poketools 全局态：gameId/feature/profile，localStorage 持久)
-  src/pages/          UnifiedHome/Games/GameSection(rail+功能路由)/Dex/Detail/Ev/Sandwiches/
-                      Donuts/Curry/Calc（React 组件，自 Vue 模板字符串组件迁移，行为等价）
-  src/pkt/            共享层：shared.tsx(TypeBadge/PokeToggle/EvoChain/toast…+Monoline 图标)
+  index.html          入口 /src/main.tsx
+  src/main.tsx        入口：样式装载（battle → 壳 → 组件库）+ 计算器 meta 预热
+  src/app/            统一壳：App.tsx(hash 分区分发 + calc/battle keep-alive) + 壳样式
+  src/lib/router.ts   零依赖 hash 路由（useSyncExternalStore）
+  src/state/          game.ts(当前游戏上下文 store) / user.ts(caught_state/custom_recipes localStorage)
+  src/components/     共享层：shared.tsx(TypeBadge/PokeToggle/EvoChain/toast…+Monoline 图标)
                       widgets.css(轻量控件替代 Element Plus：pkt-btn/select/table/modal/
                       FilterSelect=过滤+可见上限)/base|dex|features|calc|mobile.css(Vue 版原样迁移)
-  src/data/           领域层 TS 单实现（见 §4/§5）+ api.ts(本地引擎直连) + zh-patch.ts(中文补丁)
-  src/state/user.ts   用户状态 localStorage（caught_state / custom_recipes）
-  src/battle/…        模拟对战（引擎适配/会话/队伍/对战界面；见 docs/BATTLE.md）
-  src/app/pages/      对战分区页（赛制选择/队伍编辑/上阵预览/记录/设置）
+  src/pages/          UnifiedHome/Games/GameSection(rail+功能路由)/Dex/Detail/Ev/Sandwiches/
+                      Donuts/Curry/Calc（React 组件，自 Vue 模板字符串组件迁移，行为等价）
+                      calc/ 子组件（model 共享模型/SideEditor/SummaryCard/FieldPanel/…）
+  src/data/           领域层 TS 单实现（见 §4/§5）+ api.ts(本地引擎直连) + constants.ts(领域常量单源)
+  src/battle/         模拟对战自包含 feature：BattleApp/pages(赛制/组队/预览/记录/设置)/
+                      store/storage(队伍与对局记录)/BattleView/anim/sprites/battle.css（见 docs/BATTLE.md）
+  src/team/           Showdown 队伍文本导入/导出/合法性校验
+  src/engine-adapter/ 引擎适配（vendor/ gitignore，scripts/build-engine.mjs 重建）
   public/data         静态分片（33 表 + learnsets/encounters 懒加载 + manifest 行数指纹）
   public/assets|pkt|sprites  配图/官方绘图/对战精灵图
   src-tauri/          Tauri 2 壳（NSIS + 便携 exe）
 ```
+
+分层约束（2026-10-12 目录标准化后）：`pages/` 与 `battle/` 为 feature 层——只向下依赖
+`data/`（取数）、`components/`（UI 复用）、`lib/`+`state/`（通用件与全局态）；
+`app/` 为壳层单向挂载 feature，不反向被依赖；`engine-adapter/` 不依赖任何上层。
+领域常量（TYPE_LIST/STAT_ZH 等）单源 `data/constants.ts`，`api.ts`/`index.ts` re-export 维持路径。
 
 约束：TS strict + 零 any 新增；全量下拉（道具 2127/物种 1025）一律 `FilterSelect`
 （过滤 + 可见上限 80）；路由用 `location.hash`；请求/引擎异常经 toast 呈现。
@@ -405,3 +414,4 @@ web/
 | Track D D1-D3 | 全量复审（基线四绿+冒烟）+ OPTIMIZE-PLAN 执行：api.js 降级状态机修复（P0）/js/utils 抽取+50 处内联样式收敛+toast 去重/test_api 域拆分（dex/pokemon/calc/features 4 文件，recipes 并入 features 域）/smoke+state 单测固化/build_db 五函数化+derive_dex_defaults 外移/scrape parsers 拆分/abilities 中文过滤+get_methods 索引+版本横幅；R2 延后至 React 统一壳、P2-8 否决（双实现镜像） | 交付；管线重跑全表 diff 仅预期 -63 abilities；四绿+524 等价+10 state+冒烟全绿 |
 | 文档归档（2026-10-02） | plans/ 历史计划（00/UPDATE-PLAN/MASTER-PLAN/PROGRESS/CALC-FIX-PLAN/REFACTOR-PLAN/OPTIMIZE-PLAN）实现结论核对沉淀（本文档补录 R2/P2-8/crystal_id/架构五否决/Tauri 落选决策、/api/version 端点、build_db DROP 重建坑、scrollIntoView instant 坑、gmax 次要效果不做；BATTLE.md 补合规立场权威段并修 NOTICE 悬空引用；DATA-GAPS 修 build_z_moves 重跑矛盾），未完成项迁 plans/ROADMAP.md（本地维护，RM-01..RM-17）；plans/ 仅留活动计划与 KEYSTORE | 交付 |
 | 安卓端迁移（2026-10-02） | apk/ 壳与 build_apk_assets.py、battle/src-tauri 双端壳（含 rust-toolchain.toml）自 main 移除，完整工作区迁 dev/android 分支；ARCHITECTURE/BATTLE/USER-MANUAL 同步（发布历史保留），安卓开发待桌面 exe 完善后恢复 | 交付 |
+| 目录架构标准化（2026-10-12，v1.0.1 后重构分支） | web/src：pkt/→components/（pkt 一名三义收敛）、对战分区自包含（app/{BattleApp,store,storage,pages}→battle/，消除 feature→壳反向依赖）、app/router→lib/router、app/pktStore→state/game、app/main.tsx→src/main.tsx、styles.css 972 行按段拆分（909 对战→battle/battle.css）、领域常量三源→data/constants.ts 单源；管线：build_z_moves 直连 parsers.wikitext、z_moves 人工修复编入脚本（重跑幂等）、requirements-dev 拆分、.gitignore 去重清遗留、pyproject 版本对齐+pytest 配置；文档失效引用全量清理（ARCHITECTURE/README/AGENTS/USER-MANUAL/BATTLE） | 交付；tsc 零错/vitest 123 绿/build+lint 零告警/pytest 26 绿/浏览器实测五分区渲染无损 |
