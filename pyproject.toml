@@ -1,8 +1,12 @@
 [project]
 name = "poketools"
-version = "1.0.0"
+version = "1.0.1"
 description = "Switch 宝可梦五作本地图鉴工具助手（构建期 Python 管线 + web/ React+TS 前端 + Tauri 2 壳）"
 requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+# 仓库级门禁入口：`pytest`（testpaths 限定 python 侧；web 侧 vitest 自理）
+testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 110

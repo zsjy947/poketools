@@ -35,14 +35,12 @@ from parsers.features import (
     parse_picnic_condiments,
     parse_sandwiches,
 )
-from parsers.wikitext import (  # noqa: F401
-    cell_text,
+from parsers.wikitext import (
     clean_wt,
     find_template,
     parse_params,
     split_params,
     unknown_sup_weather,
-    wikitables,
 )
 from pokemondb_client import fetch_html as pdb_fetch_html
 from pokemondb_client import strip_tags as pdb_strip_tags

@@ -1,6 +1,8 @@
 # --- data pipeline artifacts (rebuildable) ---
 data/raw/
 data/*.db
+data/*.db-shm
+data/*.db-wal
 data/pokeapi-*.zip
 data/sprites/
 
@@ -8,6 +10,7 @@ data/sprites/
 __pycache__/
 *.pyc
 .pytest_cache/
+.ruff_cache/
 /build/
 /dist/
 *.egg-info/
@@ -18,21 +21,10 @@ venv/
 node_modules/
 web/dist/
 
-# --- 遗留壳（已退役：apk → archived/android 分支；app/ 旧导出目录已随 v1.0.0 清理删除）---
-apk/dist/
-apk/src-tauri/target/
-apk/src-tauri/gen/
-apk/.keystore/
-apk/appicon-1024.png
 # --- misc ---
 .DS_Store
 Thumbs.db
 *.log
-Poketools.exe
-Poketools.log
-Poketools.spec
-data/*.db-shm
-data/*.db-wal
 
 # --- ZCode session artifacts ---
 .zcode/
@@ -44,18 +36,14 @@ data/*.db-wal
 # --- release build output (exe + data, copy-to-run) ---
 /release/
 
-# --- web/ 唯一前端（Tauri 2 + React + TS + poketools 页面 + 模拟对战）---
-web/node_modules/
-web/dist/
+# --- web/ 唯一前端（Tauri 2 + React + TS）构建期生成物 ---
 web/public/
 web/src-tauri/target/
 web/src-tauri/gen/
 web/release/
 web/src/engine-adapter/vendor/
-web/public/
 web/.sprite-raw/
 web/.engine-tmp/
 web/.tauri/
 web/.keystore/
 web/coverage/
-web/public/data/

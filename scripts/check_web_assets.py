@@ -49,7 +49,7 @@ else:
 # ---- 3. 对战精灵图 manifest ----
 sp_mani = WEB / "sprites" / "manifest.json"
 if not sp_mani.exists():
-    problems.append("web/public/sprites/manifest.json 不存在（先跑 fetch-sprites.mjs）")
+    problems.append("web/public/sprites/manifest.json 不存在（先跑 web/scripts/fetch-sprites.mjs）")
 else:
     meta = json.loads(sp_mani.read_text(encoding="utf-8"))
     # keepDirs 为 zip 源目录清单；本地落地目录为 ani/ani-back/ani-shiny/dex + 图标雪碧图

@@ -15,7 +15,7 @@ import sqlite3
 import sys
 
 import wiki_client as wc
-from scrape_52poke import cell_text, wikitables
+from parsers.wikitext import cell_text, wikitables
 
 ROOT = wc.ROOT
 CURATED = ROOT / "data" / "curated"
@@ -50,7 +50,9 @@ POKEMON_COL_MAP = {
     "卡比兽": [(143, "")], "卡比獸": [(143, "")],
     "雷丘": [(26, "alola")],
     "皮卡丘": [(25, "")],                    # 皮卡丘Ｚ：戴帽皮卡丘不可用
-    "戴着帽子的皮卡丘": [("caps", "")],        # 智皮卡Ｚ：全部帽子形态（前端按形态判定）
+    "戴着帽子的皮卡丘": [(25, "original,hoenn,sinnoh,unova,kalos,alola,partner")],
+    # 智皮卡Ｚ：wiki 行只写「戴着帽子的皮卡丘」（caps 是伪 identifier，species 表无此行），
+    # 正确挂靠=皮卡丘(25)+七顶帽子形态后缀（前端 selfSuffixOk 按逗号多后缀判定）
     "伊布": [(133, "")],
     "守護神": [(779, ""), (780, ""), (781, ""), (782, "")],   # 卡璞Ｚ四守护神
     "梦幻": [(151, "")],
@@ -71,6 +73,10 @@ COMPOUND_MAP = {
     "索尔迦雷欧奈克洛兹玛黄昏之鬃": [(791, ""), (800, "dusk")],
     "露奈雅拉奈克洛兹玛拂晓之翼": [(792, ""), (800, "dawn")],
 }
+
+# 备注人工增补（编入脚本保证 curated 重跑幂等——勿只手改 JSON，会被重跑覆盖）。
+# 键用 crystal_identifier（z_move_name 是招式名，同纯晶唯一，比名称稳定）
+NOTE_APPEND = {"pikashunium-z": "仅帽子皮卡丘可用。"}
 
 
 def zh_hans_link(raw: str) -> str:
@@ -173,13 +179,14 @@ def main() -> None:
                                      "变化": "status"}.get(cls, ""),
                     "crystal_name": crystal, "crystal_identifier": ident,
                     "crystal_id": cid,
-                    "note": note + ("；需究极爆发后使用" if crystal == "究极奈克洛Ｚ" else ""),
+                    "note": note + NOTE_APPEND.get(ident, "")
+                    + ("；需究极爆发后使用" if crystal == "究极奈克洛Ｚ" else ""),
                 })
 
     out = {"_doc": "Ｚ招式数据（52poke「Ｚ招式」页泛用/专属表；纯晶道具注入 items 表）",
            "generic": generic, "exclusive": exclusive}
     (CURATED / "z_moves.json").write_text(
-        json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
+        json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8", newline="\n")
     print(f"generic: {len(generic)}  exclusive rows: {len(exclusive)} -> {CURATED / 'z_moves.json'}")
     con.close()
 

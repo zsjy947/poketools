@@ -1,0 +1,4 @@
+# 仓库级门禁与开发工具（含构建期运行依赖）
+-r requirements.txt
+pytest
+ruff

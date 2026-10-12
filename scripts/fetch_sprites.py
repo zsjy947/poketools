@@ -1,4 +1,4 @@
-"""下载宝可梦图片到 data/sprites/（三级回退：官方绘图 → HOME 类3D → 像素图）。
+"""下载宝可梦官方绘图到 web/public/pkt/（三级回退：官方绘图 → HOME 类3D → 像素图）。
 
 来源 PokeAPI/sprites 仓库。官方绘图为 475px 大图，用 Pillow 统一缩到 256px 控制体积。
 已下载的以 .manifest.json 记录来源，重复执行只补缺。
