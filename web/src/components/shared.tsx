@@ -1,6 +1,7 @@
 /* pkt 共享组件与工具（自 Vue components.js/utils.js 移植；U1 双剑图标按 monoline 规范重绘） */
 import { useMemo, useState, type ReactNode } from "react";
 import { apiGet } from "../data/api";
+import { EV_NAMES } from "../data/constants";
 
 /* ---- toast（轻量替代 ElMessage） ---- */
 let toastSeq = 0;
@@ -389,15 +390,6 @@ export function PokeImg({ formId, size = 96 }: { formId: number; size?: number }
   );
 }
 
-export const EV_NAMES: Record<string, string> = {
-  hp: "HP",
-  atk: "攻击",
-  def: "防御",
-  spa: "特攻",
-  spd: "特防",
-  spe: "速度",
-};
-
 export function EvBadges({ ev }: { ev: Record<string, number> | undefined }): JSX.Element {
   const items = ev || {};
   const hasEv = Object.values(items).some((v) => v > 0);
@@ -612,60 +604,6 @@ export function koTextFromKo(ko: any): string {
   if (p4 > 0) return `${Math.round(p4)}% 4 回合内击倒`;
   return "4 回合内无法击倒";
 }
-
-export const TYPE_LIST = [
-  "一般",
-  "火",
-  "水",
-  "电",
-  "草",
-  "冰",
-  "格斗",
-  "毒",
-  "地面",
-  "飞行",
-  "超能力",
-  "虫",
-  "岩石",
-  "幽灵",
-  "龙",
-  "恶",
-  "钢",
-  "妖精",
-];
-export const STAT_KEYS = ["hp", "atk", "def", "spa", "spd", "spe"] as const;
-export const STAT_ZH: Record<string, string> = {
-  hp: "HP",
-  atk: "攻击",
-  def: "防御",
-  spa: "特攻",
-  spd: "特防",
-  spe: "速度",
-};
-export const POWER_LIST = [
-  "蛋蛋力",
-  "遭遇力",
-  "闪光力",
-  "捕获力",
-  "大大力",
-  "小小力",
-  "经验力",
-  "掉物力",
-  "团战力",
-  "称号力",
-];
-export const POWER_COLORS: Record<string, string> = {
-  蛋蛋力: "#f6a5c8",
-  遭遇力: "#7bc86c",
-  闪光力: "#f2d24b",
-  捕获力: "#e8834a",
-  大大力: "#e05a5a",
-  小小力: "#6fc7e8",
-  经验力: "#8f7ff0",
-  掉物力: "#63b0a2",
-  团战力: "#5a9be0",
-  称号力: "#c8a2d8",
-};
 
 /* 简易确认（替代 ElMessageBox.confirm；返回 true=确认） */
 export function confirmBox(message: string, title = "确认操作"): boolean {

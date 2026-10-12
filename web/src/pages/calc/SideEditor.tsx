@@ -2,8 +2,16 @@
 import { useMemo } from "react";
 import { STAT_KEYS, STAT_ZH, TYPE_LIST } from "../../data/api";
 import { BATTLE_ITEM_IDS } from "../../data/battle-items";
-import { formDisplayName, toast } from "../../pkt/shared";
-import { SideState, isAutoEquipStone, isGmaxForm, isMegaForm, itemIdOf, loadSpeciesInto, zCrystalFor } from "./model";
+import { formDisplayName, toast } from "../../components/shared";
+import {
+  SideState,
+  isAutoEquipStone,
+  isGmaxForm,
+  isMegaForm,
+  itemIdOf,
+  loadSpeciesInto,
+  zCrystalFor,
+} from "./model";
 import { FilterSelect } from "./FilterSelect";
 
 export function SideEditor({

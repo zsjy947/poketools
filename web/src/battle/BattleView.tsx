@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useApp } from "../app/store";
+import { useApp } from "./store";
 import type { MonState, SideSlot } from "../engine-adapter";
 import type { RequestChoice } from "../engine-adapter/session";
 import { dexFor, moveView, speciesView, TYPE_ZH, STATUS_ZH, zhLine } from "../data";
 import { spriteUrl } from "./sprites";
 import { useBattleAnim } from "./anim";
 import type { AnimKind } from "./anim";
-import type { StoredBattleRecord } from "../app/storage";
+import type { StoredBattleRecord } from "./storage";
 import { exportShowdown } from "../team/showdown";
 
 type Dex = ReturnType<typeof dexFor>;

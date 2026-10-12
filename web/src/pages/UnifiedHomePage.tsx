@@ -2,7 +2,7 @@
  * 统一首页：三入口宫格（游戏中心 / 伤害计算器 / 模拟对战）。
  * monoline 图标规范：viewBox 24 / stroke 2 / round / fill none / currentColor。
  */
-import { navigate } from "../app/router";
+import { navigate } from "../lib/router";
 
 function IconGames(): JSX.Element {
   return (

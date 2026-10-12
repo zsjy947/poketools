@@ -26,11 +26,26 @@ describe("合规性校验消息全中文（U23）", () => {
   const battery: Array<[string, PokemonSet[]]> = [
     ["昵称与物种不符", [mk("garchomp", { name: "雷丘" })]],
     ["空特性+空招式", [mk("garchomp")]],
-    ["非法道具/特性/招式", [mk("garchomp", { item: "不存在道具", ability: "不存在特性", moves: ["不存在招式", "", "", ""] })]],
-    ["道具条款", [mk("garchomp", { item: "Choice Band" }), mk("dragapult", { item: "Choice Band" })]],
+    [
+      "非法道具/特性/招式",
+      [
+        mk("garchomp", {
+          item: "不存在道具",
+          ability: "不存在特性",
+          moves: ["不存在招式", "", "", ""],
+        }),
+      ],
+    ],
+    [
+      "道具条款",
+      [mk("garchomp", { item: "Choice Band" }), mk("dragapult", { item: "Choice Band" })],
+    ],
     ["努力值超上限", [mk("garchomp", { evs: EV_MAX })]],
     ["努力值 0 提示", [mk("garchomp", { nature: "Adamant", evs: EV_MAX })]],
-    ["未进化形态+非法招式", [mk("charmeleon", { ability: "Blaze", moves: ["Belly Drum", "Flamethrower", "", ""] })]],
+    [
+      "未进化形态+非法招式",
+      [mk("charmeleon", { ability: "Blaze", moves: ["Belly Drum", "Flamethrower", "", ""] })],
+    ],
   ];
 
   for (const [name, sets] of battery) {

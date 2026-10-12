@@ -1,13 +1,13 @@
 import { useMemo, useRef } from "react";
 import { version } from "../../package.json";
-import { parseHash, routeQuery, useHash, navigate } from "./router";
-import { BattleApp } from "./BattleApp";
+import { parseHash, routeQuery, useHash, navigate } from "../lib/router";
+import { BattleApp } from "../battle/BattleApp";
 import { UnifiedHomePage } from "../pages/UnifiedHomePage";
 import { GamesPage } from "../pages/GamesPage";
 import { GameSection } from "../pages/GameSection";
 import { DetailPage } from "../pages/DetailPage";
 import { CalcPage } from "../pages/CalcPage";
-import { usePkt } from "./pktStore";
+import { usePkt } from "../state/game";
 
 /**
  * 统一壳：hash 路由分区（#/home #/games #/game/:id/:feature #/pokemon/:id #/calc #/battle）。

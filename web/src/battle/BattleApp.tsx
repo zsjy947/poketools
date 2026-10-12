@@ -4,7 +4,7 @@ import { useApp, hydrateTeams } from "./store";
 import { HomePage } from "./pages/HomePage";
 import { TeamBuilderPage } from "./pages/TeamBuilderPage";
 import { PreviewPage } from "./pages/PreviewPage";
-import { BattleView } from "../battle/BattleView";
+import { BattleView } from "./BattleView";
 import { RecordsPage } from "./pages/RecordsPage";
 import { SettingsPage } from "./pages/SettingsPage";
 

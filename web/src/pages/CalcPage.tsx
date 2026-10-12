@@ -3,8 +3,17 @@
  * 六个自包含组件与共享模型已拆至 ./calc/（纯位移重构，行为零变更）。 */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { apiSend } from "../data/api";
-import { formDisplayName, koTextFromKo, toast } from "../pkt/shared";
-import { SideState, _metaCache, blankSide, isGmaxForm, isMegaForm, loadSpeciesInto, warmMeta, zCrystalFor } from "./calc/model";
+import { formDisplayName, koTextFromKo, toast } from "../components/shared";
+import {
+  SideState,
+  _metaCache,
+  blankSide,
+  isGmaxForm,
+  isMegaForm,
+  loadSpeciesInto,
+  warmMeta,
+  zCrystalFor,
+} from "./calc/model";
 import { SummaryCard } from "./calc/SummaryCard";
 import { SideEditor } from "./calc/SideEditor";
 import { FieldPanel } from "./calc/FieldPanel";
@@ -464,7 +473,3 @@ export function CalcPage(): JSX.Element {
     </div>
   );
 }
-
-/* ---- 摘要卡 ---- */
-
-export { warmCalcMeta } from "./calc/model";

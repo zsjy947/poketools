@@ -1,17 +1,16 @@
 /* 地区图鉴页（自 Vue dex.js 迁移）：卡片 + 精灵球捕捉交互 + 批量操作 + 进度环 */
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { apiGet, apiSend } from "../data/api";
+import { apiGet, apiSend, TYPE_LIST } from "../data/api";
 import { stateCounts } from "../state/user";
 import {
   loadGames,
-  TYPE_LIST,
   TypeBadge,
   PokeToggle,
   PokeImg,
   toast,
   confirmBox,
   type GameRow,
-} from "../pkt/shared";
+} from "../components/shared";
 
 interface DexEntry {
   ndex: number;

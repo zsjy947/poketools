@@ -1,7 +1,7 @@
 /* Z-A 甜甜圈工房页（自 Vue donuts.js 迁移：四表 + 我的配方 + 风味加权预览） */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { apiGet, apiSend, TYPE_LIST, POWER_COLORS } from "../data/api";
-import { MonoIcon, toast, Modal } from "../pkt/shared";
+import { MonoIcon, toast, Modal } from "../components/shared";
 
 const FLAVOR_NAMES: Record<string, string> = {
   sweet: "甜",

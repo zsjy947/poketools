@@ -112,14 +112,9 @@ export const STATUS_ZH: Record<string, string> = {
   frz: "冰冻",
 };
 
-export const STAT_ZH: Record<string, string> = {
-  hp: "HP",
-  atk: "攻击",
-  def: "防御",
-  spa: "特攻",
-  spd: "特防",
-  spe: "速度",
-};
+/* STAT_ZH 单源在 ./constants（re-export 维持既有 import 路径） */
+import { STAT_ZH } from "./constants";
+export { STAT_ZH };
 
 const STATUS_LABEL: Record<string, string> = { P0: "可用", P1: "可用（归档）" };
 export function modStatusLabel(f: { priority: string }): string {

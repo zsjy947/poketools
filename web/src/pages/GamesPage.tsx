@@ -1,6 +1,6 @@
 /* 游戏中心：五作宫格（自 Vue games.js 迁移） */
 import { useEffect, useState } from "react";
-import { loadGames, GameIcons, type GameRow } from "../pkt/shared";
+import { loadGames, GameIcons, type GameRow } from "../components/shared";
 
 export function GamesPage(): JSX.Element {
   const [games, setGames] = useState<GameRow[]>([]);

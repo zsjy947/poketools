@@ -1,8 +1,15 @@
 /* 游戏功能分区（自 Vue app.js 游戏上下文 + components.js RailNav 迁移；含 U2 侧边栏改造） */
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { navigate } from "../app/router";
-import { usePkt, type GameFeature } from "../app/pktStore";
-import { loadGames, FEATURES, GameIcons, isDualGame, MonoIcon, type GameRow } from "../pkt/shared";
+import { navigate } from "../lib/router";
+import { usePkt, type GameFeature } from "../state/game";
+import {
+  loadGames,
+  FEATURES,
+  GameIcons,
+  isDualGame,
+  MonoIcon,
+  type GameRow,
+} from "../components/shared";
 import { DexPage } from "./DexPage";
 import { EvPage } from "./EvPage";
 import { SandwichesPage } from "./SandwichesPage";

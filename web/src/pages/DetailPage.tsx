@@ -1,6 +1,6 @@
 /* 宝可梦详情页（自 Vue detail.js 迁移；含 U4 修复语义、U6 攻击面徽章定宽、U7 能力卡移左栏） */
 import { useCallback, useEffect, useMemo, useRef, useState, Fragment } from "react";
-import { apiGet } from "../data/api";
+import { apiGet, STAT_KEYS, STAT_ZH } from "../data/api";
 import { TYPES, CHART } from "../data/damage";
 import {
   loadGames,
@@ -15,11 +15,9 @@ import {
   GetMethodList,
   AbilityList,
   EvoChain,
-  STAT_KEYS,
-  STAT_ZH,
   Modal,
   type GameRow,
-} from "../pkt/shared";
+} from "../components/shared";
 
 const SEC_CHIPS = [
   { key: "basic", label: "基本", sel: "#sec-basic" },
