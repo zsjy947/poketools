@@ -305,6 +305,131 @@ describe("M2 引擎集成", () => {
       s.destroy();
     }
   }, 90000);
+
+  it("上阵直通：previewOrder 自动代发 team 指令，UI 不再见到 teamPreview 请求", async () => {
+    const sets = importShowdown(TEAM_TEXT)!;
+    const s = new BattleSession({
+      formatid: "gen9vgc2025regi",
+      teams: { p1: sets.slice(0, 4), p2: structuredClone(sets).reverse().slice(0, 4) },
+      seed: [7, 7, 7, 7],
+      previewOrder: { p1: [1, 2, 3, 4], p2: [1, 2, 3, 4] },
+    });
+    const seenTeamPreview = { p1: false, p2: false };
+    s.subscribe((snap) => {
+      for (const side of ["p1", "p2"] as const) {
+        if (snap.pending.includes(side) && snap.requests[side]?.teamPreview)
+          seenTeamPreview[side] = true;
+      }
+    });
+    await s.start();
+    await new Promise((r) => setTimeout(r, 120));
+    expect(seenTeamPreview.p1).toBe(false);
+    expect(seenTeamPreview.p2).toBe(false);
+    // 直通后应停在招式/换人阶段（team preview 语义保留在引擎侧，OTS 已生效）
+    expect(s.phase === "awaiting" || s.phase === "finished").toBe(true);
+    s.destroy();
+  }, 15000);
+
+  it("双打替补不足：先倒 1 已补 + 场上双倒替补仅剩 1 → 空位 pass 不卡死", async () => {
+    /* 脱壳忍者（HP 1 + 神奇守护）：耿鬼的阴影球（幽灵，对虫/幽灵效果绝佳）一击必杀；
+       污泥炸弹（毒，对虫/幽灵均 1x）被神奇守护完全免疫 = 精确的「不击杀」招式。
+       剧本：回合 1-3 p2a 单杀（各换上 1 只，替补 4→1），回合 4 双杀 →
+       forceSwitch 2 空位、存活替补仅 1 → 指令 "switch N, pass"（引擎 forcedPassesLeft 语义
+       = 空位数 − 可换替补数，接受 pass），会话不挂起、终局正常。 */
+    const shedinja =
+      "Shedinja\nAbility: Wonder Guard\nLevel: 50\nTera Type: Bug\n- Shadow Ball\n- X-Scissor\n- Swords Dance\n- Protect";
+    const p1 = importShowdown(Array.from({ length: 6 }, () => shedinja).join("\n\n"))!;
+    const gengar =
+      "Gengar @ Choice Specs\nAbility: Cursed Body\nLevel: 50\nTera Type: Ghost\nIVs: 0 Atk\nEVs: 252 SpA / 252 Spe\nTimid Nature\n- Shadow Ball\n- Sludge Bomb\n- Protect\n- Focus Blast";
+    const p2 = importShowdown(Array.from({ length: 6 }, () => gengar).join("\n\n"))!;
+    const s = new BattleSession({
+      formatid: "gen9doublescustomgame",
+      teams: { p1, p2 },
+      seed: [11, 22, 33, 44],
+    });
+    await s.start();
+    await new Promise((r) => setTimeout(r, 60));
+
+    const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    let sawShortBench = false;
+    let shortBenchAccepted = false;
+    let p1NextSlot = 3; // p1 首发 = 槽 1/2；换人从槽 3 起
+    let lastLen = 0;
+    let stall = 0;
+    for (let i = 0; i < 600 && s.phase !== "finished"; i++) {
+      await wait(6);
+      if (s.logTail.length === lastLen) {
+        stall += 1;
+        // 双方残局互耗（脱壳忍者反杀耿鬼后无有效输出）→ 停滞时 forcelose 兜底终局
+        if (stall >= 120 && s.turn > 4) {
+          await s.forceLose("p1");
+          stall = 0;
+        }
+      } else {
+        stall = 0;
+        lastLen = s.logTail.length;
+      }
+      for (const side of ["p1", "p2"] as const) {
+        const req = s.requests[side];
+        if (!req || !s.pending.includes(side)) continue;
+        if (req.teamPreview) {
+          await s.choose(side, "team 1, 2, 3, 4, 5, 6");
+          continue;
+        }
+        const mons = req.side?.pokemon ?? [];
+        const live = mons.filter((m) => m.active && !m.condition.includes("fnt"));
+        if (req.forceSwitch) {
+          const bench = mons
+            .map((m, idx) => ({ m, i: idx + 1 }))
+            .filter((x) => !x.m.active && !x.m.condition.includes("fnt"));
+          const needs = req.forceSwitch.filter(Boolean).length;
+          const short = needs > bench.length;
+          if (side === "p1" && short) sawShortBench = true;
+          const parts: string[] = [];
+          let used = 0;
+          for (const need of req.forceSwitch) {
+            if (!need) continue;
+            if (used < bench.length && side === "p1") {
+              parts.push(`switch ${p1NextSlot}`);
+              p1NextSlot += 1;
+              used += 1;
+            } else if (used < bench.length) {
+              const free = bench.find((b) => !parts.includes(`switch ${b.i}`));
+              parts.push(free ? `switch ${free.i}` : "pass");
+              used += 1;
+            } else {
+              parts.push("pass");
+            }
+          }
+          const before = s.logTail.length;
+          await s.choose(side, parts.join(", "));
+          await wait(40);
+          const rejected = s.logTail
+            .slice(before)
+            .some((l) => l.includes("[Invalid choice]") || l.includes("[Unavailable choice]"));
+          if (side === "p1" && short && !rejected) shortBenchAccepted = true;
+          continue;
+        }
+        if (req.active) {
+          const act = (req.active ?? []).filter((x) => !!x).slice(0, live.length);
+          const parts = act.map((_a, ordinal) => {
+            const script = side === "p2" && s.turn <= 3;
+            // p2 剧本：前 3 回合仅 a 位（左）用阴影球点杀，b 位用污泥炸弹（被神奇守护免疫）；
+            // 第 4 回合起双阴影球 → 场上双倒、p1 替补仅剩 1（空位 > 替补）
+            const moveIdx = side === "p2" ? (script ? (ordinal === 0 ? 1 : 2) : 1) : 1;
+            const needsTarget =
+              live.length > 1 && side === "p2" && moveIdx !== 2 ? true : live.length > 1;
+            return `move ${moveIdx}` + (needsTarget ? ` ${ordinal + 1}` : "");
+          });
+          await s.choose(side, parts.length ? parts.join(", ") : "pass");
+        }
+      }
+    }
+    expect(sawShortBench, "剧本未命中「空位 > 存活替补」局面").toBe(true);
+    expect(shortBenchAccepted, "混合 switch/pass 指令被引擎拒绝").toBe(true);
+    expect(s.phase).toBe("finished");
+    s.destroy();
+  }, 60000);
 });
 
 describe("M3 校验器（FR-05）", () => {

@@ -23,15 +23,13 @@ type ActiveSlotData = NonNullable<NonNullable<RequestChoice["active"]>[number]>;
 export function BattleView(): JSX.Element {
   const session = useApp((s) => s.session);
   const snapshot = useApp((s) => s.snapshot);
-  const activeSide = useApp((s) => s.activeSide);
-  const setActiveSide = useApp((s) => s.setActiveSide);
   const detachSession = useApp((s) => s.detachSession);
   const go = useApp((s) => s.go);
   const finishBattle = useApp((s) => s.finishBattle);
   const settings = useApp((s) => s.settings);
+  const updateSettings = useApp((s) => s.updateSettings);
   const format = useApp((s) => s.format);
   const teams = useApp((s) => s.teams);
-  const [animated, setAnimated] = useState(settings.animation);
   const recordedRef = useRef(false);
   const logEndRef = useRef<HTMLDivElement | null>(null);
 
@@ -67,8 +65,13 @@ export function BattleView(): JSX.Element {
   }, [snapshot?.phase, snapshot?.winner, session, finishBattle, snapshot, teams, snapshot?.turn]);
 
   const dex = useMemo(() => dexFor(format?.mod ?? "gen9"), [format]);
-  // 动画演出态（ident → 当前演出；关闭时恒空 = 降级信息流）
-  const animMap = useBattleAnim(snapshot?.events ?? [], animated, settings.animationSpeed);
+  // 动画演出态（ident → 当前演出；关闭时恒空 = 降级信息流）。
+  // 开关单源 settings.animation（设置页与对战页同源读写——本地副本曾与设置页脱钩，多次切换后语义反转）
+  const animMap = useBattleAnim(
+    snapshot?.events ?? [],
+    settings.animation,
+    settings.animationSpeed,
+  );
 
   if (!session || !snapshot) {
     return (
@@ -80,23 +83,8 @@ export function BattleView(): JSX.Element {
     );
   }
 
-  const req = snapshot.requests[activeSide];
-  const awaitingThis = snapshot.pending.includes(activeSide);
-
-  /* 单人双控的侧推进：引擎在两侧指令齐备前不发新请求，store 的 pending 不会即时清除，
-     故在成功下达后本地切换到另一待办侧（否则「已下达」后玩家需手点另一阵营按钮） */
-  const chooseAndAdvance = async (choice: string): Promise<void> => {
-    await session.choose(activeSide, choice);
-    const other: "p1" | "p2" = activeSide === "p1" ? "p2" : "p1";
-    if (snapshot.pending.includes(other)) setActiveSide(other);
-  };
-
-  const doTeamPreview = (order: number[]) => {
-    void chooseAndAdvance(`team ${order.join(",")}`);
-  };
-
   return (
-    <div className={"page page-battle side-active-" + activeSide}>
+    <div className="page page-battle">
       <div className="page-head-row">
         <h1>
           对战 · <span className="muted">{session.formatid}</span> · 第 {snapshot.turn} 回合
@@ -105,8 +93,8 @@ export function BattleView(): JSX.Element {
         <label className="anim-toggle">
           <input
             type="checkbox"
-            checked={animated}
-            onChange={(e) => setAnimated(e.target.checked)}
+            checked={settings.animation}
+            onChange={(e) => updateSettings({ animation: e.target.checked })}
           />
           动画演出
         </label>
@@ -120,86 +108,38 @@ export function BattleView(): JSX.Element {
         </button>
       </div>
 
-      {/* 阵营切换（防误操作：全屏配色联动 + 横幅） */}
-      <div className="side-switch">
-        <span className="banner">
-          正在为<b>{activeSide === "p1" ? "阵营 A" : "阵营 B"}</b>下令
-        </span>
-        {(["p1", "p2"] as SideSlot[]).map((s) => (
-          <button key={s} className={activeSide === s ? "on" : ""} onClick={() => setActiveSide(s)}>
-            阵营 {s === "p1" ? "A" : "B"}
-            {snapshot.pending.includes(s) ? " ⏳待指令" : ""}
-          </button>
-        ))}
-      </div>
-
-      {/* 场地：上=对方(p2 正面)，下=己方(p1 背面)；双打各显示两只 */}
-      <div className="battle-field">
-        <SideBoard
-          side="p2"
-          snapshot={snapshot}
-          dex={dex}
-          animated={animated}
-          active={activeSide === "p2"}
-          animMap={animMap}
-        />
-        <div className="field-mid">
-          <span>{snapshot.events.slice(-1)[0]?.value ?? ""}</span>
+      {/* 舞台一屏化：左 = 阵营 A 招式卡，中 = 场地（B 右上 / A 左下），右 = 阵营 B 招式卡；
+          双侧指令面板同屏常驻，可同时为双方出招（引擎按侧收指令，两个独立输入通道） */}
+      <div className="battle-stage">
+        <div className="stage-side stage-side-p1">
+          <SideCommandPanel side="p1" snapshot={snapshot} dex={dex} />
         </div>
-        <SideBoard
-          side="p1"
-          snapshot={snapshot}
-          dex={dex}
-          animated={animated}
-          active={activeSide === "p1"}
-          animMap={animMap}
-          back
-        />
+        <div className="stage-field">
+          <SideBoard
+            side="p2"
+            snapshot={snapshot}
+            dex={dex}
+            animated={settings.animation}
+            animMap={animMap}
+          />
+          <div className="field-mid">
+            <span>{snapshot.events.slice(-1)[0]?.value ?? ""}</span>
+          </div>
+          <SideBoard
+            side="p1"
+            snapshot={snapshot}
+            dex={dex}
+            animated={settings.animation}
+            animMap={animMap}
+            back
+          />
+        </div>
+        <div className="stage-side stage-side-p2">
+          <SideCommandPanel side="p2" snapshot={snapshot} dex={dex} />
+        </div>
       </div>
 
-      {/* 指令面板：仅当前操作阵营可操作（另一侧锁定态） */}
-      <div className="control-panel">
-        {snapshot.lastError && snapshot.lastError.side === activeSide && (
-          <div className="alert warn">
-            <b>指令未被接受：</b>
-            {zhLine(snapshot.lastError.message)}（已复位，请重新下达）
-          </div>
-        )}
-        {snapshot.phase === "finished" ? (
-          <div className="battle-result">
-            <b>对局结束：{snapshot.winner}</b>
-            <button
-              onClick={() => {
-                detachSession();
-                go("home");
-              }}
-            >
-              返回主页
-            </button>
-            <button onClick={() => go("records")}>查看记录</button>
-          </div>
-        ) : awaitingThis && req ? (
-          <div className={"choices choices-" + activeSide}>
-            {req.teamPreview && <TeamPreviewChoice req={req} dex={dex} onChoose={doTeamPreview} />}
-            {req.forceSwitch && (
-              <ForceSwitchChoice req={req} dex={dex} onChoose={(c) => void chooseAndAdvance(c)} />
-            )}
-            {req.active && (
-              <MoveOrders
-                req={req}
-                dex={dex}
-                onChoose={(c) => void chooseAndAdvance(c)}
-                animated={animated}
-                speed={settings.animationSpeed}
-              />
-            )}
-          </div>
-        ) : (
-          <div className="choices locked">等待另一阵营下达指令…（上方切换阵营查看）</div>
-        )}
-      </div>
-
-      {/* 信息流日志（FR-09） */}
+      {/* 信息流日志（FR-09）—— 唯一允许内部滚动的区域 */}
       <div className="battle-log">
         <h3>战斗日志（可回看）</h3>
         <div className="log-scroll">
@@ -213,12 +153,70 @@ export function BattleView(): JSX.Element {
   );
 }
 
+/** 单侧指令面板：常驻一侧，含 ⏳待指令标识、指令被拒黄条（标明所属侧）与请求组件 */
+function SideCommandPanel(props: {
+  side: SideSlot;
+  snapshot: NonNullable<ReturnType<typeof useApp.getState>["snapshot"]>;
+  dex: ReturnType<typeof dexFor>;
+}): JSX.Element {
+  const { side, snapshot, dex } = props;
+  const session = useApp((s) => s.session);
+  const req = snapshot.requests[side];
+  const awaiting = snapshot.pending.includes(side);
+  const label = side === "p1" ? "阵营 A" : "阵营 B";
+  const choose = (choice: string) => {
+    if (session) void session.choose(side, choice);
+  };
+
+  return (
+    <div className={"side-panel sp-" + side + (awaiting ? " awaiting" : "")}>
+      <div className="side-panel-head">
+        <b>{label}</b>
+        <span className="muted">{awaiting ? "⏳待指令" : "已下达 / 等待结算"}</span>
+      </div>
+      {snapshot.lastError && snapshot.lastError.side === side && (
+        <div className="alert warn">
+          <b>指令未被接受：</b>
+          {zhLine(snapshot.lastError.message)}（已复位，请重新下达）
+        </div>
+      )}
+      {snapshot.phase === "finished" ? (
+        <div className="battle-result">
+          <b>对局结束：{snapshot.winner}</b>
+          <button
+            onClick={() => {
+              useApp.getState().detachSession();
+              useApp.getState().go("home");
+            }}
+          >
+            返回主页
+          </button>
+          <button onClick={() => useApp.getState().go("records")}>查看记录</button>
+        </div>
+      ) : awaiting && req ? (
+        <div className={"choices choices-" + side}>
+          {req.teamPreview && (
+            <TeamPreviewChoice
+              req={req}
+              dex={dex}
+              onChoose={(order) => choose(`team ${order.join(",")}`)}
+            />
+          )}
+          {req.forceSwitch && <ForceSwitchChoice req={req} dex={dex} onChoose={choose} />}
+          {req.active && <MoveOrders req={req} dex={dex} onChoose={choose} side={side} />}
+        </div>
+      ) : (
+        <div className="choices locked">等待该阵营收到新指令请求…</div>
+      )}
+    </div>
+  );
+}
+
 function SideBoard(props: {
   side: "p1" | "p2";
   snapshot: NonNullable<ReturnType<typeof useApp.getState>["snapshot"]>;
   dex: ReturnType<typeof dexFor>;
   animated: boolean;
-  active: boolean;
   animMap: Record<string, AnimKind>;
   back?: boolean;
 }): JSX.Element {
@@ -296,15 +294,18 @@ function MonStage(props: {
   const pct = mon.maxhp > 0 ? Math.round((mon.hp / mon.maxhp) * 100) : 0;
   const animCls = anim ? " anim-" + anim : "";
   return (
+    // 竖排舞台单元：名字+血条在精灵头顶，血条宽 ≈ 精灵宽（等宽对齐）
     <div className="mon-stage">
       <div className="hp-panel">
-        <span className="hp-name">{zhNameOf(dex, nameId)}</span>
-        {mon.status && (
-          <span className={"status st-" + mon.status}>{STATUS_ZH[mon.status] ?? mon.status}</span>
-        )}
-        {mon.terastallized && <span className="tera-badge">太晶·{mon.teraType}</span>}
-        {mon.mega && <span className="mega-badge">超级进化</span>}
-        {mon.max && <span className="max-badge">极巨</span>}
+        <div className="hp-head">
+          <span className="hp-name">{zhNameOf(dex, nameId)}</span>
+          {mon.status && (
+            <span className={"status st-" + mon.status}>{STATUS_ZH[mon.status] ?? mon.status}</span>
+          )}
+          {mon.terastallized && <span className="tera-badge">太晶·{mon.teraType}</span>}
+          {mon.mega && <span className="mega-badge">超级进化</span>}
+          {mon.max && <span className="max-badge">极巨</span>}
+        </div>
         <div className="hp-bar">
           <div className={"hp-fill hp-" + hpBand(pct)} style={{ width: pct + "%" }} />
         </div>
@@ -358,18 +359,16 @@ type SlotChoice = SlotSel | SlotSwitch;
 
 /**
  * 招式回合指令（多槽合成）：双打时每只在场宝可梦一条指令，逐槽选择后统一「下达指令」。
- * 支持机制按钮（mega/Z/极巨/太晶，随槽声明）、目标选择（双打需目标的招式）、主动换人。
+ * 支持机制按钮（太晶/极巨用图标点亮，Mega/Z 为文字按钮；同一精灵的机制互斥）、
+ * 目标选择（双打需目标的招式）、主动换人。
  */
 function MoveOrders(props: {
   req: RequestChoice;
   dex: Dex;
   onChoose: (c: string) => void;
-  animated: boolean;
-  speed: number;
+  side: SideSlot;
 }): JSX.Element {
-  const { req, dex, onChoose, animated, speed } = props;
-  void animated;
-  void speed;
+  const { req, dex, onChoose } = props;
   const mons = req.side?.pokemon ?? [];
   const liveActive = mons.filter((m) => m.active && !m.condition.includes("fnt"));
   // 引擎对濒死槽自动 pass（side.getChoiceIndex）：只渲染存活数对应的槽，
@@ -538,9 +537,18 @@ function MoveOrders(props: {
               s.a.canGigantamax ||
               s.a.canTerastallize) && (
               <div className="mech-row">
-                {s.a.canTerastallize && mechBtn(sel, s.i, "terastallize", "太晶化", setSlot)}
-                {s.a.canDynamax && mechBtn(sel, s.i, "dynamax", "极巨化", setSlot)}
-                {s.a.canGigantamax && mechBtn(sel, s.i, "dynamax", "超极巨化", setSlot)}
+                {s.a.canTerastallize &&
+                  mechBtn(sel, s.i, "terastallize", "太晶化", setSlot, {
+                    icon: `/assets/mechanism/tera_${teraTypeOf(req, ordinal) ?? "一般"}.png`,
+                  })}
+                {s.a.canDynamax &&
+                  mechBtn(sel, s.i, "dynamax", "极巨化", setSlot, {
+                    icon: "/assets/mechanism/dynamax.png",
+                  })}
+                {s.a.canGigantamax &&
+                  mechBtn(sel, s.i, "dynamax", "超极巨化", setSlot, {
+                    icon: "/assets/mechanism/dynamax.png",
+                  })}
                 {s.a.canMegaEvo && mechBtn(sel, s.i, "mega", "超级进化", setSlot)}
                 {s.a.canZMove && mechBtn(sel, s.i, "zmove", "Z 招式", setSlot)}
               </div>
@@ -591,30 +599,54 @@ function MoveOrders(props: {
   );
 }
 
+/** 机制按钮：点亮 = 启用（对齐计算器交互）；同一槽位机制互斥（sel.mech 单值）。
+ *  太晶/极巨走图标（/assets/mechanism，点亮提亮），Mega/Z 为文字按钮。 */
 function mechBtn(
   sel: Record<number, SlotChoice>,
   slot: number,
   mech: string,
   label: string,
   setSlot: (slot: number, c: SlotChoice | undefined) => void,
+  opts?: { icon?: string },
 ): JSX.Element {
   const cur = sel[slot];
   const on = cur?.kind === "move" && cur.mech === mech;
   return (
     <button
       className={"mech-btn mini" + (on ? " on" : "")}
+      title={`${label}${on ? "（已点亮：出招时附加）" : ""}`}
       onClick={() => {
         if (!cur || cur.kind !== "move") return;
         setSlot(slot, { ...cur, mech: on ? undefined : mech });
       }}
     >
+      {opts?.icon && (
+        <img
+          className={"mech-icon" + (on ? " on" : "")}
+          src={opts.icon}
+          alt={label}
+          onError={(e) => {
+            (e.target as HTMLImageElement).style.display = "none";
+          }}
+        />
+      )}
       {label}
       {on ? " ✓" : ""}
     </button>
   );
 }
 
-/** 被迫换人（多槽）：forceSwitch 每个槽位一条 switch/pass；替补不足的槽用 pass。 */
+/** 当前槽位宝可梦的太晶属性（太晶图标按属性取 tera_{type}.png；引擎值为英文需转中文文件名） */
+function teraTypeOf(req: RequestChoice, slotOrdinal: number): string | undefined {
+  const mon = (req.side?.pokemon ?? []).filter((p) => p.active)[slotOrdinal];
+  const t = mon?.teraType;
+  if (!t) return undefined;
+  return TYPE_ZH[t] ?? (t === "Stellar" ? "星晶" : t);
+}
+
+/** 被迫换人（多槽）：forceSwitch 每个槽位一条 switch/pass。
+ *  替补不足时空位数 > 存活替补数：可交互槽 = 存活替补数（每槽必选），其余空位自动 pass
+ *  （引擎 choosePass 的 forcedPassesLeft 语义 = 空位数 − 可换上的替补数），不阻塞确认。 */
 function ForceSwitchChoice(props: {
   req: RequestChoice;
   dex: ReturnType<typeof dexFor>;
@@ -633,7 +665,11 @@ function ForceSwitchChoice(props: {
     setSubmitted(false);
   }, [req]);
 
-  const allChosen = needs.every((x) => benchOf.length === 0 || sel[x.i] !== undefined);
+  // 需要交互选择的槽（前 min(空位, 替补) 个）；其余空位提交时自动 pass
+  const choosable = needs.slice(0, benchOf.length);
+  const passCount = needs.length - choosable.length;
+
+  const allChosen = choosable.every((x) => sel[x.i] !== undefined);
   const submit = () => {
     const parts = needs.map((x) => {
       const pick = sel[x.i];
@@ -656,11 +692,15 @@ function ForceSwitchChoice(props: {
 
   return (
     <div className="switch-grid">
-      <b>选择换上场的宝可梦{needs.length > 1 ? `（${needs.length} 个槽位）` : ""}：</b>
-      {needs.map((x, ordinal) => (
+      <b>
+        选择换上场的宝可梦{needs.length > 1 ? `（${needs.length} 个空位）` : ""}
+        {passCount > 0 && <span className="muted">（替补不足：{passCount} 个空位将自动跳过）</span>}
+        ：
+      </b>
+      {choosable.map((x, ordinal) => (
         <div key={x.i} className="order-slot">
           <div className="slot-head">
-            <b>{needs.length > 1 ? `第 ${ordinal + 1} 个空位` : "空位"}</b>
+            <b>{choosable.length > 1 ? `第 ${ordinal + 1} 个空位` : "空位"}</b>
           </div>
           <div className="switch-row">
             {benchOf.map((b) => (

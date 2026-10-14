@@ -443,53 +443,98 @@ button.mini.danger {
   border-top: 4px solid var(--p2);
 }
 .preview-mon {
+  position: relative;
   display: grid;
-  grid-template-columns: 1fr auto auto;
-  gap: 4px 12px;
+  /* 固定信息列：名字弹性 + 属性/道具定宽 + 招式弹性截断 + 恒定顺位操作槽（未选中留空，
+     选中态不改变卡高）；两阵营 6 卡的属性/道具/招式列起点纵向对齐 */
+  grid-template-columns: minmax(0, 1.1fr) 74px 108px minmax(0, 1.5fr) 56px;
+  gap: 4px 10px;
   text-align: left;
   width: 100%;
   margin: 4px 0;
   padding: 8px 10px;
   border-radius: 8px;
   border: 1.5px solid var(--line);
+  align-items: center;
 }
 .preview-mon .name {
   font-weight: 700;
-  grid-row: span 3;
+  align-self: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.preview-mon .pv-types,
+.preview-mon .pv-item,
+.preview-mon .pv-moves {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 12.5px;
   align-self: center;
 }
 .preview-mon.on {
   border-color: var(--p1);
   background: var(--p1-bg);
 }
+.pick-ops {
+  justify-self: end;
+  display: inline-flex;
+  gap: 3px;
+}
+.pick-ops-inner {
+  display: inline-flex;
+  gap: 3px;
+}
 
-/* 对战页 */
-.page-battle .side-switch {
+/* 对战页 —— 一屏布局：舞台三栏（A 卡 | 场地 | B 卡）+ 日志（唯一内部滚动区），页面级不滚动 */
+.page-battle {
+  max-width: none;
+  display: flex;
+  flex-direction: column;
+  /* 视口高扣除应用顶栏 + 分区导航 + 主区内边距（1280×720 起步零页面滚动） */
+  height: calc(100vh - 150px);
+  min-height: 480px;
+}
+.battle-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 1.15fr) minmax(0, 1fr);
+  gap: 10px;
+  flex: 1;
+  min-height: 0;
+  align-items: stretch;
+}
+.stage-side {
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.side-panel {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+}
+.side-panel-head {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin: 6px 0 12px;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 6px;
 }
-.page-battle .banner {
-  padding: 5px 14px;
-  border-radius: 16px;
-  font-size: 13px;
-  background: var(--p1-bg);
-  color: var(--p1);
-  border: 1px solid #bcd2f5;
-}
-.page-battle.side-active-p2 .banner {
-  background: var(--p2-bg);
-  color: var(--p2);
-  border-color: #efc3bd;
-}
-.side-switch button.on {
+.side-panel.sp-p1.awaiting {
   border-color: var(--p1);
-  color: var(--p1);
-  font-weight: 700;
+  box-shadow: 0 0 0 1.5px var(--p1);
 }
-.side-switch button.on[disabled] {
-  opacity: 0.6;
+.side-panel.sp-p2.awaiting {
+  border-color: var(--p2);
+  box-shadow: 0 0 0 1.5px var(--p2);
 }
 .anim-toggle {
   display: inline-flex;
@@ -498,31 +543,39 @@ button.mini.danger {
   color: #556;
 }
 
-.battle-field {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+/* 场地：B 上（正面）A 下（背面），双打各两只并排 */
+.stage-field {
   background: linear-gradient(#dcebd8, #c8e0c2);
   border: 1px solid #b7d2b0;
   border-radius: 14px;
-  padding: 12px 18px;
+  padding: 10px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+  overflow: hidden;
+  justify-content: space-between;
 }
 .field-mid {
   display: flex;
   justify-content: center;
   color: #56705a;
-  font-size: 13px;
-  min-height: 20px;
+  font-size: 12.5px;
+  min-height: 18px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .side-board {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
+  min-height: 0;
 }
 .board-head {
   display: flex;
   justify-content: space-between;
-  font-size: 13px;
+  font-size: 12.5px;
 }
 .sb-p2 .board-head {
   color: #7c3b34;
@@ -530,18 +583,32 @@ button.mini.danger {
 .sb-p1 .board-head {
   color: #2c5588;
 }
+.sb-p2 {
+  align-self: flex-end;
+}
+.sb-p1 {
+  align-self: flex-start;
+}
+.side-actives {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+/* 舞台单元：名字+血条在精灵头顶，血条宽 ≈ 精灵宽（定宽对齐） */
 .mon-stage {
   display: flex;
-  align-items: flex-end;
-  gap: 14px;
-  min-height: 120px;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-height: 0;
 }
-.side-board.back-view .mon-stage {
-  flex-direction: row-reverse;
+.mon-stage.empty {
+  align-items: center;
+  justify-content: center;
 }
 .mon-sprite {
-  width: 132px;
-  height: 132px;
+  width: 96px;
+  height: 96px;
   object-fit: contain;
 }
 .mon-sprite.placeholder {
@@ -551,6 +618,102 @@ button.mini.danger {
 .mon-sprite.fainted {
   filter: grayscale(1);
   opacity: 0.45;
+}
+.hp-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 96px; /* 与精灵等宽：血条横贯整页的修复 */
+}
+.hp-head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.hp-name {
+  font-weight: 700;
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+.hp-bar {
+  height: 9px;
+  background: #2b2f33;
+  border: 1.5px solid #17191c;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.hp-num {
+  font-size: 11px;
+  color: #445;
+  text-align: center;
+}
+.hp-fill {
+  height: 100%;
+  transition: width 0.35s ease;
+}
+.hp-hi {
+  background: #3ec46d;
+}
+.hp-mid {
+  background: #f2c744;
+}
+.hp-lo {
+  background: #e5484d;
+}
+.status {
+  font-size: 10.5px;
+  border-radius: 4px;
+  padding: 0 5px;
+  width: fit-content;
+  color: #fff;
+}
+.st-brn {
+  background: #e2543c;
+}
+.st-par {
+  background: #d9b319;
+  color: #333;
+}
+.st-slp {
+  background: #8a7a55;
+}
+.st-psn {
+  background: #9b59c8;
+}
+.st-tox {
+  background: #7a3fa1;
+}
+.st-frz {
+  background: #59c4e0;
+}
+.tera-badge,
+.mega-badge,
+.max-badge {
+  font-size: 10.5px;
+  border-radius: 4px;
+  padding: 0 5px;
+  width: fit-content;
+  color: #fff;
+  background: #3aa9ad;
+}
+.mega-badge {
+  background: #b06ad4;
+}
+.max-badge {
+  background: #e0503f;
+}
+.bench-row {
+  display: flex;
+  gap: 5px;
+}
+.bench-ball {
+  color: #4a5548;
+  font-size: 13px;
+}
+.bench-ball.fainted {
+  color: #b6bdc9;
 }
 
 /* ===== 动画演出（FR-08）：anim.ts 事件映射 → CSS 关键帧；关闭动画不挂类自动降级信息流 ===== */
@@ -699,98 +862,12 @@ button.mini.danger {
 .mon-sprite.anim-zmove {
   animation: anim-zmove 0.52s ease;
 }
-.hp-panel {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 220px;
-}
-.hp-name {
-  font-weight: 700;
-}
-.hp-bar {
-  height: 12px;
-  background: #2b2f33;
-  border: 1.5px solid #17191c;
-  border-radius: 7px;
-  overflow: hidden;
-}
-.hp-fill {
-  height: 100%;
-  transition: width 0.35s ease;
-}
-.hp-hi {
-  background: #3ec46d;
-}
-.hp-mid {
-  background: #f2c744;
-}
-.hp-lo {
-  background: #e5484d;
-}
-.status {
-  font-size: 11px;
-  border-radius: 4px;
-  padding: 0 6px;
-  width: fit-content;
-  color: #fff;
-}
-.st-brn {
-  background: #e2543c;
-}
-.st-par {
-  background: #d9b319;
-  color: #333;
-}
-.st-slp {
-  background: #8a7a55;
-}
-.st-psn {
-  background: #9b59c8;
-}
-.st-tox {
-  background: #7a3fa1;
-}
-.st-frz {
-  background: #59c4e0;
-}
-.tera-badge,
-.mega-badge,
-.max-badge {
-  font-size: 11px;
-  border-radius: 4px;
-  padding: 0 6px;
-  width: fit-content;
-  color: #fff;
-  background: #3aa9ad;
-}
-.mega-badge {
-  background: #b06ad4;
-}
-.max-badge {
-  background: #e0503f;
-}
-.bench-row {
-  display: flex;
-  gap: 5px;
-}
-.bench-ball {
-  color: #4a5548;
-  font-size: 14px;
-}
-.bench-ball.fainted {
-  color: #b6bdc9;
-}
-
 .control-panel {
-  margin-top: 12px;
+  margin-top: 8px;
 }
 .choices {
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 12px 14px;
+  border-radius: 10px;
+  padding: 10px 12px;
 }
 .choices.locked {
   color: var(--muted);
@@ -798,11 +875,11 @@ button.mini.danger {
 .move-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
+  gap: 6px;
 }
 .move-btn {
   text-align: left;
-  padding: 10px 12px;
+  padding: 6px 8px;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -810,6 +887,10 @@ button.mini.danger {
 .move-btn.on {
   border-color: var(--p1);
   background: var(--p1-bg);
+}
+.choices-p2 .move-btn.on {
+  border-color: var(--p2);
+  background: var(--p2-bg);
 }
 button.mini.on {
   border-color: var(--p1);
@@ -819,20 +900,35 @@ button.mini.on {
 }
 .mv-name {
   font-weight: 700;
+  font-size: 13px;
 }
 .mv-meta,
 .mv-pp {
-  font-size: 11.5px;
+  font-size: 11px;
 }
 .mech-btn {
-  margin-top: 8px;
+  margin-top: 6px;
   border-color: #e5c96b;
   background: #fffbe8;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
 .mech-btn.on {
   border-color: #c9a53d;
   background: #fdf3cd;
   font-weight: 700;
+}
+.mech-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter: grayscale(1);
+  opacity: 0.5;
+}
+.mech-icon.on {
+  filter: none;
+  opacity: 1;
 }
 .switch-grid,
 .tp-grid {
@@ -855,19 +951,20 @@ button.mini.on {
 .orders {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
 }
 .order-slot {
   border: 1px dashed var(--line);
   border-radius: 10px;
-  padding: 10px 12px;
+  padding: 8px 10px;
 }
 .slot-head {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
+  gap: 8px;
+  margin-bottom: 6px;
   flex-wrap: wrap;
+  font-size: 12.5px;
 }
 .move-cell {
   display: flex;
@@ -882,38 +979,44 @@ button.mini.on {
 .mech-row {
   display: flex;
   gap: 6px;
-  margin-top: 8px;
+  margin-top: 6px;
   flex-wrap: wrap;
 }
 .switch-row {
   display: flex;
   gap: 6px;
-  margin-top: 8px;
+  margin-top: 6px;
   flex-wrap: wrap;
   align-items: center;
 }
 .side-actives {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  flex-direction: row;
+  gap: 10px;
 }
 
 .battle-log {
-  margin-top: 14px;
+  margin-top: 10px;
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 12px;
-  padding: 10px 14px;
+  padding: 8px 14px;
+  flex: none;
+  max-height: 32%;
+  display: flex;
+  flex-direction: column;
+  min-height: 110px;
 }
 .battle-log h3 {
-  margin: 0 0 8px;
-  font-size: 14px;
+  margin: 0 0 6px;
+  font-size: 13px;
 }
 .log-scroll {
-  max-height: 260px;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
-  font-size: 12.5px;
-  line-height: 1.7;
+  font-size: 12px;
+  line-height: 1.6;
 }
 .battle-log.standalone .log-scroll {
   max-height: 60vh;

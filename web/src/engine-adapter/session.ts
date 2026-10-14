@@ -92,6 +92,9 @@ export interface BattleSessionOptions {
   teams: { p1: PokemonSet[]; p2: PokemonSet[] };
   seed?: [number, number, number, number];
   names?: { p1: string; p2: string };
+  /** 上阵预览顺位直通（1 基编号）：提供后 team preview 阶段自动下发 team 指令，
+   *  UI 不再呈现选择步骤，直达第 1 回合指令界面；引擎侧 team preview 语义保留（OTS 照常） */
+  previewOrder?: { p1?: number[]; p2?: number[] };
 }
 
 export type RequestMap = { p1?: RequestChoice | undefined; p2?: RequestChoice | undefined };
@@ -146,7 +149,13 @@ export class BattleSession {
   constructor(opts: BattleSessionOptions) {
     this.formatid = opts.formatid;
     this.opts = opts;
+    this.autoTeamOrder = {};
+    if (opts.previewOrder?.p1) this.autoTeamOrder.p1 = [...opts.previewOrder.p1];
+    if (opts.previewOrder?.p2) this.autoTeamOrder.p2 = [...opts.previewOrder.p2];
   }
+
+  /** 预览顺位直通（一次性）：收到 teamPreview 请求时自动下发 team 指令 */
+  private autoTeamOrder: { p1?: number[] | undefined; p2?: number[] | undefined } = {};
 
   subscribe(fn: (snap: SessionSnapshot) => void): () => void {
     this.subscribers.add(fn);
@@ -262,6 +271,14 @@ export class BattleSession {
     this.requests[side] = req;
     this.syncSideFromRequest(side, req);
     this.lastSideRequested = side;
+    // 预览顺位直通：teamPreview 请求若带预设顺位，立即代发 team 指令（1 基编号），
+    // 不把该请求暴露给 UI；指令被拒时 |error| 恢复逻辑照常兜底（请求对象已存）
+    if (req.teamPreview && this.autoTeamOrder[side]?.length) {
+      const order = this.autoTeamOrder[side]!;
+      this.autoTeamOrder[side] = undefined as number[] | undefined;
+      void this.choose(side, `team ${order.join(",")}`);
+      return;
+    }
     if (!req.wait) {
       if (!this.pending.includes(side)) this.pending.push(side);
     } else {

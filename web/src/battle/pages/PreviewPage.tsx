@@ -1,9 +1,10 @@
 import { useMemo } from "react";
 import { useApp } from "../store";
-import { dexFor, displayName, itemView, moveView, speciesView, TYPE_ZH } from "../../data";
+import { dexFor, itemView, moveView, speciesView, TYPE_ZH } from "../../data";
 import { BattleSession } from "../../engine-adapter";
 import type { PokemonSet } from "../../engine-adapter";
 import { validateTeam } from "../../team/showdown";
+import { speciesLabel } from "../data/roster";
 
 /** 上阵预览（FR-06）：按赛制 6 选 4 / 6 选 3 的**有序**上阵选择（点击顺序 = 上阵顺位，
  * 上移/下移调整）+ OTS 信息展示 + 开局。顺位语义：单打第 1 只 = 首发、双打前 2 只 = 首发、
@@ -54,6 +55,12 @@ export function PreviewPage(): JSX.Element {
       formatid: format.id,
       teams: { p1, p2 },
       names: { p1: "阵营 A", p2: "阵营 B" },
+      // 上阵直通：sets 已按顺位排列，team 指令发恒等序列即保持顺位语义
+      // （首发位与幻觉伪装目标 = 顺位首/末），跳过对战页内的二次点选
+      previewOrder: {
+        p1: p1.map((_, i) => i + 1),
+        p2: p2.map((_, i) => i + 1),
+      },
     });
     attachSession(session);
     await session.start();
@@ -98,6 +105,10 @@ export function PreviewPage(): JSX.Element {
                   const sp = speciesView(dex, s.species);
                   const order = picks[side].indexOf(i);
                   const on = order >= 0;
+                  const moveNames = (s.moves ?? [])
+                    .filter(Boolean)
+                    .map((m) => moveView(dex, m)?.zhName ?? m)
+                    .join(" · ");
                   return (
                     <button
                       key={i}
@@ -106,43 +117,41 @@ export function PreviewPage(): JSX.Element {
                     >
                       <span className="name">
                         {order >= 0 && <b className="pick-order">{order + 1}.</b>}
-                        {displayName(dex, s.species, s.name)}
+                        {speciesLabel(dex, s.species)}
                       </span>
-                      <span className="muted">
+                      <span className="muted pv-types">
                         {(sp?.types ?? []).map((t: string) => TYPE_ZH[t] ?? t).join("/")}
                       </span>
-                      <span className="muted">
+                      <span className="muted pv-item">
                         {s.item ? (itemView(dex, s.item)?.zhName ?? s.item) : "无道具"}
                       </span>
-                      <span className="muted">
-                        {(s.moves ?? [])
-                          .filter(Boolean)
-                          .map((m) => moveView(dex, m)?.zhName ?? m)
-                          .join(" · ")}
+                      <span className="muted pv-moves" title={moveNames}>
+                        {moveNames}
                       </span>
-                      {on && (
-                        <span
-                          className="pick-ops"
-                          onClick={(e) => e.stopPropagation()}
-                          role="group"
-                          aria-label="顺位调整"
-                        >
-                          <button
-                            className="mini"
-                            disabled={order === 0}
-                            onClick={() => movePick(side, i, -1)}
+                      <span className="pick-ops" role="group" aria-label="顺位调整">
+                        {on && (
+                          <span
+                            className="pick-ops-inner"
+                            onClick={(e) => e.stopPropagation()}
+                            role="group"
                           >
-                            ↑
-                          </button>
-                          <button
-                            className="mini"
-                            disabled={order === picks[side].length - 1}
-                            onClick={() => movePick(side, i, 1)}
-                          >
-                            ↓
-                          </button>
-                        </span>
-                      )}
+                            <button
+                              className="mini"
+                              disabled={order === 0}
+                              onClick={() => movePick(side, i, -1)}
+                            >
+                              ↑
+                            </button>
+                            <button
+                              className="mini"
+                              disabled={order === picks[side].length - 1}
+                              onClick={() => movePick(side, i, 1)}
+                            >
+                              ↓
+                            </button>
+                          </span>
+                        )}
+                      </span>
                     </button>
                   );
                 })}
