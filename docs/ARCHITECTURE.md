@@ -354,6 +354,16 @@ web/
 数据类缺口仍以 `DATA-GAPS.md` 为准（无源待补与变体建模两项仍开放，ROADMAP §5 仅索引）。
 
 ## §10 变更历史
+- **2026-10-15 模拟对战修复批（BATTLE-FIX-PLAN 全量 T1-T12）**：新增 `web/src/battle/data/roster.ts`
+  选择数据基建（名册=引擎 isNonstandard / 临时形态=battleOnly 动态收集+永恒之花兜底 / 等值合并组白名单 /
+  形态短后缀表+地区派生，展示名统一「种名-形态短名」）；`FilterSelect` 移至 components（battle 分层依赖合法）；
+  招式分类修复（引擎 category 首字母大写，data 层 moveView 归一后三处同源）；校验消息补事件配信类参数化模板
+  与 IV 消息主语（zhCapture 生成表优先）；昵称栏移除（全链路含导入导出）；等级默认=赛制等级+非受控输入
+  （normalizeLevelInput 纯函数）；上阵直通（BattleSession previewOrder 自动代发 team 指令）；对战页一屏重布局
+  （双侧指令面板同屏、血条头顶等宽、太晶/极巨机制图标、动画开关单源 settings.animation、1280×720 零页面滚动）；
+  双打替补不足卡死修复（可交互槽=替补数、余位自动 pass，引擎 forcedPassesLeft 语义）；日志传输帧过滤。
+  测试 137 全绿（battle-list-zh 扩 golden/battle-validate-zh 补事件与等级/engine 补直通与替补不足剧本）。
+  详见 docs/BATTLE.md §8；未修复的中文 PokePaste 导入登记 plans/ROADMAP.md RM-21。
 - **2026-10-04 模拟对战/计算器收尾三批（U23-U25）**：模拟对战——赛制大类分组头样式补齐（U23）、
   队伍新增默认与选择框一致（species 归一为小写 id，store 装载/写入双端清理同名昵称）、
   合规性校验消息全中文（清漏扫描 22 种消息逐条映射 + translateValidatorError 前置剥离
