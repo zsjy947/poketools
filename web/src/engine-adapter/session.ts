@@ -217,9 +217,12 @@ export class BattleSession {
   }
 
   private handleLine(line: string): void {
-    // 供 UI 展示的原文日志（时间戳保留给回放，对拍另行过滤）
-    this.logTail.push(line);
-    if (this.logTail.length > 400) this.logTail.splice(0, this.logTail.length - 400);
+    // 供 UI 展示的原文日志（时间戳保留给回放，对拍另行过滤）；
+    // 传输帧（update/sideupdate/p1/p2/|request| JSON）非战斗事件，不进日志区
+    if (!isTransportFrame(line)) {
+      this.logTail.push(line);
+      if (this.logTail.length > 400) this.logTail.splice(0, this.logTail.length - 400);
+    }
 
     // 原始流帧（battle-stream pushMessage）：sideupdate\n<p1|p2>\n… / update\n…
     if (line === "sideupdate") {
@@ -435,6 +438,18 @@ export class BattleSession {
 
 function packedTeam(sets: PokemonSet[]): string {
   return Teams.pack(sets);
+}
+
+/** 流传输帧（battle-stream pushMessage 的封皮与 request 载荷）：日志区不渲染 */
+function isTransportFrame(line: string): boolean {
+  return (
+    line === "update" ||
+    line === "sideupdate" ||
+    line === "p1" ||
+    line === "p2" ||
+    line.startsWith("|request|") ||
+    line === "|"
+  );
 }
 
 function parseCondition(cond: string): [number, number] {

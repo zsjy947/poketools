@@ -486,6 +486,12 @@ button.mini.danger {
   display: inline-flex;
   gap: 3px;
 }
+/* 顺位按钮压缩到不高于信息行——选中态不撑高卡片 */
+.pick-ops-inner button.mini {
+  padding: 1px 7px;
+  font-size: 11px;
+  line-height: 1.2;
+}
 
 /* 对战页 —— 一屏布局：舞台三栏（A 卡 | 场地 | B 卡）+ 日志（唯一内部滚动区），页面级不滚动 */
 .page-battle {
@@ -493,7 +499,7 @@ button.mini.danger {
   display: flex;
   flex-direction: column;
   /* 视口高扣除应用顶栏 + 分区导航 + 主区内边距（1280×720 起步零页面滚动） */
-  height: calc(100vh - 150px);
+  height: calc(100vh - 158px);
   min-height: 480px;
 }
 .battle-stage {

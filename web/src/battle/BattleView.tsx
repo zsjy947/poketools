@@ -456,7 +456,8 @@ function MoveOrders(props: {
             </div>
             <div className="move-grid">
               {s.a.moves.map((m, i) => {
-                const mv = dex.moves.get(m.id);
+                // 走 data 层 moveView（category 已归一小写；直读引擎的首字母大写会让分类全落「变化」）
+                const mv = moveView(dex, m.id);
                 const on = cur?.kind === "move" && cur.moveIdx === i;
                 const needsTarget = doubles && !!m.target && !NO_TARGET.includes(m.target);
                 return (
@@ -472,18 +473,14 @@ function MoveOrders(props: {
                           mech: cur?.kind === "move" ? cur.mech : undefined,
                         })
                       }
-                      title={
-                        mv.exists
-                          ? (moveView(dex, m.id)?.desc ?? mv.desc ?? mv.shortDesc ?? "")
-                          : ""
-                      }
+                      title={mv?.desc ?? ""}
                     >
                       <span className="mv-name">{zhMoveName(dex, m.id, m.move)}</span>
                       <span className="mv-meta muted">
-                        {TYPE_ZH[mv.type] ?? mv.type} ·{" "}
-                        {mv.category === "physical"
+                        {mv?.type ?? ""} ·{" "}
+                        {mv?.category === "physical"
                           ? "物理"
-                          : mv.category === "special"
+                          : mv?.category === "special"
                             ? "特殊"
                             : "变化"}
                       </span>

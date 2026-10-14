@@ -52,6 +52,7 @@ export function TeamBuilderPage(): JSX.Element {
 
   const team = teams[slot];
   const current = team.sets[editing] ?? null;
+  const defaultLevel = format?.level ?? 50;
 
   useEffect(() => {
     void (async () => {
@@ -98,8 +99,6 @@ export function TeamBuilderPage(): JSX.Element {
     () => (current ? learnableMoves(dex, current.species) : []),
     [dex, current?.species],
   );
-  /** 新增宝可梦默认等级 = 当前赛制默认（冠军/朱紫系 50，自由对战 100） */
-  const defaultLevel = format?.level ?? 50;
 
   if (!format) {
     return (
@@ -274,13 +273,16 @@ export function TeamBuilderPage(): JSX.Element {
             )}
             <div className="ed-row">
               <label>等级</label>
+              {/* 非受控 + 编辑目标切换重建：键入即时生效（显示由浏览器持有，不受渲染快照回写）；
+                  store 值随 onChange 同步归一写入（1~100 clamp，空串回赛制默认）。等级不随物种
+                  切换变化，key 仅绑槽位即可（绑物种会在事件后渲染快照下重建并吞掉键入） */}
               <input
+                key={`lv-${slot}-${editing}`}
                 type="number"
                 min={1}
                 max={100}
-                value={current.level ?? defaultLevel}
+                defaultValue={current.level ?? defaultLevel}
                 onChange={(e) => {
-                  // 受控值与显示值恒一致：空串/非数字为键入中间态，回退赛制默认；其余 clamp 1~100
                   patchSet({ level: normalizeLevelInput(e.target.value, defaultLevel) });
                 }}
               />

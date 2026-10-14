@@ -172,14 +172,12 @@ async function driveToEnd(session: BattleSession, maxTurns = 120): Promise<void>
       stallTicks = 0;
     }
     await new Promise((r) => setTimeout(r, 4));
-    // 错误按 sideupdate 帧归属；3 次连续无效指令 → forcelose 兜底终局
+    // 无效指令按 session.lastError 的 side 归属累计；3 次连续无效指令 → forcelose 兜底终局
     const fresh = session.logTail.slice(lastLogLen);
     lastLogLen = session.logTail.length;
-    let cur: "p1" | "p2" | null = null;
-    for (const line of fresh) {
-      if (line === "p1" || line === "p2") cur = line;
-      else if ((line.includes("[Invalid choice]") || line.includes("[Unavailable choice]")) && cur)
-        errCount[cur]! += 1;
+    if (fresh.some((l) => l.includes("[Invalid choice]") || l.includes("[Unavailable choice]"))) {
+      const side = session.lastError?.side;
+      if (side) errCount[side]! += 1;
     }
     for (const side of ["p1", "p2"] as const) {
       if ((errCount[side] ?? 0) >= 3) {
@@ -196,7 +194,8 @@ async function driveToEnd(session: BattleSession, maxTurns = 120): Promise<void>
       const parts: string[] = [];
       const mons = req.side?.pokemon ?? [];
       const liveActive = mons.filter((m) => m.active && !m.condition.includes("fnt"));
-      const doubles = liveActive.length > 1;
+      // 目标需求按场地槽位数（active 数）判定——双打残局单在场仍需指定目标（§2.2）
+      const doubles = mons.filter((m) => m.active).length > 1;
       // 1) 需要换人的槽（forceSwitch true）：换上未用过的替补，不足则 pass
       if (req.forceSwitch) {
         const bench = mons
