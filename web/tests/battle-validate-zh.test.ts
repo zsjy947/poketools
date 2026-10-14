@@ -1,7 +1,12 @@
 /* battle-validate-zh.test.ts —— 合规性校验消息全中文回归（U23 清漏扫描）。
  * 用样例违规队伍跑 TeamValidator，断言翻译后的消息不含成段英文（专名白名单除外）。 */
 import { describe, expect, it } from "vitest";
-import { validateTeam, translateValidatorError } from "../src/team/showdown";
+import {
+  blankSet,
+  normalizeLevelInput,
+  translateValidatorError,
+  validateTeam,
+} from "../src/team/showdown";
 import type { PokemonSet } from "../src/engine-adapter";
 
 const mk = (species: string, patch: Partial<PokemonSet> = {}): PokemonSet => ({
@@ -67,5 +72,49 @@ describe("合规性校验消息全中文（U23）", () => {
     expect(out).toContain("大剑鬼");
     expect(out).toContain("昵称与实际种名不符");
     expect(out).not.toMatch(/must not be nicknamed/);
+  });
+
+  it("IV 未满 31 提示带主语（缺主语修复回归）", async () => {
+    const r = await validateTeam("gen9championsvgc2026regmc", [
+      mk("garchomp", { ivs: { hp: 30, atk: 31, def: 31, spa: 31, spd: 31, spe: 31 } }),
+    ]);
+    const hit = r.errors.find((e) => e.includes("个体值必须全为 31"));
+    expect(hit, JSON.stringify(r.errors)).toBeDefined();
+    expect(hit).toContain("烈咬陆鲨");
+  });
+
+  it("事件配信类消息全中文（厄诡椪样例）", async () => {
+    const r = await validateTeam("gen9vgc2025regi", [
+      mk("ogerpon", {
+        ability: "Water Absorb",
+        ivs: { hp: 30, atk: 31, def: 31, spa: 31, spd: 31, spe: 31 },
+        moves: ["Ivy Cudgel", "", "", ""],
+      }),
+    ]);
+    expect(r.errors.some((e) => e.includes("只能通过配信活动获得"))).toBe(true);
+    const eventMsgs = r.errors.filter((e) => e.includes("匹配活动"));
+    expect(eventMsgs.length).toBeGreaterThanOrEqual(1);
+    for (const e of r.errors) {
+      expect(e.replace(ALLOW, ""), `英文泄漏：${e}`).not.toMatch(/[A-Za-z]{4,}/);
+    }
+  });
+
+  it("特性不合法提示（can't have）", () => {
+    const out = translateValidatorError("Garchomp can't have Sturdy.");
+    expect(out).toContain("烈咬陆鲨");
+    expect(out).toContain("不能拥有特性");
+    expect(out).toContain("结实");
+  });
+
+  it("等级输入归一：任意整数键入立即生效（1~100 clamp）", () => {
+    expect(normalizeLevelInput("50", 100)).toBe(50);
+    expect(normalizeLevelInput("37", 50)).toBe(37);
+    expect(normalizeLevelInput("0", 50)).toBe(1);
+    expect(normalizeLevelInput("150", 50)).toBe(100);
+    expect(normalizeLevelInput("-3", 50)).toBe(1);
+    expect(normalizeLevelInput("", 50)).toBe(50); // 空串=键入中间态回退赛制默认
+    expect(normalizeLevelInput("abc", 50)).toBe(50);
+    expect(blankSet("garchomp", 100).level).toBe(100);
+    expect(blankSet().level).toBe(50);
   });
 });

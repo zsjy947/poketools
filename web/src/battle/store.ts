@@ -62,12 +62,13 @@ export const useApp = create<AppState>((set, get) => ({
   go: (page) => set({ page }),
   setFormat: (f) => set({ format: f, picks: { p1: [], p2: [] } }),
   setTeam: (key, sets, name) => {
-    // 旧版本样例数据曾以大写种名作 species（"Garchomp"）——写入前统一归一为小写 id 并清理同名昵称
-    const norm = sets.map((s) => {
-      const species = /^[a-z0-9-]+$/.test(s.species) ? s.species : s.species.toLowerCase();
-      const nick = s.name && s.name.toLowerCase() === s.species.toLowerCase() ? "" : (s.name ?? "");
-      return { ...s, species, name: nick };
-    });
+    // 旧版本样例数据曾以大写种名作 species（"Garchomp"）——写入前统一归一为小写 id；
+    // 昵称已随输入栏移除废弃，显示名恒为中文种名
+    const norm = sets.map((s) => ({
+      ...s,
+      species: /^[a-z0-9-]+$/.test(s.species) ? s.species : s.species.toLowerCase(),
+      name: "",
+    }));
     const teams = { ...get().teams, [key]: { name: name ?? get().teams[key].name, sets: norm } };
     set({ teams });
     storage.saveTeams(teams);
@@ -75,7 +76,14 @@ export const useApp = create<AppState>((set, get) => ({
   importTeam: (key, text) => {
     const sets = importShowdown(text);
     if (!sets) return false;
-    get().setTeam(key, sets);
+    // 导入文本未标注等级时 PS 解析默认 100——低于 100 级的赛制（L50 系）归一为赛制默认等级；
+    // 显式 L100 会被一并归一（PS 解析无法区分，50 级系赛制实际由引擎按 Flat Rules 强制 L50）
+    const fmt = get().format;
+    const leveled =
+      fmt && fmt.level < 100
+        ? sets.map((s) => (s.level === 100 ? { ...s, level: fmt.level } : s))
+        : sets;
+    get().setTeam(key, leveled);
     return true;
   },
   teamText: (key) => exportShowdown(get().teams[key].sets),
@@ -123,17 +131,17 @@ export const useApp = create<AppState>((set, get) => ({
 }));
 
 /** 启动时恢复持久化队伍。旧版本样例数据曾把 species 存成大写种名（如 "Garchomp"），
- *  导致选择框值对不上、列表显示英文名——装载时统一归一为小写 id 并清掉同 species 名的昵称 */
+ *  导致选择框值对不上、列表显示英文名——装载时统一归一为小写 id 并清掉昵称（已移除） */
 export function hydrateTeams(): void {
   const stored = storage.loadTeams<TeamState>();
   if (!stored?.A || !stored?.B) return;
   const fixSets = (slot: TeamState["A"]): TeamState["A"] => ({
     ...slot,
-    sets: (slot.sets ?? []).map((s) => {
-      const species = /^[a-z0-9-]+$/.test(s.species) ? s.species : s.species.toLowerCase();
-      const name = s.name && s.name.toLowerCase() === s.species.toLowerCase() ? "" : (s.name ?? "");
-      return { ...s, species, name };
-    }),
+    sets: (slot.sets ?? []).map((s) => ({
+      ...s,
+      species: /^[a-z0-9-]+$/.test(s.species) ? s.species : s.species.toLowerCase(),
+      name: "",
+    })),
   });
   useApp.setState({ teams: { A: fixSets(stored.A), B: fixSets(stored.B) } });
 }

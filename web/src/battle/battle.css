@@ -350,6 +350,59 @@ button.mini.danger {
 .ed-row input[type="number"] {
   width: 84px;
 }
+.ed-hint {
+  font-size: 12px;
+}
+.roster-hidden-tip {
+  font-size: 12.5px;
+  margin: 6px 0;
+}
+
+/* 招式选项两列布局：左侧招式名弹性宽，右侧信息列定宽右对齐（属性/分类/威力竖直成列） */
+.mv-opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.mv-opt-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mv-opt-meta {
+  display: flex;
+  gap: 12px;
+  flex: none;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.mv-opt-type {
+  width: 3.5em;
+}
+.mv-opt-cat {
+  width: 3em;
+  text-align: center;
+}
+.mv-opt-power {
+  width: 3.5em;
+}
+
+/* 道具选项：图标 + 名称（图标缺失时 onerror 隐藏） */
+.item-opt {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.item-opt img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex: none;
+}
 .ed-stats .st-head,
 .ed-stats .st-line {
   display: grid;

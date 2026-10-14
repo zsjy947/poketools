@@ -4,6 +4,7 @@
  */
 import { Dex, TeamValidator, Teams, toID } from "../engine-adapter";
 import { zhLine, zhText } from "../data";
+import { ZH_ITEMS_GEN, ZH_SPECIES_GEN } from "../data/zh-gen";
 import type { Format, PokemonSet } from "../engine-adapter";
 
 export type { PokemonSet };
@@ -26,13 +27,15 @@ export function emptyTeam(key: "A" | "B"): TeamSlot {
 }
 
 /** Showdown 队伍文本 → sets。返回 null 表示无法解析任何「物种真实存在」的条目
-    （PS 解析器宽松：任意首行都会被当作物种名，需用 Dex 存在性过滤垃圾文本）。 */
+    （PS 解析器宽松：任意首行都会被当作物种名，需用 Dex 存在性过滤垃圾文本）。
+    昵称对模拟对战无意义：导入时静默丢弃（引擎显示名恒为种名）。 */
 export function importShowdown(text: string): PokemonSet[] | null {
   const trimmed = text.trim();
   if (!trimmed) return null;
   try {
-    const sets = Teams.import(trimmed);
-    if (!sets || sets.length === 0) return null;
+    const parsed = Teams.import(trimmed);
+    if (!parsed || parsed.length === 0) return null;
+    const sets = parsed.map((s) => ({ ...s, name: "" }));
     const real = sets.filter((s) => Dex.forFormat("gen9").species.get(s.species).exists);
     return real.length > 0 ? sets : null;
   } catch {
@@ -40,18 +43,20 @@ export function importShowdown(text: string): PokemonSet[] | null {
   }
 }
 
-/** sets → Showdown 队伍文本（导出）。 */
+/** sets → Showdown 队伍文本（导出）。昵称不再产出（统一以中文种名示人）。 */
 export function exportShowdown(sets: PokemonSet[]): string {
-  if (sets.length === 0) return "";
+  const anon = sets.map((s) => ({ ...s, name: "" }));
+  if (anon.length === 0) return "";
   try {
-    return Teams.export(sets).trim();
+    return Teams.export(anon).trim();
   } catch {
-    return sets.map((s) => Teams.export([s]).trim()).join("\n\n");
+    return anon.map((s) => Teams.export([s]).trim()).join("\n\n");
   }
 }
 
-/** 单只默认模板（编辑器新建起点；物种用小写 id，与选择器 option value 一致） */
-export function blankSet(species = "garchomp"): PokemonSet {
+/** 单只默认模板（编辑器新建起点；物种用小写 id，与选择器 option value 一致；
+ *  等级 = 当前赛制默认（冠军/朱紫系 50，自由对战 100）） */
+export function blankSet(species = "garchomp", level = 50): PokemonSet {
   return {
     name: "",
     species,
@@ -61,8 +66,17 @@ export function blankSet(species = "garchomp"): PokemonSet {
     nature: "Serious",
     evs: { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 },
     ivs: { hp: 31, atk: 31, def: 31, spa: 31, spd: 31, spe: 31 },
-    level: 50,
+    level,
   };
+}
+
+/** 等级输入归一：任意整数键入立即生效（1~100 clamp）；空串/非数字视为中间态回退默认。
+ *  受控输入值与显示值恒一致——不做「值等于默认时回退显示」一类的条件分支。 */
+export function normalizeLevelInput(raw: string, fallback: number): number {
+  if (raw.trim() === "") return fallback;
+  const n = Number(raw);
+  if (!Number.isFinite(n)) return fallback;
+  return Math.max(1, Math.min(100, Math.round(n)));
 }
 
 const VALIDATOR_MSG_ZH: Array<[RegExp, string]> = [
@@ -73,9 +87,18 @@ const VALIDATOR_MSG_ZH: Array<[RegExp, string]> = [
   [/(.+) needs to have an ability\./, "$1 未选择特性"],
   [/(.+?) has more than (\d+) Stat Points in (\w+)/, "$1 的$3努力值超过 $2 点上限"],
   [
-    /IVs are not maxed out, but this format requires all IVs to be 31/,
-    "的个体值必须全为 31（该赛制不支持 IV 调整）",
+    /^(.+?)'s IVs are not maxed out, but this format requires all IVs to be 31/,
+    "$1 的个体值必须全为 31（该赛制不支持 IV 调整）",
   ],
+  [
+    /(.+?) is only obtainable from events - it needs to match one of its events:/,
+    "$1 只能通过配信活动获得，必须匹配以下活动之一：",
+  ],
+  [
+    /(.+?) must have 31 HP IVs to be from its event #(\d+)\./,
+    "$1 的 HP 个体值必须为 31 才能匹配活动 #$2",
+  ],
+  [/(.+?) can't have (.+?)\.?$/, "$1 不能拥有特性「$2」"],
   [
     /(.+?) has (\d+) total Stat Points, which is more than this format's limit of (\d+)/,
     "$1 努力值总和 $2 点，超过该赛制上限 $3 点",
@@ -105,8 +128,8 @@ const VALIDATOR_MSG_ZH: Array<[RegExp, string]> = [
     "未选择任何招式（至少需要 1 个才能参战）",
   ],
   [
-    /has exactly 0 Stat Points - did you forget to invest it\? \(If this was intentional, change your Nature to a different neutral Nature, which won't change its stats but will tell us that it wasn't a mistake\)\.?/,
-    "努力值合计为 0——是否忘记分配？（如确有意为之，请把性格改为其他中立性格，效果不变但能表明非遗漏）",
+    /(.+?) has exactly 0 EVs - did you forget to EV it\? \(If this was intentional, add exactly 1 to one of your EVs, which won't change its stats but will tell us that it wasn't a mistake\)\.?/,
+    "$1 努力值合计为 0——是否忘记分配？（如确有意为之，请在任一项努力值加 1 点，效果不变但能表明非遗漏）",
   ],
   [/The Pokemon "(.+?)" does not exist\./, "宝可梦「$1」不存在"],
   [/has too many moves/, "招式数量超过上限"],
@@ -119,7 +142,7 @@ const VALIDATOR_MSG_ZH: Array<[RegExp, string]> = [
     "$1 的昵称与实际种名不符（实际为 $2）——请修改昵称或清除昵称",
   ],
   [
-    /(.+?) has exactly 0 Stat Points - did you forget to invest it\? If this was intentional, change its Nature to a different neutral Nature, which won't change its stats but will tell us that it wasn't a mistake\./,
+    /(.+?) has exactly 0 Stat Points - did you forget to invest it\? \(If this was intentional, change your Nature to a different neutral Nature, which won't change its stats but will tell us that it wasn't a mistake\)\.?/,
     "$1 努力值合计为 0——是否忘记分配？（如确有意为之，请把性格改为其他中立性格，效果不变但能表明非遗漏）",
   ],
   [/^You are limited to 1 of each item by Item Clause\.$/, "道具条款：每种道具限 1 个"],
@@ -168,14 +191,18 @@ export function translateValidatorError(input: string): string {
   return zhLine(msg);
 }
 
-/** 校验消息里的英文专名（$1 捕获值）转中文：物种/道具/特性/招式名查表，未命中保留原文 */
+/** 校验消息里的英文专名（$1 捕获值）转中文：生成表优先（引擎 zh-cn 占位值如
+ *  Ogerpon-Teal 由生成表覆盖），再查物种/道具/特性/招式引擎表，未命中保留原文 */
 function zhCapture(raw: string): string {
   const id = toID(raw);
   if (!id) return raw;
+  const gen = ZH_SPECIES_GEN[id] ?? ZH_ITEMS_GEN[id];
+  if (gen) return gen;
   const zh = zhText();
-  const hit =
+  const engine =
     zh.Pokedex[id]?.name ?? zh.Items[id]?.name ?? zh.Abilities[id]?.name ?? zh.Moves[id]?.name;
-  return hit || raw;
+  if (engine && /[一-鿿]/.test(engine)) return engine;
+  return engine || raw;
 }
 
 export interface ValidationResult {

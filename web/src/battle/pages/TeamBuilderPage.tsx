@@ -4,23 +4,26 @@ import {
   abilityList,
   abilityView,
   dexFor,
-  displayName,
   itemList,
   learnableMoves,
+  moveView,
   natureList,
-  speciesList,
   speciesView,
   STAT_ZH,
   TYPE_ZH,
 } from "../../data";
 import type { AbilityView, MoveView, SpeciesView } from "../../data";
+import { FilterSelect } from "../../components/FilterSelect";
+import { isHiddenFromRoster, rosterSpecies, speciesLabel } from "../data/roster";
 import type { PokemonSet } from "../../engine-adapter";
-import { blankSet, exportShowdown, validateTeam } from "../../team/showdown";
+import { blankSet, exportShowdown, normalizeLevelInput, validateTeam } from "../../team/showdown";
 import type { ValidationResult } from "../../team/showdown";
 
 /**
  * 队伍构建器（FR-02~05）：A/B 双槽位；编辑器（等级/IV/EV/性格/特性/道具/招式/太晶）；
  * Showdown 文本导入导出；按赛制实时合法性校验（中文错误提示）。
+ * 选择器全部为可搜索列表（FilterSelect：名称包含即命中）；物种列表 = 赛制名册 −
+ * 对战临时形态 − 等值重复形态（battle/data/roster.ts 单源），展示名「种名-形态短名」。
  */
 export function TeamBuilderPage(): JSX.Element {
   const format = useApp((s) => s.format);
@@ -40,7 +43,9 @@ export function TeamBuilderPage(): JSX.Element {
   const mod = format?.mod ?? "gen9";
   const dex = useMemo(() => dexFor(mod), [mod]);
 
-  const species = useMemo(() => speciesList(dex), [dex]);
+  /** 自由对战（customgame）引擎校验放行名册外物种，列表同步放开（仅排除临时/等值/机制形态） */
+  const unrestricted = !!format && /customgame/.test(format.id);
+  const roster = useMemo(() => rosterSpecies(dex, unrestricted), [dex, unrestricted]);
   const items = useMemo(() => itemList(dex), [dex]);
   const abilities = useMemo(() => abilityList(dex), [dex]);
   const natures = useMemo(() => natureList(), []);
@@ -69,6 +74,7 @@ export function TeamBuilderPage(): JSX.Element {
     if (!current) return;
     patchSet({ ivs: { ...current.ivs, [k]: v } });
   };
+
   const patchEv = (k: string, v: number) => {
     if (!current) return;
     patchSet({ evs: { ...current.evs, [k]: v } });
@@ -84,12 +90,16 @@ export function TeamBuilderPage(): JSX.Element {
   const clearSlot = () => setTeam(slot, []);
 
   const currentSpecies = current ? speciesView(dex, current.species) : null;
+  /** 被过滤形态（临时/等值/名册外）：保留原数据仅禁止重选，给出可见中文提示 */
+  const speciesHidden = !!currentSpecies && isHiddenFromRoster(currentSpecies, unrestricted);
   /** B10：宝可梦冠军赛制（Champions mod）无太晶机制，编辑器不渲染太晶下拉 */
   const hasTera = format?.mod === "gen9";
   const currentMoves: MoveView[] = useMemo(
     () => (current ? learnableMoves(dex, current.species) : []),
     [dex, current?.species],
   );
+  /** 新增宝可梦默认等级 = 当前赛制默认（冠军/朱紫系 50，自由对战 100） */
+  const defaultLevel = format?.level ?? 50;
 
   if (!format) {
     return (
@@ -156,7 +166,7 @@ export function TeamBuilderPage(): JSX.Element {
                 onClick={() => setEditing(i)}
               >
                 <span className="idx">{i + 1}</span>
-                <span className="name">{displayName(dex, s.species, s.name)}</span>
+                <span className="name">{speciesLabel(dex, s.species)}</span>
                 <span className="muted">{s.item ? `@ ${itemLabel(dex, s.item)}` : ""}</span>
                 <button
                   className="mini danger"
@@ -178,7 +188,7 @@ export function TeamBuilderPage(): JSX.Element {
             <button
               className="team-add"
               onClick={() => {
-                setTeam(slot, [...team.sets, blankSet()]);
+                setTeam(slot, [...team.sets, blankSet("garchomp", defaultLevel)]);
                 setEditing(team.sets.length);
               }}
             >
@@ -222,7 +232,7 @@ export function TeamBuilderPage(): JSX.Element {
                   if (importTeam(slot, importText)) {
                     setShowImport(false);
                     setImportText("");
-                  } else alert("导入失败：无法解析队伍文本");
+                  } else alert("导入失败：无法解析队伍文本（未识别到任何宝可梦）");
                 }}
               >
                 导入
@@ -235,71 +245,83 @@ export function TeamBuilderPage(): JSX.Element {
           <div className="mon-editor">
             <div className="ed-row">
               <label>宝可梦</label>
-              <select
+              <FilterSelect
                 value={currentSpecies?.id ?? current.species}
-                onChange={(e) => {
-                  // U22：昵称固定为中文种名，随物种切换一律重置（官方语义：昵称跨物种无意义）
-                  const next = speciesView(dex, e.target.value);
+                onChange={(v) => {
+                  // 切换物种：特性/招式随物种重置；昵称已移除，显示名恒为中文种名
                   patchSet({
-                    species: e.target.value,
+                    species: String(v),
                     ability: "",
                     moves: ["", "", "", ""],
-                    name: next?.zhName ?? "",
+                    name: "",
                   });
                 }}
-              >
-                {species
-                  .filter((s) => !s.isMega && !/-(gmax|mega)/.test(s.id))
-                  .map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.zhName}
-                    </option>
-                  ))}
-              </select>
-            </div>
-            <div className="ed-row">
-              <label>昵称</label>
-              <input
-                value={current.name ?? ""}
-                onChange={(e) => patchSet({ name: e.target.value })}
-                placeholder="默认=中文种名（切换宝可梦时重置）"
+                options={roster}
+                displayOf={(v) => speciesLabel(dex, String(v))}
+                render={(s: SpeciesView) => {
+                  const label = speciesLabel(dex, s.id);
+                  return { value: s.id, label, search: `${label} ${s.zhName} ${s.name}` };
+                }}
+                placeholder="搜索宝可梦…"
               />
+            </div>
+            {speciesHidden && (
+              <div className="alert warn roster-hidden-tip">
+                当前宝可梦（{speciesLabel(dex, current.species)}）不在该赛制的可选列表中
+                （对战临时形态 / 等值重复形态 /
+                名册外物种）：已有数据保留可用，重新选择后将切换为列表内形态。
+              </div>
+            )}
+            <div className="ed-row">
               <label>等级</label>
               <input
                 type="number"
                 min={1}
                 max={100}
-                value={current.level ?? 50}
-                onChange={(e) => patchSet({ level: Number(e.target.value) || 50 })}
+                value={current.level ?? defaultLevel}
+                onChange={(e) => {
+                  // 受控值与显示值恒一致：空串/非数字为键入中间态，回退赛制默认；其余 clamp 1~100
+                  patchSet({ level: normalizeLevelInput(e.target.value, defaultLevel) });
+                }}
               />
+              <span className="muted ed-hint">赛制默认 Lv.{defaultLevel}</span>
             </div>
             <div className="ed-row">
               <label>特性</label>
-              <select
+              <FilterSelect
                 value={current.ability}
-                onChange={(e) => patchSet({ ability: e.target.value })}
-              >
-                <option value="">（选择特性）</option>
-                {abilityOptions(dex, currentSpecies, abilities).map((a) => (
-                  <option key={a.id} value={a.name}>
-                    {a.zhName}
-                  </option>
-                ))}
-              </select>
+                onChange={(v) => patchSet({ ability: String(v) })}
+                options={abilityOptions(dex, currentSpecies, abilities)}
+                displayOf={(v) => abilityView(dex, String(v))?.zhName ?? String(v)}
+                render={(a: AbilityView) => ({ value: a.name, label: a.zhName })}
+                placeholder="搜索特性…"
+              />
             </div>
             <div className="ed-row">
               <label>道具</label>
-              <select
+              <FilterSelect
                 value={current.item ?? ""}
-                onChange={(e) => patchSet({ item: e.target.value })}
-              >
-                <option value="">（无道具）</option>
-                {items.map((it) => (
-                  <option key={it.id} value={it.name}>
-                    {it.zhName}
-                  </option>
-                ))}
-              </select>
+                onChange={(v) => patchSet({ item: String(v) })}
+                options={items}
+                displayOf={(v) => itemLabel(dex, String(v))}
+                render={(it) => ({
+                  value: it.name,
+                  label: (
+                    <span className="item-opt">
+                      <img
+                        src={`/assets/items/${it.id}.png`}
+                        alt=""
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = "none";
+                        }}
+                      />
+                      {it.zhName}
+                    </span>
+                  ),
+                  search: `${it.zhName} ${it.name}`,
+                })}
+                placeholder="搜索道具…"
+              />
               {hasTera && (
                 <>
                   <label>太晶属性</label>
@@ -322,27 +344,31 @@ export function TeamBuilderPage(): JSX.Element {
               {[0, 1, 2, 3].map((i) => (
                 <div className="ed-row" key={i}>
                   <label>招式 {i + 1}</label>
-                  <select
+                  <FilterSelect
                     value={current.moves[i] ?? ""}
-                    onChange={(e) => {
+                    onChange={(v) => {
                       const moves = [...current.moves];
-                      moves[i] = e.target.value;
+                      moves[i] = String(v);
                       patchSet({ moves });
                     }}
-                  >
-                    <option value="">（空）</option>
-                    {currentMoves.map((m) => (
-                      <option key={m.id} value={m.name}>
-                        {m.zhName}（{m.type}·
-                        {m.category === "physical"
-                          ? "物理"
-                          : m.category === "special"
-                            ? "特殊"
-                            : "变化"}
-                        ·威力 {m.basePower || "—"}）
-                      </option>
-                    ))}
-                  </select>
+                    options={currentMoves}
+                    displayOf={(v) => moveLabel(dex, String(v))}
+                    render={(m: MoveView) => ({
+                      value: m.name,
+                      label: (
+                        <span className="mv-opt">
+                          <span className="mv-opt-name">{m.zhName}</span>
+                          <span className="mv-opt-meta muted">
+                            <span className="mv-opt-type">{m.type}</span>
+                            <span className="mv-opt-cat">{CATEGORY_ZH[m.category]}</span>
+                            <span className="mv-opt-power">{m.basePower || "—"}</span>
+                          </span>
+                        </span>
+                      ),
+                      search: `${m.zhName} ${m.name}`,
+                    })}
+                    placeholder="搜索招式…"
+                  />
                 </div>
               ))}
             </div>
@@ -399,6 +425,12 @@ export function TeamBuilderPage(): JSX.Element {
   );
 }
 
+const CATEGORY_ZH: Record<string, string> = {
+  physical: "物理",
+  special: "特殊",
+  status: "变化",
+};
+
 function abilityOptions(
   dex: ReturnType<typeof import("../../data").dexFor>,
   sp: SpeciesView,
@@ -416,6 +448,12 @@ function itemLabel(dex: ReturnType<typeof import("../../data").dexFor>, itemName
     (i) => i.name === itemName || i.id === itemName.toLowerCase().replace(/ /g, ""),
   );
   return it?.zhName ?? itemName;
+}
+
+/** 招式显示名（FilterSelect 收起态回显）：value 是招式英文名，反查中文 */
+function moveLabel(dex: ReturnType<typeof import("../../data").dexFor>, moveName: string): string {
+  const id = moveName.toLowerCase().replace(/ /g, "");
+  return moveView(dex, id)?.zhName ?? moveName;
 }
 
 function reverseType(zh: string): string {

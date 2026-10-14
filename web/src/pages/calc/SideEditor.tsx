@@ -12,7 +12,7 @@ import {
   loadSpeciesInto,
   zCrystalFor,
 } from "./model";
-import { FilterSelect } from "./FilterSelect";
+import { FilterSelect } from "../../components/FilterSelect";
 
 export function SideEditor({
   side,
