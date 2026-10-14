@@ -22,6 +22,8 @@ export interface SpeciesView {
   baseSpecies?: string | undefined;
   forme?: string | undefined;
   otherFormes?: string[] | undefined;
+  /** 对战临时形态（battleOnly）：只在对战中由招式/特性/道具触发，不可作为队伍成员 */
+  battleOnly?: boolean | undefined;
 }
 
 export interface MoveView {
@@ -164,6 +166,7 @@ export function speciesView(dex: ReturnType<typeof dexFor>, id: string): Species
     baseSpecies: sp.baseSpecies,
     forme: sp.forme,
     otherFormes: sp.otherFormes,
+    battleOnly: !!sp.battleOnly,
   };
 }
 
@@ -178,7 +181,8 @@ export function moveView(dex: ReturnType<typeof dexFor>, id: string): MoveView |
     basePower: mv.basePower,
     accuracy: mv.accuracy,
     pp: mv.pp,
-    category: mv.category,
+    // 引擎数据是首字母大写（Physical/Special/Status），归一化为小写供 UI 判定（否则全落「变化」分支）
+    category: (mv.category?.toLowerCase() ?? "status") as MoveView["category"],
     priority: mv.priority,
     desc: zhMoveDesc(mv.id, mv),
   };

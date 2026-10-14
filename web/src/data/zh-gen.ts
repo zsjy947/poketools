@@ -91,6 +91,12 @@ export const ZH_SPECIES_GEN: Record<string, string> = {
   ogerponwellspringtera: "厄诡椪水井面具太晶",
   ogerponhearthflametera: "厄诡椪火炉面具太晶",
   ogerponcornerstonetera: "厄诡椪基石面具太晶",
+  // 厄诡椪基础与持久面具形态：引擎 zh-cn 为英文占位（Ogerpon-Teal 等），手工补名（官方译名）
+  ogerpon: "厄诡椪",
+  ogerpontteal: "厄诡椪青草面具",
+  ogerponwellspring: "厄诡椪水井面具",
+  ogerponhearthflame: "厄诡椪火炉面具",
+  ogerponcornerstone: "厄诡椪基石面具",
   terapagosterastal: "太乐巴戈斯星晶形态",
 };
 
