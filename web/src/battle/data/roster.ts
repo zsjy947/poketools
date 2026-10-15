@@ -8,7 +8,8 @@
  *   引擎校验放行 Past 物种，列表同样放开（仅排除 Custom 等数据性条目）。
  * - 临时形态：只在对战中由招式/特性/道具触发（如谜拟丘被打破、坚盾剑怪刀剑、太晶 Tera 形态）。
  *   引擎 Pokedex 中带 battleOnly 字段的条目即临时形态（值 = 归属的基础种），动态收集一次缓存，
- *   不在渲染路径逐行调引擎；引擎字段缺口由 MANUAL_BATTLE_ONLY 兜底。
+ *   不在渲染路径逐行调引擎。注意永恒之花（floetteeternal）不是临时形态——champions 里是可选用
+ *   的特殊形态（其超进化 floettemega 才是 battleOnly）；gen9 中它标 Past 由名册过滤兜底。
  * - 等值形态：种族值/特性/招式池完全一致、仅外观差异（彩粉蝶花纹、霜奶仙奶油、
  *   一家鼠家庭数、怒鹦哥羽色、来悲粗茶真伪）；南瓜怪人尺寸族存在少量种族值差异
  *  （HP/速度随尺寸递增），按用户要求一并并入默认形态（其他尺寸仍可经 PokePaste 导入使用）。
@@ -22,9 +23,6 @@ import { speciesView } from "../../data";
 import type { ModdedDex } from "../../engine-adapter";
 
 type DexLike = ReturnType<typeof import("../../data").dexFor> | ModdedDex;
-
-/** 引擎字段缺口兜底：永恒之花在 champions mod 无 battleOnly 标记（gen9 已标 Past） */
-const MANUAL_BATTLE_ONLY: ReadonlySet<string> = new Set(["floetteeternal"]);
 
 /** 等值合并组：组内全部并入基础条目（判定依据见文件头注释） */
 const EQUIV_MERGE_BASES: ReadonlySet<string> = new Set([
@@ -60,6 +58,8 @@ const FORME_SUFFIX_ZH: Readonly<Record<string, string>> = {
   taurospaldeacombat: "斗战种",
   taurospaldeablaze: "火炽种",
   taurospaldeaaqua: "水澜种",
+  // —— 永恒之花：champions 可选特殊形态（可超进化，超进化形态 floettemega 为 battleOnly）——
+  floetteeternal: "永恒之花",
   // —— 厄诡椪持久面具形态（引擎 zh-cn 英文占位，中文名走 zh-gen 手工补名）——
   ogerpontteal: "青草面具",
   ogerponwellspring: "水井面具",
@@ -104,7 +104,6 @@ export function isHiddenFromRoster(view: SpeciesView, unrestricted: boolean): bo
   if (!unrestricted && view.isNonstandard) return true;
   if (view.isNonstandard === "Custom") return true;
   if (isMechanicalForm(view)) return true;
-  if (MANUAL_BATTLE_ONLY.has(view.id)) return true;
   if (view.battleOnly) return true;
   const base = view.baseSpecies?.toLowerCase().replace(/ /g, "");
   if (base && view.id !== base && EQUIV_MERGE_BASES.has(base)) return true;
@@ -128,7 +127,6 @@ export function rosterSpecies(dex: DexLike, unrestricted: boolean): SpeciesView[
     if (!unrestricted && v.isNonstandard) continue;
     if (v.isNonstandard === "Custom") continue;
     if (isMechanicalForm(v)) continue;
-    if (MANUAL_BATTLE_ONLY.has(v.id)) continue;
     if (battleOnly.has(v.id)) continue;
     const base = v.baseSpecies?.toLowerCase().replace(/ /g, "");
     if (base && v.id !== base && EQUIV_MERGE_BASES.has(base)) continue;

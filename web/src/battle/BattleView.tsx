@@ -6,6 +6,7 @@ import { dexFor, moveView, speciesView, TYPE_ZH, STATUS_ZH, zhLine } from "../da
 import { spriteUrl } from "./sprites";
 import { useBattleAnim } from "./anim";
 import type { AnimKind } from "./anim";
+import { fieldConditions, condLabel, STATUS_ICON } from "./field";
 import type { StoredBattleRecord } from "./storage";
 import { exportShowdown } from "../team/showdown";
 
@@ -72,6 +73,8 @@ export function BattleView(): JSX.Element {
     settings.animation,
     settings.animationSpeed,
   );
+  // 场地状态（天气/地形/空间/侧壁）：从事件流推导
+  const conds = useMemo(() => fieldConditions(snapshot?.events ?? []), [snapshot?.events]);
 
   if (!session || !snapshot) {
     return (
@@ -108,45 +111,71 @@ export function BattleView(): JSX.Element {
         </button>
       </div>
 
-      {/* 舞台一屏化：左 = 阵营 A 招式卡，中 = 场地（B 右上 / A 左下），右 = 阵营 B 招式卡；
+      {/* 一屏三栏：左右 = 阵营指令面板占全列高（无需下拉），中列 = 场地（上）+ 日志（下，居中收窄）。
           双侧指令面板同屏常驻，可同时为双方出招（引擎按侧收指令，两个独立输入通道） */}
       <div className="battle-stage">
         <div className="stage-side stage-side-p1">
           <SideCommandPanel side="p1" snapshot={snapshot} dex={dex} />
         </div>
-        <div className="stage-field">
-          <SideBoard
-            side="p2"
-            snapshot={snapshot}
-            dex={dex}
-            animated={settings.animation}
-            animMap={animMap}
-          />
-          <div className="field-mid">
-            <span>{snapshot.events.slice(-1)[0]?.value ?? ""}</span>
+        <div className="stage-mid">
+          <div className={"stage-field" + (conds.weather ? " w-" + conds.weather : "")}>
+            <SideBoard
+              side="p2"
+              snapshot={snapshot}
+              dex={dex}
+              animated={settings.animation}
+              animMap={animMap}
+            />
+            <div className="field-strip">
+              <div className="field-conds">
+                {conds.weather && (
+                  <span className="cond cond-weather">{condLabel(conds.weather)}</span>
+                )}
+                {conds.terrain && (
+                  <span className="cond cond-terrain">{condLabel(conds.terrain)}</span>
+                )}
+                {conds.fieldMoves.map((f) => (
+                  <span key={f} className="cond cond-room">
+                    {condLabel(f)}
+                  </span>
+                ))}
+                {conds.sideStatus.p1.map((s) => (
+                  <span key={"p1" + s} className="cond cond-side p1">
+                    A·{condLabel(s)}
+                  </span>
+                ))}
+                {conds.sideStatus.p2.map((s) => (
+                  <span key={"p2" + s} className="cond cond-side p2">
+                    B·{condLabel(s)}
+                  </span>
+                ))}
+              </div>
+              <div className="field-mid">
+                <span>{snapshot.events.slice(-1)[0]?.value ?? ""}</span>
+              </div>
+            </div>
+            <SideBoard
+              side="p1"
+              snapshot={snapshot}
+              dex={dex}
+              animated={settings.animation}
+              animMap={animMap}
+              back
+            />
           </div>
-          <SideBoard
-            side="p1"
-            snapshot={snapshot}
-            dex={dex}
-            animated={settings.animation}
-            animMap={animMap}
-            back
-          />
+          {/* 信息流日志（FR-09）—— 中列下半（唯一内部滚动区） */}
+          <div className="battle-log">
+            <h3>战斗日志（可回看）</h3>
+            <div className="log-scroll">
+              {snapshot.logTail.map((l: string, i: number) => (
+                <LogLine key={i} line={l} />
+              ))}
+              <div ref={logEndRef} />
+            </div>
+          </div>
         </div>
         <div className="stage-side stage-side-p2">
           <SideCommandPanel side="p2" snapshot={snapshot} dex={dex} />
-        </div>
-      </div>
-
-      {/* 信息流日志（FR-09）—— 唯一允许内部滚动的区域 */}
-      <div className="battle-log">
-        <h3>战斗日志（可回看）</h3>
-        <div className="log-scroll">
-          {snapshot.logTail.map((l: string, i: number) => (
-            <LogLine key={i} line={l} />
-          ))}
-          <div ref={logEndRef} />
         </div>
       </div>
     </div>
@@ -300,14 +329,18 @@ function MonStage(props: {
         <div className="hp-head">
           <span className="hp-name">{zhNameOf(dex, nameId)}</span>
           {mon.status && (
-            <span className={"status st-" + mon.status}>{STATUS_ZH[mon.status] ?? mon.status}</span>
+            <span className={"status st-" + mon.status}>
+              {STATUS_ICON[mon.status] ?? ""}
+              {STATUS_ZH[mon.status] ?? mon.status}
+            </span>
           )}
           {mon.terastallized && <span className="tera-badge">太晶·{mon.teraType}</span>}
           {mon.mega && <span className="mega-badge">超级进化</span>}
           {mon.max && <span className="max-badge">极巨</span>}
         </div>
+        {/* 血条：白轨 + 恒绿存量（扣血露白，更直观） */}
         <div className="hp-bar">
-          <div className={"hp-fill hp-" + hpBand(pct)} style={{ width: pct + "%" }} />
+          <div className="hp-fill" style={{ width: pct + "%" }} />
         </div>
         <span className="hp-num">
           {mon.hp}/{mon.maxhp}
@@ -930,8 +963,4 @@ function zhNameOf(dex: Dex, speciesId: string): string {
 
 function zhMoveName(dex: Dex, id: string, fallback: string): string {
   return moveView(dex, id)?.zhName ?? fallback;
-}
-
-function hpBand(pct: number): string {
-  return pct > 50 ? "hi" : pct > 20 ? "mid" : "lo";
 }

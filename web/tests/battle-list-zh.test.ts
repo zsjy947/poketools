@@ -46,7 +46,6 @@ describe("对战选择列表清理（名册/临时形态/等值形态/展示名�
       "cramorantgulping",
       "cramorantgorging",
       "meloettapirouette",
-      "floetteeternal",
       "miniormeteor",
       "cherrimsunshine",
       "wishiwashischool",
@@ -55,6 +54,7 @@ describe("对战选择列表清理（名册/临时形态/等值形态/展示名�
       "ogerponhearthflametera",
       "ogerponcornerstonetera",
       "terapagosterastal",
+      "floettemega", // 永恒之花的超进化形态（battleOnly）
     ];
     for (const id of hidden) {
       expect(champ, `champions 列表不应含 ${id}`).not.toContain(id);
@@ -65,6 +65,10 @@ describe("对战选择列表清理（名册/临时形态/等值形态/展示名�
     expect(champ).toContain("mimikyu");
     expect(gen9).toContain("eiscue");
     expect(champ).toContain("palafin");
+    // 永恒之花：champions 可选特殊形态（可超进化），gen9（朱紫）名册外
+    expect(champ).toContain("floetteeternal");
+    expect(gen9).not.toContain("floetteeternal");
+    expect(speciesLabel(dexChamp, "floetteeternal")).toBe("花叶蒂-永恒之花");
   });
 
   it("等值合并组只保留基础条目", () => {

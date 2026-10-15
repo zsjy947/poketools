@@ -45,6 +45,9 @@ export const ZH_SPECIES_GEN: Record<string, string> = {
   vivillonfancy: "彩粉蝶高档花纹",
   vivillonpokeball: "彩粉蝶精灵球花纹",
   floetteeternal: "花叶蒂永恒之花",
+  // 花蓓蓓一族基础名：引擎 zh-cn 为英文占位（Flabébé-Red 等），手工补名（官方译名）
+  flabebe: "花蓓蓓",
+  floette: "花叶蒂",
   florges: "花洁夫人",
   meowstic: "超能妙喵",
   meowsticf: "超能妙喵雌性",

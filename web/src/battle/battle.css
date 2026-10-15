@@ -504,7 +504,8 @@ button.mini.danger {
 }
 .battle-stage {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(320px, 1.15fr) minmax(0, 1fr);
+  /* 左右指令面板占全列高；中列收窄（场地 + 居中日志），面板内容不再需要下拉 */
+  grid-template-columns: minmax(0, 1fr) clamp(280px, 32%, 440px) minmax(0, 1fr);
   gap: 10px;
   flex: 1;
   min-height: 0;
@@ -512,27 +513,34 @@ button.mini.danger {
 }
 .stage-side {
   min-height: 0;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
+}
+.stage-mid {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 .side-panel {
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 12px;
-  padding: 10px 12px;
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
   gap: 8px;
   flex: 1;
   min-height: 0;
+  overflow-y: auto; /* 内容超高在面板内滚动，不溢出边框 */
 }
 .side-panel-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--line);
-  padding-bottom: 6px;
+  padding-bottom: 4px;
+  font-size: 13px;
 }
 .side-panel.sp-p1.awaiting {
   border-color: var(--p1);
@@ -549,25 +557,119 @@ button.mini.danger {
   color: #556;
 }
 
-/* 场地：B 上（正面）A 下（背面），双打各两只并排 */
+/* 场地：B 上（正面）A 下（背面），双打各两只并排。
+   背景 = 天空→草地分层渐变 + 双站位椭圆平台（伪元素），随天气换色（CSS 变量） */
 .stage-field {
-  background: linear-gradient(#dcebd8, #c8e0c2);
-  border: 1px solid #b7d2b0;
+  --sky1: #cfe8f8;
+  --sky2: #e8f4ec;
+  --grass1: #b7dba5;
+  --grass2: #9cc487;
+  background:
+    radial-gradient(150% 55% at 50% 118%, rgba(255, 255, 255, 0.35), transparent 60%),
+    linear-gradient(var(--sky1) 0%, var(--sky2) 52%, var(--grass1) 52.5%, var(--grass2) 100%);
+  position: relative;
+  border: 1px solid #a8c9a0;
   border-radius: 14px;
-  padding: 10px 16px;
+  padding: 10px 14px;
   display: flex;
   flex-direction: column;
   gap: 6px;
   min-height: 0;
   overflow: hidden;
   justify-content: space-between;
+  flex: none;
+}
+.stage-field::before,
+.stage-field::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  width: 58%;
+  height: 13%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.16);
+  pointer-events: none;
+}
+.stage-field::before {
+  top: 34%;
+  transform: translateX(-50%);
+}
+.stage-field::after {
+  bottom: 3%;
+  transform: translateX(-50%);
+}
+/* 天气色调（--sky/--grass 变量覆盖） */
+.stage-field.w-sunnyday {
+  --sky1: #ffe3ad;
+  --sky2: #fff3d6;
+  --grass1: #cfe08f;
+  --grass2: #b3c877;
+}
+.stage-field.w-raindance {
+  --sky1: #a7bfd2;
+  --sky2: #c8d7de;
+  --grass1: #93b898;
+  --grass2: #7da383;
+}
+.stage-field.w-sandstorm {
+  --sky1: #ecd9a9;
+  --sky2: #f4e6c4;
+  --grass1: #cfbb84;
+  --grass2: #b8a46f;
+}
+.stage-field.w-snow,
+.stage-field.w-hail {
+  --sky1: #dde9f3;
+  --sky2: #f0f6fa;
+  --grass1: #dde7de;
+  --grass2: #c8d5ca;
+}
+
+/* 场地状态条：天气/地形/空间 chips + 最新事件（单行，超长省略） */
+.field-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 22px;
+}
+.field-conds {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  flex: none;
+  max-width: 70%;
+}
+.cond {
+  font-size: 11px;
+  border-radius: 10px;
+  padding: 1px 8px;
+  color: #fff;
+  background: #7c879c;
+  white-space: nowrap;
+}
+.cond-weather {
+  background: #e8a13c;
+}
+.cond-terrain {
+  background: #4caf6d;
+}
+.cond-room {
+  background: #8a6ad4;
+}
+.cond-side.p1 {
+  background: var(--p1);
+}
+.cond-side.p2 {
+  background: var(--p2);
 }
 .field-mid {
+  flex: 1;
+  min-width: 0;
   display: flex;
-  justify-content: center;
-  color: #56705a;
-  font-size: 12.5px;
-  min-height: 18px;
+  justify-content: flex-end;
+  color: #4c6350;
+  font-size: 11.5px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -643,9 +745,10 @@ button.mini.danger {
   font-size: 12.5px;
   white-space: nowrap;
 }
-.hp-bar {
+/* 作用域 .mon-stage：组件库 calc.css 也有全局 .hp-bar（图鉴 HP 条），提升特异度避免覆盖 */
+.mon-stage .hp-bar {
   height: 9px;
-  background: #2b2f33;
+  background: #ffffff; /* 扣血露白 */
   border: 1.5px solid #17191c;
   border-radius: 6px;
   overflow: hidden;
@@ -655,18 +758,11 @@ button.mini.danger {
   color: #445;
   text-align: center;
 }
-.hp-fill {
+.mon-stage .hp-bar .hp-fill {
   height: 100%;
+  position: static; /* 归位 calc.css .hp-bar .hp-fill 的 absolute */
+  background: linear-gradient(#62dd8f, #3ec46d); /* 恒绿存量 */
   transition: width 0.35s ease;
-}
-.hp-hi {
-  background: #3ec46d;
-}
-.hp-mid {
-  background: #f2c744;
-}
-.hp-lo {
-  background: #e5484d;
 }
 .status {
   font-size: 10.5px;
@@ -873,7 +969,7 @@ button.mini.danger {
 }
 .choices {
   border-radius: 10px;
-  padding: 10px 12px;
+  padding: 8px 10px;
 }
 .choices.locked {
   color: var(--muted);
@@ -881,11 +977,11 @@ button.mini.danger {
 .move-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 6px;
+  gap: 5px;
 }
 .move-btn {
   text-align: left;
-  padding: 6px 8px;
+  padding: 4px 7px;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -957,18 +1053,18 @@ button.mini.on {
 .orders {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 .order-slot {
   border: 1px dashed var(--line);
   border-radius: 10px;
-  padding: 8px 10px;
+  padding: 6px 8px;
 }
 .slot-head {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   flex-wrap: wrap;
   font-size: 12.5px;
 }
@@ -1002,16 +1098,14 @@ button.mini.on {
 }
 
 .battle-log {
-  margin-top: 10px;
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 12px;
-  padding: 8px 14px;
-  flex: none;
-  max-height: 32%;
+  padding: 8px 12px;
+  flex: 1;
+  min-height: 96px;
   display: flex;
   flex-direction: column;
-  min-height: 110px;
 }
 .battle-log h3 {
   margin: 0 0 6px;
