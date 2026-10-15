@@ -395,6 +395,26 @@ type SlotChoice = SlotSel | SlotSwitch;
  * 支持机制按钮（太晶/极巨用图标点亮，Mega/Z 为文字按钮；同一精灵的机制互斥）、
  * 目标选择（双打需目标的招式）、主动换人。
  */
+/** 招式回合可行动槽位：req.active[i] 与场上第 i 只（含濒死，按槽序）对齐，
+ *  只保留**该槽位宝可梦存活**的槽。不能按「前 N 个」截取——左侧（槽 0）阵亡时
+ *  前槽恰好是濒死者的招式数据，会出现「名字=右侧存活者、招式=左侧阵亡者」的错位；
+ *  引擎对濒死槽自动 pass（getChoiceIndex），指令仍按存活槽的场地序拼装。 */
+export function liveMoveSlots(req: RequestChoice): Array<{
+  a: ActiveSlotData;
+  /** 场地槽位（0=左/单打位，1=右）；目标缺省与「左/右」标签按它取值 */
+  i: number;
+  mon: NonNullable<RequestChoice["side"]>["pokemon"][number];
+}> {
+  const mons = req.side?.pokemon ?? [];
+  const onField = mons.filter((m) => m.active);
+  const out: ReturnType<typeof liveMoveSlots> = [];
+  (req.active ?? []).forEach((a, i) => {
+    const mon = onField[i];
+    if (a && mon && !mon.condition.includes("fnt")) out.push({ a, i, mon });
+  });
+  return out;
+}
+
 function MoveOrders(props: {
   req: RequestChoice;
   dex: Dex;
@@ -403,13 +423,9 @@ function MoveOrders(props: {
 }): JSX.Element {
   const { req, dex, onChoose } = props;
   const mons = req.side?.pokemon ?? [];
-  const liveActive = mons.filter((m) => m.active && !m.condition.includes("fnt"));
-  // 引擎对濒死槽自动 pass（side.getChoiceIndex）：只渲染存活数对应的槽，
+  // 引擎对濒死槽自动 pass（side.getChoiceIndex）：只渲染存活宝可梦对应的槽，
   // 多发指令会被拒（You sent more choices than unfainted Pokémon）
-  const slots = (req.active ?? [])
-    .map((a, i) => ({ a, i }))
-    .filter((x): x is { a: ActiveSlotData; i: number } => !!x.a)
-    .slice(0, liveActive.length);
+  const slots = liveMoveSlots(req);
   if (slots.length === 0) {
     return (
       <div>
@@ -422,9 +438,6 @@ function MoveOrders(props: {
   }
   // 目标选择取决于场地槽位数（双打残局单在场仍需指定目标），而非存活数
   const doubles = mons.filter((m) => m.active).length > 1;
-  const activesOnField = (req.side?.pokemon ?? []).filter(
-    (p) => p.active && !p.condition.includes("fnt"),
-  );
   const [sel, setSel] = useState<Record<number, SlotChoice>>({});
   const [submitted, setSubmitted] = useState(false);
 
@@ -475,14 +488,13 @@ function MoveOrders(props: {
 
   return (
     <div className="orders">
-      {slots.map((s, ordinal) => {
-        const mon = activesOnField[ordinal];
+      {slots.map((s) => {
         const cur = sel[s.i];
         return (
           <div key={s.i} className="order-slot">
             <div className="slot-head">
-              <b>{slots.length > 1 ? `第 ${ordinal + 1} 只` : "行动"}</b>
-              <span className="muted">{mon ? zhDetails(mon.details, dex) : ""}</span>
+              <b>{slots.length > 1 ? (s.i === 0 ? "左侧" : "右侧") : "行动"}</b>
+              <span className="muted">{zhDetails(s.mon.details, dex)}</span>
               {cur && (
                 <span className="muted">→ {describeChoice(cur, s.a.moves, dex, doubles)}</span>
               )}
@@ -502,7 +514,7 @@ function MoveOrders(props: {
                         setSlot(s.i, {
                           kind: "move",
                           moveIdx: i,
-                          target: defaultTarget(m.target, ordinal),
+                          target: defaultTarget(m.target, s.i),
                           mech: cur?.kind === "move" ? cur.mech : undefined,
                         })
                       }
@@ -569,7 +581,7 @@ function MoveOrders(props: {
               <div className="mech-row">
                 {s.a.canTerastallize &&
                   mechBtn(sel, s.i, "terastallize", "太晶化", setSlot, {
-                    icon: `/assets/mechanism/tera_${teraTypeOf(req, ordinal) ?? "一般"}.png`,
+                    icon: `/assets/mechanism/tera_${teraTypeOf(req, s.i) ?? "一般"}.png`,
                   })}
                 {s.a.canDynamax &&
                   mechBtn(sel, s.i, "dynamax", "极巨化", setSlot, {
@@ -838,6 +850,8 @@ function describeChoice(
 }
 
 /** 目标缺省值（getAtLoc：正=对手槽，负=己方槽；adjacentAlly 系招式缺省指向同伴/自己） */
+/** 目标缺省值（getAtLoc：正=对手槽，负=己方槽；slotOrdinal 为**场地槽位**：
+ *  左槽(0)的同伴=右槽(-2)，右槽(1)的同伴/自己=左槽(-1)；adjacentAlly 系招式按此缺省） */
 function defaultTarget(target: string | undefined, slotOrdinal: number): number | undefined {
   if (!target) return undefined;
   if (target === "adjacentAlly") return slotOrdinal === 0 ? -2 : -1;

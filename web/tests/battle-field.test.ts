@@ -49,3 +49,60 @@ describe("场地状态推导", () => {
     expect(condLabel("tailwind")).toBe("顺风");
   });
 });
+
+/* 招式槽位映射（濒死槽裁剪）回归：双打左槽阵亡时名字/招式不得错位 */
+import { liveMoveSlots } from "../src/battle/BattleView";
+import type { RequestChoice } from "../src/engine-adapter/session";
+
+const mon = (ident: string, active: boolean, cond: string) => ({
+  ident,
+  details: ident.split(": ")[1] ?? ident,
+  condition: cond,
+  active,
+  stats: { atk: 0, def: 0, spa: 0, spd: 0, spe: 0 },
+  moves: [],
+  baseAbility: "",
+  item: "",
+  ability: "",
+  pokeball: "poke",
+});
+const slotData = (name: string) => ({
+  moves: [{ move: name + "-A", id: name.toLowerCase() + "a", pp: 10, maxpp: 10, target: "normal" }],
+});
+
+const mkReq = (c0: string, c1: string): RequestChoice => ({
+  side: {
+    name: "阵营 A",
+    id: "p1",
+    pokemon: [
+      mon("p1a: Garchomp", true, c0),
+      mon("p1b: Corviknight", true, c1),
+      mon("p1c: Zoroark", false, "0 fnt"),
+    ],
+  },
+  active: [slotData("garchomp"), slotData("corviknight")],
+});
+
+describe("招式槽位映射（liveMoveSlots）", () => {
+  it("双打左槽阵亡：只剩右槽，招式与名字同为右侧存活者", () => {
+    const out = liveMoveSlots(mkReq("0 fnt", "150/150"));
+    expect(out).toHaveLength(1);
+    expect(out[0]!.i).toBe(1);
+    expect(out[0]!.mon.ident).toBe("p1b: Corviknight");
+    expect(out[0]!.a.moves[0]!.move).toBe("corviknight-A");
+  });
+
+  it("双打右槽阵亡：只剩左槽", () => {
+    const out = liveMoveSlots(mkReq("150/150", "0 fnt"));
+    expect(out).toHaveLength(1);
+    expect(out[0]!.i).toBe(0);
+    expect(out[0]!.mon.ident).toBe("p1a: Garchomp");
+    expect(out[0]!.a.moves[0]!.move).toBe("garchomp-A");
+  });
+
+  it("双存活：两槽齐备（槽位序）", () => {
+    const out = liveMoveSlots(mkReq("150/150", "150/150"));
+    expect(out.map((x) => x.i)).toEqual([0, 1]);
+    expect(out.map((x) => x.mon.ident)).toEqual(["p1a: Garchomp", "p1b: Corviknight"]);
+  });
+});
