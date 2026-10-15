@@ -364,6 +364,10 @@ web/
   双打替补不足卡死修复（可交互槽=替补数、余位自动 pass，引擎 forcedPassesLeft 语义）；日志传输帧过滤。
   测试 137 全绿（battle-list-zh 扩 golden/battle-validate-zh 补事件与等级/engine 补直通与替补不足剧本）。
   详见 docs/BATTLE.md §8；未修复的中文 PokePaste 导入登记 plans/ROADMAP.md RM-21。
+- **2026-10-15 模拟对战走查反馈批（第二批）**：三栏全高布局（侧面板全列高+日志中列收窄，720p 零滚动）、
+  side-panel overflow 修复（招式卡不再越框）、永恒之花恢复可选（champions 特殊形态，zh-gen 补花蓓蓓族名）、
+  场地视觉（分层渐变背景+天气色调+站位平台、状态 chips 栏 battle/field.ts 推导、异常状态 emoji 徽章）、
+  血条白轨绿条（.mon-stage 作用域避免 calc.css 同名覆盖）。battle-field 4 用例，141 全绿。
 - **2026-10-04 模拟对战/计算器收尾三批（U23-U25）**：模拟对战——赛制大类分组头样式补齐（U23）、
   队伍新增默认与选择框一致（species 归一为小写 id，store 装载/写入双端清理同名昵称）、
   合规性校验消息全中文（清漏扫描 22 种消息逐条映射 + translateValidatorError 前置剥离
