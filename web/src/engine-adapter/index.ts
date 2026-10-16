@@ -37,5 +37,7 @@ export type {
   MonState,
   SideState,
   SessionSnapshot,
+  EngineMonView,
+  EngineFieldView,
 } from "./session";
 export { parseLogLine } from "./parse";

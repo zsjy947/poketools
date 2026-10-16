@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useApp } from "../store";
 import type { StoredBattleRecord } from "../storage";
+import { TurnLogView } from "../turnLog";
 
-/** 对局记录（FR-10）：列表查看、日志回看、删除。 */
+/** 对局记录（FR-10）：列表查看、日志回看（Showdown 式回合分组）、删除。 */
 export function RecordsPage(): JSX.Element {
   const records = useApp((s) => s.records);
   const loadRecords = useApp((s) => s.loadRecords);
@@ -24,13 +25,7 @@ export function RecordsPage(): JSX.Element {
           <button onClick={() => setViewing(null)}>返回列表</button>
         </div>
         <div className="battle-log standalone">
-          <div className="log-scroll">
-            {viewing.log.map((l, i) => (
-              <div key={i} className="log-raw">
-                {l}
-              </div>
-            ))}
-          </div>
+          <TurnLogView lines={viewing.log} />
         </div>
       </div>
     );

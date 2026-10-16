@@ -8,7 +8,7 @@
  * 在比对时过滤（parse.isNondeterministicLine）。
  */
 import { BattleStream, Teams } from "./vendor/ps-engine.js";
-import type { PokemonSet } from "./vendor/ps-engine.js";
+import type { PokemonSet, PokemonLike, BattleLike } from "./vendor/ps-engine.js";
 import { isNondeterministicLine, parseLogLine } from "./parse";
 import type { BattleEvent } from "./parse";
 
@@ -85,6 +85,35 @@ export interface SideState {
   name: string;
   active: string[];
   bench: MonState[];
+}
+
+/** 引擎窥视：宝可梦侧（分层约束——UI 不直接接触 vendor 类型，此处重声明表面） */
+export interface EngineMonView {
+  /** "p1: Garchomp"（与 request.side.pokemon[].ident 同格式） */
+  ident: string;
+  hp: number;
+  maxhp: number;
+  fainted: boolean;
+  status: string;
+  types: string[];
+  baseTypes: string[];
+  teraType?: string | undefined;
+  boosts: Record<string, number>;
+  moveSlots: Array<{ id: string; move: string; pp: number; maxpp: number }>;
+}
+
+/** 引擎窥视：场地侧（天气/地形/空间/侧壁的引擎权威剩余回合） */
+export interface EngineFieldView {
+  weather: string;
+  weatherDuration?: number | undefined;
+  terrain: string;
+  terrainDuration?: number | undefined;
+  pseudoWeather: Record<string, { duration?: number }>;
+  sideConditions: {
+    p1: Record<string, { duration?: number }>;
+    p2: Record<string, { duration?: number }>;
+  };
+  turn: number;
 }
 
 export interface BattleSessionOptions {
@@ -291,13 +320,16 @@ export class BattleSession {
   }
 
   private syncSideFromRequest(side: SideSlot, req: RequestChoice): void {
+    const prev = new Map(this.sides[side].bench.map((m) => [m.ident, m]));
     const mons: MonState[] = (req.side?.pokemon ?? []).map((p) => {
       const [hp, maxhp] = parseCondition(p.condition);
+      // "0 fnt" 行不携带 maxhp：沿用上次已知值，避免濒死者血条变 0/0
+      const keepMax = maxhp === 0 ? (prev.get(p.ident)?.maxhp ?? 0) : maxhp;
       return {
         ident: p.ident,
         details: p.details,
-        hp,
-        maxhp,
+        hp: Math.min(hp, keepMax || hp),
+        maxhp: keepMax,
         fainted: hp === 0,
         status: parseStatus(p.condition),
         teraType: p.teraType,
@@ -377,8 +409,9 @@ export class BattleSession {
   }
 
   private updateMonHp(ident: string, delta: number): void {
+    const key = normIdent(ident);
     for (const side of ["p1", "p2"] as const) {
-      const mon = this.sides[side].bench.find((m) => m.ident === ident);
+      const mon = this.sides[side].bench.find((m) => normIdent(m.ident) === key);
       if (mon) {
         mon.hp = Math.max(0, Math.min(mon.maxhp, mon.hp + delta));
         mon.fainted = mon.hp === 0;
@@ -388,8 +421,11 @@ export class BattleSession {
   }
 
   private updateMonFlag(ident: string, fn: (m: MonState) => void): void {
+    const key = normIdent(ident);
     for (const side of ["p1", "p2"] as const) {
-      const mon = this.sides[side].bench.find((m) => m.ident === ident || m.details === ident);
+      const mon = this.sides[side].bench.find(
+        (m) => normIdent(m.ident) === key || m.details === ident,
+      );
       if (mon) {
         fn(mon);
         return;
@@ -434,6 +470,52 @@ export class BattleSession {
   deterministicLog(): string[] {
     return this.logTail.filter((l) => !isNondeterministicLine(l));
   }
+
+  /** 引擎内部只读窥视（悬浮状态框/场地倒计时用）：能力变化、当前属性、招式 PP、
+   *  天气/地形/空间与侧壁的**引擎权威剩余回合**（事件推导无法区分来源差异，如特性天气）。
+   *  引擎对象随结算原地突变，调用方应在每次快照后即时消费，不要缓存。 */
+  enginePeek(): {
+    mons: { p1: EngineMonView[]; p2: EngineMonView[] };
+    field: EngineFieldView;
+  } | null {
+    const battle: BattleLike | null | undefined = this.stream?.battle;
+    if (!battle) return null;
+    const conv = (p: PokemonLike): EngineMonView => ({
+      ident: p.fullname,
+      hp: p.hp,
+      maxhp: p.maxhp,
+      fainted: p.fainted,
+      status: p.status ?? "",
+      types: [...(p.types ?? [])],
+      baseTypes: [...(p.baseTypes ?? [])],
+      teraType: p.teraType,
+      boosts: { ...(p.boosts ?? {}) },
+      moveSlots: (p.moveSlots ?? []).map((m) => ({
+        id: m.id,
+        move: m.move,
+        pp: m.pp,
+        maxpp: m.maxpp,
+      })),
+    });
+    return {
+      mons: {
+        p1: (battle.sides[0]?.pokemon ?? []).map(conv),
+        p2: (battle.sides[1]?.pokemon ?? []).map(conv),
+      },
+      field: {
+        weather: battle.field.weather ?? "",
+        weatherDuration: battle.field.weatherState?.duration,
+        terrain: battle.field.terrain ?? "",
+        terrainDuration: battle.field.terrainState?.duration,
+        pseudoWeather: battle.field.pseudoWeather ?? {},
+        sideConditions: {
+          p1: battle.sides[0]?.sideConditions ?? {},
+          p2: battle.sides[1]?.sideConditions ?? {},
+        },
+        turn: battle.turn,
+      },
+    };
+  }
 }
 
 function packedTeam(sets: PokemonSet[]): string {
@@ -460,6 +542,12 @@ function parseCondition(cond: string): [number, number] {
   if (nums.length === 2 && nums[0] !== undefined && nums[1] !== undefined)
     return [nums[0], nums[1]];
   return [0, 0];
+}
+
+/** ident 归一：事件行的 "p1a: X"（带槽位字母）与 request 的 "p1: X" 统一成 "p1: X"
+ *  （引擎 request 不区分同侧同名分身，属上游口径；比此前「永不匹配」的静默失配好） */
+function normIdent(ident: string): string {
+  return ident.replace(/^(p[12])[ab]?:/, "$1:");
 }
 
 function parseStatus(cond: string): string | undefined {

@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "./store";
-import type { MonState, SideSlot } from "../engine-adapter";
+import type { MonState, SideSlot, EngineMonView, EngineFieldView } from "../engine-adapter";
 import type { RequestChoice } from "../engine-adapter/session";
 import { dexFor, moveView, speciesView, TYPE_ZH, STATUS_ZH, zhLine } from "../data";
 import { spriteUrl } from "./sprites";
 import { useBattleAnim } from "./anim";
 import type { AnimKind } from "./anim";
 import { fieldConditions, condLabel, STATUS_ICON } from "./field";
+import { lastLogText, TurnLogView } from "./turnLog";
+import { buildMonInfo, HoverHost, MonHoverCard } from "./MonHover";
 import type { StoredBattleRecord } from "./storage";
 import { exportShowdown } from "../team/showdown";
 
@@ -32,7 +34,6 @@ export function BattleView(): JSX.Element {
   const format = useApp((s) => s.format);
   const teams = useApp((s) => s.teams);
   const recordedRef = useRef(false);
-  const logEndRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (session && !snapshot) {
@@ -40,10 +41,6 @@ export function BattleView(): JSX.Element {
       session.subscribe((snap) => useApp.getState().pushSnapshot(snap));
     }
   }, [session, snapshot]);
-
-  useEffect(() => {
-    logEndRef.current?.scrollIntoView({ block: "end" });
-  }, [snapshot?.logTail.length]);
 
   // 终局记录（FR-10）
   useEffect(() => {
@@ -67,14 +64,20 @@ export function BattleView(): JSX.Element {
 
   const dex = useMemo(() => dexFor(format?.mod ?? "gen9"), [format]);
   // 动画演出态（ident → 当前演出；关闭时恒空 = 降级信息流）。
-  // 开关单源 settings.animation（设置页与对战页同源读写——本地副本曾与设置页脱钩，多次切换后语义反转）
-  const animMap = useBattleAnim(
-    snapshot?.events ?? [],
-    settings.animation,
-    settings.animationSpeed,
-  );
+  // 开关单源 settings.animation（设置页与对战页同源读写——本地副本曾与设置页脱钩，多次切换后语义反转）。
+  // 速度：设置为 ms/事件（基准 420），动画契约为倍率——420ms→1x，越大越慢
+  const animSpeed = settings.animationSpeed > 0 ? 420 / settings.animationSpeed : 1;
+  const animMap = useBattleAnim(snapshot?.events ?? [], settings.animation, animSpeed);
   // 场地状态（天气/地形/空间/侧壁）：从事件流推导
   const conds = useMemo(() => fieldConditions(snapshot?.events ?? []), [snapshot?.events]);
+  // 引擎窥视（每次快照即时消费，不缓存）：悬浮框数据 + 场地剩余回合的引擎权威值
+  const engine = useMemo(() => session?.enginePeek() ?? null, [session, snapshot]);
+  const engineMons = useMemo(() => {
+    const m: Record<string, EngineMonView> = {};
+    for (const side of ["p1", "p2"] as const)
+      for (const p of engine?.mons[side] ?? []) m[p.ident] = p;
+    return m;
+  }, [engine]);
 
   if (!session || !snapshot) {
     return (
@@ -127,29 +130,46 @@ export function BattleView(): JSX.Element {
               animated={settings.animation}
               animMap={animMap}
               sideConds={conds.sideStatus.p2}
+              engineMons={engineMons}
+              engineField={engine?.field ?? null}
             />
             <div className="field-strip">
               <div className="field-conds">
-                {conds.weather && (
-                  <span className="cond cond-weather">{condLabel(conds.weather)}</span>
-                )}
-                {conds.terrain && (
-                  <span className="cond cond-terrain">{condLabel(conds.terrain)}</span>
-                )}
+                <CondChip
+                  cls="cond-weather"
+                  id={conds.weather}
+                  turns={engine ? engine.field.weatherDuration : undefined}
+                />
+                <CondChip
+                  cls="cond-terrain"
+                  id={conds.terrain}
+                  turns={engine ? engine.field.terrainDuration : undefined}
+                />
                 {conds.fieldMoves.map((f) => (
-                  <span key={f} className="cond cond-room">
-                    {condLabel(f)}
-                  </span>
+                  <CondChip
+                    key={f}
+                    cls="cond-room"
+                    id={f}
+                    turns={engine ? engine.field.pseudoWeather[f]?.duration : undefined}
+                  />
                 ))}
                 {conds.sideStatus.p1.map((s) => (
-                  <span key={"p1" + s} className="cond cond-side p1">
-                    A·{condLabel(s)}
-                  </span>
+                  <CondChip
+                    key={"p1" + s}
+                    cls="cond-side p1"
+                    id={s}
+                    label={"A·" + condLabel(s)}
+                    turns={engine ? engine.field.sideConditions.p1[s]?.duration : undefined}
+                  />
                 ))}
                 {conds.sideStatus.p2.map((s) => (
-                  <span key={"p2" + s} className="cond cond-side p2">
-                    B·{condLabel(s)}
-                  </span>
+                  <CondChip
+                    key={"p2" + s}
+                    cls="cond-side p2"
+                    id={s}
+                    label={"B·" + condLabel(s)}
+                    turns={engine ? engine.field.sideConditions.p2[s]?.duration : undefined}
+                  />
                 ))}
               </div>
               <div className="field-mid">
@@ -163,18 +183,15 @@ export function BattleView(): JSX.Element {
               animated={settings.animation}
               animMap={animMap}
               sideConds={conds.sideStatus.p1}
+              engineMons={engineMons}
+              engineField={engine?.field ?? null}
               back
             />
           </div>
-          {/* 信息流日志（FR-09）—— 中列下半（唯一内部滚动区） */}
+          {/* 信息流日志（FR-09）—— 中列下半（唯一内部滚动区）：Showdown 式回合分组 */}
           <div className="battle-log">
             <h3>战斗日志（可回看）</h3>
-            <div className="log-scroll">
-              {snapshot.logTail.map((l: string, i: number) => (
-                <LogLine key={i} line={l} />
-              ))}
-              <div ref={logEndRef} />
-            </div>
+            <TurnLogView lines={snapshot.logTail} />
           </div>
         </div>
         <div className="stage-side stage-side-p2">
@@ -182,6 +199,27 @@ export function BattleView(): JSX.Element {
         </div>
       </div>
     </div>
+  );
+}
+
+/** 场地状态 chip：id 缺失不渲染；带引擎剩余回合（≤1 高亮临期） */
+function CondChip(props: {
+  cls: string;
+  id?: string | undefined;
+  label?: string | undefined;
+  turns?: number | undefined;
+}): JSX.Element | null {
+  const { cls, id, label, turns } = props;
+  if (!id) return null;
+  const low = turns != null && turns <= 1;
+  return (
+    <span
+      className={"cond " + cls + (low ? " low" : "")}
+      title={condLabel(id) + (turns != null ? `（剩余 ${turns} 回合）` : "")}
+    >
+      {label ?? condLabel(id)}
+      {turns != null && turns > 0 ? ` ${turns}` : ""}
+    </span>
   );
 }
 
@@ -252,10 +290,15 @@ function SideBoard(props: {
   animMap: Record<string, AnimKind>;
   /** 该侧生效的侧壁（reflect/lightscreen/auroraveil/safeguard/tailwind/mist） */
   sideConds: string[];
+  /** 引擎窥视（ident → 引擎宝可梦视图；悬浮框数据源） */
+  engineMons: Record<string, EngineMonView>;
+  engineField: EngineFieldView | null;
   back?: boolean;
 }): JSX.Element {
-  const { side, snapshot, dex, animated, back, animMap, sideConds } = props;
+  const { side, snapshot, dex, animated, back, animMap, sideConds, engineMons } = props;
   const state = snapshot.sides[side];
+  const payloadOf = (ident: string) =>
+    (snapshot.requests[side]?.side?.pokemon ?? []).find((p) => p.ident === ident);
   const actives = state.active
     .map((ident) => state.bench.find((m) => m.ident === ident))
     .filter((m): m is MonState => !!m);
@@ -270,16 +313,31 @@ function SideBoard(props: {
       <div className="side-actives">
         {actives.length > 0 ? (
           actives.map((m) => (
-            <MonStage
+            <HoverHost
               key={m.ident}
-              mon={m}
-              dex={dex}
-              animated={animated}
-              side={side}
-              back={!!back}
-              anim={animMap[m.ident]}
-              sideConds={sideConds}
-            />
+              place={side === "p1" ? "up" : "down"}
+              panel={
+                <MonHoverCard
+                  dex={dex}
+                  info={buildMonInfo({
+                    dex,
+                    mon: m,
+                    payload: payloadOf(m.ident),
+                    engineMon: engineMons[m.ident],
+                  })}
+                />
+              }
+            >
+              <MonStage
+                mon={m}
+                dex={dex}
+                animated={animated}
+                side={side}
+                back={!!back}
+                anim={animMap[m.ident]}
+                sideConds={sideConds}
+              />
+            </HoverHost>
           ))
         ) : (
           <div className="mon-stage empty muted">（无在场宝可梦）</div>
@@ -287,13 +345,28 @@ function SideBoard(props: {
       </div>
       <div className="bench-row">
         {state.bench.map((m) => (
-          <span
+          <HoverHost
             key={m.ident}
-            className={"bench-ball" + (m.fainted ? " fainted" : "")}
-            title={`${m.details}${m.status ? `（${STATUS_ZH[m.status] ?? m.status}）` : ""}`}
+            place="down"
+            panel={
+              <MonHoverCard
+                dex={dex}
+                info={buildMonInfo({
+                  dex,
+                  mon: m,
+                  payload: payloadOf(m.ident),
+                  engineMon: engineMons[m.ident],
+                })}
+              />
+            }
           >
-            {m.fainted ? "×" : "●"}
-          </span>
+            <span
+              className={"bench-ball" + (m.fainted ? " fainted" : "")}
+              title={`${m.details}${m.status ? `（${STATUS_ZH[m.status] ?? m.status}）` : ""}`}
+            >
+              {m.fainted ? "×" : "●"}
+            </span>
+          </HoverHost>
         ))}
       </div>
     </div>
@@ -886,173 +959,6 @@ function defaultTarget(target: string | undefined, slotOrdinal: number): number 
   if (target === "adjacentAlly") return slotOrdinal === 0 ? -2 : -1;
   if (target === "adjacentAllyOrSelf") return slotOrdinal === 0 ? -1 : -2;
   return 1;
-}
-
-/** 日志不渲染的协议噪音（连接/元数据行；裸 p1/p2 系 sideupdate 残行用正则） */
-const LOG_HIDDEN = new Set([
-  "player",
-  "seed",
-  "rated",
-  "start",
-  "clearpoke",
-  "poke",
-  "teampreview",
-  "t:",
-  "gametype",
-  "gen",
-  "format",
-  "tier",
-  "uptime",
-  "split",
-  "tee",
-  "view",
-  "c",
-  "chat",
-  "j",
-  "l",
-  "prompt",
-]);
-const LOG_HIDDEN_RE = /^p[12]( \d+)?$/;
-
-function LogLine(props: { line: string }): JSX.Element | null {
-  const { line } = props;
-  // 战斗事件行一律以 | 开头；无前缀的裸行是流帧残留（挑战按钮/帧头等），不渲染
-  if (!line.startsWith("|")) return null;
-  const parts = line.split("|");
-  const kind = parts[1] ?? "";
-  if (LOG_HIDDEN.has(kind) || LOG_HIDDEN_RE.test(kind)) return null;
-  // raw 行里的服务端交互控件（OTS 请求按钮等）不进日志
-  if (kind === "raw" && /<button|otsrequest/i.test(line)) return null;
-  const text = zhLine(renderLine(kind, parts.slice(2)));
-  if (!text) return null;
-  return <div className={"log-line log-" + kind.replace(/[^a-z-]/g, "")}>{text}</div>;
-}
-
-/** 协议 ident（"p1a: Garchomp"）去掉槽位前缀，只留可读名（zhLine 再翻专名） */
-function who(ident: string | undefined): string {
-  return (ident ?? "").replace(/^p[12][ab]?: /, "");
-}
-
-/** 最近一条可渲染日志的中文文本（场地 ticker 用，复用日志渲染规则） */
-function lastLogText(logTail: string[]): string {
-  for (let i = logTail.length - 1; i >= 0; i--) {
-    const line = logTail[i]!;
-    if (!line.startsWith("|")) continue;
-    const parts = line.split("|");
-    const kind = parts[1] ?? "";
-    if (LOG_HIDDEN.has(kind) || LOG_HIDDEN_RE.test(kind)) continue;
-    if (kind === "raw" && /<button|otsrequest/i.test(line)) continue;
-    const t = zhLine(renderLine(kind, parts.slice(2)));
-    if (t) return t;
-  }
-  return "";
-}
-
-function renderLine(kind: string, p: string[]): string {
-  const clean = (s: string | undefined) =>
-    (s ?? "").replace(/\\n/g, " ").replace(/\n/g, " ").trim();
-  switch (kind) {
-    case "turn":
-      return `第 ${p[0]} 回合`;
-    case "-ability":
-      return `${who(p[0])} 的「${p[1]}」发动了`;
-    case "move":
-      return `${who(p[0])} 使用了 ${p[1]}！`;
-    case "switch":
-    case "drag":
-      return `${who(p[0])}，就决定是你了！（${p[1]}）`;
-    case "damage":
-      // p[1] 形如 "58/194"（剩余/最大）——参考 Showdown 展示剩余血量
-      return p[1] ? `${who(p[0])} 受到了伤害（${p[1]}）` : `${who(p[0])} 受到了伤害。`;
-    case "heal":
-      return p[1] ? `${who(p[0])} 回复了 HP（${p[1]}）` : `${who(p[0])} 回复了 HP。`;
-    case "faint":
-      return `${who(p[0])} 倒下了！`;
-    case "win":
-      return `🎉 ${p[0]} 获胜！`;
-    case "tie":
-      return "平局。";
-    case "mega":
-      return `${who(p[0])} 超级进化成了 ${p[1]}！`;
-    case "terastallize":
-    case "-terastallize":
-      return `${who(p[0])} 太晶化！（${p[1]}）`;
-    case "max":
-      return `${who(p[0])} 极巨化了！`;
-    case "zpower":
-      return `${who(p[0])} 汇聚了 Z 力量！`;
-    case "weather":
-    case "-weather":
-      return p[0] === "none" ? "天气恢复了。" : `天气：${zhFieldText(p[0] ?? "")}`;
-    case "-fieldstart":
-    case "fieldstart":
-      return `场地：${zhFieldText(p[0] ?? "")}`;
-    case "-fieldend":
-    case "fieldend":
-      return `场地结束：${zhFieldText(p[0] ?? "")}`;
-    case "-sidestart":
-      return `${who(p[0])}：${zhFieldText(p[1] ?? "")} 展开`;
-    case "-sideend":
-      return `${who(p[0])}：${zhFieldText(p[1] ?? "")} 结束`;
-    case "-end":
-    case "-singlemove":
-    case "-singleturn":
-    case "-activate":
-      return zhFieldText(clean(p.join(" ")));
-    case "-supereffective":
-      return "效果绝佳！";
-    case "-resisted":
-      return "效果不太好…";
-    case "-immune":
-      return "没有效果…";
-    case "-crit":
-      return "击中了要害！";
-    case "-status":
-      return `${who(p[0])} 陷入了${p[1]}状态。`;
-    case "-curestatus":
-      return `${who(p[0])} 的${p[1] ?? "状态"}解除了。`;
-    case "rule":
-      return `规则：${p[0]}`;
-    case "error":
-      return `⚠ ${clean(p.join(" "))}`;
-    default:
-      return clean(p.filter(Boolean).join(" "));
-  }
-}
-
-/** 天气/场地/持续效果段的中文渲染（SunnyDay [from] ability: 日照 [of] p1a: 喷火龙 等） */
-const FIELD_ZH: Record<string, string> = {
-  SunnyDay: "日照强烈",
-  RainDance: "下雨",
-  Sandstorm: "沙暴",
-  Hail: "冰雹",
-  Snow: "下雪",
-  Snowscape: "下雪",
-  ElectricTerrain: "电气场地",
-  GrassyTerrain: "青草场地",
-  MistyTerrain: "薄雾场地",
-  PsychicTerrain: "精神场地",
-  TrickRoom: "戏法空间",
-  Tailwind: "顺风",
-  Reflect: "反射壁",
-  LightScreen: "光墙",
-  AuroraVeil: "极光幕",
-  Safeguard: "神秘守护",
-  "move: Sunny Day": "日照强烈",
-  "move: Rain Dance": "下雨",
-};
-
-function zhFieldText(raw: string): string {
-  let out = raw;
-  // 长键优先（如 Snowscape 先于 Snow），避免短键把长词条截断替换
-  const entries = Object.entries(FIELD_ZH).sort((a, b) => b[0].length - a[0].length);
-  for (const [en, zh] of entries) out = out.replaceAll(en, zh);
-  out = out.replace(/\[upkeep\]/g, "（持续中）");
-  out = out.replace(/\[from\] ability: ?/g, "（特性：");
-  out = out.replace(/\[from\] ?move: ?/g, "（招式：");
-  out = out.replace(/\[of\] ?/g, "——");
-  if (out.includes("（特性：") && !out.endsWith("）")) out += "）";
-  return out;
 }
 
 function zhDetails(details: string, dex: Dex): string {
