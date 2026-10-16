@@ -33,6 +33,9 @@ export function DetailPage({
   speciesId: number;
   query: URLSearchParams;
 }): JSX.Element {
+  /* national 模式：全国图鉴语境下的详情——隐藏图鉴介绍/获取方式/招式表，
+     形态切换不做游戏可用性过滤（全量形态可选） */
+  const national = query.get("national") === "1";
   const [loading, setLoading] = useState(true);
   const [d, setD] = useState<any>(null);
   const [formId, setFormId] = useState<number | null>(null);
@@ -298,6 +301,10 @@ export function DetailPage({
   }
 
   function goBack(): void {
+    if (national) {
+      location.hash = "#/national";
+      return;
+    }
     if (gameId) {
       location.hash =
         `#/game/${gameId}/dex` +
@@ -374,17 +381,19 @@ export function DetailPage({
         {game && <span className="pkt-chip">{game.name_zh}</span>}
       </div>
 
-      {/* 移动端分段锚点 */}
+      {/* 移动端分段锚点（national 模式裁掉 获取/招式 两区） */}
       <div className="mobile-sec-chips">
-        {SEC_CHIPS.map((sec) => (
-          <span
-            key={sec.key}
-            className={"chip-sec" + (activeSec === sec.key ? " on" : "")}
-            onClick={() => scrollSec(sec)}
-          >
-            {sec.label}
-          </span>
-        ))}
+        {SEC_CHIPS.filter((sec) => !national || sec.key === "basic" || sec.key === "ability").map(
+          (sec) => (
+            <span
+              key={sec.key}
+              className={"chip-sec" + (activeSec === sec.key ? " on" : "")}
+              onClick={() => scrollSec(sec)}
+            >
+              {sec.label}
+            </span>
+          ),
+        )}
       </div>
 
       {/* 形态选择 */}
@@ -469,10 +478,12 @@ export function DetailPage({
             </div>
           </div>
 
-          <div className="block">
-            <h3>图鉴介绍{game ? `（${game.name_zh}）` : ""}</h3>
-            <FlavorList flavor={curFlavor} />
-          </div>
+          {!national && (
+            <div className="block">
+              <h3>图鉴介绍{game ? `（${game.name_zh}）` : ""}</h3>
+              <FlavorList flavor={curFlavor} />
+            </div>
+          )}
 
           {!noAbilities && (
             <div className="block">
@@ -643,159 +654,164 @@ export function DetailPage({
             <EvoChain evo={d.evolution} current={speciesId} gameId={gameId} />
           </div>
 
-          <div className="block" id="sec-get">
-            <h3>获取方式{game ? `（${game.name_zh}）` : ""}</h3>
-            <GetMethodList rows={d.get_methods} extra={d.encounters_api} />
-          </div>
+          {!national && (
+            <div className="block" id="sec-get">
+              <h3>获取方式{game ? `（${game.name_zh}）` : ""}</h3>
+              <GetMethodList rows={d.get_methods} extra={d.encounters_api} />
+            </div>
+          )}
 
-          <div className="block" id="sec-moves">
-            <h3>招式表{game ? `（${game.name_zh}）` : ""}</h3>
-            {moves && (
-              <>
-                <div className="pkt-tabs">
-                  {moves.tabs.map((t: any) => (
-                    <button
-                      key={t.key}
-                      className={"pkt-tab" + (tab === t.key ? " on" : "")}
-                      onClick={() => setTab(t.key)}
-                    >
-                      {t.label} ({(moves.groups[t.key] || []).length})
-                    </button>
-                  ))}
-                </div>
-                <div className="pkt-table-wrap" style={{ maxHeight: 480, overflow: "auto" }}>
-                  <table className="pkt-table pkt-table-sm">
-                    <thead>
-                      <tr>
-                        {(tab === "level" || tab === "evolution-recall") && (
-                          <th style={{ width: 96 }}>等级</th>
-                        )}
-                        {tab === "machine" && <th style={{ width: 140 }}>编号</th>}
-                        <th style={{ minWidth: 120 }}>招式</th>
-                        <th style={{ width: 96 }}>属性</th>
-                        <th style={{ width: 76 }}>分类</th>
-                        <th style={{ width: 66 }}>威力</th>
-                        <th style={{ width: 66 }}>命中</th>
-                        <th style={{ width: 60 }}>PP</th>
-                        <th style={{ width: 70 }}>优先度</th>
-                        {tab === "egg" && <th style={{ width: 120 }}>生蛋链</th>}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {(moves.groups[tab] || []).map((row: any) => (
-                        <Fragment key={row.move_id}>
-                          <tr>
-                            {(tab === "level" || tab === "evolution-recall") && (
-                              <td>
-                                {row.recall ? (
-                                  <span className="mastery">回忆</span>
-                                ) : row.evolution ? (
-                                  <span className="mastery">进化</span>
-                                ) : (
-                                  <>
-                                    Lv.{row.level}
-                                    {row.mastery != null && (
-                                      <span className="mastery">精通+{row.mastery}</span>
-                                    )}
-                                  </>
-                                )}
-                              </td>
-                            )}
-                            {tab === "machine" && (
-                              <td>
-                                {/* 点击编号 chip 展开/收起获取方式（展开内容在下方独立行，招式行保持不动） */}
-                                {(row.tm || []).map((t2: any) => (
-                                  <span
-                                    key={t2.number}
-                                    className={
-                                      "pkt-chip tm-chip " + (t2.kind === "TR" ? "warning" : "info")
-                                    }
-                                    style={{ marginRight: 4 }}
-                                    onClick={() =>
-                                      setExpandedTm((s) => ({
-                                        ...s,
-                                        [row.move_id]: !s[row.move_id],
-                                      }))
-                                    }
-                                  >
-                                    {t2.kind}
-                                    {String(t2.number).padStart(3, "0")}
-                                  </span>
-                                ))}
-                              </td>
-                            )}
-                            <td>{row.name_zh}</td>
-                            <td>
-                              <TypeBadge types={row.type_zh} />
-                            </td>
-                            <td>
-                              <MoveClassBadge cls={row.damage_class} />
-                            </td>
-                            <td>{row.power ?? "—"}</td>
-                            <td>{row.accuracy ?? "—"}</td>
-                            <td>{row.pp}</td>
-                            <td>{row.priority > 0 ? "+" + row.priority : row.priority}</td>
-                            {tab === "egg" && (
-                              <td>
-                                <button
-                                  className="pkt-btn pkt-btn-sm primary-plain"
-                                  onClick={() => void showChains(row)}
-                                >
-                                  计算繁殖链
-                                </button>
-                              </td>
-                            )}
-                          </tr>
-                          {tab === "machine" && expandedTm[row.move_id] && (
-                            <tr className="tm-how-row">
-                              <td colSpan={8}>
-                                <div className="tm-how-list">
-                                  {(row.tm || []).map((t2: any) => (
-                                    <div key={t2.number} className="tm-how">
-                                      <b>
-                                        {t2.kind} {String(t2.number).padStart(3, "0")}
-                                      </b>
-                                      {t2.how && (
-                                        <>
-                                          <br />
-                                          获取：{t2.how}
-                                        </>
-                                      )}
-                                      {t2.materials && (
-                                        <>
-                                          <br />
-                                          制作材料：{t2.materials}
-                                        </>
-                                      )}
-                                      {!t2.how && !t2.materials && (
-                                        <>
-                                          <br />
-                                          获取方式待补充
-                                        </>
-                                      )}
-                                    </div>
-                                  ))}
-                                  {!(row.tm || []).length && (
-                                    <div className="tm-how">获取方式待补充</div>
-                                  )}
-                                </div>
-                              </td>
-                            </tr>
-                          )}
-                        </Fragment>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                {tab === "egg" && !moves.has_breeding && (
-                  <div className="empty-hint">
-                    当前游戏没有生蛋孵化机制（{game ? game.name_zh : ""}）
+          {!national && (
+            <div className="block" id="sec-moves">
+              <h3>招式表{game ? `（${game.name_zh}）` : ""}</h3>
+              {moves && (
+                <>
+                  <div className="pkt-tabs">
+                    {moves.tabs.map((t: any) => (
+                      <button
+                        key={t.key}
+                        className={"pkt-tab" + (tab === t.key ? " on" : "")}
+                        onClick={() => setTab(t.key)}
+                      >
+                        {t.label} ({(moves.groups[t.key] || []).length})
+                      </button>
+                    ))}
                   </div>
-                )}
-              </>
-            )}
-            {!moves && <div className="empty-hint">招式表加载中…</div>}
-          </div>
+                  <div className="pkt-table-wrap" style={{ maxHeight: 480, overflow: "auto" }}>
+                    <table className="pkt-table pkt-table-sm">
+                      <thead>
+                        <tr>
+                          {(tab === "level" || tab === "evolution-recall") && (
+                            <th style={{ width: 96 }}>等级</th>
+                          )}
+                          {tab === "machine" && <th style={{ width: 140 }}>编号</th>}
+                          <th style={{ minWidth: 120 }}>招式</th>
+                          <th style={{ width: 96 }}>属性</th>
+                          <th style={{ width: 76 }}>分类</th>
+                          <th style={{ width: 66 }}>威力</th>
+                          <th style={{ width: 66 }}>命中</th>
+                          <th style={{ width: 60 }}>PP</th>
+                          <th style={{ width: 70 }}>优先度</th>
+                          {tab === "egg" && <th style={{ width: 120 }}>生蛋链</th>}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {(moves.groups[tab] || []).map((row: any) => (
+                          <Fragment key={row.move_id}>
+                            <tr>
+                              {(tab === "level" || tab === "evolution-recall") && (
+                                <td>
+                                  {row.recall ? (
+                                    <span className="mastery">回忆</span>
+                                  ) : row.evolution ? (
+                                    <span className="mastery">进化</span>
+                                  ) : (
+                                    <>
+                                      Lv.{row.level}
+                                      {row.mastery != null && (
+                                        <span className="mastery">精通+{row.mastery}</span>
+                                      )}
+                                    </>
+                                  )}
+                                </td>
+                              )}
+                              {tab === "machine" && (
+                                <td>
+                                  {/* 点击编号 chip 展开/收起获取方式（展开内容在下方独立行，招式行保持不动） */}
+                                  {(row.tm || []).map((t2: any) => (
+                                    <span
+                                      key={t2.number}
+                                      className={
+                                        "pkt-chip tm-chip " +
+                                        (t2.kind === "TR" ? "warning" : "info")
+                                      }
+                                      style={{ marginRight: 4 }}
+                                      onClick={() =>
+                                        setExpandedTm((s) => ({
+                                          ...s,
+                                          [row.move_id]: !s[row.move_id],
+                                        }))
+                                      }
+                                    >
+                                      {t2.kind}
+                                      {String(t2.number).padStart(3, "0")}
+                                    </span>
+                                  ))}
+                                </td>
+                              )}
+                              <td>{row.name_zh}</td>
+                              <td>
+                                <TypeBadge types={row.type_zh} />
+                              </td>
+                              <td>
+                                <MoveClassBadge cls={row.damage_class} />
+                              </td>
+                              <td>{row.power ?? "—"}</td>
+                              <td>{row.accuracy ?? "—"}</td>
+                              <td>{row.pp}</td>
+                              <td>{row.priority > 0 ? "+" + row.priority : row.priority}</td>
+                              {tab === "egg" && (
+                                <td>
+                                  <button
+                                    className="pkt-btn pkt-btn-sm primary-plain"
+                                    onClick={() => void showChains(row)}
+                                  >
+                                    计算繁殖链
+                                  </button>
+                                </td>
+                              )}
+                            </tr>
+                            {tab === "machine" && expandedTm[row.move_id] && (
+                              <tr className="tm-how-row">
+                                <td colSpan={8}>
+                                  <div className="tm-how-list">
+                                    {(row.tm || []).map((t2: any) => (
+                                      <div key={t2.number} className="tm-how">
+                                        <b>
+                                          {t2.kind} {String(t2.number).padStart(3, "0")}
+                                        </b>
+                                        {t2.how && (
+                                          <>
+                                            <br />
+                                            获取：{t2.how}
+                                          </>
+                                        )}
+                                        {t2.materials && (
+                                          <>
+                                            <br />
+                                            制作材料：{t2.materials}
+                                          </>
+                                        )}
+                                        {!t2.how && !t2.materials && (
+                                          <>
+                                            <br />
+                                            获取方式待补充
+                                          </>
+                                        )}
+                                      </div>
+                                    ))}
+                                    {!(row.tm || []).length && (
+                                      <div className="tm-how">获取方式待补充</div>
+                                    )}
+                                  </div>
+                                </td>
+                              </tr>
+                            )}
+                          </Fragment>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  {tab === "egg" && !moves.has_breeding && (
+                    <div className="empty-hint">
+                      当前游戏没有生蛋孵化机制（{game ? game.name_zh : ""}）
+                    </div>
+                  )}
+                </>
+              )}
+              {!moves && <div className="empty-hint">招式表加载中…</div>}
+            </div>
+          )}
         </div>
       </div>
 

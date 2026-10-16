@@ -42,6 +42,53 @@
   margin-top: 4px;
 }
 
+/* 全国图鉴 */
+.national-card {
+  background: linear-gradient(135deg, #f7faff 0%, #f2f8ff 70%, #eef6ff 100%);
+  border-style: dashed;
+  border-color: #b8cdf2;
+}
+.national-card:hover {
+  border-color: #409eff;
+}
+.national-ic-wrap {
+  display: flex;
+  align-items: center;
+  height: 50px;
+  margin-bottom: 10px;
+  color: #409eff;
+}
+.nat-badges {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 5px;
+}
+.nat-badge {
+  font-size: 10.5px;
+  border-radius: 4px;
+  padding: 0 5px;
+  line-height: 17px;
+  white-space: nowrap;
+}
+.nb-region {
+  background: #e8f4ea;
+  color: #2e7d43;
+}
+.nb-mega {
+  background: #f4e8f7;
+  color: #8e44ad;
+}
+.nb-gmax {
+  background: #fdeee0;
+  color: #c85a10;
+}
+.nb-cosmetic {
+  background: #eef2ff;
+  color: #4a5fd0;
+}
+
 /* 图鉴 tabs 与进度 */
 .dex-tabs {
   display: flex;

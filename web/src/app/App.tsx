@@ -6,6 +6,7 @@ import { UnifiedHomePage } from "../pages/UnifiedHomePage";
 import { GamesPage } from "../pages/GamesPage";
 import { GameSection } from "../pages/GameSection";
 import { DetailPage } from "../pages/DetailPage";
+import { NationalDexPage } from "../pages/NationalDexPage";
 import { CalcPage } from "../pages/CalcPage";
 import { usePkt } from "../state/game";
 
@@ -29,15 +30,19 @@ export function App(): JSX.Element {
     {
       id: "games",
       label: "游戏中心",
-      on: route.name === "games" || route.name === "game" || route.name === "pokemon",
+      on:
+        route.name === "games" ||
+        route.name === "game" ||
+        route.name === "national" ||
+        route.name === "pokemon",
     },
     { id: "calc", label: "伤害计算器", on: route.name === "calc" },
     { id: "battle", label: "模拟对战", on: route.name === "battle" },
   ];
 
-  // 详情页 query：hash 未带 game 时回退最近游戏上下文
+  // 详情页 query：hash 未带 game 时回退最近游戏上下文（national 模式不带游戏，保持全量形态）
   const detailQuery = useMemo(() => {
-    if (rawQuery.get("game")) return rawQuery;
+    if (rawQuery.get("game") || rawQuery.get("national")) return rawQuery;
     const rest = hash.includes("?") ? "&" + hash.slice(hash.indexOf("?") + 1) : "";
     return new URLSearchParams(`game=${lastGame}${rest}`);
   }, [rawQuery, hash, lastGame]);
@@ -61,6 +66,7 @@ export function App(): JSX.Element {
         {route.name === "home" && <UnifiedHomePage />}
         {route.name === "games" && <GamesPage />}
         {route.name === "game" && <GameSection gameId={route.gameId} feature={route.feature} />}
+        {route.name === "national" && <NationalDexPage />}
         {route.name === "pokemon" && <DetailPage speciesId={route.speciesId} query={detailQuery} />}
         {route.name === "not-found" && (
           <div className="page">

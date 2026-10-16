@@ -1,6 +1,6 @@
-/* 游戏中心：五作宫格（自 Vue games.js 迁移） */
+/* 游戏中心：五作宫格 + 全国图鉴独立入口（自 Vue games.js 迁移） */
 import { useEffect, useState } from "react";
-import { loadGames, GameIcons, type GameRow } from "../components/shared";
+import { loadGames, GameIcons, MonoIcon, type GameRow } from "../components/shared";
 
 export function GamesPage(): JSX.Element {
   const [games, setGames] = useState<GameRow[]>([]);
@@ -31,6 +31,13 @@ export function GamesPage(): JSX.Element {
             </div>
           </div>
         ))}
+        <div className="game-card national-card" onClick={() => (location.hash = "#/national")}>
+          <span className="national-ic-wrap">
+            <MonoIcon name="dex" size={44} />
+          </span>
+          <div className="game-name">全国图鉴</div>
+          <div className="game-sub">全 1025 种 · 形态收集 · 与各地区图鉴同步</div>
+        </div>
       </div>
     </div>
   );

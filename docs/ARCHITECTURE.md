@@ -33,6 +33,7 @@ python scripts/build_db.py            # 二次执行装入 Z 纯晶 items 与 z_
 python scripts/scrape_52poke.py       # 52poke wiki -> data/curated/*.json + 合并入库
 python scripts/fetch_sprites.py       # 官方绘图（三级回退）-> web/public/pkt/
 python scripts/fetch_calc_assets.py   # 全量道具图标 + 机制图标（极巨/太晶19种）-> assets/items + assets/mechanism
+python scripts/fetch_sprites_52poke.py # 52poke 兜底：残余形态图/道具图 -> curated/sprite_overrides_52poke.json + TODO.json
 python scripts/fetch_feature_images.py / fetch_sandwich_images.py   # 特化页配图 -> dist/assets
 python scripts/make_icon.py           # 精灵球应用图标
 python scripts/export_static_data.py  # db 读侧 -> web/public/data/ JSON 分片（本地模式数据源；含全表 diff 硬门禁）
@@ -123,6 +124,10 @@ main 保留纯前端能力：本地模式降级（api.js，无后端自动切本
 `profiles`（固定默认档案 id=1）· `caught_state(profile_id, dex_id, species_id, caught, note)` ·
 `custom_recipes`（ingredients/seasonings 存 `[{name,count}]` JSON，读取兼容旧字符串数组/顿号文本）
 
+> web 端等价实现为 localStorage（`web/src/state/user.ts`）：`pkt.caught_state.v1` 结构
+> `{dexId: {speciesId: 0|1}}` 不变，新增 **`national` 伪 dexId 键**（零 schema 迁移）；
+> 无地区图鉴归属的物种（如小拉达）仅落在 national 键。
+
 ## §4 端点映射（本地引擎 = `web/src/data/local-api.ts`，签名与原 FastAPI 一致）
 
 > 原 REST 端点已随 FastAPI 退役；下表路径即 `localApi.handle(method, path, params)` 的调度键，
@@ -131,8 +136,9 @@ main 保留纯前端能力：本地模式降级（api.js，无后端自动切本
 | 方法与路径 | 说明 |
 |---|---|
 | `GET /api/games` | 游戏列表 + features + 各图鉴计数 |
+| `GET /api/national` | 全国图鉴：全 1025 物种（默认一般形态图/属性/世代/形态类别标记/形态数，含 national 捕捉态） |
 | `GET /api/dex/{dex_id}?profile&filter&type&q` | 图鉴条目（含捕捉状态；form 优先 dex_default_forms 覆盖） |
-| `PUT /api/state` · `POST /api/state/bulk` | 捕捉标记 / 批量（**同游戏各图鉴自动双向同步**，跨游戏不传播） |
+| `PUT /api/state` · `POST /api/state/bulk` | 捕捉标记 / 批量（**物种级全局传播**：所在全部图鉴跨游戏 + `national` 伪 dexId 同步，勾/取消一致；2026-10-17 起随全国图鉴上线，替代原「同游戏同步」） |
 | `GET /api/state/counts?profile` | 全部图鉴已捕捉计数（一次返回） |
 | `GET /api/pokemon/{id}?game=&form=&dex=` | 详情（介绍/获取方式/进化链/形态按游戏与形态裁剪；form=后缀驱动分支与过滤，dex=默认选中覆盖形态） |
 | `GET /api/pokemon/{id}/moves?game=&form_id=` | 招式分组表（tab 随游戏；朱紫含「进化&回忆」；TM 展开 how/materials） |
@@ -240,12 +246,13 @@ web/
   src/main.tsx        入口：样式装载（battle → 壳 → 组件库）+ 计算器 meta 预热
   src/app/            统一壳：App.tsx(hash 分区分发 + calc/battle keep-alive) + 壳样式
   src/lib/router.ts   零依赖 hash 路由（useSyncExternalStore）
-  src/state/          game.ts(当前游戏上下文 store) / user.ts(caught_state/custom_recipes localStorage)
+  src/state/          game.ts(当前游戏上下文 store) / user.ts(caught_state/custom_recipes localStorage；
+                      caught_state 含 national 伪 dexId 键，物种级全局传播见 §4)
   src/components/     共享层：shared.tsx(TypeBadge/PokeToggle/EvoChain/toast…+Monoline 图标)
                       widgets.css(轻量控件替代 Element Plus：pkt-btn/select/table/modal/
                       FilterSelect=过滤+可见上限)/base|dex|features|calc|mobile.css(Vue 版原样迁移)
-  src/pages/          UnifiedHome/Games/GameSection(rail+功能路由)/Dex/Detail/Ev/Sandwiches/
-                      Donuts/Curry/Calc（React 组件，自 Vue 模板字符串组件迁移，行为等价）
+  src/pages/          UnifiedHome/Games/GameSection(rail+功能路由)/Dex/National(全国图鉴)/Detail/
+                      Ev/Sandwiches/Donuts/Curry/Calc（React 组件，自 Vue 模板字符串组件迁移，行为等价）
                       calc/ 子组件（model 共享模型/SideEditor/SummaryCard/FieldPanel/…）
   src/data/           领域层 TS 单实现（见 §4/§5）+ api.ts(本地引擎直连) + constants.ts(领域常量单源)
   src/battle/         模拟对战自包含 feature：BattleApp/pages(赛制/组队/预览/记录/设置)/
@@ -273,7 +280,8 @@ web/
 | 决策 | 理由 | 里程碑 |
 |---|---|---|
 | 已捕捉卡片**不变色**，仅右上角精灵球表达状态 | 用户拍板：视觉噪音最小化 | M1 |
-| 同游戏图鉴自动双向同步、跨游戏不同步 | 本体/DLC 图鉴同一存档，重复标记违反直觉 | M1 |
+| 图鉴捕捉标记**物种级全局传播**（任一地区 ⇔ 全国，跨游戏同步） | 全国图鉴 = 各地区图鉴并集；每只一个标记、勾/取消一致最符合收集直觉（2026-10-17 随全国图鉴上线，替代原「同游戏同步」） | 全国图鉴 |
+| 全国图鉴独立页 `#/national`，详情页 national 模式裁剪（无图鉴介绍/获取方式/招式表，全量形态切换） | 全国语境无游戏归属，获取方式/招式表无意义；形态不做游戏可用性过滤 | 全国图鉴 |
 | 朱紫「进化&回忆」独立 tab | 52poke 升级表 0 级=进化、tutor=回忆机，语义应显式呈现 | M6 |
 | LA 图鉴 species 不删、改默认展示形态 | LA 无法外部传入，图鉴内 242 种均本作可获得 | M5 |
 | 形态×游戏可用性用 **curated 配置**而非按图鉴成员推断 | 图鉴成员≠形态可用（洗翠图鉴含小拳石但无阿罗拉形态）；配置可随时调整 | M0 |
@@ -354,6 +362,12 @@ web/
 数据类缺口仍以 `DATA-GAPS.md` 为准（无源待补与变体建模两项仍开放，ROADMAP §5 仅索引）。
 
 ## §10 变更历史
+- **2026-10-17 全国图鉴上线（M1）**：`#/national` 独立入口（首页宫格 + 游戏中心卡片）；1025 物种收集网格
+  （进度环/属性/形态类别/世代筛选 + 批量操作）；收集标记升级为**物种级全局传播**（任一地区 ⇔ 全国、跨游戏同步，
+  `national` 伪 dexId 零迁移）；详情页 national 模式（`?national=1`）裁剪图鉴介绍/获取方式/招式表三区、
+  形态切换全量不过滤；数据面新增 `GET /api/national` 与 `nationalDex()/nationalFormBadges()`；
+  管线新增 `fetch_sprites_52poke.py` 52poke 兜底（霜奶仙 62 形态映射表、性别/古董茶具/骑乘形态 curated 标题、
+  SV 道具图 `Bag {中文名} SV Sprite` 模式）。
 - **2026-10-16 模拟对战 UI 迭代批（两轮实机走查反馈）**：濒死槽位错位修复（liveMoveSlots 按槽位对齐存活者，
   修复双打左槽阵亡时名字/招式错位）；队伍编辑器加性别选择并重构两列字段卡；指令面板目标行收敛为槽位级、
   机制按钮（mega/Z/极巨/太晶）独立于选招顺序；日志 Showdown 化（着色/剩余血量/ident 前缀剥离/Snowscape

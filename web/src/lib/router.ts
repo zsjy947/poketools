@@ -4,7 +4,8 @@
  *   #/home                      统一首页（游戏中心 / 伤害计算器 / 模拟对战 宫格）
  *   #/games                     游戏中心（五作列表）
  *   #/game/:gameId/:feature     游戏功能页（dex/ev/sandwich/donut/curry）
- *   #/pokemon/:speciesId        宝可梦详情（query: game / dex / form）
+ *   #/national                  全国图鉴（1025 物种全量形态收集，独立于游戏）
+ *   #/pokemon/:speciesId        宝可梦详情（query: game / dex / form / national）
  *   #/calc                      伤害计算器（全局入口）
  *   #/battle/*                  模拟对战（内部页面流仍由 zustand store 驱动）
  */
@@ -14,6 +15,7 @@ export type Route =
   | { name: "home" }
   | { name: "games" }
   | { name: "game"; gameId: string; feature: string }
+  | { name: "national" }
   | { name: "pokemon"; speciesId: number }
   | { name: "calc" }
   | { name: "battle"; rest: string }
@@ -32,6 +34,8 @@ export function parseHash(hash: string): Route {
       return { name: "games" };
     case "game":
       return a ? { name: "game", gameId: a, feature: b || "dex" } : { name: "games" };
+    case "national":
+      return { name: "national" };
     case "pokemon":
       return a && /^\d+$/.test(a)
         ? { name: "pokemon", speciesId: Number(a) }
