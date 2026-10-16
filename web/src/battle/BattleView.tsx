@@ -119,12 +119,14 @@ export function BattleView(): JSX.Element {
         </div>
         <div className="stage-mid">
           <div className={"stage-field" + (conds.weather ? " w-" + conds.weather : "")}>
+            {conds.weather && <div className={"fx fx-" + conds.weather} aria-hidden="true" />}
             <SideBoard
               side="p2"
               snapshot={snapshot}
               dex={dex}
               animated={settings.animation}
               animMap={animMap}
+              sideConds={conds.sideStatus.p2}
             />
             <div className="field-strip">
               <div className="field-conds">
@@ -151,7 +153,7 @@ export function BattleView(): JSX.Element {
                 ))}
               </div>
               <div className="field-mid">
-                <span>{snapshot.events.slice(-1)[0]?.value ?? ""}</span>
+                <span>{lastLogText(snapshot.logTail)}</span>
               </div>
             </div>
             <SideBoard
@@ -160,6 +162,7 @@ export function BattleView(): JSX.Element {
               dex={dex}
               animated={settings.animation}
               animMap={animMap}
+              sideConds={conds.sideStatus.p1}
               back
             />
           </div>
@@ -247,9 +250,11 @@ function SideBoard(props: {
   dex: ReturnType<typeof dexFor>;
   animated: boolean;
   animMap: Record<string, AnimKind>;
+  /** 该侧生效的侧壁（reflect/lightscreen/auroraveil/safeguard/tailwind/mist） */
+  sideConds: string[];
   back?: boolean;
 }): JSX.Element {
-  const { side, snapshot, dex, animated, back, animMap } = props;
+  const { side, snapshot, dex, animated, back, animMap, sideConds } = props;
   const state = snapshot.sides[side];
   const actives = state.active
     .map((ident) => state.bench.find((m) => m.ident === ident))
@@ -273,6 +278,7 @@ function SideBoard(props: {
               side={side}
               back={!!back}
               anim={animMap[m.ident]}
+              sideConds={sideConds}
             />
           ))
         ) : (
@@ -301,8 +307,9 @@ function MonStage(props: {
   side: "p1" | "p2";
   back: boolean;
   anim?: AnimKind | undefined;
+  sideConds?: string[] | undefined;
 }): JSX.Element {
-  const { mon, dex, animated, side, back, anim } = props;
+  const { mon, dex, animated, side, back, anim, sideConds } = props;
   // 精灵文件名 = 引擎 spriteid（官方 dump 口径：garchomp-mega/hooh/muk-alola）；中文名按物种 id 查
   const spName = mon.details.split(",")[0]?.trim() ?? "";
   const sp = dex.species.get(spName);
@@ -328,20 +335,31 @@ function MonStage(props: {
       <div className="hp-panel">
         <div className="hp-head">
           <span className="hp-name">{zhNameOf(dex, nameId)}</span>
-          {mon.status && (
-            <span className={"status st-" + mon.status}>
-              {STATUS_ICON[mon.status] ?? ""}
-              {STATUS_ZH[mon.status] ?? mon.status}
-            </span>
-          )}
           {mon.terastallized && <span className="tera-badge">太晶·{mon.teraType}</span>}
           {mon.mega && <span className="mega-badge">超级进化</span>}
           {mon.max && <span className="max-badge">极巨</span>}
         </div>
-        {/* 血条：白轨 + 恒绿存量（扣血露白，更直观） */}
-        <div className="hp-bar">
-          <div className="hp-fill" style={{ width: pct + "%" }} />
+        {/* 血条 + 状态图标（Showdown 风：异常状态以图标贴血条右侧，悬停出说明） */}
+        <div className="hp-row">
+          <div className="hp-bar">
+            <div className="hp-fill" style={{ width: pct + "%" }} />
+          </div>
+          {mon.status && (
+            <span className={"status st-" + mon.status} title={STATUS_ZH[mon.status] ?? mon.status}>
+              {STATUS_ICON[mon.status] ?? STATUS_ZH[mon.status]}
+            </span>
+          )}
         </div>
+        {/* 该侧生效的侧壁（Showdown 风：精灵旁常驻图标 + 呼吸动画，悬停出说明） */}
+        {(sideConds?.length ?? 0) > 0 && (
+          <div className="side-cond-row">
+            {sideConds!.map((sc) => (
+              <span key={sc} className={"side-cond sc-" + sc} title={condLabel(sc)}>
+                {SIDE_COND_ICON[sc] ?? "🛡"}
+              </span>
+            ))}
+          </div>
+        )}
         <span className="hp-num">
           {mon.hp}/{mon.maxhp}
         </span>
@@ -364,6 +382,16 @@ function MonStage(props: {
   );
 }
 
+/** 侧壁图标（Showdown 风：精灵旁小图标，动画呼吸提示生效中） */
+const SIDE_COND_ICON: Record<string, string> = {
+  reflect: "🛡",
+  lightscreen: "🔆",
+  auroraveil: "🌈",
+  safeguard: "✨",
+  tailwind: "💨",
+  mist: "🌫",
+};
+
 /** 无需目标选择的招式 target 值 */
 const NO_TARGET = [
   "self",
@@ -381,7 +409,6 @@ const NO_TARGET = [
 interface SlotSel {
   kind: "move";
   moveIdx: number;
-  mech?: string | undefined;
   target?: number | undefined;
 }
 interface SlotSwitch {
@@ -439,16 +466,24 @@ function MoveOrders(props: {
   // 目标选择取决于场地槽位数（双打残局单在场仍需指定目标），而非存活数
   const doubles = mons.filter((m) => m.active).length > 1;
   const [sel, setSel] = useState<Record<number, SlotChoice>>({});
+  /** 机制声明独立于招式选择（槽位 → mega/zmove/dynamax/terastallize）：
+   *  先点机制再选招、或先选招再点机制均生效（引擎指令为 move N + mech 的后缀） */
+  const [mechSel, setMechSel] = useState<Record<number, string | undefined>>({});
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     setSel({});
+    setMechSel({});
     setSubmitted(false);
   }, [req]);
 
   const benchOf = (req.side?.pokemon ?? [])
     .map((p, i) => ({ p, i }))
     .filter((x) => !x.p.active && !x.p.condition.includes("fnt"));
+
+  const toggleMech = (slot: number, mech: string) => {
+    setMechSel((prev) => ({ ...prev, [slot]: prev[slot] === mech ? undefined : mech }));
+  };
 
   const setSlot = (slot: number, choice: SlotChoice | undefined) => {
     setSel((prev) => {
@@ -479,7 +514,8 @@ function MoveOrders(props: {
       const mv = s.a.moves[c.moveIdx];
       const needsTarget = doubles && !!mv?.target && !NO_TARGET.includes(mv.target);
       if (needsTarget && c.target !== undefined) part += ` ${c.target > 0 ? "+" : ""}${c.target}`;
-      if (c.mech) part += ` ${c.mech}`;
+      const mech = mechSel[s.i];
+      if (mech) part += ` ${mech}`;
       return part;
     });
     setSubmitted(true);
@@ -490,13 +526,18 @@ function MoveOrders(props: {
     <div className="orders">
       {slots.map((s) => {
         const cur = sel[s.i];
+        // 槽位级目标行：作用于当前选中的招式（未选招 / 全体类招式时整行置灰）
+        const curMove = cur?.kind === "move" ? s.a.moves[cur.moveIdx] : undefined;
+        const targetUsable = doubles && !!curMove?.target && !NO_TARGET.includes(curMove.target);
         return (
           <div key={s.i} className="order-slot">
             <div className="slot-head">
               <b>{slots.length > 1 ? (s.i === 0 ? "左侧" : "右侧") : "行动"}</b>
               <span className="muted">{zhDetails(s.mon.details, dex)}</span>
               {cur && (
-                <span className="muted">→ {describeChoice(cur, s.a.moves, dex, doubles)}</span>
+                <span className="muted">
+                  → {describeChoice(cur, s.a.moves, dex, doubles, mechSel[s.i])}
+                </span>
               )}
             </div>
             <div className="move-grid">
@@ -504,7 +545,6 @@ function MoveOrders(props: {
                 // 走 data 层 moveView（category 已归一小写；直读引擎的首字母大写会让分类全落「变化」）
                 const mv = moveView(dex, m.id);
                 const on = cur?.kind === "move" && cur.moveIdx === i;
-                const needsTarget = doubles && !!m.target && !NO_TARGET.includes(m.target);
                 return (
                   <div key={i} className="move-cell">
                     <button
@@ -515,7 +555,6 @@ function MoveOrders(props: {
                           kind: "move",
                           moveIdx: i,
                           target: defaultTarget(m.target, s.i),
-                          mech: cur?.kind === "move" ? cur.mech : undefined,
                         })
                       }
                       title={mv?.desc ?? ""}
@@ -533,42 +572,6 @@ function MoveOrders(props: {
                         PP {m.pp}/{m.maxpp}
                       </span>
                     </button>
-                    {on && needsTarget && (
-                      <div className="target-row">
-                        {[1, 2].map((loc) => (
-                          <button
-                            key={loc}
-                            className={"mini" + (cur.target === loc ? " on" : "")}
-                            onClick={() =>
-                              setSlot(s.i, {
-                                kind: "move",
-                                moveIdx: i,
-                                target: loc,
-                                mech: cur.mech,
-                              })
-                            }
-                          >
-                            对手{loc === 1 ? "左" : "右"}
-                          </button>
-                        ))}
-                        {[-1, -2].map((loc) => (
-                          <button
-                            key={loc}
-                            className={"mini" + (cur.target === loc ? " on" : "")}
-                            onClick={() =>
-                              setSlot(s.i, {
-                                kind: "move",
-                                moveIdx: i,
-                                target: loc,
-                                mech: cur.mech,
-                              })
-                            }
-                          >
-                            己方{loc === -1 ? "左" : "右"}
-                          </button>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 );
               })}
@@ -580,19 +583,48 @@ function MoveOrders(props: {
               s.a.canTerastallize) && (
               <div className="mech-row">
                 {s.a.canTerastallize &&
-                  mechBtn(sel, s.i, "terastallize", "太晶化", setSlot, {
-                    icon: `/assets/mechanism/tera_${teraTypeOf(req, s.i) ?? "一般"}.png`,
-                  })}
+                  mechBtn(
+                    mechSel[s.i],
+                    "terastallize",
+                    "太晶化",
+                    () => toggleMech(s.i, "terastallize"),
+                    {
+                      icon: `/assets/mechanism/tera_${teraTypeOf(req, s.i) ?? "一般"}.png`,
+                    },
+                  )}
                 {s.a.canDynamax &&
-                  mechBtn(sel, s.i, "dynamax", "极巨化", setSlot, {
+                  mechBtn(mechSel[s.i], "dynamax", "极巨化", () => toggleMech(s.i, "dynamax"), {
                     icon: "/assets/mechanism/dynamax.png",
                   })}
                 {s.a.canGigantamax &&
-                  mechBtn(sel, s.i, "dynamax", "超极巨化", setSlot, {
+                  mechBtn(mechSel[s.i], "dynamax", "超极巨化", () => toggleMech(s.i, "dynamax"), {
                     icon: "/assets/mechanism/dynamax.png",
                   })}
-                {s.a.canMegaEvo && mechBtn(sel, s.i, "mega", "超级进化", setSlot)}
-                {s.a.canZMove && mechBtn(sel, s.i, "zmove", "Z 招式", setSlot)}
+                {s.a.canMegaEvo &&
+                  mechBtn(mechSel[s.i], "mega", "超级进化", () => toggleMech(s.i, "mega"))}
+                {s.a.canZMove &&
+                  mechBtn(mechSel[s.i], "zmove", "Z 招式", () => toggleMech(s.i, "zmove"))}
+              </div>
+            )}
+            {/* 槽位级目标选择：双打常驻一行（作用于已选招式；其余置灰） */}
+            {doubles && (
+              <div className={"target-row slot-target" + (targetUsable ? "" : " off")}>
+                <span className="muted">目标</span>
+                {[1, 2, -1, -2].map((loc) => (
+                  <button
+                    key={loc}
+                    disabled={!targetUsable}
+                    className={
+                      "mini" +
+                      (targetUsable && cur?.kind === "move" && cur.target === loc ? " on" : "")
+                    }
+                    onClick={() => {
+                      if (cur?.kind === "move") setSlot(s.i, { ...cur, target: loc });
+                    }}
+                  >
+                    {loc > 0 ? `对手${loc === 1 ? "左" : "右"}` : `己方${loc === -1 ? "左" : "右"}`}
+                  </button>
+                ))}
               </div>
             )}
             {benchOf.length > 0 && (
@@ -641,26 +673,22 @@ function MoveOrders(props: {
   );
 }
 
-/** 机制按钮：点亮 = 启用（对齐计算器交互）；同一槽位机制互斥（sel.mech 单值）。
+/** 机制按钮：点亮 = 启用（对齐计算器交互）；同一槽位机制互斥（mechSel 单值）。
+ *  与选招顺序无关——先点机制再选招、或先选招再点机制，提交时统一作为 move 指令后缀。
  *  太晶/极巨走图标（/assets/mechanism，点亮提亮），Mega/Z 为文字按钮。 */
 function mechBtn(
-  sel: Record<number, SlotChoice>,
-  slot: number,
+  current: string | undefined,
   mech: string,
   label: string,
-  setSlot: (slot: number, c: SlotChoice | undefined) => void,
+  toggle: () => void,
   opts?: { icon?: string },
 ): JSX.Element {
-  const cur = sel[slot];
-  const on = cur?.kind === "move" && cur.mech === mech;
+  const on = current === mech;
   return (
     <button
       className={"mech-btn mini" + (on ? " on" : "")}
       title={`${label}${on ? "（已点亮：出招时附加）" : ""}`}
-      onClick={() => {
-        if (!cur || cur.kind !== "move") return;
-        setSlot(slot, { ...cur, mech: on ? undefined : mech });
-      }}
+      onClick={toggle}
     >
       {opts?.icon && (
         <img
@@ -828,18 +856,19 @@ function describeChoice(
   moves: Array<{ move: string; id: string }>,
   dex: Dex,
   doubles: boolean,
+  mechSel?: string | undefined,
 ): string {
   if (c.kind === "switch") return "换人";
   const m = moves[c.moveIdx];
   const name = m ? zhMoveName(dex, m.id, m.move) : "";
   const mech =
-    c.mech === "terastallize"
+    mechSel === "terastallize"
       ? "（太晶）"
-      : c.mech === "dynamax"
+      : mechSel === "dynamax"
         ? "（极巨）"
-        : c.mech === "mega"
+        : mechSel === "mega"
           ? "（超级进化）"
-          : c.mech === "zmove"
+          : mechSel === "zmove"
             ? "（Z）"
             : "";
   const target =
@@ -859,13 +888,64 @@ function defaultTarget(target: string | undefined, slotOrdinal: number): number 
   return 1;
 }
 
-function LogLine(props: { line: string }): JSX.Element {
+/** 日志不渲染的协议噪音（连接/元数据行；裸 p1/p2 系 sideupdate 残行用正则） */
+const LOG_HIDDEN = new Set([
+  "player",
+  "seed",
+  "rated",
+  "start",
+  "clearpoke",
+  "poke",
+  "teampreview",
+  "t:",
+  "gametype",
+  "gen",
+  "format",
+  "tier",
+  "uptime",
+  "split",
+  "tee",
+  "view",
+  "c",
+  "chat",
+  "j",
+  "l",
+  "prompt",
+]);
+const LOG_HIDDEN_RE = /^p[12]( \d+)?$/;
+
+function LogLine(props: { line: string }): JSX.Element | null {
   const { line } = props;
-  if (!line.startsWith("|")) return <div className="log-raw">{line}</div>;
+  // 战斗事件行一律以 | 开头；无前缀的裸行是流帧残留（挑战按钮/帧头等），不渲染
+  if (!line.startsWith("|")) return null;
   const parts = line.split("|");
   const kind = parts[1] ?? "";
+  if (LOG_HIDDEN.has(kind) || LOG_HIDDEN_RE.test(kind)) return null;
+  // raw 行里的服务端交互控件（OTS 请求按钮等）不进日志
+  if (kind === "raw" && /<button|otsrequest/i.test(line)) return null;
   const text = zhLine(renderLine(kind, parts.slice(2)));
+  if (!text) return null;
   return <div className={"log-line log-" + kind.replace(/[^a-z-]/g, "")}>{text}</div>;
+}
+
+/** 协议 ident（"p1a: Garchomp"）去掉槽位前缀，只留可读名（zhLine 再翻专名） */
+function who(ident: string | undefined): string {
+  return (ident ?? "").replace(/^p[12][ab]?: /, "");
+}
+
+/** 最近一条可渲染日志的中文文本（场地 ticker 用，复用日志渲染规则） */
+function lastLogText(logTail: string[]): string {
+  for (let i = logTail.length - 1; i >= 0; i--) {
+    const line = logTail[i]!;
+    if (!line.startsWith("|")) continue;
+    const parts = line.split("|");
+    const kind = parts[1] ?? "";
+    if (LOG_HIDDEN.has(kind) || LOG_HIDDEN_RE.test(kind)) continue;
+    if (kind === "raw" && /<button|otsrequest/i.test(line)) continue;
+    const t = zhLine(renderLine(kind, parts.slice(2)));
+    if (t) return t;
+  }
+  return "";
 }
 
 function renderLine(kind: string, p: string[]): string {
@@ -873,40 +953,47 @@ function renderLine(kind: string, p: string[]): string {
     (s ?? "").replace(/\\n/g, " ").replace(/\n/g, " ").trim();
   switch (kind) {
     case "turn":
-      return `—— 第 ${p[0]} 回合 ——`;
+      return `第 ${p[0]} 回合`;
+    case "-ability":
+      return `${who(p[0])} 的「${p[1]}」发动了`;
     case "move":
-      return `${p[0]} 使用了 ${p[1]}！`;
+      return `${who(p[0])} 使用了 ${p[1]}！`;
     case "switch":
     case "drag":
-      return `${p[0]}，就决定是你了！（${p[1]}）`;
+      return `${who(p[0])}，就决定是你了！（${p[1]}）`;
     case "damage":
-      return `${p[0]} 受到了伤害。`;
+      // p[1] 形如 "58/194"（剩余/最大）——参考 Showdown 展示剩余血量
+      return p[1] ? `${who(p[0])} 受到了伤害（${p[1]}）` : `${who(p[0])} 受到了伤害。`;
     case "heal":
-      return `${p[0]} 回复了 HP。`;
+      return p[1] ? `${who(p[0])} 回复了 HP（${p[1]}）` : `${who(p[0])} 回复了 HP。`;
     case "faint":
-      return `${p[0]} 倒下了！`;
+      return `${who(p[0])} 倒下了！`;
     case "win":
       return `🎉 ${p[0]} 获胜！`;
     case "tie":
       return "平局。";
     case "mega":
-      return `${p[0]} 超级进化成了 ${p[1]}！`;
+      return `${who(p[0])} 超级进化成了 ${p[1]}！`;
     case "terastallize":
     case "-terastallize":
-      return `${p[0]} 太晶化！（${p[1]}）`;
+      return `${who(p[0])} 太晶化！（${p[1]}）`;
     case "max":
-      return `${p[0]} 极巨化了！`;
+      return `${who(p[0])} 极巨化了！`;
     case "zpower":
-      return `${p[0]} 汇聚了 Z 力量！`;
+      return `${who(p[0])} 汇聚了 Z 力量！`;
     case "weather":
     case "-weather":
-      return `天气：${zhFieldText(p[0] ?? "")}`;
+      return p[0] === "none" ? "天气恢复了。" : `天气：${zhFieldText(p[0] ?? "")}`;
     case "-fieldstart":
     case "fieldstart":
       return `场地：${zhFieldText(p[0] ?? "")}`;
     case "-fieldend":
     case "fieldend":
       return `场地结束：${zhFieldText(p[0] ?? "")}`;
+    case "-sidestart":
+      return `${who(p[0])}：${zhFieldText(p[1] ?? "")} 展开`;
+    case "-sideend":
+      return `${who(p[0])}：${zhFieldText(p[1] ?? "")} 结束`;
     case "-end":
     case "-singlemove":
     case "-singleturn":
@@ -921,7 +1008,9 @@ function renderLine(kind: string, p: string[]): string {
     case "-crit":
       return "击中了要害！";
     case "-status":
-      return `${p[0]} 陷入了${p[1]}状态。`;
+      return `${who(p[0])} 陷入了${p[1]}状态。`;
+    case "-curestatus":
+      return `${who(p[0])} 的${p[1] ?? "状态"}解除了。`;
     case "rule":
       return `规则：${p[0]}`;
     case "error":
@@ -938,6 +1027,7 @@ const FIELD_ZH: Record<string, string> = {
   Sandstorm: "沙暴",
   Hail: "冰雹",
   Snow: "下雪",
+  Snowscape: "下雪",
   ElectricTerrain: "电气场地",
   GrassyTerrain: "青草场地",
   MistyTerrain: "薄雾场地",
@@ -954,7 +1044,9 @@ const FIELD_ZH: Record<string, string> = {
 
 function zhFieldText(raw: string): string {
   let out = raw;
-  for (const [en, zh] of Object.entries(FIELD_ZH)) out = out.replaceAll(en, zh);
+  // 长键优先（如 Snowscape 先于 Snow），避免短键把长词条截断替换
+  const entries = Object.entries(FIELD_ZH).sort((a, b) => b[0].length - a[0].length);
+  for (const [en, zh] of entries) out = out.replaceAll(en, zh);
   out = out.replace(/\[upkeep\]/g, "（持续中）");
   out = out.replace(/\[from\] ability: ?/g, "（特性：");
   out = out.replace(/\[from\] ?move: ?/g, "（招式：");

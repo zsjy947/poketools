@@ -242,28 +242,6 @@ export function TeamBuilderPage(): JSX.Element {
 
         {current && currentSpecies ? (
           <div className="mon-editor">
-            <div className="ed-row">
-              <label>宝可梦</label>
-              <FilterSelect
-                value={currentSpecies?.id ?? current.species}
-                onChange={(v) => {
-                  // 切换物种：特性/招式随物种重置；昵称已移除，显示名恒为中文种名
-                  patchSet({
-                    species: String(v),
-                    ability: "",
-                    moves: ["", "", "", ""],
-                    name: "",
-                  });
-                }}
-                options={roster}
-                displayOf={(v) => speciesLabel(dex, String(v))}
-                render={(s: SpeciesView) => {
-                  const label = speciesLabel(dex, s.id);
-                  return { value: s.id, label, search: `${label} ${s.zhName} ${s.name}` };
-                }}
-                placeholder="搜索宝可梦…"
-              />
-            </div>
             {speciesHidden && (
               <div className="alert warn roster-hidden-tip">
                 当前宝可梦（{speciesLabel(dex, current.species)}）不在该赛制的可选列表中
@@ -271,61 +249,99 @@ export function TeamBuilderPage(): JSX.Element {
                 名册外物种）：已有数据保留可用，重新选择后将切换为列表内形态。
               </div>
             )}
-            <div className="ed-row">
-              <label>等级</label>
-              {/* 非受控 + 编辑目标切换重建：键入即时生效（显示由浏览器持有，不受渲染快照回写）；
-                  store 值随 onChange 同步归一写入（1~100 clamp，空串回赛制默认）。等级不随物种
-                  切换变化，key 仅绑槽位即可（绑物种会在事件后渲染快照下重建并吞掉键入） */}
-              <input
-                key={`lv-${slot}-${editing}`}
-                type="number"
-                min={1}
-                max={100}
-                defaultValue={current.level ?? defaultLevel}
-                onChange={(e) => {
-                  patchSet({ level: normalizeLevelInput(e.target.value, defaultLevel) });
-                }}
-              />
-              <span className="muted ed-hint">赛制默认 Lv.{defaultLevel}</span>
-            </div>
-            <div className="ed-row">
-              <label>特性</label>
-              <FilterSelect
-                value={current.ability}
-                onChange={(v) => patchSet({ ability: String(v) })}
-                options={abilityOptions(dex, currentSpecies, abilities)}
-                displayOf={(v) => abilityView(dex, String(v))?.zhName ?? String(v)}
-                render={(a: AbilityView) => ({ value: a.name, label: a.zhName })}
-                placeholder="搜索特性…"
-              />
-            </div>
-            <div className="ed-row">
-              <label>道具</label>
-              <FilterSelect
-                value={current.item ?? ""}
-                onChange={(v) => patchSet({ item: String(v) })}
-                options={items}
-                displayOf={(v) => itemLabel(dex, String(v))}
-                render={(it) => ({
-                  value: it.name,
-                  label: (
-                    <span className="item-opt">
-                      <img
-                        src={`/assets/items/${it.id}.png`}
-                        alt=""
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).style.display = "none";
-                        }}
-                      />
-                      {it.zhName}
-                    </span>
-                  ),
-                  search: `${it.zhName} ${it.name}`,
-                })}
-                placeholder="搜索道具…"
-              />
+            {/* 基本信息两列紧凑网格：字段卡（label 上 / 控件下），不再一控件占满一行 */}
+            <div className="ed-basic">
+              <div className="ed-field ed-field-wide">
+                <label>宝可梦</label>
+                <FilterSelect
+                  value={currentSpecies?.id ?? current.species}
+                  onChange={(v) => {
+                    // 切换物种：特性/招式随物种重置；昵称已移除，显示名恒为中文种名
+                    patchSet({
+                      species: String(v),
+                      ability: "",
+                      moves: ["", "", "", ""],
+                      name: "",
+                    });
+                  }}
+                  options={roster}
+                  displayOf={(v) => speciesLabel(dex, String(v))}
+                  render={(s: SpeciesView) => {
+                    const label = speciesLabel(dex, s.id);
+                    return { value: s.id, label, search: `${label} ${s.zhName} ${s.name}` };
+                  }}
+                  placeholder="搜索宝可梦…"
+                />
+              </div>
+              <div className="ed-field">
+                <label>性别</label>
+                {/* 性别影响个别招式判定（如魅惑仅对异性生效）；导出为 PokePaste 的 (M)/(F) 后缀 */}
+                <select
+                  value={current.gender ?? ""}
+                  onChange={(e) => patchSet({ gender: e.target.value })}
+                >
+                  <option value="">（默认）</option>
+                  <option value="M">♂ 雄性</option>
+                  <option value="F">♀ 雌性</option>
+                </select>
+              </div>
+              <div className="ed-field">
+                <label>
+                  等级<span className="muted">（赛制默认 Lv.{defaultLevel}）</span>
+                </label>
+                {/* 非受控 + 编辑目标切换重建：键入即时生效（显示由浏览器持有，不受渲染快照回写）；
+                    store 值随 onChange 同步归一写入（1~100 clamp，空串回赛制默认）。等级不随物种
+                    切换变化，key 仅绑槽位即可（绑物种会在事件后渲染快照下重建并吞掉键入） */}
+                <input
+                  key={`lv-${slot}-${editing}`}
+                  type="number"
+                  min={1}
+                  max={100}
+                  defaultValue={current.level ?? defaultLevel}
+                  onChange={(e) => {
+                    patchSet({ level: normalizeLevelInput(e.target.value, defaultLevel) });
+                  }}
+                />
+              </div>
+              <div className="ed-field">
+                <label>特性</label>
+                <FilterSelect
+                  value={current.ability}
+                  onChange={(v) => patchSet({ ability: String(v) })}
+                  options={abilityOptions(dex, currentSpecies, abilities)}
+                  displayOf={(v) => abilityView(dex, String(v))?.zhName ?? String(v)}
+                  render={(a: AbilityView) => ({ value: a.name, label: a.zhName })}
+                  placeholder="搜索特性…"
+                />
+              </div>
+              <div className="ed-field">
+                <label>道具</label>
+                <FilterSelect
+                  value={current.item ?? ""}
+                  onChange={(v) => patchSet({ item: String(v) })}
+                  options={items}
+                  displayOf={(v) => itemLabel(dex, String(v))}
+                  render={(it) => ({
+                    value: it.name,
+                    label: (
+                      <span className="item-opt">
+                        <img
+                          src={`/assets/items/${it.id}.png`}
+                          alt=""
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = "none";
+                          }}
+                        />
+                        {it.zhName}
+                      </span>
+                    ),
+                    search: `${it.zhName} ${it.name}`,
+                  })}
+                  placeholder="搜索道具…"
+                />
+              </div>
               {hasTera && (
-                <>
+                <div className="ed-field">
                   <label>太晶属性</label>
                   <select
                     value={current.teraType ?? ""}
@@ -338,13 +354,13 @@ export function TeamBuilderPage(): JSX.Element {
                       </option>
                     ))}
                   </select>
-                </>
+                </div>
               )}
             </div>
 
             <div className="ed-moves">
               {[0, 1, 2, 3].map((i) => (
-                <div className="ed-row" key={i}>
+                <div className="ed-field" key={i}>
                   <label>招式 {i + 1}</label>
                   <FilterSelect
                     value={current.moves[i] ?? ""}

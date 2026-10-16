@@ -73,6 +73,7 @@ export const FIELD_COND_ZH: Record<string, string> = {
   sandstorm: "沙暴",
   hail: "冰雹",
   snow: "下雪",
+  snowscape: "下雪",
   electricterrain: "电气场地",
   grassyterrain: "青草场地",
   mistyterrain: "薄雾场地",
