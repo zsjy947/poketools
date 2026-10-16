@@ -354,6 +354,11 @@ web/
 数据类缺口仍以 `DATA-GAPS.md` 为准（无源待补与变体建模两项仍开放，ROADMAP §5 仅索引）。
 
 ## §10 变更历史
+- **2026-10-16 模拟对战 UI 迭代批（两轮实机走查反馈）**：濒死槽位错位修复（liveMoveSlots 按槽位对齐存活者，
+  修复双打左槽阵亡时名字/招式错位）；队伍编辑器加性别选择并重构两列字段卡；指令面板目标行收敛为槽位级、
+  机制按钮（mega/Z/极巨/太晶）独立于选招顺序；日志 Showdown 化（着色/剩余血量/ident 前缀剥离/Snowscape
+  适配/噪音隐藏/ticker 中文化）；场地复刻 Showdown（官方截图视觉分析）+ 天气粒子动画层 + 异常状态纯图标 +
+  侧壁呼吸图标。144 测试全绿；结论沉淀 docs/BATTLE.md §1/§5/§8 与 USER-MANUAL。
 - **2026-10-15 模拟对战修复批（BATTLE-FIX-PLAN 全量 T1-T12）**：新增 `web/src/battle/data/roster.ts`
   选择数据基建（名册=引擎 isNonstandard / 临时形态=battleOnly 动态收集+永恒之花兜底 / 等值合并组白名单 /
   形态短后缀表+地区派生，展示名统一「种名-形态短名」）；`FilterSelect` 移至 components（battle 分层依赖合法）；
