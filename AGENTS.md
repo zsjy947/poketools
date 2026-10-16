@@ -104,7 +104,8 @@ node tools/smoke.mjs               # 冒烟：web 构建产物静态托管逐资
 
 ## 约定
 
-- commit 规范：`类型: 摘要`（类型 = feat/fix/data/docs/test/chore），每个里程碑一次 commit。
+- commit 规范：`类型: 摘要`（类型 = feat/fix/data/docs/test/chore），每个里程碑一次 commit，全部使用英文；
+  commit 信息只描述实际修改内容，不携带计划文档中的阶段/任务编号（如 M1、T3）——阶段标记只存在于计划文档内。
 - UI 文案一律简体中文；界面缺失数据一律标注「待补充」，禁止编造数据。
 - 52poke 解析失败的条目必须落 `data/curated/TODO.json`，不要静默丢弃。
 - 前端构建产物 `web/dist` 不入库（gitignore）；发布产物为 Tauri 安装包/便携 exe。
