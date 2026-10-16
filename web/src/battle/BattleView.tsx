@@ -149,6 +149,13 @@ export function BattleStagePane(props: {
   highlightTurn?: number | null;
 }): JSX.Element {
   const { snapshot, session, dex, animation } = props;
+  // 闪回：点击回合指示/天气 chip → 日志面板滚动至该回合块并高亮（2.5s 后熄灭）
+  const [flashTurn, setFlashTurn] = useState<number | null>(null);
+  useEffect(() => {
+    if (flashTurn == null) return;
+    const t = window.setTimeout(() => setFlashTurn(null), 2500);
+    return () => window.clearTimeout(t);
+  }, [flashTurn]);
   // 速度：设置为 ms/事件（基准 420），动画契约为倍率——420ms→1x，越大越慢
   const animSpeed = props.animationSpeed > 0 ? 420 / props.animationSpeed : 1;
   // 飘字 HP 种子：首个带完整 bench 且尚无 HP 事件的快照（一次性捕获开局血量）
@@ -214,6 +221,7 @@ export function BattleStagePane(props: {
               cls="cond-weather"
               id={conds.weather}
               turns={engine ? engine.field.weatherDuration : undefined}
+              onClick={conds.weather ? () => setFlashTurn(snapshot.turn) : undefined}
             />
             <CondChip
               cls="cond-terrain"
@@ -248,7 +256,14 @@ export function BattleStagePane(props: {
             ))}
           </div>
           <div className="field-mid">
-            <span>{lastLogText(snapshot.logTail)}</span>
+            <button
+              className="turn-indicator"
+              title="点击在日志中定位当前回合"
+              onClick={() => setFlashTurn(snapshot.turn)}
+            >
+              回合 {snapshot.turn}
+            </button>
+            <span className="ticker">{lastLogText(snapshot.logTail)}</span>
           </div>
         </div>
         <SideBoard
@@ -263,13 +278,18 @@ export function BattleStagePane(props: {
           engineField={engine?.field ?? null}
           back
         />
+        {snapshot.phase === "finished" && (
+          <div className="victory-banner" aria-hidden="true">
+            {snapshot.winner ? `🏆 ${snapshot.winner} 获胜！` : "平局"}
+          </div>
+        )}
       </div>
       {/* 信息流日志（FR-09）—— 中列下半（唯一内部滚动区）：Showdown 式回合分组 */}
       <div className="battle-log">
         <h3>战斗日志（可回看）</h3>
         <TurnLogView
           lines={props.logLines ?? snapshot.logTail}
-          highlightTurn={props.highlightTurn}
+          highlightTurn={flashTurn ?? props.highlightTurn ?? null}
         />
       </div>
     </>
@@ -282,14 +302,16 @@ function CondChip(props: {
   id?: string | undefined;
   label?: string | undefined;
   turns?: number | undefined;
+  onClick?: (() => void) | undefined;
 }): JSX.Element | null {
-  const { cls, id, label, turns } = props;
+  const { cls, id, label, turns, onClick } = props;
   if (!id) return null;
   const low = turns != null && turns <= 1;
   return (
     <span
-      className={"cond " + cls + (low ? " low" : "")}
+      className={"cond " + cls + (low ? " low" : "") + (onClick ? " clickable" : "")}
       title={condLabel(id) + (turns != null ? `（剩余 ${turns} 回合）` : "")}
+      onClick={onClick}
     >
       {label ?? condLabel(id)}
       {turns != null && turns > 0 ? ` ${turns}` : ""}

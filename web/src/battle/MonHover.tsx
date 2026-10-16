@@ -8,7 +8,7 @@ import { useRef, useState, type ReactNode } from "react";
 import type { MonState, EngineMonView } from "../engine-adapter";
 import type { RequestChoice } from "../engine-adapter/session";
 import { dexFor, moveView, speciesView, TYPE_ZH, STATUS_ZH, itemView } from "../data";
-import { STATUS_ICON } from "./field";
+import { STATUS_ICON, STAT_BOOST_ZH } from "./field";
 
 type Dex = ReturnType<typeof dexFor>;
 
@@ -34,16 +34,6 @@ export interface MonInfo {
   /** 引擎能力变化（atk/def/spa/spd/spe/accuracy/evasion → -6..6）；替补为空 */
   boosts: Record<string, number>;
 }
-
-export const BOOST_ZH: Record<string, string> = {
-  atk: "攻击",
-  def: "防御",
-  spa: "特攻",
-  spd: "特防",
-  spe: "速度",
-  accuracy: "命中",
-  evasion: "闪避",
-};
 
 /** 组装悬浮框数据：payload=request 侧载荷行，engineMon=引擎同名列（可缺）。纯函数。 */
 export function buildMonInfo(args: {
@@ -134,7 +124,7 @@ export function HoverHost(props: {
 export function MonHoverCard(props: { info: MonInfo; dex: Dex }): JSX.Element {
   const { info, dex } = props;
   const itemZh = info.item ? (itemView(dex, info.item)?.zhName ?? info.item) : "";
-  const boostEntries = Object.entries(info.boosts).filter(([k]) => BOOST_ZH[k]);
+  const boostEntries = Object.entries(info.boosts).filter(([k]) => STAT_BOOST_ZH[k]);
   return (
     <div className="mhc-body">
       <div className="mhc-head">
@@ -179,7 +169,7 @@ export function MonHoverCard(props: { info: MonInfo; dex: Dex }): JSX.Element {
           <span>
             {boostEntries.map(([k, v]) => (
               <span key={k} className={"mhc-boost " + (v > 0 ? "up" : "down")}>
-                {BOOST_ZH[k]} {v > 0 ? "+" : ""}
+                {STAT_BOOST_ZH[k]} {v > 0 ? "+" : ""}
                 {v}
               </span>
             ))}

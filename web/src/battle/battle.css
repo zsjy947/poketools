@@ -1695,3 +1695,63 @@ button.mini.on {
 .replay-log-reveal .log-scroll {
   max-height: 70vh;
 }
+
+/* ---- M4 打磨：回合指示（闪回）/终局横幅 ---- */
+.field-mid .turn-indicator {
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid #b8c6e4;
+  border-radius: 10px;
+  background: #fff;
+  color: #2c5588;
+  padding: 1px 8px;
+  cursor: pointer;
+  margin-right: 8px;
+  flex: none;
+}
+.field-mid .turn-indicator:hover {
+  background: #f2f6fd;
+}
+.field-mid .ticker {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.cond.clickable {
+  cursor: pointer;
+}
+.victory-banner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 40;
+  pointer-events: none;
+  font-size: 26px;
+  font-weight: 800;
+  color: #1e7a43;
+  text-shadow:
+    0 2px 4px rgba(255, 255, 255, 0.95),
+    0 0 18px rgba(255, 255, 255, 0.9);
+  animation: victory-in 0.6s ease-out;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 255, 0.72) 0%,
+    rgba(255, 255, 255, 0) 65%
+  );
+}
+@keyframes victory-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  60% {
+    transform: scale(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

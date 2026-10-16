@@ -103,3 +103,14 @@ export const STATUS_ICON: Record<string, string> = {
 export function condLabel(id: string): string {
   return FIELD_COND_ZH[id] ?? id;
 }
+
+/** 能力名中文（-boost/-unboost 与悬浮框共用；accuracy/evasion 为命中/闪避） */
+export const STAT_BOOST_ZH: Record<string, string> = {
+  atk: "攻击",
+  def: "防御",
+  spa: "特攻",
+  spd: "特防",
+  spe: "速度",
+  accuracy: "命中",
+  evasion: "闪避",
+};

@@ -5,6 +5,7 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { zhLine } from "../data";
+import { STAT_BOOST_ZH } from "./field";
 
 export interface TurnGroup {
   /** 回合号；null = 开局段（回合 1 之前的换人提示/规则行） */
@@ -141,6 +142,18 @@ export function renderLine(kind: string, p: string[]): string {
     case "-singleturn":
     case "-activate":
       return zhFieldText(clean(p.join(" ")));
+    case "-boost":
+      return `${who(p[0])} 的${STAT_BOOST_ZH[p[1] ?? ""] ?? p[1] ?? "能力"}提升了！（+${p[2]}）`;
+    case "-unboost":
+      return `${who(p[0])} 的${STAT_BOOST_ZH[p[1] ?? ""] ?? p[1] ?? "能力"}下降了！（-${p[2]}）`;
+    case "-item":
+      return `${who(p[0])} 的道具「${p[1] ?? ""}」生效了`;
+    case "-enditem":
+      return `${who(p[0])} 的道具「${p[1] ?? ""}」失效了`;
+    case "-prepare":
+      return `${who(p[0])} 正在积蓄力量…（${p[1] ?? ""}）`;
+    case "-hits":
+      return `命中了 ${p[1] ?? "?"} 次！`;
     case "-supereffective":
       return "效果绝佳！";
     case "-resisted":
