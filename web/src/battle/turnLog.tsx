@@ -204,9 +204,9 @@ function zhFieldText(raw: string): string {
  */
 export function TurnLogView(props: {
   lines: string[];
-  onTurnClick?: (turn: number) => void;
+  onTurnClick?: ((turn: number) => void) | undefined;
   /** 高亮回合（闪回定位时滚动至该回合块并高亮） */
-  highlightTurn?: number | null;
+  highlightTurn?: number | null | undefined;
 }): JSX.Element {
   const { lines, onTurnClick, highlightTurn } = props;
   const groups = turnGroups(lines);

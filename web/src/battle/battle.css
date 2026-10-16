@@ -1674,3 +1674,24 @@ button.mini.on {
   gap: 10px;
   margin: 8px 0;
 }
+
+/* ---- M4 P3：回放页 ---- */
+.replay-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 8px 14px;
+  margin-bottom: 10px;
+}
+.replay-controls input[type="range"] {
+  min-width: 120px;
+}
+.replay-stage {
+  grid-template-columns: 1fr; /* 只读回放：单列舞台（无指令面板） */
+}
+.replay-log-reveal .log-scroll {
+  max-height: 70vh;
+}

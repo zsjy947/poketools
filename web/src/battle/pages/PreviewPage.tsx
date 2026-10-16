@@ -51,10 +51,18 @@ export function PreviewPage(): JSX.Element {
       alert(`上阵阵容校验未通过：\n${[...ok1.errors, ...ok2.errors].join("\n")}`);
       return;
     }
+    // 显式种子：回放需要确定性复现（引擎自选种子不可回收）
+    const seed: [number, number, number, number] = [
+      Math.floor(Math.random() * 0x10000),
+      Math.floor(Math.random() * 0x10000),
+      Math.floor(Math.random() * 0x10000),
+      Math.floor(Math.random() * 0x10000),
+    ];
     const session = new BattleSession({
       formatid: format.id,
       teams: { p1, p2 },
       names: { p1: "阵营 A", p2: "阵营 B" },
+      seed,
       // 上阵直通：sets 已按顺位排列，team 指令发恒等序列即保持顺位语义
       // （首发位与幻觉伪装目标 = 顺位首/末），跳过对战页内的二次点选
       previewOrder: {

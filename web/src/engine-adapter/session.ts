@@ -169,6 +169,8 @@ export class BattleSession {
   events: BattleEvent[] = [];
   logTail: string[] = [];
   lastError: { side: SideSlot; message: string } | undefined;
+  /** 指令录制（回放持久化）：每次 choose 按提交序记录（含预览直通的 team 指令） */
+  choiceLog: Array<{ side: SideSlot; input: string; turn: number }> = [];
   /** 原始流帧解析：sideupdate 行之后的 p1/p2 行指示该帧所属侧 */
   private channelSide: SideSlot | null = null;
   private expectSideLine = false;
@@ -438,7 +440,13 @@ export class BattleSession {
    *  乐观清除会让 UI 与引擎脱节死锁；两侧状态一律以引擎的下一次 request/wait 驱动。 */
   async choose(side: SideSlot, choice: string): Promise<void> {
     if (!this.stream || this.done) return;
+    this.choiceLog.push({ side, input: choice, turn: this.turn });
     await this.stream.write(`>${side} ${choice}`);
+  }
+
+  /** 本局实际使用的随机种子（回放确定性复现用；未显式传入时引擎自选） */
+  get seedUsed(): [number, number, number, number] | undefined {
+    return this.opts.seed;
   }
 
   /** 是否双方都已下达指令 */

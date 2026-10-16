@@ -6,6 +6,7 @@ import { TeamBuilderPage } from "./pages/TeamBuilderPage";
 import { PreviewPage } from "./pages/PreviewPage";
 import { BattleView } from "./BattleView";
 import { RecordsPage } from "./pages/RecordsPage";
+import { ReplayPage } from "./pages/ReplayPage";
 import { SettingsPage } from "./pages/SettingsPage";
 
 /** 渲染异常兜底：显示错误信息而非整树卸载白屏（错误详情进 console 便于排查） */
@@ -79,6 +80,7 @@ export function BattleApp(): JSX.Element {
         {page === "preview" && <PreviewPage />}
         {page === "battle" && <BattleView />}
         {page === "records" && <RecordsPage />}
+        {page === "replay" && <ReplayPage />}
         {page === "settings" && <SettingsPage />}
       </BattleErrorBoundary>
     </div>

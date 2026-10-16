@@ -14,9 +14,11 @@ export interface StoredBattleRecord {
   p2Name: string;
   p1Team: string;
   p2Team: string; // Showdown 文本
-  seed?: string;
+  seed?: string | undefined; // JSON "[n,n,n,n]"（确定性回放；旧记录无此字段）
   turns: number;
   log: string[];
+  /** 指令序列（回放复现）：按提交序记录的双方指令（含预览 team 指令）；旧记录无此字段 */
+  choices?: Array<{ side: "p1" | "p2"; input: string; turn: number }> | undefined;
 }
 
 export interface StoredSettings {

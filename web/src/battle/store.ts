@@ -10,7 +10,7 @@ import { emptyTeam, exportShowdown, importShowdown } from "../team/showdown";
 import { storage } from "./storage";
 import type { StoredBattleRecord, StoredSettings } from "./storage";
 
-export type Page = "home" | "team" | "preview" | "battle" | "records" | "settings";
+export type Page = "home" | "team" | "preview" | "battle" | "records" | "replay" | "settings";
 
 export interface TeamState {
   A: { name: string; sets: PokemonSet[] };
@@ -26,6 +26,8 @@ interface AppState {
   /** 当前操作阵营（单人操控双方；另一侧呈锁定态，FR-07） */
   activeSide: SideSlot;
   records: StoredBattleRecord[];
+  /** 回放目标记录（回放页数据源；官方日志导入也组装成同构记录，choices 缺失走日志揭示模式） */
+  replayRecord: StoredBattleRecord | null;
   settings: StoredSettings;
   /** 上阵预览选择（有序：单打第 1 只 = 首发、双打前 2 只 = 首发位；顺位末位存活者 = 幻觉伪装目标） */
   picks: { p1: number[]; p2: number[] };
@@ -42,6 +44,8 @@ interface AppState {
   detachSession: () => void;
   loadRecords: () => void;
   removeRecord: (id: string) => void;
+  openReplay: (record: StoredBattleRecord) => void;
+  closeReplay: () => void;
   updateSettings: (patch: Partial<StoredSettings>) => void;
   togglePick: (side: "p1" | "p2", index: number, max: number) => void;
   /** 上阵顺位调整（index 为队伍槽位号；dir=-1 上移 / +1 下移） */
@@ -56,6 +60,7 @@ export const useApp = create<AppState>((set, get) => ({
   snapshot: null,
   activeSide: "p1",
   records: [],
+  replayRecord: null,
   settings: storage.loadSettings(),
   picks: { p1: [], p2: [] },
 
@@ -101,6 +106,8 @@ export const useApp = create<AppState>((set, get) => ({
   },
   loadRecords: () => set({ records: storage.loadRecords() }),
   removeRecord: (id) => set({ records: storage.deleteRecord(id) }),
+  openReplay: (record) => set({ replayRecord: record, page: "replay" }),
+  closeReplay: () => set({ replayRecord: null, page: "records" }),
   updateSettings: (patch) => {
     const settings = { ...get().settings, ...patch };
     storage.saveSettings(settings);

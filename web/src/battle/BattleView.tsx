@@ -1,6 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "./store";
-import type { MonState, SideSlot, EngineMonView, EngineFieldView } from "../engine-adapter";
+import type {
+  MonState,
+  SideSlot,
+  EngineMonView,
+  EngineFieldView,
+  SessionSnapshot,
+  BattleSession,
+} from "../engine-adapter";
 import type { RequestChoice } from "../engine-adapter/session";
 import { dexFor, moveView, speciesView, TYPE_ZH, STATUS_ZH, zhLine } from "../data";
 import { spriteUrl } from "./sprites";
@@ -42,7 +49,7 @@ export function BattleView(): JSX.Element {
     }
   }, [session, snapshot]);
 
-  // 终局记录（FR-10）
+  // 终局记录（FR-10）：seed + 指令序列随日志一并落盘（回放复现三件套）
   useEffect(() => {
     if (snapshot?.phase === "finished" && session && !recordedRef.current) {
       recordedRef.current = true;
@@ -55,59 +62,16 @@ export function BattleView(): JSX.Element {
         p2Name: "阵营 B",
         p1Team: exportShowdown(teams.A.sets),
         p2Team: exportShowdown(teams.B.sets),
+        seed: session.seedUsed ? JSON.stringify(session.seedUsed) : undefined,
         turns: snapshot.turn,
         log: session.deterministicLog(),
+        choices: [...session.choiceLog],
       };
       finishBattle(record);
     }
   }, [snapshot?.phase, snapshot?.winner, session, finishBattle, snapshot, teams, snapshot?.turn]);
 
   const dex = useMemo(() => dexFor(format?.mod ?? "gen9"), [format]);
-  // 动画演出（M4 P2 队列串播）。开关单源 settings.animation；
-  // 速度：设置为 ms/事件（基准 420），动画契约为倍率——420ms→1x，越大越慢
-  const animSpeed = settings.animationSpeed > 0 ? 420 / settings.animationSpeed : 1;
-  // 飘字 HP 种子：首个带完整 bench 且尚无 HP 事件的快照（一次性捕获开局血量）
-  const initialHpRef = useRef<Record<string, [number, number]> | null>(null);
-  if (
-    !initialHpRef.current &&
-    snapshot &&
-    snapshot.sides.p1.bench.length > 0 &&
-    !snapshot.events.some((e) => e.kind === "damage" || e.kind === "heal")
-  ) {
-    const m: Record<string, [number, number]> = {};
-    for (const side of ["p1", "p2"] as const)
-      for (const mon of snapshot.sides[side].bench) m[mon.ident] = [mon.hp, mon.maxhp];
-    initialHpRef.current = m;
-  }
-  // 招式类别缓存（位移风格分化：物理突进/特殊蓄能/变化低幅）
-  const catCacheRef = useRef(new Map<string, "physical" | "special" | "status" | undefined>());
-  const categoryOf = useCallback(
-    (moveName: string): "physical" | "special" | "status" | undefined => {
-      const key = moveName.toLowerCase().replace(/[^a-z0-9]/g, "");
-      if (!key) return undefined;
-      if (!catCacheRef.current.has(key)) {
-        catCacheRef.current.set(key, moveView(dex, key)?.category);
-      }
-      return catCacheRef.current.get(key);
-    },
-    [dex],
-  );
-  const { anims: animMap, popups: animPopups } = useBattleAnimQueue(
-    snapshot?.events ?? [],
-    settings.animation,
-    animSpeed,
-    { initialHp: initialHpRef.current, categoryOf },
-  );
-  // 场地状态（天气/地形/空间/侧壁）：从事件流推导
-  const conds = useMemo(() => fieldConditions(snapshot?.events ?? []), [snapshot?.events]);
-  // 引擎窥视（每次快照即时消费，不缓存）：悬浮框数据 + 场地剩余回合的引擎权威值
-  const engine = useMemo(() => session?.enginePeek() ?? null, [session, snapshot]);
-  const engineMons = useMemo(() => {
-    const m: Record<string, EngineMonView> = {};
-    for (const side of ["p1", "p2"] as const)
-      for (const p of engine?.mons[side] ?? []) m[p.ident] = p;
-    return m;
-  }, [engine]);
 
   if (!session || !snapshot) {
     return (
@@ -151,86 +115,164 @@ export function BattleView(): JSX.Element {
           <SideCommandPanel side="p1" snapshot={snapshot} dex={dex} />
         </div>
         <div className="stage-mid">
-          <div className={"stage-field" + (conds.weather ? " w-" + conds.weather : "")}>
-            {conds.weather && <div className={"fx fx-" + conds.weather} aria-hidden="true" />}
-            <SideBoard
-              side="p2"
-              snapshot={snapshot}
-              dex={dex}
-              animated={settings.animation}
-              animMap={animMap}
-              sideConds={conds.sideStatus.p2}
-              engineMons={engineMons}
-              popups={animPopups}
-              engineField={engine?.field ?? null}
-            />
-            <div className="field-strip">
-              <div className="field-conds">
-                <CondChip
-                  cls="cond-weather"
-                  id={conds.weather}
-                  turns={engine ? engine.field.weatherDuration : undefined}
-                />
-                <CondChip
-                  cls="cond-terrain"
-                  id={conds.terrain}
-                  turns={engine ? engine.field.terrainDuration : undefined}
-                />
-                {conds.fieldMoves.map((f) => (
-                  <CondChip
-                    key={f}
-                    cls="cond-room"
-                    id={f}
-                    turns={engine ? engine.field.pseudoWeather[f]?.duration : undefined}
-                  />
-                ))}
-                {conds.sideStatus.p1.map((s) => (
-                  <CondChip
-                    key={"p1" + s}
-                    cls="cond-side p1"
-                    id={s}
-                    label={"A·" + condLabel(s)}
-                    turns={engine ? engine.field.sideConditions.p1[s]?.duration : undefined}
-                  />
-                ))}
-                {conds.sideStatus.p2.map((s) => (
-                  <CondChip
-                    key={"p2" + s}
-                    cls="cond-side p2"
-                    id={s}
-                    label={"B·" + condLabel(s)}
-                    turns={engine ? engine.field.sideConditions.p2[s]?.duration : undefined}
-                  />
-                ))}
-              </div>
-              <div className="field-mid">
-                <span>{lastLogText(snapshot.logTail)}</span>
-              </div>
-            </div>
-            <SideBoard
-              side="p1"
-              snapshot={snapshot}
-              dex={dex}
-              animated={settings.animation}
-              animMap={animMap}
-              sideConds={conds.sideStatus.p1}
-              engineMons={engineMons}
-              popups={animPopups}
-              engineField={engine?.field ?? null}
-              back
-            />
-          </div>
-          {/* 信息流日志（FR-09）—— 中列下半（唯一内部滚动区）：Showdown 式回合分组 */}
-          <div className="battle-log">
-            <h3>战斗日志（可回看）</h3>
-            <TurnLogView lines={snapshot.logTail} />
-          </div>
+          <BattleStagePane
+            snapshot={snapshot}
+            session={session}
+            dex={dex}
+            animation={settings.animation}
+            animationSpeed={settings.animationSpeed}
+          />
         </div>
         <div className="stage-side stage-side-p2">
           <SideCommandPanel side="p2" snapshot={snapshot} dex={dex} />
         </div>
       </div>
     </div>
+  );
+}
+
+/**
+ * 对战舞台中列（场地 + 回合日志）：实时对局与回放共用。
+ * 内聚动画队列/引擎窥视/悬浮框/倒计时 chip；回放侧传完整记录日志（logLines）与
+ * 当前回合高亮（highlightTurn），实时对局用快照 logTail。
+ */
+export function BattleStagePane(props: {
+  snapshot: SessionSnapshot;
+  session: BattleSession;
+  dex: Dex;
+  animation: boolean;
+  /** ms/事件（设置页口径） */
+  animationSpeed: number;
+  /** 日志行（默认 snapshot.logTail；回放传完整记录日志） */
+  logLines?: string[] | undefined;
+  /** 高亮并滚动定位的回合（回放进度） */
+  highlightTurn?: number | null;
+}): JSX.Element {
+  const { snapshot, session, dex, animation } = props;
+  // 速度：设置为 ms/事件（基准 420），动画契约为倍率——420ms→1x，越大越慢
+  const animSpeed = props.animationSpeed > 0 ? 420 / props.animationSpeed : 1;
+  // 飘字 HP 种子：首个带完整 bench 且尚无 HP 事件的快照（一次性捕获开局血量）
+  const initialHpRef = useRef<Record<string, [number, number]> | null>(null);
+  if (
+    !initialHpRef.current &&
+    snapshot.sides.p1.bench.length > 0 &&
+    !snapshot.events.some((e) => e.kind === "damage" || e.kind === "heal")
+  ) {
+    const m: Record<string, [number, number]> = {};
+    for (const side of ["p1", "p2"] as const)
+      for (const mon of snapshot.sides[side].bench) m[mon.ident] = [mon.hp, mon.maxhp];
+    initialHpRef.current = m;
+  }
+  // 招式类别缓存（位移风格分化：物理突进/特殊蓄能/变化低幅）
+  const catCacheRef = useRef(new Map<string, "physical" | "special" | "status" | undefined>());
+  const categoryOf = useCallback(
+    (moveName: string): "physical" | "special" | "status" | undefined => {
+      const key = moveName.toLowerCase().replace(/[^a-z0-9]/g, "");
+      if (!key) return undefined;
+      if (!catCacheRef.current.has(key)) {
+        catCacheRef.current.set(key, moveView(dex, key)?.category);
+      }
+      return catCacheRef.current.get(key);
+    },
+    [dex],
+  );
+  const { anims: animMap, popups: animPopups } = useBattleAnimQueue(
+    snapshot.events,
+    animation,
+    animSpeed,
+    { initialHp: initialHpRef.current, categoryOf },
+  );
+  // 场地状态（天气/地形/空间/侧壁）：从事件流推导
+  const conds = useMemo(() => fieldConditions(snapshot.events), [snapshot.events]);
+  // 引擎窥视（每次快照即时消费，不缓存）：悬浮框数据 + 场地剩余回合的引擎权威值
+  const engine = useMemo(() => session.enginePeek(), [session, snapshot]);
+  const engineMons = useMemo(() => {
+    const m: Record<string, EngineMonView> = {};
+    for (const side of ["p1", "p2"] as const)
+      for (const p of engine?.mons[side] ?? []) m[p.ident] = p;
+    return m;
+  }, [engine]);
+
+  return (
+    <>
+      <div className={"stage-field" + (conds.weather ? " w-" + conds.weather : "")}>
+        {conds.weather && <div className={"fx fx-" + conds.weather} aria-hidden="true" />}
+        <SideBoard
+          side="p2"
+          snapshot={snapshot}
+          dex={dex}
+          animated={animation}
+          animMap={animMap}
+          sideConds={conds.sideStatus.p2}
+          engineMons={engineMons}
+          popups={animPopups}
+          engineField={engine?.field ?? null}
+        />
+        <div className="field-strip">
+          <div className="field-conds">
+            <CondChip
+              cls="cond-weather"
+              id={conds.weather}
+              turns={engine ? engine.field.weatherDuration : undefined}
+            />
+            <CondChip
+              cls="cond-terrain"
+              id={conds.terrain}
+              turns={engine ? engine.field.terrainDuration : undefined}
+            />
+            {conds.fieldMoves.map((f) => (
+              <CondChip
+                key={f}
+                cls="cond-room"
+                id={f}
+                turns={engine ? engine.field.pseudoWeather[f]?.duration : undefined}
+              />
+            ))}
+            {conds.sideStatus.p1.map((s) => (
+              <CondChip
+                key={"p1" + s}
+                cls="cond-side p1"
+                id={s}
+                label={"A·" + condLabel(s)}
+                turns={engine ? engine.field.sideConditions.p1[s]?.duration : undefined}
+              />
+            ))}
+            {conds.sideStatus.p2.map((s) => (
+              <CondChip
+                key={"p2" + s}
+                cls="cond-side p2"
+                id={s}
+                label={"B·" + condLabel(s)}
+                turns={engine ? engine.field.sideConditions.p2[s]?.duration : undefined}
+              />
+            ))}
+          </div>
+          <div className="field-mid">
+            <span>{lastLogText(snapshot.logTail)}</span>
+          </div>
+        </div>
+        <SideBoard
+          side="p1"
+          snapshot={snapshot}
+          dex={dex}
+          animated={animation}
+          animMap={animMap}
+          sideConds={conds.sideStatus.p1}
+          engineMons={engineMons}
+          popups={animPopups}
+          engineField={engine?.field ?? null}
+          back
+        />
+      </div>
+      {/* 信息流日志（FR-09）—— 中列下半（唯一内部滚动区）：Showdown 式回合分组 */}
+      <div className="battle-log">
+        <h3>战斗日志（可回看）</h3>
+        <TurnLogView
+          lines={props.logLines ?? snapshot.logTail}
+          highlightTurn={props.highlightTurn}
+        />
+      </div>
+    </>
   );
 }
 
