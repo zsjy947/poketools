@@ -1168,7 +1168,8 @@ button.mini.danger {
   grid-template-columns: repeat(2, 1fr);
   gap: 5px;
 }
-.move-btn {
+/* 作用域 .battle-section：计算器 SummaryCard 也用全局 .move-btn（招式条），避免 flex 方向泄漏影响其布局 */
+.battle-section .move-btn {
   text-align: left;
   padding: 4px 8px;
   display: flex;
@@ -1176,11 +1177,11 @@ button.mini.danger {
   align-items: center;
   gap: 8px;
 }
-.move-btn.on {
+.battle-section .move-btn.on {
   border-color: var(--p1);
   background: var(--p1-bg);
 }
-.choices-p2 .move-btn.on {
+.battle-section .choices-p2 .move-btn.on {
   border-color: var(--p2);
   background: var(--p2-bg);
 }
@@ -1219,14 +1220,15 @@ button.mini.on {
   background: #fdf3cd;
   font-weight: 700;
 }
-.mech-icon {
+/* 作用域 .battle-section：计算器 calc.css 也有全局 .mech-icon（太晶/极巨标记），互不泄漏 */
+.battle-section .mech-icon {
   width: 20px;
   height: 20px;
   object-fit: contain;
   filter: grayscale(1);
   opacity: 0.5;
 }
-.mech-icon.on {
+.battle-section .mech-icon.on {
   filter: none;
   opacity: 1;
 }
@@ -1284,7 +1286,7 @@ button.mini.on {
 .target-row.off button {
   cursor: not-allowed;
 }
-.mech-row {
+.battle-section .mech-row {
   display: flex;
   gap: 6px;
   margin-top: 6px;
