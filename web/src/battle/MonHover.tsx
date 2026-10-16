@@ -7,7 +7,7 @@
 import { useRef, useState, type ReactNode } from "react";
 import type { MonState, EngineMonView } from "../engine-adapter";
 import type { RequestChoice } from "../engine-adapter/session";
-import { dexFor, moveView, speciesView, TYPE_ZH, STATUS_ZH, itemView } from "../data";
+import { dexFor, moveView, speciesView, abilityView, TYPE_ZH, STATUS_ZH, itemView } from "../data";
 import { STATUS_ICON, STAT_BOOST_ZH } from "./field";
 
 type Dex = ReturnType<typeof dexFor>;
@@ -81,7 +81,11 @@ export function buildMonInfo(args: {
     mega: mon.mega,
     zmove: mon.zmove,
     max: mon.max,
-    ability: payload?.ability || payload?.baseAbility || undefined,
+    ability: (() => {
+      const a = payload?.ability || payload?.baseAbility || undefined;
+      if (!a) return undefined;
+      return abilityView(dex, a)?.zhName ?? a;
+    })(),
     item: payload?.item || undefined,
     moves,
     boosts,

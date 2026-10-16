@@ -46,6 +46,7 @@ export function ReplayPage(): JSX.Element {
   const [resetKey, setResetKey] = useState(0); // 重播 = 重建复现会话（引擎不可回退）
   const cursorRef = useRef(0); // 已消费的 choices 数
   const feedLockRef = useRef(false);
+  const pendingTargetRef = useRef<number | null>(null); // feed 目标合流（并发跳转不丢）
 
   const maxTurn = useMemo(() => (record ? maxTurnOf(record) : 0), [record]);
   const dex = useMemo(
@@ -78,20 +79,31 @@ export function ReplayPage(): JSX.Element {
     };
   }, [record, hasSim, resetKey]);
 
-  /** 消费 choices 直到目标回合（含）——按提交序直灌引擎，双方齐活自然结算 */
+  /** 消费 choices 直到目标回合（含）——按提交序直灌引擎，双方齐活自然结算。
+   *  并发推进（快速多点/拖进度条）目标合流到最新值：锁内循环重读 pendingTarget，
+   *  不丢最终回合。 */
   const feedTo = useCallback(
     async (upToTurn: number) => {
       const s = session;
       const choices = record?.choices;
       if (!s || !choices) return;
+      pendingTargetRef.current = Math.max(pendingTargetRef.current ?? 0, upToTurn);
       if (feedLockRef.current) return;
       feedLockRef.current = true;
       try {
-        while (cursorRef.current < choices.length) {
-          const c = choices[cursorRef.current]!;
-          if (c.turn > upToTurn) break;
-          await s.choose(c.side, c.input);
-          cursorRef.current += 1;
+        for (;;) {
+          const target: number | null = pendingTargetRef.current;
+          if (target == null) break;
+          while (cursorRef.current < choices.length) {
+            const c = choices[cursorRef.current]!;
+            if (c.turn > target) break;
+            await s.choose(c.side, c.input);
+            cursorRef.current += 1;
+          }
+          if (pendingTargetRef.current === target) {
+            pendingTargetRef.current = null;
+            break;
+          }
         }
       } finally {
         feedLockRef.current = false;

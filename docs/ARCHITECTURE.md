@@ -327,6 +327,25 @@ web/
 
 **结论：并入执行**——battle 分支 M8 合并回 main；统一壳以路线 B（数据静态化）推进，Track C A1-A4 即 UPDATE-PLAN §4 的 APK 落地；UI 迁移基线 = battle 的 React 18 + TS 组件体系（终态），过渡期 poketools 免构建 Vue 前端原样保留、竖屏化后入壳。
 
+### §7.2 计算器 × 模拟对战共用审计（M5 终审，2026-10-17）
+
+原则：**领域算法可共用**（battle 只读 `data/` 查询视图，禁止在 battle/ 内复制伤害算法）；
+**UI 设计禁止共用**（calc 与 battle 之间不复用组件、同名 CSS 类须作用域化）。
+`components/` 通用原子层（PokeImg/TypeBadge/FilterSelect 等）允许两侧使用。
+
+审计结论（静态扫描 calc.css×battle.css 与双侧 TSX + 构建产物实机双向量化）：
+
+| 命中项 | 判定 | 处置 |
+|---|---|---|
+| CSS 同名类交集 9：`move-btn`/`mech-icon`/`mech-row`/`hp-bar`/`hp-fill`/`on`/`st-head`/`st-base`/`grow` | `mech-*` 与 `move-btn.on` 双侧已前缀作用域（`.calc-page`/`.battle-section`，c410acb）；裸 `.move-btn`（cursor/圆角）为双方共享基样式；`hp-bar`/`hp-fill`＝calc 全局（图鉴条）×battle `.mon-stage` 特异度压制（历史白名单）；`on` 全为复合选择器组件态；`st-head`/`st-base` 各在 `.stat-table`/`.ed-stats` 作用域；`grow`＝battle 壳层承重全局工具（M2 遗留白名单） | 白名单保留 |
+| TSX className 交集另 4：`acc-arrow`/`empty`/`warn`/`st-k` | `acc-arrow`＝mobile.css `.acc-head` 系 ×battle `.format-section-head` 各自作用域；`empty`＝组件库 `.fselect-opt.empty` ×battle `.mon-editor/.mon-stage` 局部；`warn`＝组件库 `.pkt-alert.warn` ×battle `.alert.warn`（基类不同）；`st-k` battle 无定义不外溢 | 白名单保留 |
+| 组件引用交集 | battle↔pages/calc、calc→battle 双向零 import | 通过 |
+| 领域共用面 | battle 仍只读 data 层视图（dexFor/moveView/speciesView/abilityView/itemView/TYPE_ZH/STATUS_ZH/zhLine），未引入 damage/calc 结算 | 通过 |
+| 运行时量化（dist 实机） | calc：`.sum-moves .move-btn` 619px=卡内满宽（M2 指标保持）、flex/text-align 均非 battle 值（作用域未命中）；battle（回放驱动实局）：`.mon-stage .hp-fill` position=static（calc 全局 absolute 被压制）、倒计时 chip/悬浮卡/飘字/终局横幅均为 battle 样式 | 通过 |
+
+维护约束：两侧新增样式一律各自作用域前缀（`.calc-page`/`.battle-section`）；引入组件库全局类时
+不得为同名另写样式；battle 需要伤害预估时走 `data/damage.ts` 共用。
+
 ## §8 代码与测试规范
 
 - commit：`类型: 摘要`（feat/fix/data/docs/test/chore），每个里程碑一次 commit。
@@ -362,6 +381,11 @@ web/
 数据类缺口仍以 `DATA-GAPS.md` 为准（无源待补与变体建模两项仍开放，ROADMAP §5 仅索引）。
 
 ## §10 变更历史
+- **2026-10-17 模拟对战 Showdown 对照增强批（M3/M4/M5）**：悬浮状态框（三源合流+引擎窥视）、场地倒计时
+  （引擎权威剩余回合）、回合分组日志（turnGroups/闪回/回到底部）、演出串播队列（位移风格/伤害飘字/方向化入场）、
+  回放系统（seed+choices 确定性复现/播放器/官方日志导入）、舞台打磨（回合指示/日志内容补齐/终局横幅）；
+  顺带修复事件 ident 与 request ident 失配导致的 HP 增量追踪/舞台演出类静默失效、濒死者 maxhp 丢失、
+  animationSpeed 语义错用。详见 docs/BATTLE.md §8 2026-10-17 条目与 §7.2 审计表。
 - **2026-10-17 全国图鉴上线（M1）**：`#/national` 独立入口（首页宫格 + 游戏中心卡片）；1025 物种收集网格
   （进度环/属性/形态类别/世代筛选 + 批量操作）；收集标记升级为**物种级全局传播**（任一地区 ⇔ 全国、跨游戏同步，
   `national` 伪 dexId 零迁移）；详情页 national 模式（`?national=1`）裁剪图鉴介绍/获取方式/招式表三区、

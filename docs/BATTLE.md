@@ -298,3 +298,35 @@ M5/M6 期间发现并修复：
     小图标/侧壁图标堆叠）；天气粒子动画层（fx-rain/snow/sandstorm/sunnyday/hail CSS 关键帧）；站位椭圆垫底
     （精灵 z-index 压上）；精灵间距 26px；异常状态纯图标贴血条右（hp-row）；侧壁呼吸动画图标 + chips 双呈现。
   - 测试 144 全绿（槽位映射/天气推导/译名回归）。
+- **Showdown 对照增强批（2026-10-17，UPDATE-PLAN-2026-10-16 M3/M4/M5）**：
+  - **悬浮状态框（M3a）**：悬停场上精灵/替补球 ~150ms 出完整状态卡（`battle/MonHover.tsx`）：
+    名字/等级/HP/异常/当前属性（太晶后=引擎 types）/特性（中文）/道具/招式含 PP/太晶·Mega·极巨·Z 标记/
+    能力变化等级。数据三源合流：request 载荷 + MonState + **引擎窥视**；`buildMonInfo` 纯函数单测。
+  - **引擎窥视（session.enginePeek）**：vendor d.ts 扩 `battle` 只读表面（分层约束：对外重声明为
+    EngineMonView/EngineFieldView，不泄漏 vendor 类型）。场地倒计时**直读引擎权威剩余回合**
+    （weatherState.duration 等）——事件推导表无法区分来源差异（实测本引擎特性日照同为 5 回合），
+    chip 带「晴天 4」式计数、≤1 回合红色临期。顺带修复三类历史缺陷：事件行 ident（p1a: X）与 request
+    ident（p1: X）永不匹配致 HP 增量追踪静默失效（双向归一）；濒死者在 request 重同步时丢 maxhp（0/0 血条）；
+    settings.animationSpeed（ms/事件）被当倍率传入动画层。
+  - **回合分组日志（M3c）**：`battle/turnLog.tsx` 的 `turnGroups()` 以 |turn|n 锚点切组（开局段归第 0 组、
+    末尾空回合保留）；`TurnLogView` 回合容器 + 缩进行动块，自动滚底（用户上翻不强拉，「回到底部」浮标），
+    回合头可点击（闪回钩子）；RecordsPage 日志回看共用同组件。渲染函数自 BattleView 提取（唯一实现）。
+  - **演出队列（M4 P2）**：`anim.ts` 重构为**串播队列**（useBattleAnimQueue）——事件序即演出序、逐步消费，
+    对齐 Showdown 客户端节奏；动画关闭直落终态；首挂载游标取当前末尾（补挂不重播整局）。
+    位移风格按招式类别分化（物理突进/特殊蓄能/变化低幅，BattleView 注入 dex 类别查询）；
+    **伤害/回复飘字**取事件 HP 段差量（initialHp 种子 + switch 行播种，replay 百分比口径兼容），
+    会心/拔群/不佳/无效果后置关联着色；上场改方向化滑入（p1 左/p2 右带回弹）。
+    修复：anims 键未归一导致舞台演出类从未命中（与 HP 追踪同根因）。9 份官方 replay 金标准整局驱动断言
+    （步骤有限非负、ident 可归一、飘字 50+）。
+  - **回放系统（M4 P3）**：session.choose 全程录制 `choiceLog`（含预览直通指令）+ PreviewPage 显式下种，
+    终局记录落 seed+choices+log 三件套；`pages/ReplayPage.tsx` 同种子同队伍重建会话按提交序重灌指令——
+    确定性复现（金标准测试：同胜负同日志）；播放器=播放/暂停/逐回合/进度条（高亮当前回合块）/倍速，
+    引擎不可回退→重播重建会话，并发跳转目标合流不丢；舞台复用 BattleStagePane（自 BattleView 提取），
+    只读无指令面板。官方日志可导入（记录页粘贴框）→ 日志揭示模式逐回合展开（无指令序列不重演舞台）；
+    旧记录无 choices 回放按钮置灰「待补充」。
+  - **舞台打磨**：回合指示 chip（可点击闪回日志定位并高亮 2.5s，天气 chip 同）；日志补齐能力升降
+    （中文名+方向数值）/道具生效失效/多段命中/蓄力行的中文呈现（能力名单源 field.ts STAT_BOOST_ZH）；
+    终局中央胜负横幅（奖杯+缩放入场）。构建产物实机验证：回放驱动 5 回合对局，天气倒计时 chip、
+    3 条飘字、悬浮卡（特性已中文）、终局横幅全部就位。
+  - **M5 共用审计（终审）**：见 ARCHITECTURE §7.2 审计表——同名类/TSX className 交集全部作用域化或白名单，
+    组件引用双向为零，运行时双向量化验证通过。

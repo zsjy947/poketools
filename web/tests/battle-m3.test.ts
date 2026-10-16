@@ -160,7 +160,7 @@ describe("M3 悬浮框数据组装", () => {
     });
     expect(info.nameZh).toBe("烈咬陆鲨");
     expect(info.level).toBe("L50");
-    expect(info.ability).toBe("roughskin");
+    expect(info.ability).toBe("粗糙皮肤");
     expect(info.item).toBe("lifeorb");
     expect(info.types).toEqual(["龙", "地面"]);
     expect(info.teraType).toBe("Steel"); // 原始值；卡片渲染时经 TYPE_ZH 转中文
