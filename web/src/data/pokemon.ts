@@ -550,6 +550,73 @@ export async function dexEntries(dexId: string, params?: any) {
   };
 }
 
+// ---- GET /api/national（全国图鉴：1025 物种全量形态，物种级收集） ----
+export type FormBadge = "region" | "mega" | "gmax" | "cosmetic";
+const REGION_SUFFIXES = ["alola", "galar", "hisui", "paldea"];
+const NATIONAL_COSMETIC_BASE = 900000; // build_db 合成外观形态行起点
+
+export function nationalFormBadges(forms: Row[]): FormBadge[] {
+  const out = new Set<FormBadge>();
+  for (const f of forms) {
+    const ident = f.identifier || "";
+    if (f.is_mega === 1 || ident.endsWith("-primal")) out.add("mega");
+    if (ident.endsWith("-gmax")) out.add("gmax");
+    /* 仅匹配结尾后缀：pikachu-alola-cap（阿罗拉帽子）这类外观形态不是地区形态 */
+    if (REGION_SUFFIXES.some((s) => ident.endsWith("-" + s))) out.add("region");
+    if (f.id >= NATIONAL_COSMETIC_BASE) out.add("cosmetic");
+  }
+  return (["region", "mega", "gmax", "cosmetic"] as FormBadge[]).filter((k) => out.has(k));
+}
+
+export async function nationalDex(): Promise<{
+  total: number;
+  entries: Array<{
+    ndex: number;
+    species_id: number;
+    name_zh: string;
+    name_en: string;
+    types: string;
+    form_id: number;
+    form_count: number;
+    generation: number;
+    badges: FormBadge[];
+    caught: boolean;
+  }>;
+}> {
+  const caught = caughtMap("national");
+  const speciesRows = ((await table("species")) as Row[]).slice().sort((a, b) => a.id - b.id);
+  const formsRows = await table("forms");
+  const bySp = new Map<number, Row[]>();
+  for (const f of formsRows) {
+    let arr = bySp.get(f.species_id);
+    if (!arr) {
+      arr = [];
+      bySp.set(f.species_id, arr);
+    }
+    arr.push(f);
+  }
+  const entries = speciesRows.map((sp) => {
+    // 全国图鉴默认一般形态：is_default 行（不套用 dex_default_forms 的地区口径）
+    const forms = (bySp.get(sp.id) || [])
+      .slice()
+      .sort((a, b) => b.is_default - a.is_default || a.id - b.id);
+    const def = forms.find((f) => f.is_default) || forms[0] || ({} as Row);
+    return {
+      ndex: sp.id,
+      species_id: sp.id,
+      name_zh: sp.name_zh,
+      name_en: sp.name_en,
+      types: typeSort(def.types || ""),
+      form_id: def.id || 0,
+      form_count: forms.length,
+      generation: sp.generation,
+      badges: nationalFormBadges(forms),
+      caught: caught.get(sp.id) || false,
+    };
+  });
+  return { total: entries.length, entries };
+}
+
 // ---- GET /api/pokemon/{species_id} ----
 export async function pokemonDetail(speciesId: number, params?: any) {
   const p = params || {};

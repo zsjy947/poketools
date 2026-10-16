@@ -24,6 +24,7 @@ export async function handle(method: string, path: string, paramsOrBody?: any): 
   }
   if (head === "games") return pokemonApi.games();
   if (head === "dex" && sub) return pokemonApi.dexEntries(decodeURIComponent(sub), p);
+  if (head === "national") return pokemonApi.nationalDex();
   if (head === "pokemon" && sub) {
     const sid = parseInt(sub, 10);
     if (rest === "moves") return pokemonApi.pokemonMoves(sid, p);

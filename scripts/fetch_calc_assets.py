@@ -98,7 +98,8 @@ def fetch_item_icons() -> tuple[int, int]:
     print(f"  pokeapi ok={ok} missing={len(missing)}")
 
     # PokeAPI 缺图 → 52poke Bag 兜底：TM/TR 走属性圆盘，其余用中文名 Bag 模板图
-    # （命名不统一：Bag_X Sprite / Bag_X ZA Sprite / 空格版，全部候选都试）
+    # （命名不统一：Bag_X Sprite / Bag_X ZA Sprite / Bag_X SV Sprite / 空格版，全部候选都试；
+    #   残余缺口由 fetch_sprites_52poke.py 二次兜底并记 TODO）
     con = sqlite3.connect(DB_PATH)
     tm_titles = _tm_disc_titles(con, set(missing))
     con.close()
@@ -115,6 +116,8 @@ def fetch_item_icons() -> tuple[int, int]:
                 f"File:Bag {zh} Sprite.png",
                 f"File:Bag_{zh} ZA Sprite.png",
                 f"File:Bag {zh} ZA Sprite.png",
+                f"File:Bag_{zh} SV Sprite.png",
+                f"File:Bag {zh} SV Sprite.png",
             ]
         if titles:
             fallback.append((ident, titles))

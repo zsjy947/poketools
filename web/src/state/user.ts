@@ -1,11 +1,13 @@
 /* 用户状态（唯一实现）：caught_state / custom_recipes 迁 localStorage（路线 B）。
  * localStorage 键与 Vue 版一致（pkt.caught_state.v1 / pkt.custom_recipes.v1）——用户数据零迁移；
- * 端点签名与响应结构与原 app/routers/dex.py、lookup.py 一致；
- * 同游戏图鉴双向同步语义逐行移植（_same_game_dex_ids → dex_entries+regional_dexes 索引）。 */
+ * 端点签名与响应结构与原 app/routers/dex.py、lookup.py 一致。
+ * 收集标记为物种级：一次标记传播到该物种所在的全部图鉴（跨游戏）+ "national" 伪 dexId
+ * （全国图鉴 = 各地区图鉴并集，任一地区捕获 ⇔ 全国捕获）。 */
 import { table } from "../data/core";
 
-const K_CAUGHT = "pkt.caught_state.v1"; // {dexId: {speciesId: 0/1}}
+const K_CAUGHT = "pkt.caught_state.v1"; // {dexId: {speciesId: 0/1}}；national 为伪 dexId 键
 const K_RECIPES = "pkt.custom_recipes.v1"; // [{id, game, name, effects, ingredients, seasonings, created_at}]
+export const NATIONAL_DEX = "national";
 export const PROFILE = 1;
 const RECIPE_GAMES = ["scarlet-violet", "legends-za"];
 
@@ -29,21 +31,12 @@ function writeJson(key: string, v: any): void {
   if (store()) store()!.setItem(key, JSON.stringify(v));
 }
 
-// ---- dex_entries + regional_dexes → 同游戏图鉴索引（species → dexIds，插入序=表序） ----
-let sameGameIdx: Map<string, Map<number, string[]>> | null = null;
-async function sameGameIndex(): Promise<Map<string, Map<number, string[]>>> {
-  if (sameGameIdx) return sameGameIdx;
-  const [entries, dexes] = await Promise.all([table("dex_entries"), table("regional_dexes")]);
-  const dexGame = new Map(dexes.map((d) => [d.id, d.game_id]));
-  const byGame = new Map<string, Map<number, string[]>>();
-  for (const e of entries) {
-    const gm = dexGame.get(e.dex_id);
-    if (!gm) continue;
-    let bySp = byGame.get(gm);
-    if (!bySp) {
-      bySp = new Map();
-      byGame.set(gm, bySp);
-    }
+// ---- dex_entries → 全局图鉴索引（species → dexIds，跨游戏全量）----
+let allDexIdx: Map<number, string[]> | null = null;
+async function allDexIndex(): Promise<Map<number, string[]>> {
+  if (allDexIdx) return allDexIdx;
+  const bySp = new Map<number, string[]>();
+  for (const e of await table("dex_entries")) {
     let arr = bySp.get(e.species_id);
     if (!arr) {
       arr = [];
@@ -51,14 +44,22 @@ async function sameGameIndex(): Promise<Map<string, Map<number, string[]>>> {
     }
     if (!arr.includes(e.dex_id)) arr.push(e.dex_id);
   }
-  sameGameIdx = byGame;
-  return byGame;
+  allDexIdx = bySp;
+  return bySp;
 }
 
-async function sameGameDexIds(speciesId: number, gameId: string): Promise<string[]> {
-  const byGame = await sameGameIndex();
-  const bySp = byGame.get(gameId);
-  return (bySp && bySp.get(speciesId)) || [];
+/** 物种级标记的传播目标：所在全部图鉴（跨游戏）+ national 伪键（并集语义）。 */
+async function propagateTargets(speciesId: number): Promise<string[]> {
+  const idx = await allDexIndex();
+  const dexIds = (idx.get(speciesId) || []).slice();
+  if (!dexIds.includes(NATIONAL_DEX)) dexIds.push(NATIONAL_DEX);
+  return dexIds;
+}
+
+async function validateDexId(dexId: string): Promise<void> {
+  if (dexId === NATIONAL_DEX) return;
+  const dexes = await table("regional_dexes");
+  if (!dexes.find((d) => d.id === dexId)) throw new Error("dex_id 无效");
 }
 
 // ---- /api/state（PUT）/api/state/bulk（POST）/api/state/counts（GET） ----
@@ -68,10 +69,8 @@ export async function setState(body: any): Promise<{ ok: boolean; synced_dexes: 
   if (!dexId) throw new Error("dex_id 必填");
   if (!Number.isInteger(speciesId)) throw new Error("species_id 无效");
   const caught = body.caught ? 1 : 0;
-  const dexes = await table("regional_dexes");
-  const dex = dexes.find((d) => d.id === dexId);
-  if (!dex) throw new Error("dex_id 无效");
-  let dexIds = (await sameGameDexIds(speciesId, dex.game_id)) || [];
+  await validateDexId(dexId);
+  let dexIds = await propagateTargets(speciesId);
   if (!dexIds.includes(dexId)) dexIds = dexIds.concat([dexId]);
   const all = readJson(K_CAUGHT, {});
   for (const d of dexIds) {
@@ -88,12 +87,10 @@ export async function setStateBulk(body: any): Promise<{ ok: boolean; count: num
   const caught = body.caught ? 1 : 0;
   const ids = (body.species_ids || []).map((s: any) => parseInt(s, 10));
   if (ids.some((x: number) => !Number.isInteger(x))) throw new Error("species_ids 无效");
-  const dexes = await table("regional_dexes");
-  const dex = dexes.find((d) => d.id === dexId);
-  if (!dex) throw new Error("dex_id 无效");
+  await validateDexId(dexId);
   const all = readJson(K_CAUGHT, {});
   for (const sid of ids) {
-    for (const d of await sameGameDexIds(sid, dex.game_id)) {
+    for (const d of await propagateTargets(sid)) {
       all[d] = all[d] || {};
       all[d][String(sid)] = caught;
     }
