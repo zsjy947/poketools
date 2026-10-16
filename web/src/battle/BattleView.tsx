@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "./store";
 import type { MonState, SideSlot, EngineMonView, EngineFieldView } from "../engine-adapter";
 import type { RequestChoice } from "../engine-adapter/session";
 import { dexFor, moveView, speciesView, TYPE_ZH, STATUS_ZH, zhLine } from "../data";
 import { spriteUrl } from "./sprites";
-import { useBattleAnim } from "./anim";
-import type { AnimKind } from "./anim";
+import { useBattleAnimQueue, normAnimIdent } from "./anim";
+import type { AnimRuntime, AnimPopup } from "./anim";
 import { fieldConditions, condLabel, STATUS_ICON } from "./field";
 import { lastLogText, TurnLogView } from "./turnLog";
 import { buildMonInfo, HoverHost, MonHoverCard } from "./MonHover";
@@ -63,11 +63,41 @@ export function BattleView(): JSX.Element {
   }, [snapshot?.phase, snapshot?.winner, session, finishBattle, snapshot, teams, snapshot?.turn]);
 
   const dex = useMemo(() => dexFor(format?.mod ?? "gen9"), [format]);
-  // 动画演出态（ident → 当前演出；关闭时恒空 = 降级信息流）。
-  // 开关单源 settings.animation（设置页与对战页同源读写——本地副本曾与设置页脱钩，多次切换后语义反转）。
+  // 动画演出（M4 P2 队列串播）。开关单源 settings.animation；
   // 速度：设置为 ms/事件（基准 420），动画契约为倍率——420ms→1x，越大越慢
   const animSpeed = settings.animationSpeed > 0 ? 420 / settings.animationSpeed : 1;
-  const animMap = useBattleAnim(snapshot?.events ?? [], settings.animation, animSpeed);
+  // 飘字 HP 种子：首个带完整 bench 且尚无 HP 事件的快照（一次性捕获开局血量）
+  const initialHpRef = useRef<Record<string, [number, number]> | null>(null);
+  if (
+    !initialHpRef.current &&
+    snapshot &&
+    snapshot.sides.p1.bench.length > 0 &&
+    !snapshot.events.some((e) => e.kind === "damage" || e.kind === "heal")
+  ) {
+    const m: Record<string, [number, number]> = {};
+    for (const side of ["p1", "p2"] as const)
+      for (const mon of snapshot.sides[side].bench) m[mon.ident] = [mon.hp, mon.maxhp];
+    initialHpRef.current = m;
+  }
+  // 招式类别缓存（位移风格分化：物理突进/特殊蓄能/变化低幅）
+  const catCacheRef = useRef(new Map<string, "physical" | "special" | "status" | undefined>());
+  const categoryOf = useCallback(
+    (moveName: string): "physical" | "special" | "status" | undefined => {
+      const key = moveName.toLowerCase().replace(/[^a-z0-9]/g, "");
+      if (!key) return undefined;
+      if (!catCacheRef.current.has(key)) {
+        catCacheRef.current.set(key, moveView(dex, key)?.category);
+      }
+      return catCacheRef.current.get(key);
+    },
+    [dex],
+  );
+  const { anims: animMap, popups: animPopups } = useBattleAnimQueue(
+    snapshot?.events ?? [],
+    settings.animation,
+    animSpeed,
+    { initialHp: initialHpRef.current, categoryOf },
+  );
   // 场地状态（天气/地形/空间/侧壁）：从事件流推导
   const conds = useMemo(() => fieldConditions(snapshot?.events ?? []), [snapshot?.events]);
   // 引擎窥视（每次快照即时消费，不缓存）：悬浮框数据 + 场地剩余回合的引擎权威值
@@ -131,6 +161,7 @@ export function BattleView(): JSX.Element {
               animMap={animMap}
               sideConds={conds.sideStatus.p2}
               engineMons={engineMons}
+              popups={animPopups}
               engineField={engine?.field ?? null}
             />
             <div className="field-strip">
@@ -184,6 +215,7 @@ export function BattleView(): JSX.Element {
               animMap={animMap}
               sideConds={conds.sideStatus.p1}
               engineMons={engineMons}
+              popups={animPopups}
               engineField={engine?.field ?? null}
               back
             />
@@ -287,7 +319,9 @@ function SideBoard(props: {
   snapshot: NonNullable<ReturnType<typeof useApp.getState>["snapshot"]>;
   dex: ReturnType<typeof dexFor>;
   animated: boolean;
-  animMap: Record<string, AnimKind>;
+  animMap: Record<string, AnimRuntime>;
+  /** 活跃飘字（伤害/回复数值；按 ident 归一匹配本侧宝可梦） */
+  popups: AnimPopup[];
   /** 该侧生效的侧壁（reflect/lightscreen/auroraveil/safeguard/tailwind/mist） */
   sideConds: string[];
   /** 引擎窥视（ident → 引擎宝可梦视图；悬浮框数据源） */
@@ -295,13 +329,14 @@ function SideBoard(props: {
   engineField: EngineFieldView | null;
   back?: boolean;
 }): JSX.Element {
-  const { side, snapshot, dex, animated, back, animMap, sideConds, engineMons } = props;
+  const { side, snapshot, dex, animated, back, animMap, sideConds, engineMons, popups } = props;
   const state = snapshot.sides[side];
   const payloadOf = (ident: string) =>
     (snapshot.requests[side]?.side?.pokemon ?? []).find((p) => p.ident === ident);
   const actives = state.active
     .map((ident) => state.bench.find((m) => m.ident === ident))
     .filter((m): m is MonState => !!m);
+  const popupsOf = (ident: string) => popups.filter((p) => p.ident === normAnimIdent(ident));
   return (
     <div className={"side-board sb-" + side + (back ? " back-view" : "")}>
       <div className="board-head">
@@ -334,7 +369,8 @@ function SideBoard(props: {
                 animated={animated}
                 side={side}
                 back={!!back}
-                anim={animMap[m.ident]}
+                anim={animMap[normAnimIdent(m.ident)]}
+                popups={popupsOf(m.ident)}
                 sideConds={sideConds}
               />
             </HoverHost>
@@ -379,10 +415,11 @@ function MonStage(props: {
   animated: boolean;
   side: "p1" | "p2";
   back: boolean;
-  anim?: AnimKind | undefined;
+  anim?: AnimRuntime | undefined;
+  popups?: AnimPopup[] | undefined;
   sideConds?: string[] | undefined;
 }): JSX.Element {
-  const { mon, dex, animated, side, back, anim, sideConds } = props;
+  const { mon, dex, animated, side, back, anim, popups, sideConds } = props;
   // 精灵文件名 = 引擎 spriteid（官方 dump 口径：garchomp-mega/hooh/muk-alola）；中文名按物种 id 查
   const spName = mon.details.split(",")[0]?.trim() ?? "";
   const sp = dex.species.get(spName);
@@ -401,7 +438,9 @@ function MonStage(props: {
   ).filter(Boolean);
   const url = candidates[srcIdx] ?? null;
   const pct = mon.maxhp > 0 ? Math.round((mon.hp / mon.maxhp) * 100) : 0;
-  const animCls = anim ? " anim-" + anim : "";
+  const animCls = anim
+    ? " anim-" + anim.kind + (anim.style && anim.kind === "lunge" ? " style-" + anim.style : "")
+    : "";
   return (
     // 竖排舞台单元：名字+血条在精灵头顶，血条宽 ≈ 精灵宽（等宽对齐）
     <div className="mon-stage">
@@ -437,20 +476,35 @@ function MonStage(props: {
           {mon.hp}/{mon.maxhp}
         </span>
       </div>
-      {url ? (
-        <img
-          className={"mon-sprite" + (mon.fainted ? " fainted" : "") + animCls}
-          data-side={side}
-          src={url}
-          alt={mon.details}
-          onError={(e) => {
-            if (srcIdx + 1 < candidates.length) setSrcIdx(srcIdx + 1);
-            else (e.target as HTMLImageElement).style.visibility = "hidden";
-          }}
-        />
-      ) : (
-        <div className="mon-sprite placeholder" />
-      )}
+      <div className="mon-sprite-wrap">
+        {url ? (
+          <img
+            className={"mon-sprite" + (mon.fainted ? " fainted" : "") + animCls}
+            data-side={side}
+            src={url}
+            alt={mon.details}
+            onError={(e) => {
+              if (srcIdx + 1 < candidates.length) setSrcIdx(srcIdx + 1);
+              else (e.target as HTMLImageElement).style.visibility = "hidden";
+            }}
+          />
+        ) : (
+          <div className="mon-sprite placeholder" />
+        )}
+        {/* 伤害/回复飘字（M4 P2）：数值取自事件 HP 段差量，会心/效果着色 */}
+        {(popups?.length ?? 0) > 0 && (
+          <div className="popup-layer" aria-hidden="true">
+            {popups!.map((p) => (
+              <span key={p.key} className={"dmg-popup tone-" + p.tone}>
+                {p.text}
+                {p.tone === "crit" && <em>会心</em>}
+                {p.tone === "super" && <em>拔群</em>}
+                {p.tone === "resisted" && <em>不佳</em>}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

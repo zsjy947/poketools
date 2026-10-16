@@ -1007,7 +1007,7 @@ button.mini.danger {
   color: #b6bdc9;
 }
 
-/* ===== 动画演出（FR-08）：anim.ts 事件映射 → CSS 关键帧；关闭动画不挂类自动降级信息流 ===== */
+/* ===== 动画演出（FR-08 → M4 P2）：队列串播 + 位移风格分化 + 伤害飘字 ===== */
 @keyframes anim-lunge-p2 {
   0%,
   100% {
@@ -1024,6 +1024,28 @@ button.mini.danger {
   }
   45% {
     transform: translate(26px, -14px);
+  }
+}
+/* 特殊招式（style-cast）：原地蓄能脉冲（径向提亮 + 微缩放），不位移 */
+@keyframes anim-cast {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: none;
+  }
+  40% {
+    transform: scale(1.08);
+    filter: brightness(1.45) drop-shadow(0 0 10px rgba(120, 160, 255, 0.85));
+  }
+}
+/* 变化招式（style-chant）：低幅起手浮动 */
+@keyframes anim-chant {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  45% {
+    transform: translate(0, -8px) scale(1.03);
   }
 }
 @keyframes anim-hit {
@@ -1049,17 +1071,31 @@ button.mini.danger {
     opacity: 0;
   }
 }
-@keyframes anim-switch-in {
+/* 上场（M4 P2 打磨）：方向化滑入——p1 自左 / p2 自右，带回弹 */
+@keyframes anim-switch-in-p1 {
   0% {
-    transform: scale(0.2);
+    transform: translateX(-52px) scale(0.6);
     opacity: 0;
   }
   70% {
-    transform: scale(1.12);
+    transform: translateX(4px) scale(1.08);
     opacity: 1;
   }
   100% {
-    transform: scale(1);
+    transform: translateX(0) scale(1);
+  }
+}
+@keyframes anim-switch-in-p2 {
+  0% {
+    transform: translateX(52px) scale(0.6);
+    opacity: 0;
+  }
+  70% {
+    transform: translateX(-4px) scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0) scale(1);
   }
 }
 @keyframes anim-heal {
@@ -1126,14 +1162,27 @@ button.mini.danger {
 .mon-sprite[data-side="p1"].anim-lunge {
   animation: anim-lunge-p1 0.34s ease;
 }
+/* 位移风格分化：特殊=蓄能脉冲 / 变化=低幅起手（覆盖同侧 lunge 位移） */
+.mon-sprite.anim-lunge.style-cast {
+  animation: anim-cast 0.34s ease !important;
+}
+.mon-sprite.anim-lunge.style-chant {
+  animation: anim-chant 0.34s ease !important;
+}
 .mon-sprite.anim-hit {
   animation: anim-hit 0.42s ease;
 }
 .mon-sprite.anim-faint {
   animation: anim-faint 0.7s ease forwards;
 }
+.mon-sprite[data-side="p1"].anim-switch-in {
+  animation: anim-switch-in-p1 0.42s ease;
+}
+.mon-sprite[data-side="p2"].anim-switch-in {
+  animation: anim-switch-in-p2 0.42s ease;
+}
 .mon-sprite.anim-switch-in {
-  animation: anim-switch-in 0.42s ease;
+  animation: anim-switch-in-p1 0.42s ease;
 }
 .mon-sprite.anim-heal {
   animation: anim-heal 0.42s ease;
@@ -1152,6 +1201,90 @@ button.mini.danger {
 }
 .mon-sprite.anim-zmove {
   animation: anim-zmove 0.52s ease;
+}
+
+/* 伤害/回复飘字（M4 P2）：精灵上方浮出，会心/效果拔群/收效甚微分色角标 */
+.mon-sprite-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.popup-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  z-index: 30;
+}
+.dmg-popup {
+  position: relative;
+  top: 2px;
+  font-size: 17px;
+  font-weight: 800;
+  color: #d92d20;
+  text-shadow:
+    0 1px 2px #fff,
+    0 0 6px rgba(255, 255, 255, 0.9);
+  animation: dmg-popup-rise 0.95s ease-out forwards;
+  white-space: nowrap;
+}
+.dmg-popup em {
+  font-style: normal;
+  font-size: 10.5px;
+  font-weight: 700;
+  border-radius: 3px;
+  padding: 0 3px;
+  margin-left: 3px;
+  vertical-align: 2px;
+}
+.dmg-popup.tone-heal {
+  color: #1e7a43;
+}
+.dmg-popup.tone-crit {
+  color: #b45309;
+  font-size: 20px;
+}
+.dmg-popup.tone-crit em {
+  background: #fdeee0;
+  color: #b45309;
+}
+.dmg-popup.tone-super {
+  color: #c2410c;
+}
+.dmg-popup.tone-super em {
+  background: #fdeee0;
+  color: #c2410c;
+}
+.dmg-popup.tone-resisted {
+  color: #64748b;
+}
+.dmg-popup.tone-resisted em {
+  background: #eef1f6;
+  color: #64748b;
+}
+.dmg-popup.tone-immune {
+  color: #475569;
+}
+@keyframes dmg-popup-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.7);
+  }
+  18% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.12);
+  }
+  40% {
+    transform: translateY(-8px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.96);
+  }
 }
 .control-panel {
   margin-top: 8px;
