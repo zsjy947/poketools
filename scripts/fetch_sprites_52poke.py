@@ -78,7 +78,7 @@ def alcremie_title(identifier: str) -> str | None:
     m = _ALCREMIE_RE.match(identifier)
     if not m:
         return None
-    return f"File:869Alcremie{ALCREMIE_CREAM[m.group(1)]}{ALCREMIE_SWEET[m.group(2)]}.png"
+    return f"File:869Alcremie-{ALCREMIE_CREAM[m.group(1)]}{ALCREMIE_SWEET[m.group(2)]}.png"
 
 
 def item_candidates(ident: str, zh: str) -> list[str]:
