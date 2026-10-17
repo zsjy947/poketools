@@ -49,15 +49,12 @@ const SAMPLE_MOVES = [
 describe("M5 动画演出", () => {
   const dex = dexFor("gen9");
 
-  it("抽样 30 招式：出手 lunge + 目标 hit，中文名/属性显示正确", () => {
+  it("抽样 30 招式：出手 lunge（受击由 -damage 自带，不再预挂），中文名/属性显示正确", () => {
     expect(SAMPLE_MOVES.length).toBeGreaterThanOrEqual(30);
     for (const mv of SAMPLE_MOVES) {
       const line = `|move|p1a: Testmon|${mv}|p2a: Foe`;
       const steps = linesToSteps([line]);
-      expect(steps.map((s) => s.kind + "@" + s.ident)).toEqual([
-        `lunge@p1a: Testmon`,
-        `hit@p2a: Foe`,
-      ]);
+      expect(steps.map((s) => s.kind + "@" + s.ident)).toEqual([`lunge@p1a: Testmon`]);
       const view = moveView(dex, mv);
       expect(view, `招式缺失：${mv}`).not.toBeNull();
       expect(view!.zhName, `${mv} 应有中文名`).not.toBe(mv);
@@ -65,6 +62,17 @@ describe("M5 动画演出", () => {
         TYPE_ZH[Object.entries(TYPE_ZH).find(([, v]) => v === view!.type)?.[0] ?? ""] ?? view!.type,
       ).toBeTruthy();
     }
+  });
+
+  it("单一招式单段受击：move 不预挂 hit，实际伤害的 -damage 才出受击步骤", () => {
+    const steps = linesToSteps([
+      "|move|p1a: Testmon|Earthquake|p2a: Foe",
+      "|-damage|p2a: Foe|50/100",
+    ]);
+    expect(steps.map((s) => s.kind + "@" + s.ident)).toEqual([
+      "lunge@p1a: Testmon",
+      "hit@p2a: Foe",
+    ]);
   });
 
   it("受击/濒死/换人/回复/异常/机制事件各有专属演出", () => {

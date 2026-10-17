@@ -518,16 +518,25 @@ export function EvoChain({
   evo,
   current,
   gameId,
+  extraQuery,
 }: {
   evo: any;
   current: number;
   gameId: string;
+  /** 附加到节点跳转 hash 的额外 query（如全国图鉴语境传 "national=1"；不传行为不变） */
+  extraQuery?: string | undefined;
 }): JSX.Element {
   if (!evo || !evo.root) return <div className="empty-hint">不进化</div>;
   return (
     <div className="evo-wrap">
       <div className="evo-node-list">
-        <EvoNode sid={evo.root} evo={evo} current={current} gameId={gameId} />
+        <EvoNode
+          sid={evo.root}
+          evo={evo}
+          current={current}
+          gameId={gameId}
+          extraQuery={extraQuery}
+        />
       </div>
     </div>
   );
@@ -538,11 +547,13 @@ function EvoNode({
   evo,
   current,
   gameId,
+  extraQuery,
 }: {
   sid: number;
   evo: any;
   current: number;
   gameId: string;
+  extraQuery?: string | undefined;
 }): JSX.Element {
   const node = (evo.nodes || {})[sid] || {};
   const children: number[] = (evo.children || {})[sid] || [];
@@ -551,7 +562,8 @@ function EvoNode({
       <div
         className={"evo-node" + (sid === current ? " cur" : "")}
         onClick={() => {
-          location.hash = `#/pokemon/${sid}?game=${gameId || ""}`;
+          const extra = extraQuery ? "&" + extraQuery : "";
+          location.hash = `#/pokemon/${sid}?game=${gameId || ""}${extra}`;
         }}
       >
         <PokeImg formId={node.form_id} size={64} />
@@ -566,7 +578,13 @@ function EvoNode({
                 <div className="evo-arrow">➜</div>
                 <div className="evo-cond">{(evo.conds || {})[`${sid}|${c}`] || "进化"}</div>
               </div>
-              <EvoNode sid={c} evo={evo} current={current} gameId={gameId} />
+              <EvoNode
+                sid={c}
+                evo={evo}
+                current={current}
+                gameId={gameId}
+                extraQuery={extraQuery}
+              />
             </div>
           ))}
         </div>

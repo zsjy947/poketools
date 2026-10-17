@@ -591,7 +591,9 @@ button.mini.danger {
   flex-direction: column;
   gap: 6px;
   min-height: 0;
-  overflow: hidden;
+  /* 场地自身不裁剪：左右两侧最外宝可梦的悬浮状态卡/伤害飘字要能探出场外
+     （天气粒子层 .fx 已自带 border-radius:inherit + overflow:hidden，圆角观感不变） */
+  overflow: visible;
   justify-content: space-between;
   flex: none;
 }
@@ -1754,4 +1756,65 @@ button.mini.on {
     opacity: 1;
     transform: scale(1);
   }
+}
+
+/* ===== 2026-10-18 对战体验批 ===== */
+/* 滚动条占位：日志/指令面板内容跨过滚动阈值时不再出现/消失滚动条导致列宽抖动 */
+.log-scroll,
+.side-panel {
+  scrollbar-gutter: stable;
+}
+
+/* 回放页一屏布局（与对战页同口径）：舞台常在视口内，页面级不滚动——
+   日志只在自身容器内滚（TurnLogView 已改为容器内 scrollTo），修复"被钉在
+   日志底部看不到动画"；舞台容器常驻 + 滚动条占位修复"动画界面忽宽忽窄" */
+.page-replay {
+  max-width: none;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 158px);
+  min-height: 520px;
+}
+.page-replay .battle-stage {
+  flex: 1;
+  min-height: 0;
+}
+.replay-booting {
+  flex: 1;
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 日志视图切换（整合/原始）：浮在日志区右上角 */
+.log-mode-toggle {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  z-index: 20;
+  display: inline-flex;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(31, 42, 68, 0.12);
+}
+.log-mode-toggle button {
+  border: none;
+  background: transparent;
+  font-size: 11px;
+  padding: 1px 8px;
+  cursor: pointer;
+  color: #556;
+}
+.log-mode-toggle button.on {
+  background: #2c5588;
+  color: #fff;
+}
+
+/* 免疫飘字角标底色（tone-immune 此前无 em 配色） */
+.dmg-popup.tone-immune em {
+  background: #eef1f6;
+  color: #475569;
 }

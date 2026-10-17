@@ -693,3 +693,99 @@
 .evo-node img.img-missing {
   visibility: hidden;
 }
+
+/* ===== 全国图鉴·单只详情页（nd- 前缀，与地区图鉴 detail-cols 体系完全隔离） ===== */
+.nd-hero {
+  display: flex;
+  gap: 26px;
+  align-items: center;
+  background: linear-gradient(120deg, #ffffff 0%, #eef4ff 55%, #e9f3ee 100%);
+  border: 1px solid #dbe4f2;
+  border-radius: 16px;
+  padding: 22px 26px;
+  margin-bottom: 14px;
+}
+.nd-hero .detail-art {
+  width: 204px;
+  flex-shrink: 0;
+  text-align: center;
+}
+.nd-hero .detail-art img {
+  width: 192px;
+  height: 192px;
+  object-fit: contain;
+}
+.nd-hero .meta {
+  flex: 1;
+  min-width: 0;
+}
+.nd-hero .names {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.nd-hero .names h2 {
+  margin: 0;
+  font-size: 30px;
+}
+.nd-hero .names .en {
+  color: #98a1b3;
+  font-size: 15px;
+}
+.nd-hero .names .ndex {
+  font-size: 16px;
+  letter-spacing: 1px;
+  color: #6f7d99;
+}
+.nd-hero-tags {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.nd-hero .kv {
+  margin-top: 10px;
+}
+.nd-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 10fr) minmax(0, 11fr);
+  gap: 14px;
+  align-items: start;
+}
+.nd-col {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.nd-col .block {
+  margin-bottom: 0;
+}
+.nd-flavor {
+  margin-top: 14px;
+}
+.nd-flavor-toggle {
+  margin-top: 8px;
+}
+@media (max-width: 1080px) {
+  .nd-cols {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 720px) {
+  .nd-hero {
+    flex-direction: column;
+    text-align: center;
+    padding: 16px;
+    gap: 10px;
+  }
+  .nd-hero .detail-art {
+    width: auto;
+  }
+  .nd-hero-tags,
+  .nd-hero .kv {
+    justify-content: center;
+  }
+}

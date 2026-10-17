@@ -191,9 +191,11 @@ export function ReplayPage(): JSX.Element {
       </div>
 
       {hasSim ? (
-        session && snapshot ? (
-          <div className="battle-stage replay-stage">
-            <div className="stage-mid">
+        /* 舞台容器常驻（宽度稳定）：会话重建期间 BattleStagePane 短暂缺席时占位仍在
+           同一列内，不再整容器换型导致舞台忽宽忽窄 */
+        <div className="battle-stage replay-stage">
+          <div className="stage-mid">
+            {session && snapshot ? (
               <BattleStagePane
                 snapshot={snapshot}
                 session={session}
@@ -203,11 +205,11 @@ export function ReplayPage(): JSX.Element {
                 logLines={record.log}
                 highlightTurn={curTurn}
               />
-            </div>
+            ) : (
+              <div className="empty-hint replay-booting">复现会话启动中…</div>
+            )}
           </div>
-        ) : (
-          <div className="empty-hint">复现会话启动中…</div>
-        )
+        </div>
       ) : (
         <div className="battle-log standalone replay-log-reveal">
           <TurnLogReveal lines={record.log} uptoTurn={curTurn} />

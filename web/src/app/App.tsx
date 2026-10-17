@@ -7,6 +7,7 @@ import { GamesPage } from "../pages/GamesPage";
 import { GameSection } from "../pages/GameSection";
 import { DetailPage } from "../pages/DetailPage";
 import { NationalDexPage } from "../pages/NationalDexPage";
+import { NationalDetailPage } from "../pages/NationalDetailPage";
 import { CalcPage } from "../pages/CalcPage";
 import { usePkt } from "../state/game";
 
@@ -67,7 +68,13 @@ export function App(): JSX.Element {
         {route.name === "games" && <GamesPage />}
         {route.name === "game" && <GameSection gameId={route.gameId} feature={route.feature} />}
         {route.name === "national" && <NationalDexPage />}
-        {route.name === "pokemon" && <DetailPage speciesId={route.speciesId} query={detailQuery} />}
+        {route.name === "pokemon" &&
+          /* national 语境走专用详情页（与地区图鉴 DetailPage 完全隔离，互不影响） */
+          (detailQuery.get("national") === "1" ? (
+            <NationalDetailPage speciesId={route.speciesId} query={detailQuery} />
+          ) : (
+            <DetailPage speciesId={route.speciesId} query={detailQuery} />
+          ))}
         {route.name === "not-found" && (
           <div className="page">
             <h1>未找到页面</h1>

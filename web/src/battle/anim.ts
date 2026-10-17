@@ -35,6 +35,8 @@ export interface AnimPopup {
   ident: string;
   text: string;
   tone: PopupTone;
+  /** 效果角标文本（击中要害/效果绝佳/效果不好…；由后置 -crit/-supereffective… 回填合并） */
+  label?: string | undefined;
 }
 
 /** 组件侧演出态：kind 驱动 keyframe，style 细分 lunge 位移（物理/特殊/变化） */
@@ -53,7 +55,7 @@ export interface AnimStep {
   /** 目标 ident（预留方向化位移） */
   target?: string | undefined;
   /** 伤害/回复飘字（数值来自 HP 段差量） */
-  popup?: { text: string; tone: PopupTone } | undefined;
+  popup?: { text: string; tone: PopupTone; label?: string | undefined } | undefined;
   /** 纯飘字步骤（要害/效果关联修正，不阻塞演出节奏太久） */
   markerOnly?: boolean;
 }
@@ -117,8 +119,8 @@ export function eventsToSteps(events: BattleEvent[], speed = 1, opts?: StepOpts)
         const cat = opts?.categoryOf?.(ev.value ?? "");
         const style: AnimStyle = cat === "special" ? "cast" : cat === "status" ? "chant" : "lunge";
         push({ kind: "lunge", ident: ev.from!, durMs: dur("lunge"), style, target: ev.to });
-        // 直接攻击的受击挂目标（实际伤害由 -damage 事件补充独立 hit 步骤；无目标招式跳过）
-        if (ev.to) push({ kind: "hit", ident: ev.to, durMs: dur("hit") });
+        // 受击不再预挂：实际伤害由 -damage 自带 hit（一次伤害只演一段受击，
+        // 修复"单一招两段受击闪烁"）；未命中/无效不出受击动画，对齐 Showdown 观感
         break;
       }
       case "damage": {
@@ -165,6 +167,11 @@ export function eventsToSteps(events: BattleEvent[], speed = 1, opts?: StepOpts)
       case "status":
         push({ kind: "status", ident: ev.from!, durMs: dur("status") });
         break;
+      case "boost":
+      case "unboost":
+        // 能力升降（招式的次级效果或威吓等）：轻量脉冲反馈（变化招去除预挂 hit 后的目标反应）
+        push({ kind: "status", ident: ev.from!, durMs: dur("status") });
+        break;
       case "tera":
         push({ kind: "tera", ident: ev.from!, durMs: dur("tera") });
         break;
@@ -178,18 +185,31 @@ export function eventsToSteps(events: BattleEvent[], speed = 1, opts?: StepOpts)
         push({ kind: "zmove", ident: ev.from!, durMs: dur("zmove") });
         break;
       case "crit": {
-        // 后置关联：修正最近一条该 ident 的飘字（要害 > 效果着色）
+        // 后置关联：修正最近一条该 ident 的飘字（要害 > 效果着色），角标文本合并
         const idx = lastPopupIdx.get(normAnimIdent(ev.from ?? ""));
         if (idx != null && out[idx]?.popup) {
-          out[idx]!.popup = { text: out[idx]!.popup!.text, tone: "crit" };
+          const p = out[idx]!.popup!;
+          const labels = p.label ? p.label.split("·") : [];
+          if (!labels.includes("击中要害")) labels.unshift("击中要害");
+          out[idx]!.popup = { text: p.text, tone: "crit", label: labels.join("·") };
         }
         break;
       }
       case "effectiveness": {
         const idx = lastPopupIdx.get(normAnimIdent(ev.from ?? ""));
-        if (idx != null && out[idx]?.popup && out[idx]!.popup!.tone === "dmg") {
-          const tone = ev.eff === "super" ? "super" : ev.eff === "resisted" ? "resisted" : "immune";
-          out[idx]!.popup = { text: out[idx]!.popup!.text, tone };
+        const effLabel =
+          ev.eff === "super" ? "效果绝佳" : ev.eff === "resisted" ? "效果不好" : "没有效果";
+        if (
+          idx != null &&
+          out[idx]?.popup &&
+          (out[idx]!.popup!.tone === "dmg" || out[idx]!.popup!.tone === "crit")
+        ) {
+          const p = out[idx]!.popup!;
+          const labels = p.label ? p.label.split("·") : [];
+          if (!labels.includes(effLabel)) labels.push(effLabel);
+          const tone: PopupTone =
+            p.tone === "crit" ? "crit" : ev.eff === "super" ? "super" : "resisted";
+          out[idx]!.popup = { text: p.text, tone, label: labels.join("·") };
         } else if (ev.eff === "immune") {
           // 无 -damage 行的免疫：独立飘字
           push({
@@ -197,7 +217,7 @@ export function eventsToSteps(events: BattleEvent[], speed = 1, opts?: StepOpts)
             ident: ev.from!,
             durMs: 160,
             markerOnly: true,
-            popup: { text: "无效", tone: "immune" },
+            popup: { text: "没有效果", tone: "immune" },
           });
         }
         break;
@@ -268,6 +288,7 @@ export function useBattleAnimQueue(
         ident: key,
         text: step.popup.text,
         tone: step.popup.tone,
+        label: step.popup.label,
       };
       setPopups((prev) => [...prev.slice(-5), popup]);
       const live = Math.max(

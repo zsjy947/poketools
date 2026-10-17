@@ -555,15 +555,13 @@ function MonStage(props: {
         ) : (
           <div className="mon-sprite placeholder" />
         )}
-        {/* 伤害/回复飘字（M4 P2）：数值取自事件 HP 段差量，会心/效果着色 */}
+        {/* 伤害/回复飘字（M4 P2）：数值取自事件 HP 段差量，会心/效果角标（label）着色 */}
         {(popups?.length ?? 0) > 0 && (
           <div className="popup-layer" aria-hidden="true">
             {popups!.map((p) => (
               <span key={p.key} className={"dmg-popup tone-" + p.tone}>
                 {p.text}
-                {p.tone === "crit" && <em>会心</em>}
-                {p.tone === "super" && <em>拔群</em>}
-                {p.tone === "resisted" && <em>不佳</em>}
+                {p.label && <em>{p.label}</em>}
               </span>
             ))}
           </div>
