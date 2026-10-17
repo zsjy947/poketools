@@ -12,6 +12,7 @@ import { useApp } from "../store";
 import { BattleSession } from "../../engine-adapter";
 import type { SessionSnapshot } from "../../engine-adapter";
 import type { StoredBattleRecord } from "../storage";
+import { ReplayFeedController } from "../replay-feed";
 import { importShowdown } from "../../team/showdown";
 import { dexFor } from "../../data";
 import { BattleStagePane } from "../BattleView";
@@ -43,10 +44,15 @@ export function ReplayPage(): JSX.Element {
   const [session, setSession] = useState<BattleSession | null>(null);
   const [curTurn, setCurTurn] = useState(0);
   const [playing, setPlaying] = useState(false);
-  const [resetKey, setResetKey] = useState(0); // 重播 = 重建复现会话（引擎不可回退）
-  const cursorRef = useRef(0); // 已消费的 choices 数
-  const feedLockRef = useRef(false);
-  const pendingTargetRef = useRef<number | null>(null); // feed 目标合流（并发跳转不丢）
+  const [resetKey, setResetKey] = useState(0); // 重播/向后跳转 = 重建复现会话（引擎不可回退）
+  const feedRef = useRef(new ReplayFeedController()); // 指令推进状态机（世代失效防旧循环触碰新会话游标）
+  const curTurnRef = useRef(0); // curTurn 镜像：seek/播放循环直读，避免副作用入 setState updater
+  const rebuildTargetRef = useRef<number | null>(null); // 重建后待直灌到的目标回合
+
+  const applyTurn = useCallback((n: number) => {
+    curTurnRef.current = n;
+    setCurTurn(n);
+  }, []);
 
   const maxTurn = useMemo(() => (record ? maxTurnOf(record) : 0), [record]);
   const dex = useMemo(
@@ -67,47 +73,32 @@ export function ReplayPage(): JSX.Element {
       seed,
       names: { p1: record.p1Name, p2: record.p2Name },
     });
-    cursorRef.current = 0;
-    setCurTurn(0);
+    const epoch = feedRef.current.reset();
+    applyTurn(rebuildTargetRef.current ?? 0);
     setSnapshot(null);
     setSession(session);
     session.subscribe(setSnapshot);
-    void session.start();
+    void session.start().then(() => {
+      // 向后跳转触发的重建：会话就绪后直灌到目标回合（0 回合重建则留在起点）
+      if (feedRef.current.epochNow !== epoch) return;
+      const target = rebuildTargetRef.current;
+      rebuildTargetRef.current = null;
+      if (target != null) void feedRef.current.feed(session, record.choices!, target, epoch);
+    });
     return () => {
+      feedRef.current.invalidate();
       session.destroy();
       setSession(null);
     };
-  }, [record, hasSim, resetKey]);
+  }, [record, hasSim, resetKey, applyTurn]);
 
-  /** 消费 choices 直到目标回合（含）——按提交序直灌引擎，双方齐活自然结算。
-   *  并发推进（快速多点/拖进度条）目标合流到最新值：锁内循环重读 pendingTarget，
-   *  不丢最终回合。 */
+  /** 消费 choices 直到目标回合（含）——并发推进目标合流见 ReplayFeedController。 */
   const feedTo = useCallback(
-    async (upToTurn: number) => {
+    (upToTurn: number) => {
       const s = session;
       const choices = record?.choices;
       if (!s || !choices) return;
-      pendingTargetRef.current = Math.max(pendingTargetRef.current ?? 0, upToTurn);
-      if (feedLockRef.current) return;
-      feedLockRef.current = true;
-      try {
-        for (;;) {
-          const target: number | null = pendingTargetRef.current;
-          if (target == null) break;
-          while (cursorRef.current < choices.length) {
-            const c = choices[cursorRef.current]!;
-            if (c.turn > target) break;
-            await s.choose(c.side, c.input);
-            cursorRef.current += 1;
-          }
-          if (pendingTargetRef.current === target) {
-            pendingTargetRef.current = null;
-            break;
-          }
-        }
-      } finally {
-        feedLockRef.current = false;
-      }
+      return feedRef.current.feed(s, choices, upToTurn, feedRef.current.epochNow);
     },
     [record, session],
   );
@@ -117,18 +108,16 @@ export function ReplayPage(): JSX.Element {
     if (!playing || !hasSim) return;
     const beat = Math.max(400, settings.animationSpeed * 2.2);
     const iv = window.setInterval(() => {
-      setCurTurn((t) => {
-        const next = t + 1;
-        if (next > maxTurn) {
-          setPlaying(false);
-          return t;
-        }
-        void feedTo(next);
-        return next;
-      });
+      const next = curTurnRef.current + 1;
+      if (next > maxTurn) {
+        setPlaying(false);
+        return;
+      }
+      applyTurn(next);
+      void feedTo(next);
     }, beat);
     return () => window.clearInterval(iv);
-  }, [playing, hasSim, maxTurn, settings.animationSpeed, feedTo]);
+  }, [playing, hasSim, maxTurn, settings.animationSpeed, feedTo, applyTurn]);
 
   if (!record) {
     return (
@@ -140,24 +129,24 @@ export function ReplayPage(): JSX.Element {
     );
   }
 
-  const step = (delta: number) => {
-    setPlaying(false);
-    setCurTurn((t) => {
-      const next = Math.max(0, Math.min(maxTurn, t + delta));
-      if (delta > 0 && hasSim) void feedTo(next);
-      return next;
-    });
-  };
-  const jumpTo = (turn: number) => {
+  /** 统一跳转：前进走单调 feed；向后跳转引擎不可回卷 = 重建会话后直灌到目标回合 */
+  const seek = (turn: number) => {
     setPlaying(false);
     const next = Math.max(0, Math.min(maxTurn, turn));
-    if (hasSim && next === 0 && cursorRef.current > 0) {
-      // 引擎不可回退：回到第 0 回合 = 重建复现会话
+    if (hasSim && next < curTurnRef.current) {
+      rebuildTargetRef.current = next > 0 ? next : null;
+      applyTurn(next);
       setResetKey((k) => k + 1);
       return;
     }
-    setCurTurn(next);
-    if (hasSim) void feedTo(next);
+    applyTurn(next);
+    if (hasSim && next > curTurnRef.current) void feedTo(next);
+  };
+  const step = (delta: number) => {
+    seek(curTurnRef.current + delta);
+  };
+  const jumpTo = (turn: number) => {
+    seek(turn);
   };
 
   const done = curTurn >= maxTurn;
