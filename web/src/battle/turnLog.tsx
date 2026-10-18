@@ -54,6 +54,11 @@ const LOG_HIDDEN = new Set([
   "j",
   "l",
   "prompt",
+  // 服务器 UI 注入指令（OTS 请求按钮等）：整段是 HTML，非战斗叙事，
+  // 渲染出来即原始标签文本（曾把场地 ticker 撑到 1600px+）
+  "uhtml",
+  "uhtmlchange",
+  "html",
 ]);
 const LOG_HIDDEN_RE = /^p[12]( \d+)?$/;
 
@@ -181,7 +186,8 @@ export function renderLine(kind: string, p: string[]): string {
   }
 }
 
-/** 天气/场地/持续效果段的中文渲染（SunnyDay [from] ability: 日照 [of] p1a: 喷火龙 等） */const FIELD_ZH: Record<string, string> = {
+/** 天气/场地/持续效果段的中文渲染（SunnyDay [from] ability: 日照 [of] p1a: 喷火龙 等） */
+const FIELD_ZH: Record<string, string> = {
   SunnyDay: "日照强烈",
   RainDance: "下雨",
   Sandstorm: "沙暴",

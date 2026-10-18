@@ -384,7 +384,9 @@ export function NationalDetailPage({
                     max={252}
                     step={4}
                     value={sc.ev[k]}
-                    onChange={(e) => setSc({ ...sc, ev: { ...sc.ev, [k]: Number(e.target.value) } })}
+                    onChange={(e) =>
+                      setSc({ ...sc, ev: { ...sc.ev, [k]: Number(e.target.value) } })
+                    }
                   />
                   <span className="mini">个体值</span>
                   <input
@@ -393,7 +395,9 @@ export function NationalDetailPage({
                     min={0}
                     max={31}
                     value={sc.iv[k]}
-                    onChange={(e) => setSc({ ...sc, iv: { ...sc.iv, [k]: Number(e.target.value) } })}
+                    onChange={(e) =>
+                      setSc({ ...sc, iv: { ...sc.iv, [k]: Number(e.target.value) } })
+                    }
                   />
                   <span className="mini result">
                     = <b>{computedStats[k] ?? "—"}</b>

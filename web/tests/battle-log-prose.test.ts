@@ -5,7 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { beforeAll, describe, expect, it } from "vitest";
 import { setLoader } from "../src/data/core";
-import { proseTurns } from "../src/battle/turnLog";
+import { proseTurns, lastLogText } from "../src/battle/turnLog";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const DATA = path.join(ROOT, "web", "public", "data");
@@ -67,18 +67,11 @@ describe("Showdown 式整合日志", () => {
       "|move|p1a: Attacker|Hydro Pump|p2a: Testmon",
       "|-miss|p1a: Attacker|p2a: Testmon",
     ]);
-    expect(out.map((l) => l.text)).toEqual([
-      "A·Attacker 使用了 水炮！",
-      "B·Testmon 避开了攻击！",
-    ]);
+    expect(out.map((l) => l.text)).toEqual(["A·Attacker 使用了 水炮！", "B·Testmon 避开了攻击！"]);
   });
 
   it("回合分组保留：|turn| 锚点切组，未覆盖事件回落单行渲染", () => {
-    const out = flat([
-      "|turn|2",
-      "|-weather|RainDance|[upkeep]",
-      "|faint|p2a: Testmon",
-    ]);
+    const out = flat(["|turn|2", "|-weather|RainDance|[upkeep]", "|faint|p2a: Testmon"]);
     expect(out.map((l) => l.turn)).toEqual([2, 2]);
     expect(out[1]!.text).toContain("Testmon");
     expect(out[1]!.text).toContain("倒下");
@@ -87,5 +80,21 @@ describe("Showdown 式整合日志", () => {
   it("未知首段（无 switch 播种）也能给出剩余百分比", () => {
     const out = flat(["|-damage|p2a: Testmon|70/100"]);
     expect(out[0]!.text).toBe("B·Testmon 受到了伤害（剩余 70%）");
+  });
+
+  it("服务器 UI 注入行（uhtml/otsrequest 按钮）不进日志与 ticker", () => {
+    const startup = [
+      "|tier|[Gen 9] VGC 2025 Reg I",
+      "|rule|Item Clause: Limit 1 of each item",
+      "|teampreview|4",
+      '|uhtml|otsrequest|<button name="send" value="/acceptopenteamsheets"><strong>Accept Open Team Sheets</strong></button>',
+      "|uhtmlchange|otsrequest|",
+    ];
+    // 整合视图：uhtml/uhtmlchange 整行丢弃，回退渲染也不落 HTML 文本
+    const out = flat(startup);
+    expect(out.some((l) => l.text.includes("<button"))).toBe(false);
+    expect(out.map((l) => l.text)).toEqual(["规则：Item Clause: Limit 1 of each item"]);
+    // ticker（lastLogText）取最后一条可渲染行而非 otsrequest HTML
+    expect(lastLogText(startup)).toBe("规则：Item Clause: Limit 1 of each item");
   });
 });

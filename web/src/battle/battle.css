@@ -1692,7 +1692,10 @@ button.mini.on {
   min-width: 120px;
 }
 .replay-stage {
-  grid-template-columns: 1fr; /* 只读回放：单列舞台（无指令面板） */
+  /* 只读回放：单列舞台（无指令面板）。minmax(0,…) 同对战页口径：1fr 等价
+     minmax(auto,1fr)，grid item 的自动最小宽 = 内容 min-content，ticker 等
+     nowrap 长文本会把整列撑出视口（舞台比页面宽） */
+  grid-template-columns: minmax(0, 1fr);
 }
 .replay-log-reveal .log-scroll {
   max-height: 70vh;
