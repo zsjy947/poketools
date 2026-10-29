@@ -454,7 +454,7 @@ export function DonutsPage(): JSX.Element {
               {editor.effects.map((e2, i) => (
                 <div key={i} className="fld-row">
                   <select
-                    className="pkt-select"
+                    className={"pkt-select" + (e2.power ? "" : " unset")}
                     style={{ width: 140 }}
                     value={e2.power}
                     onChange={(ev) =>
@@ -466,7 +466,7 @@ export function DonutsPage(): JSX.Element {
                       })
                     }
                   >
-                    <option value="">力量</option>
+                    <option value="">选择力量</option>
                     {powerNames.map((p) => (
                       <option key={p} value={p}>
                         {p}
@@ -474,7 +474,7 @@ export function DonutsPage(): JSX.Element {
                     ))}
                   </select>
                   <select
-                    className="pkt-select w100"
+                    className={"pkt-select w100" + (e2.type ? "" : " unset")}
                     value={e2.type}
                     onChange={(ev) =>
                       setEditor({
@@ -485,7 +485,7 @@ export function DonutsPage(): JSX.Element {
                       })
                     }
                   >
-                    <option value="">属性</option>
+                    <option value="">选择属性</option>
                     {TYPE_LIST.map((t) => (
                       <option key={t} value={t}>
                         {t}
@@ -511,14 +511,16 @@ export function DonutsPage(): JSX.Element {
                       </option>
                     ))}
                   </select>
-                  <button
-                    className="pkt-btn pkt-btn-sm danger-text"
-                    onClick={() =>
-                      setEditor({ ...editor, effects: editor.effects.filter((_, j) => j !== i) })
-                    }
-                  >
-                    删
-                  </button>
+                  {editor.effects.length > 1 && (
+                    <button
+                      className="pkt-btn pkt-btn-sm danger-text"
+                      onClick={() =>
+                        setEditor({ ...editor, effects: editor.effects.filter((_, j) => j !== i) })
+                      }
+                    >
+                      删
+                    </button>
+                  )}
                 </div>
               ))}
               <button

@@ -4,7 +4,7 @@
  * renderLine/LogLine 系渲染函数自 BattleView 提取至此（唯一实现）。
  */
 import { useEffect, useMemo, useRef, useState } from "react";
-import { zhLine } from "../data";
+import { zhLine, STATUS_ZH } from "../data";
 import { STAT_BOOST_ZH } from "./field";
 
 export interface TurnGroup {
@@ -174,15 +174,33 @@ export function renderLine(kind: string, p: string[]): string {
     case "-crit":
       return "击中了要害！";
     case "-status":
-      return `${who(p[0])} 陷入了${p[1]}状态。`;
+      return `${who(p[0])} 陷入了${STATUS_ZH[p[1] ?? ""] ?? p[1] ?? "异常"}状态。`;
     case "-curestatus":
-      return `${who(p[0])} 的${p[1] ?? "状态"}解除了。`;
+      return `${who(p[0])} 的${STATUS_ZH[p[1] ?? ""] ?? p[1] ?? "状态"}解除了。`;
+    case "cant": {
+      // 无法行动原因（slp/par/frz/flinch/recharge/ability: X 等）
+      const reason = p[1] ?? "";
+      if (reason.startsWith("ability:")) {
+        return `${who(p[0])} 因特性「${zhLine(reason.slice("ability:".length).trim())}」无法行动！`;
+      }
+      const CANT_ZH: Record<string, string> = {
+        slp: "睡着了，无法行动！",
+        par: "麻痹了，无法行动！",
+        frz: "被冻住了，无法行动！",
+        flinch: "因畏缩无法出招！",
+        recharge: "力竭，本回合需要冷却！",
+      };
+      return `${who(p[0])} ${CANT_ZH[reason] ?? `无法行动！（${reason}）`}`;
+    }
     case "rule":
-      return `规则：${p[0]}`;
+      return `规则：${zhFieldText(p[0] ?? "")}`;
     case "error":
       return `⚠ ${clean(p.join(" "))}`;
-    default:
-      return clean(p.filter(Boolean).join(" "));
+    default: {
+      // 未覆盖事件：剥 ident 槽位前缀（p1a: X）后拼接，避免协议残留混入可读日志
+      const joined = clean(p.filter(Boolean).join(" "));
+      return joined.replace(/^p[12][ab]?: /, "").replace(/ p[12][ab]?: /g, " ");
+    }
   }
 }
 
@@ -206,6 +224,8 @@ const FIELD_ZH: Record<string, string> = {
   Safeguard: "神秘守护",
   "move: Sunny Day": "日照强烈",
   "move: Rain Dance": "下雨",
+  // 赛制规则行（|rule|）：引擎原文英文，逐条映射（出现一条补一条）
+  "Item Clause: Limit 1 of each item": "同一种道具限带 1 只",
 };
 
 function zhFieldText(raw: string): string {
@@ -342,6 +362,11 @@ function proseLines(raw: string[], hp: Map<string, number>): ProseLine[] {
         }
         const bits: string[] = [];
         if (kind === "-damage") {
+          if (prev != null && pct != null && prev - pct <= 0) {
+            // 差值为 0 的重复 -damage 行（同一击的二次结算）：无信息量，整行跳过
+            i = j;
+            break;
+          }
           let text: string;
           if (prev != null && pct != null) {
             const lost = Math.max(0, prev - pct);

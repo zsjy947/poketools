@@ -82,6 +82,33 @@ describe("Showdown 式整合日志", () => {
     expect(out[0]!.text).toBe("B·Testmon 受到了伤害（剩余 70%）");
   });
 
+  it("差值为 0 的重复 -damage 行（同一击二次结算）整行跳过", () => {
+    const out = flat([
+      "|switch|p2a: Testmon|Testmon, L50|100/100",
+      "|-damage|p2a: Testmon|60/100",
+      "|-damage|p2a: Testmon|60/100",
+    ]);
+    expect(out.map((l) => l.text)).toEqual([
+      "B·Testmon 上场了！",
+      "B·Testmon 损失了 40% 的 HP（剩余 60%）",
+    ]);
+  });
+
+  it("cant 行中文化（睡眠/畏缩/特性）且不泄漏 p1b 协议前缀", () => {
+    const out = flat([
+      "|-status|p1b: Sleeper|slp",
+      "|cant|p1b: Sleeper|slp",
+      "|cant|p2a: Flincher|flinch",
+      "|cant|p1a: Levitator|ability: Levitate",
+    ]);
+    expect(out.map((l) => l.text)).toEqual([
+      "Sleeper 陷入了睡眠状态。",
+      "Sleeper 睡着了，无法行动！",
+      "Flincher 因畏缩无法出招！",
+      "Levitator 因特性「飘浮」无法行动！",
+    ]);
+  });
+
   it("服务器 UI 注入行（uhtml/otsrequest 按钮）不进日志与 ticker", () => {
     const startup = [
       "|tier|[Gen 9] VGC 2025 Reg I",
@@ -90,11 +117,12 @@ describe("Showdown 式整合日志", () => {
       '|uhtml|otsrequest|<button name="send" value="/acceptopenteamsheets"><strong>Accept Open Team Sheets</strong></button>',
       "|uhtmlchange|otsrequest|",
     ];
-    // 整合视图：uhtml/uhtmlchange 整行丢弃，回退渲染也不落 HTML 文本
+    // 整合视图：uhtml/uhtmlchange 整行丢弃，回退渲染也不落 HTML 文本；
+    // rule 行走 FIELD_ZH 映射（UI 文案一律简体中文）
     const out = flat(startup);
     expect(out.some((l) => l.text.includes("<button"))).toBe(false);
-    expect(out.map((l) => l.text)).toEqual(["规则：Item Clause: Limit 1 of each item"]);
+    expect(out.map((l) => l.text)).toEqual(["规则：同一种道具限带 1 只"]);
     // ticker（lastLogText）取最后一条可渲染行而非 otsrequest HTML
-    expect(lastLogText(startup)).toBe("规则：Item Clause: Limit 1 of each item");
+    expect(lastLogText(startup)).toBe("规则：同一种道具限带 1 只");
   });
 });

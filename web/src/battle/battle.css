@@ -1300,7 +1300,8 @@ button.mini.danger {
 }
 .move-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  /* 单列行式（名字左 + 信息右）：2 列网格会把招式名挤成两字省略号（鬼…/暗…），不可读 */
+  grid-template-columns: 1fr;
   gap: 5px;
 }
 /* 作用域 .battle-section：计算器 SummaryCard 也用全局 .move-btn（招式条），避免 flex 方向泄漏影响其布局 */

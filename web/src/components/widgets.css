@@ -74,6 +74,10 @@
 .pkt-select {
   padding-right: 24px;
 }
+/* 未选择的占位态（弹窗「选择食力」等）：灰显与真实选项区分，避免误以为已选 */
+select.pkt-select.unset {
+  color: #a8abb2;
+}
 
 /* ---- 单选组（分段按钮） ---- */
 .pkt-radio-group {

@@ -60,6 +60,14 @@
   `TODO.json` `sprite_52poke_failed`，不静默丢弃。
 - 残余：绅士蛾-垃圾蓑衣（mothim-trash）52poke 无独立图（PokeAPI/Bulbagarden 亦无）→ 前端隐藏兜底。
 
+### 7. 抓取文案繁简混排（2026-10-29 实机走查登记）
+
+- 部分特性文案/获取方式地点为繁体中文（如「通過在腳下張開青草场地…寶可夢」「挑戰海灘」
+  「歐鼬鎮愛奧尼亚酒店」）：源头 52poke 部分页面/表格单元格本身是繁体。
+- 正确修法：抓取管线统一加 MediaWiki `variant=zh-cn`（`wiki_client.py` wikitext/imageinfo
+  请求参数），需联网重跑全管线；前端不做字符级繁简映射（半转换比不转换更糟）。
+- 影响面：特性详细介绍（abilities.extra）、get_methods 地点、form_flavor 个别段。
+
 ## 二、人工 curated 已知账
 
 ### 1. Z-A 学习集（已全覆盖 364/364）

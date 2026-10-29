@@ -90,7 +90,7 @@ export function EvPage({ gameId }: { gameId: string }): JSX.Element {
             onChange={(e) => setQ(e.target.value)}
           />
           <button className="pkt-btn pkt-btn-sm" onClick={() => setShowFilters(false)}>
-            收起
+            收起筛选
           </button>
         </div>
       </div>

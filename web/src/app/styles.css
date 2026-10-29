@@ -22,9 +22,10 @@
 }
 .pkt-home-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  /* 四张功能卡 2×2：auto-fit 在桌面宽度出 3 列，第 4 张会挤到第二行左对齐（视觉失衡） */
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
   gap: 16px;
-  max-width: 760px;
+  max-width: 560px;
   margin: 32px auto 0;
 }
 .pkt-home-card {

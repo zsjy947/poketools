@@ -449,6 +449,12 @@ export class BattleSession {
     return this.opts.seed;
   }
 
+  /** 本局实际上阵队伍（回放持久化必须存这份：引擎收到的是 pickSets 后的上阵子集，
+   *  存注册整队会让回放的 team 指令命中错误子集，重演状态错位） */
+  get battleTeams(): { p1: PokemonSet[]; p2: PokemonSet[] } {
+    return this.opts.teams;
+  }
+
   /** 是否双方都已下达指令 */
   get awaiting(): SideSlot[] {
     return this.pending;

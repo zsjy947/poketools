@@ -153,16 +153,19 @@ export async function evFilter(params: any) {
       { location: string; methods: Set<string>; labels: Set<string> }
     >();
     for (const item of locs) {
-      if (!merged.has(item.location)) {
-        merged.set(item.location, {
-          location: item.location,
-          methods: new Set(),
-          labels: new Set(),
-        });
+      // 52poke 单元格存在一格多地点（如「挑戰海灘，揖礼原野所有天气」）：
+      // 拆分逐段归并，否则与独立行渲染出仅前缀之差的重复地点行
+      for (const loc of item.location
+        .split(/[，,；;]/)
+        .map((s: string) => s.trim())
+        .filter(Boolean)) {
+        if (!merged.has(loc)) {
+          merged.set(loc, { location: loc, methods: new Set(), labels: new Set() });
+        }
+        const m = merged.get(loc)!;
+        m.methods.add(item.method);
+        m.labels.add(item.version_label);
       }
-      const m = merged.get(item.location)!;
-      m.methods.add(item.method);
-      m.labels.add(item.version_label);
     }
     d.locations = [...merged.values()].map((m) => ({
       location: m.location,

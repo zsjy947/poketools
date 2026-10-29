@@ -34,9 +34,9 @@ export function App(): JSX.Element {
       on:
         route.name === "games" ||
         route.name === "game" ||
-        route.name === "national" ||
-        route.name === "pokemon",
+        (route.name === "pokemon" && !rawQuery.get("national")),
     },
+    { id: "national", label: "全国图鉴", on: route.name === "national" },
     { id: "calc", label: "伤害计算器", on: route.name === "calc" },
     { id: "battle", label: "模拟对战", on: route.name === "battle" },
   ];

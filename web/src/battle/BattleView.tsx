@@ -10,6 +10,7 @@ import type {
 } from "../engine-adapter";
 import type { RequestChoice } from "../engine-adapter/session";
 import { dexFor, moveView, speciesView, TYPE_ZH, STATUS_ZH, zhLine } from "../data";
+import { confirmBox } from "../components/shared";
 import { spriteUrl } from "./sprites";
 import { useBattleAnimQueue, normAnimIdent } from "./anim";
 import type { AnimRuntime, AnimPopup } from "./anim";
@@ -39,7 +40,6 @@ export function BattleView(): JSX.Element {
   const settings = useApp((s) => s.settings);
   const updateSettings = useApp((s) => s.updateSettings);
   const format = useApp((s) => s.format);
-  const teams = useApp((s) => s.teams);
   const recordedRef = useRef(false);
 
   useEffect(() => {
@@ -60,8 +60,10 @@ export function BattleView(): JSX.Element {
         winner: snapshot.winner ?? "未知",
         p1Name: "阵营 A",
         p2Name: "阵营 B",
-        p1Team: exportShowdown(teams.A.sets),
-        p2Team: exportShowdown(teams.B.sets),
+        // 必须存实局上阵子集（session.battleTeams）：存注册整队会让回放的
+        // team 指令命中错误子集，重演状态错位（见 plans/UI-FIXLIST A1）
+        p1Team: exportShowdown(session.battleTeams.p1),
+        p2Team: exportShowdown(session.battleTeams.p2),
         seed: session.seedUsed ? JSON.stringify(session.seedUsed) : undefined,
         turns: snapshot.turn,
         log: session.deterministicLog(),
@@ -69,7 +71,7 @@ export function BattleView(): JSX.Element {
       };
       finishBattle(record);
     }
-  }, [snapshot?.phase, snapshot?.winner, session, finishBattle, snapshot, teams, snapshot?.turn]);
+  }, [snapshot?.phase, snapshot?.winner, session, finishBattle, snapshot?.turn]);
 
   const dex = useMemo(() => dexFor(format?.mod ?? "gen9"), [format]);
 
@@ -100,6 +102,13 @@ export function BattleView(): JSX.Element {
         </label>
         <button
           onClick={() => {
+            // 未分出胜负的弃局不入对局记录——明示，避免误触丢局无感知
+            if (
+              snapshot.phase !== "finished" &&
+              !confirmBox("本局尚未分出胜负，结束后不会保存到对局记录。确定结束？", "结束本局")
+            ) {
+              return;
+            }
             detachSession();
             go("preview");
           }}

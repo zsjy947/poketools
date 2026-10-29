@@ -134,6 +134,9 @@ export function NationalDexPage(): JSX.Element {
 
   return (
     <div className="pkt-page">
+      <button className="back-btn" onClick={() => (location.hash = "#/home")}>
+        ← 返回首页
+      </button>
       <div className="page-head">
         <span className="page-title">全国图鉴 · 收集追踪</span>
         <div className="dex-progress">
