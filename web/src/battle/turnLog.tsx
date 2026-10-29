@@ -226,6 +226,7 @@ const FIELD_ZH: Record<string, string> = {
   "move: Rain Dance": "下雨",
   // 赛制规则行（|rule|）：引擎原文英文，逐条映射（出现一条补一条）
   "Item Clause: Limit 1 of each item": "同一种道具限带 1 只",
+  "Species Clause: Limit one of each Pokémon": "同一种宝可梦限带 1 只",
 };
 
 function zhFieldText(raw: string): string {
