@@ -316,12 +316,14 @@ function proseLines(raw: string[], hp: Map<string, number>): ProseLine[] {
       case "drag": {
         const seg = segPct(parts[4]);
         if (parts[2] && seg != null) hp.set(parts[2]!, seg);
-        out.push({
-          text: zhLine(
-            kind === "drag" ? `${zhWho(parts[2])} 被强制换上场了！` : `${zhWho(parts[2])} 上场了！`,
-          ),
-          cls: "switch",
-        });
+        const text = zhLine(
+          kind === "drag" ? `${zhWho(parts[2])} 被强制换上场了！` : `${zhWho(parts[2])} 上场了！`,
+        );
+        // 引擎对同一次上场会输出两行相同 switch（主流直读重复），相邻重复只渲染一次
+        const last = out[out.length - 1];
+        if (!(last && last.cls === "switch" && last.text === text)) {
+          out.push({ text, cls: "switch" });
+        }
         i++;
         break;
       }
@@ -390,6 +392,11 @@ function proseLines(raw: string[], hp: Map<string, number>): ProseLine[] {
                     : "damage",
           });
         } else {
+          if (prev != null && pct != null && pct - prev <= 0) {
+            // 差值为 0 的重复 -heal 行（满血时回复/同一回复二次结算）：无信息量，整行跳过
+            i = j;
+            break;
+          }
           let text: string;
           if (prev != null && pct != null) {
             const gain = Math.max(0, pct - prev);
@@ -419,6 +426,7 @@ function proseLines(raw: string[], hp: Map<string, number>): ProseLine[] {
 
 /** 未整合事件回落单行渲染（与"原始"视图同一条 renderLine；噪音行返回 null 不渲染） */
 function fallbackProse(kind: string, line: string): ProseLine | null {
+  if (!line.startsWith("|")) return null; // 裸行（p1 4 等流帧残段）不渲染，与 LogLine 同规
   if (LOG_HIDDEN.has(kind) || LOG_HIDDEN_RE.test(kind)) return null;
   if (kind === "raw" && /<button|otsrequest/i.test(line)) return null;
   const parts = line.split("|");

@@ -1,7 +1,7 @@
 {
   "name": "poketools",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "宝可梦工具助手——五作图鉴/努力值/特化功能/伤害计算器/模拟对战（完全本地离线）",
   "type": "module",
   "engines": {

@@ -541,8 +541,7 @@ function isTransportFrame(line: string): boolean {
   return (
     line === "update" ||
     line === "sideupdate" ||
-    line === "p1" ||
-    line === "p2" ||
+    /^p[12]( \d+)?$/.test(line) || // p1/p2 封皮与 teampreview 数量残行（p1 4）
     line.startsWith("|request|") ||
     line === "|"
   );

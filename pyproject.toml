@@ -1,6 +1,6 @@
 [project]
 name = "poketools"
-version = "1.0.1"
+version = "1.0.2"
 description = "Switch 宝可梦五作本地图鉴工具助手（构建期 Python 管线 + web/ React+TS 前端 + Tauri 2 壳）"
 requires-python = ">=3.10"
 
