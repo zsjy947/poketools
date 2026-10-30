@@ -220,10 +220,14 @@ FORM_MARKERS = {
     "宝箱形态": "chest", "流浪形态": "roaming",
     "制限形态": "limited-build", "受限模式": "limited-build", "完整模式": "ultimate-mode",
     "碧草面具": "teal-mask",
-    "現在的顏色": "eternal", "现在的颜色": "eternal", "５００年前的顏色": "eternal",
+    # 玛机雅娜（Z-A：颜色两型 × 超级进化；wiki_client t2s 后缓存为简体「颜色」。
+    # 旧值 "eternal" 是死键——对 801 的 forms 后缀永不命中而被静默丢弃，改挂真实形态）
+    "现在的颜色": "", "現在的顏色": "",
+    "５００年前的颜色": "original", "５００年前的顏色": "original",
     "{{Female}}": "female", "{{Male}}": "male",
     "超级进化、上弓姿势": "curly", "超级进化、下垂姿势": "droopy", "超级进化、平挺姿势": "stretchy",
-    "超级进化、现在的颜色": "eternal", "超级进化、５００年前的顏色": "eternal",
+    "超级进化、现在的颜色": "mega", "超级进化、現在的顏色": "mega",
+    "超级进化、５００年前的颜色": "original-mega", "超级进化、５００年前的顏色": "original-mega",
     "冰冻卡带": "ice", "水流卡带": "water", "火焰卡带": "fire", "闪电卡带": "electric",
     "花园花纹": "garden", "骤雨花纹": "monsoon", "核心": "core", "流星的样子": "red-meteor",
     "洛托姆的样子": "rotom", "普通形态": "terapagos",
@@ -305,7 +309,10 @@ def parse_flavor(wt: str) -> tuple[list[dict], list[dict], list[dict]]:
                 if not t:
                     continue
                 suffix = FORM_MARKERS.get(marker) if marker else None
-                if suffix:
+                if suffix == "":
+                    # 「默认形态」标记（玛机雅娜「现在的颜色」）：并入基础图鉴行
+                    out.append({"game": game, "label": label, "text": t})
+                elif suffix:
                     # 值可为 str 或 [候选…]（同名标记跨种歧义时按顺序试，如 化形→谜拟丘/胡帕）
                     cands = suffix if isinstance(suffix, list) else [suffix]
                     forms_out.append({"suffixes": cands, "game": game,
@@ -496,30 +503,31 @@ def parse_ability_page(wt: str) -> dict | None:
     ==特性效果==：正文可能在节首或 `===对战中===` 子节（旁支系列子节不取），
     首段散文=effect，`*` 行=extra（多点补充）
     ==特性说明==：{{状态说明框|世代|游戏|-{zh-hans:…}-}}，优先第九世代 SV/ZA，无则最后一条
+    缺「特性效果」标题的页（如 黄金之躯）：effect 回退用官方说明文本（intro），
+    不视为解析失败——同一官方描述，不属编造。
     """
     seg = _section(wt, "特性效果")
-    if not seg.strip():
-        return None
-    m = re.search(r"^===对战中===", seg, re.MULTILINE)
-    if m:
-        sub = seg[m.start():]
-        nxt = re.search(r"^===[^=]", sub[3:], re.MULTILINE)
-        seg = sub[:m.start()] + (sub[:nxt.start() + 3] if nxt else sub)
-    else:
-        top = re.search(r"^===[^=]", seg, re.MULTILINE)
-        if top:
-            seg = seg[:top.start()]
     effect, extra = "", []
-    for line in seg.splitlines():
-        s = line.strip()
-        if not s:
-            continue
-        if s.startswith("*"):
-            t = clean_wt(s.lstrip("*").strip())
-            if t:
-                extra.append(t)
-        elif not effect and not s.startswith(("{{", "|", "}", "{", "=")):
-            effect = clean_wt(s)
+    if seg.strip():
+        m = re.search(r"^===对战中===", seg, re.MULTILINE)
+        if m:
+            sub = seg[m.start():]
+            nxt = re.search(r"^===[^=]", sub[3:], re.MULTILINE)
+            seg = sub[:m.start()] + (sub[:nxt.start() + 3] if nxt else sub)
+        else:
+            top = re.search(r"^===[^=]", seg, re.MULTILINE)
+            if top:
+                seg = seg[:top.start()]
+        for line in seg.splitlines():
+            s = line.strip()
+            if not s:
+                continue
+            if s.startswith("*"):
+                t = clean_wt(s.lstrip("*").strip())
+                if t:
+                    extra.append(t)
+            elif not effect and not s.startswith(("{{", "|", "}", "{", "=")):
+                effect = clean_wt(s)
     intro = ""
     desc = _section(wt, "特性说明")
     rows: list[tuple[int, str, str]] = []
@@ -539,6 +547,8 @@ def parse_ability_page(wt: str) -> dict | None:
             return (gen >= 9 and game.upper() in ("SV", "ZA"), gen >= 9, gen)
         rows.sort(key=rank, reverse=True)
         intro = rows[0][2]
+    if not effect and intro:
+        effect = intro   # 缺「特性效果」段的页（黄金之躯等）：官方说明即效果描述
     if not effect and not intro:
         return None
     return {"effect": effect, "extra": extra, "intro": intro}

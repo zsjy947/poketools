@@ -5,7 +5,9 @@
 - wikitext 批量抓取（每批 ≤50 标题）必须写 `data/raw/52poke-cache/` 本地缓存；
 - 图片下载走 `api.php?prop=imageinfo` 拿 media.52poke.com 直链（Special:FilePath 会 403），
   且需要 Referer + 浏览器式 UA；
-- API 会把标题中的下划线规范化为空格，查表键要统一。
+- API 会把标题中的下划线规范化为空格，查表键要统一；
+- wikitext 写缓存前做 OpenCC t2s 繁→简转换（部分页面源码为繁体，API variant 不作用于
+  revisions 内容；UI 文案一律简体，见 DATA-GAPS §一.7）。缓存键带 .zhcn 后缀与旧繁体缓存隔离。
 """
 from __future__ import annotations
 
@@ -15,12 +17,15 @@ import time
 from pathlib import Path
 
 import requests
+from opencc import OpenCC
 
 ROOT = Path(__file__).resolve().parent.parent
 CACHE = ROOT / "data" / "raw" / "52poke-cache"
 API = "https://wiki.52poke.com/api.php"
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) poketools/0.4 (asset build)"
 BATCH = 25   # 网关对过长 URL 偶发 502，缩批次
+
+_T2S = OpenCC("t2s")
 
 _session = requests.Session()
 _session.headers["User-Agent"] = UA
@@ -29,7 +34,15 @@ _aliases: dict[str, str] = {}   # 重定向 from -> to
 
 def cache_path(title: str) -> Path:
     safe = re.sub(r'[\\/:*?"<>|]', "_", title)
-    return CACHE / f"{safe}.txt"
+    return CACHE / f"{safe}.zhcn.txt"
+
+
+def to_simplified(text: str) -> str:
+    """繁→简转换（t2s，词汇级转换；52poke 页面无 -{}- 标记，可整段转换）。"""
+    try:
+        return _T2S.convert(text)
+    except Exception:   # 转换失败按原文落库，解析失败另有 TODO 账
+        return text
 
 
 def _api(params: dict, retries: int = 5) -> dict | None:
@@ -81,7 +94,7 @@ def fetch_titles(titles: list[str]) -> None:
             revs = page.get("revisions") or []
             if revs:
                 cache_path(page["title"]).write_text(
-                    revs[0]["slots"]["main"]["content"], encoding="utf-8")
+                    to_simplified(revs[0]["slots"]["main"]["content"]), encoding="utf-8")
         time.sleep(0.6)
         done = min(i + BATCH, len(todo))
         if done % 200 == 0 or done == len(todo):

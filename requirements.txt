@@ -2,3 +2,4 @@
 # 开发/门禁工具（pytest、ruff）在 requirements-dev.txt
 requests
 Pillow
+opencc-python-reimplemented   # 52poke 抓取繁→简（wiki_client t2s）

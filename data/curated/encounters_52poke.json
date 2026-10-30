@@ -1200,7 +1200,7 @@
   "species_id": 16,
   "game": "legends-za",
   "version_label": "传说 Z-A",
-  "location": "１号野生特区，５号野生特区，榴红区，翡绿区，浦蓝区，琼黄区，蓉粉区",
+  "location": "１号野生特区，５号野生特区，榴红１号街区，榴红３号街区，榴红５号街区，翡绿１号街区，翡绿３号街区，翡绿４号街区，翡绿５号街区，翡绿６号街区，翡绿７号街区，翡绿８号街区，翡绿９号街区，浦蓝３号街区，浦蓝４号街区，浦蓝５号街区，浦蓝６号街区，浦蓝７号街区，浦蓝８号街区，琼黄１号街区，琼黄２号街区，琼黄３号街区，琼黄４号街区，琼黄６号街区，琼黄７号街区，琼黄９号街区，蓉粉１号街区，蓉粉３号街区，榴红大道 ，红色广场 ，发呆公园 ，琼黄大道 ，蓉粉大道 ，粉色广场 ，北侧大道 ，南侧大道 ，春日大道 ，冬日大道",
   "method": "可见",
   "note": "",
   "form": ""
@@ -1668,7 +1668,7 @@
   "species_id": 25,
   "game": "brilliant-diamond-shining-pearl",
   "version_label": "晶灿钻石/明亮珍珠",
-  "location": "自豪的後院",
+  "location": "自豪的后院",
   "method": "随机",
   "note": "",
   "form": ""
@@ -2064,7 +2064,7 @@
   "species_id": 27,
   "game": "scarlet-violet",
   "version_label": "朱/紫·零之秘宝",
-  "location": "起舞山道，樂土荒地",
+  "location": "起舞山道，乐土荒地",
   "method": "可见",
   "note": "",
   "form": ""
@@ -2235,7 +2235,7 @@
   "species_id": 28,
   "game": "scarlet-violet",
   "version_label": "朱/紫·零之秘宝",
-  "location": "起舞山道，樂土荒地",
+  "location": "起舞山道，乐土荒地",
   "method": "可见，定点",
   "note": "",
   "form": ""
@@ -3279,7 +3279,7 @@
   "species_id": 39,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "挑戰海灘，揖礼原野所有天气",
+  "location": "挑战海滩，揖礼原野所有天气",
   "method": "随机",
   "note": "",
   "form": ""
@@ -3333,7 +3333,7 @@
   "species_id": 39,
   "game": "brilliant-diamond-shining-pearl",
   "version_label": "晶灿钻石/明亮珍珠",
-  "location": "自豪的後院",
+  "location": "自豪的后院",
   "method": "跟富豪对话如果不是则后院没有",
   "note": "获得全国图鉴后",
   "form": ""
@@ -3405,7 +3405,7 @@
   "species_id": 40,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野（大雾），清涼濕原（大雾），专注森林（大雾），挑战海滩（大雾），圓環海灣（大雾），鍛鍊平原（大雾）",
+  "location": "揖礼原野（大雾），清凉湿原（大雾），专注森林（大雾），挑战海滩（大雾），圆环海湾（大雾），锻炼平原（大雾）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -3630,7 +3630,7 @@
   "species_id": 42,
   "game": "brilliant-diamond-shining-pearl",
   "version_label": "晶灿钻石/明亮珍珠",
-  "location": "227号道路，荒芜小道，嚴酷山，冠军之路，天冠山，钢铁岛，雪峰神殿，迷失塔，归途洞窟",
+  "location": "227号道路，荒芜小道，严酷山，冠军之路，天冠山，钢铁岛，雪峰神殿，迷失塔，归途洞窟",
   "method": "随机",
   "note": "",
   "form": ""
@@ -4521,7 +4521,7 @@
   "species_id": 52,
   "game": "brilliant-diamond-shining-pearl",
   "version_label": "晶灿钻石/明亮珍珠",
-  "location": "自豪的後院",
+  "location": "自豪的后院",
   "method": "随机",
   "note": "获得全国图鉴后",
   "form": ""
@@ -4710,7 +4710,7 @@
   "species_id": 52,
   "game": "scarlet-violet",
   "version_label": "朱/紫",
-  "location": "橘子學院／葡萄學院",
+  "location": "橘子学院／葡萄学院",
   "method": "赛吉赠送",
   "note": "完成语言学期末考试后",
   "form": "G"
@@ -6258,7 +6258,7 @@
   "species_id": 67,
   "game": "brilliant-diamond-shining-pearl",
   "version_label": "晶灿钻石/明亮珍珠",
-  "location": "226，天冠山，嚴酷山，冠军之路，睿智湖畔",
+  "location": "226，天冠山，严酷山，冠军之路，睿智湖畔",
   "method": "随机",
   "note": "",
   "form": ""
@@ -8976,9 +8976,9 @@
   "species_id": 93,
   "game": "scarlet-violet",
   "version_label": "朱/紫",
-  "location": "釀光市",
+  "location": "酿光市",
   "method": "交换",
-  "note": "啪嚓海膽",
+  "note": "啪嚓海胆",
   "form": ""
  },
  {
@@ -9102,9 +9102,9 @@
   "species_id": 94,
   "game": "scarlet-violet",
   "version_label": "朱/紫",
-  "location": "釀光市",
+  "location": "酿光市",
   "method": "交换",
-  "note": "啪嚓海膽",
+  "note": "啪嚓海胆",
   "form": ""
  },
  {
@@ -10893,7 +10893,7 @@
   "species_id": 111,
   "game": "brilliant-diamond-shining-pearl",
   "version_label": "晶灿钻石/明亮珍珠",
-  "location": "227号道路，嚴酷山",
+  "location": "227号道路，严酷山",
   "method": "随机",
   "note": "",
   "form": ""
@@ -11010,7 +11010,7 @@
   "species_id": 112,
   "game": "brilliant-diamond-shining-pearl",
   "version_label": "晶灿钻石/明亮珍珠",
-  "location": "228，嚴酷山",
+  "location": "228，严酷山",
   "method": "随机",
   "note": "",
   "form": ""
@@ -11127,7 +11127,7 @@
   "species_id": 113,
   "game": "brilliant-diamond-shining-pearl",
   "version_label": "晶灿钻石/明亮珍珠",
-  "location": "自豪的後院",
+  "location": "自豪的后院",
   "method": "随机",
   "note": "获得全国图鉴后",
   "form": ""
@@ -12684,8 +12684,8 @@
   "species_id": 128,
   "game": "scarlet-violet",
   "version_label": "朱/紫·零之秘宝",
-  "location": "草原區",
-  "method": "可見／定点",
+  "location": "草原区",
+  "method": "可见／定点",
   "note": "",
   "form": ""
  },
@@ -12902,7 +12902,7 @@
   "version_label": "晶灿钻石/明亮珍珠",
   "location": "226号道路",
   "method": "交换",
-  "note": "螢光魚",
+  "note": "萤光鱼",
   "form": ""
  },
  {
@@ -13458,7 +13458,7 @@
   "species_id": 133,
   "game": "brilliant-diamond-shining-pearl",
   "version_label": "晶灿钻石/明亮珍珠",
-  "location": "自豪的後院",
+  "location": "自豪的后院",
   "method": "随机",
   "note": "获得全国图鉴后",
   "form": ""
@@ -13944,7 +13944,7 @@
   "species_id": 137,
   "game": "brilliant-diamond-shining-pearl",
   "version_label": "晶灿钻石/明亮珍珠",
-  "location": "自豪的後院",
+  "location": "自豪的后院",
   "method": "随机",
   "note": "获得全国图鉴后",
   "form": ""
@@ -14504,7 +14504,7 @@
   "version_label": "剑/盾·扩展票",
   "location": "王冠雪原全境",
   "method": "四处游走",
-  "note": "传说的鸟宝可梦劇情",
+  "note": "传说的鸟宝可梦剧情",
   "form": "G"
  },
  {
@@ -14612,7 +14612,7 @@
   "version_label": "剑/盾·扩展票",
   "location": "旷野地带所有区域",
   "method": "四处游走",
-  "note": "传说的鸟宝可梦劇情",
+  "note": "传说的鸟宝可梦剧情",
   "form": "G"
  },
  {
@@ -14718,9 +14718,9 @@
   "species_id": 146,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "鎧島全境",
+  "location": "铠岛全境",
   "method": "四处游走",
-  "note": "传说的鸟宝可梦劇情",
+  "note": "传说的鸟宝可梦剧情",
   "form": "G"
  },
  {
@@ -15195,7 +15195,7 @@
   "species_id": 152,
   "game": "legends-za",
   "version_label": "传说 Z-A",
-  "location": "２０號野生特區",
+  "location": "２０号野生特区",
   "method": "可见",
   "note": "",
   "form": ""
@@ -15573,7 +15573,7 @@
   "species_id": 158,
   "game": "legends-za",
   "version_label": "传说 Z-A",
-  "location": "２０號野生特區",
+  "location": "２０号野生特区",
   "method": "可见",
   "note": "",
   "form": ""
@@ -16662,7 +16662,7 @@
   "species_id": 172,
   "game": "brilliant-diamond-shining-pearl",
   "version_label": "晶灿钻石/明亮珍珠",
-  "location": "自豪的後院",
+  "location": "自豪的后院",
   "method": "野生",
   "note": "",
   "form": ""
@@ -16761,7 +16761,7 @@
   "species_id": 173,
   "game": "brilliant-diamond-shining-pearl",
   "version_label": "晶灿钻石/明亮珍珠",
-  "location": "自豪的後院",
+  "location": "自豪的后院",
   "method": "随机",
   "note": "获得全国图鉴后",
   "form": ""
@@ -16842,7 +16842,7 @@
   "species_id": 174,
   "game": "brilliant-diamond-shining-pearl",
   "version_label": "晶灿钻石/明亮珍珠",
-  "location": "自豪的後院",
+  "location": "自豪的后院",
   "method": "野生",
   "note": "",
   "form": ""
@@ -17490,7 +17490,7 @@
   "species_id": 183,
   "game": "brilliant-diamond-shining-pearl",
   "version_label": "晶灿钻石/明亮珍珠",
-  "location": "自豪的後院",
+  "location": "自豪的后院",
   "method": "随机",
   "note": "获得全国图鉴后",
   "form": ""
@@ -21468,7 +21468,7 @@
   "species_id": 227,
   "game": "brilliant-diamond-shining-pearl",
   "version_label": "晶灿钻石/明亮珍珠",
-  "location": "227号道路，嚴酷山",
+  "location": "227号道路，严酷山",
   "method": "随机",
   "note": "",
   "form": ""
@@ -26913,7 +26913,7 @@
   "species_id": 298,
   "game": "brilliant-diamond-shining-pearl",
   "version_label": "晶灿钻石/明亮珍珠",
-  "location": "自豪的後院",
+  "location": "自豪的后院",
   "method": "随机",
   "note": "获得全国图鉴后",
   "form": ""
@@ -27966,7 +27966,7 @@
   "species_id": 311,
   "game": "brilliant-diamond-shining-pearl",
   "version_label": "晶灿钻石/明亮珍珠",
-  "location": "自豪的後院",
+  "location": "自豪的后院",
   "method": "随机",
   "note": "获得全国图鉴后",
   "form": ""
@@ -28020,7 +28020,7 @@
   "species_id": 312,
   "game": "brilliant-diamond-shining-pearl",
   "version_label": "晶灿钻石/明亮珍珠",
-  "location": "自豪的後院",
+  "location": "自豪的后院",
   "method": "随机",
   "note": "获得全国图鉴后",
   "form": ""
@@ -28263,7 +28263,7 @@
   "species_id": 315,
   "game": "brilliant-diamond-shining-pearl",
   "version_label": "晶灿钻石/明亮珍珠",
-  "location": "225，自豪的後院，大湿地",
+  "location": "225，自豪的后院，大湿地",
   "method": "随机",
   "note": "",
   "form": ""
@@ -28372,7 +28372,7 @@
   "game": "scarlet-violet",
   "version_label": "朱/紫·零之秘宝",
   "location": "联盟社",
-  "method": "吉尼亞交换",
+  "method": "吉尼亚交换",
   "note": "任意宝可梦",
   "form": ""
  },
@@ -31422,7 +31422,7 @@
   "species_id": 351,
   "game": "brilliant-diamond-shining-pearl",
   "version_label": "晶灿钻石/明亮珍珠",
-  "location": "自豪的後院",
+  "location": "自豪的后院",
   "method": "随机",
   "note": "获得全国图鉴后",
   "form": ""
@@ -33411,7 +33411,7 @@
   "species_id": 377,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "岩山遺跡",
+  "location": "岩山遗迹",
   "method": "定点",
   "note": "同行宝可梦首位携带不变之石",
   "form": ""
@@ -33465,9 +33465,9 @@
   "species_id": 378,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "冰山遺跡",
+  "location": "冰山遗迹",
   "method": "定点",
-  "note": "同行宝可梦首位為幾何雪花",
+  "note": "同行宝可梦首位为几何雪花",
   "form": ""
  },
  {
@@ -33519,9 +33519,9 @@
   "species_id": 379,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "黑金遺跡",
+  "location": "黑金遗迹",
   "method": "定点",
-  "note": "在門前吹响指哨",
+  "note": "在门前吹响指哨",
   "form": ""
  },
  {
@@ -34608,7 +34608,7 @@
   "species_id": 397,
   "game": "brilliant-diamond-shining-pearl",
   "version_label": "晶灿钻石/明亮珍珠",
-  "location": "212，立志湖畔，立志湖，大湿地，自豪的後院，送行之泉",
+  "location": "212，立志湖畔，立志湖，大湿地，自豪的后院，送行之泉",
   "method": "随机",
   "note": "",
   "form": ""
@@ -38091,7 +38091,7 @@
   "species_id": 438,
   "game": "brilliant-diamond-shining-pearl",
   "version_label": "晶灿钻石/明亮珍珠",
-  "location": "自豪的後院",
+  "location": "自豪的后院",
   "method": "随机",
   "note": "获得全国图鉴后",
   "form": ""
@@ -38199,7 +38199,7 @@
   "species_id": 439,
   "game": "brilliant-diamond-shining-pearl",
   "version_label": "晶灿钻石/明亮珍珠",
-  "location": "自豪的後院",
+  "location": "自豪的后院",
   "method": "野生",
   "note": "获得全国图鉴后",
   "form": ""
@@ -38280,7 +38280,7 @@
   "species_id": 440,
   "game": "brilliant-diamond-shining-pearl",
   "version_label": "晶灿钻石/明亮珍珠",
-  "location": "自豪的後院",
+  "location": "自豪的后院",
   "method": "随机",
   "note": "获得全国图鉴后",
   "form": ""
@@ -38389,8 +38389,8 @@
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
   "location": "球湖湖畔所有天气",
-  "method": "定點",
-  "note": "調查墓碑後，在曠野地帶、铠岛、王冠雪原合计與32位在线玩家對話",
+  "method": "定点",
+  "note": "调查墓碑后，在旷野地带、铠岛、王冠雪原合计与32位在线玩家对话",
   "form": ""
  },
  {
@@ -38408,7 +38408,7 @@
   "version_label": "传说 阿尔宙斯",
   "location": "云雾遗迹",
   "method": "可见",
-  "note": "Q22完成後",
+  "note": "Q22完成后",
   "form": ""
  },
  {
@@ -38821,8 +38821,8 @@
   "game": "scarlet-violet",
   "version_label": "朱/紫·零之秘宝",
   "location": "北上中心",
-  "method": "職員贈送",
-  "note": "打鬼祭通過高級模式，异色",
+  "method": "职员赠送",
+  "note": "打鬼祭通过高级模式，异色",
   "form": ""
  },
  {
@@ -40296,7 +40296,7 @@
   "species_id": 462,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "離島海域（雷雨），挑戰海灘（雷雨），圆环海湾（雷雨）",
+  "location": "离岛海域（雷雨），挑战海滩（雷雨），圆环海湾（雷雨）",
   "method": "定点",
   "note": "",
   "form": ""
@@ -41635,6 +41635,15 @@
  },
  {
   "species_id": 479,
+  "game": "scarlet-violet",
+  "version_label": "朱/紫·零之秘宝",
+  "location": "火光迷宫",
+  "method": "定点",
+  "note": "太晶化宝可梦",
+  "form": ""
+ },
+ {
+  "species_id": 479,
   "game": "legends-za",
   "version_label": "传说 Z-A",
   "location": "",
@@ -42052,8 +42061,8 @@
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
   "location": "巢穴（233）",
-  "method": "極巨團體戰",
-  "note": "隊伍中同時有雷吉洛克、雷吉艾斯、雷吉斯奇鲁、雷吉艾勒奇、雷吉鐸拉戈，並調查该宝可梦巢穴",
+  "method": "极巨团体战",
+  "note": "队伍中同时有雷吉洛克、雷吉艾斯、雷吉斯奇鲁、雷吉艾勒奇、雷吉铎拉戈，并调查该宝可梦巢穴",
   "form": ""
  },
  {
@@ -42618,7 +42627,7 @@
   "species_id": 498,
   "game": "legends-za",
   "version_label": "传说 Z-A",
-  "location": "２０號野生特區",
+  "location": "２０号野生特区",
   "method": "可见",
   "note": "",
   "form": ""
@@ -42772,7 +42781,7 @@
   "game": "legends-arceus",
   "version_label": "传说 阿尔宙斯",
   "location": "纯白冻土",
-  "method": "大大大量出現",
+  "method": "大大大量出现",
   "note": "",
   "form": ""
  },
@@ -42792,6 +42801,15 @@
   "location": "极地区",
   "method": "可见",
   "note": "环境整治后",
+  "form": ""
+ },
+ {
+  "species_id": 501,
+  "game": "legends-za",
+  "version_label": "传说 Z-A",
+  "location": "",
+  "method": "本作中不存在",
+  "note": "",
   "form": ""
  },
  {
@@ -42817,7 +42835,7 @@
   "game": "legends-arceus",
   "version_label": "传说 阿尔宙斯",
   "location": "纯白冻土",
-  "method": "大大大量出現",
+  "method": "大大大量出现",
   "note": "",
   "form": ""
  },
@@ -42836,6 +42854,15 @@
   "version_label": "朱/紫·零之秘宝",
   "location": "",
   "method": "由水水獭进化获得",
+  "note": "",
+  "form": ""
+ },
+ {
+  "species_id": 502,
+  "game": "legends-za",
+  "version_label": "传说 Z-A",
+  "location": "",
+  "method": "本作中不存在",
   "note": "",
   "form": ""
  },
@@ -42886,10 +42913,28 @@
  },
  {
   "species_id": 503,
+  "game": "legends-za",
+  "version_label": "传说 Z-A",
+  "location": "",
+  "method": "本作中不存在",
+  "note": "",
+  "form": ""
+ },
+ {
+  "species_id": 503,
   "game": "scarlet-violet",
   "version_label": "朱/紫",
   "location": "",
   "method": "活动赠送",
+  "note": "",
+  "form": "H"
+ },
+ {
+  "species_id": 503,
+  "game": "legends-za",
+  "version_label": "传说 Z-A",
+  "location": "",
+  "method": "本作中不存在",
   "note": "",
   "form": "H"
  },
@@ -43875,6 +43920,15 @@
   "form": ""
  },
  {
+  "species_id": 522,
+  "game": "legends-za",
+  "version_label": "传说 Z-A",
+  "location": "",
+  "method": "本作中不存在",
+  "note": "",
+  "form": ""
+ },
+ {
   "species_id": 523,
   "game": "sword-shield",
   "version_label": "剑/盾",
@@ -43907,6 +43961,15 @@
   "version_label": "朱/紫·零之秘宝",
   "location": "★★★★结晶",
   "method": "太晶团体战",
+  "note": "",
+  "form": ""
+ },
+ {
+  "species_id": 523,
+  "game": "legends-za",
+  "version_label": "传说 Z-A",
+  "location": "",
+  "method": "本作中不存在",
   "note": "",
   "form": ""
  },
@@ -44595,6 +44658,15 @@
   "form": ""
  },
  {
+  "species_id": 532,
+  "game": "legends-za",
+  "version_label": "传说 Z-A",
+  "location": "",
+  "method": "本作中不存在",
+  "note": "",
+  "form": ""
+ },
+ {
   "species_id": 533,
   "game": "sword-shield",
   "version_label": "剑",
@@ -44703,6 +44775,15 @@
   "form": ""
  },
  {
+  "species_id": 533,
+  "game": "legends-za",
+  "version_label": "传说 Z-A",
+  "location": "",
+  "method": "本作中不存在",
+  "note": "",
+  "form": ""
+ },
+ {
   "species_id": 534,
   "game": "sword-shield",
   "version_label": "剑/盾",
@@ -44762,6 +44843,15 @@
   "version_label": "朱/紫·零之秘宝",
   "location": "★★★★★结晶，★★★★★★结晶",
   "method": "太晶团体战",
+  "note": "",
+  "form": ""
+ },
+ {
+  "species_id": 534,
+  "game": "legends-za",
+  "version_label": "传说 Z-A",
+  "location": "",
+  "method": "本作中不存在",
   "note": "",
   "form": ""
  },
@@ -44985,8 +45075,8 @@
   "species_id": 538,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "戰競鎮",
-  "method": "交換",
+  "location": "战竞镇",
+  "method": "交换",
   "note": "多多冰",
   "form": ""
  },
@@ -44994,7 +45084,7 @@
   "species_id": 538,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "泉煙小路，機擎市郊外所有天气；桥间空地（阴天），機擎河岸（阴天），巨人鏡池（阴天）",
+  "location": "泉烟小路，机擎市郊外所有天气；桥间空地（阴天），机擎河岸（阴天），巨人镜池（阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -45057,7 +45147,7 @@
   "species_id": 539,
   "game": "sword-shield",
   "version_label": "剑",
-  "location": "泉煙小路，機擎市郊外所有天气；桥间空地（阴天），機擎河岸（阴天），巨人鏡池（阴天）",
+  "location": "泉烟小路，机擎市郊外所有天气；桥间空地（阴天），机擎河岸（阴天），巨人镜池（阴天）",
   "method": "可见",
   "note": "",
   "form": ""
@@ -45075,8 +45165,8 @@
   "species_id": 539,
   "game": "sword-shield",
   "version_label": "盾",
-  "location": "戰競鎮",
-  "method": "交換",
+  "location": "战竞镇",
+  "method": "交换",
   "note": "多多冰",
   "form": ""
  },
@@ -45162,6 +45252,15 @@
   "form": ""
  },
  {
+  "species_id": 540,
+  "game": "legends-za",
+  "version_label": "传说 Z-A",
+  "location": "",
+  "method": "本作中不存在",
+  "note": "",
+  "form": ""
+ },
+ {
   "species_id": 541,
   "game": "sword-shield",
   "version_label": "剑/盾",
@@ -45207,6 +45306,15 @@
   "form": ""
  },
  {
+  "species_id": 541,
+  "game": "legends-za",
+  "version_label": "传说 Z-A",
+  "location": "",
+  "method": "本作中不存在",
+  "note": "",
+  "form": ""
+ },
+ {
   "species_id": 542,
   "game": "sword-shield",
   "version_label": "剑/盾",
@@ -45248,6 +45356,15 @@
   "version_label": "朱/紫·零之秘宝",
   "location": "★★★★结晶，★★★★★★结晶",
   "method": "太晶团体战",
+  "note": "",
+  "form": ""
+ },
+ {
+  "species_id": 542,
+  "game": "legends-za",
+  "version_label": "传说 Z-A",
+  "location": "",
+  "method": "本作中不存在",
   "note": "",
   "form": ""
  },
@@ -45687,7 +45804,7 @@
   "species_id": 548,
   "game": "legends-arceus",
   "version_label": "传说 阿尔宙斯",
-  "location": "羊胡草原，試煉沙洲",
+  "location": "羊胡草原，试炼沙洲",
   "method": "可见",
   "note": "",
   "form": ""
@@ -47083,7 +47200,7 @@
   "game": "sword-shield",
   "version_label": "剑/盾",
   "location": "舞姿竞技场",
-  "method": "交換",
+  "method": "交换",
   "note": "伽勒尔哭哭面具",
   "form": ""
  },
@@ -52959,9 +53076,9 @@
   "species_id": 638,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "凍海所有天气",
+  "location": "冻海所有天气",
   "method": "定点",
-  "note": "蒐集所有鐵心寶可夢的線索並向索妮亞彙報",
+  "note": "搜集所有铁心宝可梦的线索并向索妮亚汇报",
   "form": ""
  },
  {
@@ -53015,7 +53132,7 @@
   "version_label": "剑/盾·扩展票",
   "location": "湖畔洞窟所有天气",
   "method": "定点",
-  "note": "蒐集所有岩窟寶可夢的線索並向索妮亞彙報",
+  "note": "搜集所有岩窟宝可梦的线索并向索妮亚汇报",
   "form": ""
  },
  {
@@ -53069,7 +53186,7 @@
   "version_label": "剑/盾·扩展票",
   "location": "巨人睡榻所有天气",
   "method": "定点",
-  "note": "蒐集所有草原寶可夢的線索並向索妮亞彙報",
+  "note": "搜集所有草原宝可梦的线索并向索妮亚汇报",
   "form": ""
  },
  {
@@ -53392,8 +53509,8 @@
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
   "location": "球湖湖畔所有天气",
-  "method": "寶可夢露營",
-  "note": "隊伍中同時有親自捕獲的勾帕路翁、代拉基翁、畢力吉翁并且向索妮亞彙報後，在球湖湖畔西南侧小岛的鍋子附近做咖喱饭",
+  "method": "宝可梦露营",
+  "note": "队伍中同时有亲自捕获的勾帕路翁、代拉基翁、毕力吉翁并且向索妮亚汇报后，在球湖湖畔西南侧小岛的锅子附近做咖喱饭",
   "form": ""
  },
  {
@@ -53454,7 +53571,7 @@
   "species_id": 648,
   "game": "scarlet-violet",
   "version_label": "朱/紫·零之秘宝",
-  "location": "海岸區",
+  "location": "海岸区",
   "method": "定点",
   "note": "",
   "form": ""
@@ -54066,7 +54183,7 @@
   "species_id": 659,
   "game": "legends-za",
   "version_label": "传说 Z-A",
-  "location": "１号野生特区，５号野生特区，榴红区，翡绿区，浦蓝区，琼黄区，蓉粉区",
+  "location": "１号野生特区，５号野生特区，榴红２号街区，翡绿４号街区，翡绿６号街区，翡绿８号街区，浦蓝３号街区，浦蓝６号街区，浦蓝８号街区，琼黄６号街区，琼黄７号街区，琼黄１１号街区，蓉粉７号街区，蓉粉８号街区",
   "method": "可见",
   "note": "",
   "form": ""
@@ -54282,7 +54399,7 @@
   "species_id": 661,
   "game": "legends-za",
   "version_label": "传说 Z-A",
-  "location": "１号野生特区，５号野生特区，榴红区，翡绿区，浦蓝区，琼黄区，蓉粉区",
+  "location": "１号野生特区，５号野生特区，榴红区，翡绿区，浦蓝区，琼黄区，蓉粉区，中央广场 ，榴红大道 ，翡绿大道 ，浦蓝大道 ，琼黄大道 ，发呆公园 ，四季运河 ，北侧大道 ，南侧大道 ，春日大道 ，夏日大道，秋日大道",
   "method": "可见",
   "note": "",
   "form": ""
@@ -54417,7 +54534,7 @@
   "species_id": 662,
   "game": "legends-za",
   "version_label": "传说 Z-A",
-  "location": "５号野生特区，９号野生特区，榴红区，翡绿区，浦蓝区，琼黄区，蓉粉区",
+  "location": "９号野生特区，榴红３号街区，榴红８号街区，翡绿２号街区，翡绿４号街区，琼黄１０号街区，蓉粉６号街区，琼黄大道",
   "method": "可见",
   "note": "",
   "form": ""
@@ -54525,7 +54642,7 @@
   "species_id": 663,
   "game": "legends-za",
   "version_label": "传说 Z-A",
-  "location": "１７号野生特区，榴红区，翡绿区，浦蓝区，琼黄区，蓉粉区",
+  "location": "翡绿３号街区，翡绿４号街区，蓉粉１号街区",
   "method": "可见",
   "note": "",
   "form": ""
@@ -54570,7 +54687,7 @@
   "species_id": 664,
   "game": "legends-za",
   "version_label": "传说 Z-A",
-  "location": "１号野生特区，榴红区，翡绿区，浦蓝区，琼黄区，蓉粉区",
+  "location": "１号野生特区，榴红１号街区，榴红８号街区，翡绿６号街区，翡绿８号街区，翡绿９号街区，浦蓝４号街区，浦蓝７号街区，琼黄５号街区，琼黄９号街区，琼黄１２号街区，蓉粉６号街区",
   "method": "可见",
   "note": "花园花纹",
   "form": ""
@@ -54606,7 +54723,7 @@
   "species_id": 665,
   "game": "legends-za",
   "version_label": "传说 Z-A",
-  "location": "４号野生特区，榴红区，翡绿区，浦蓝区，琼黄区，蓉粉区",
+  "location": "４号野生特区，翡绿９号街区，浦蓝４号街区，浦蓝７号街区，琼黄５号街区，蓉粉６号街区",
   "method": "可见",
   "note": "花园花纹",
   "form": ""
@@ -54651,7 +54768,7 @@
   "species_id": 666,
   "game": "legends-za",
   "version_label": "传说 Z-A",
-  "location": "１３号野生特区，榴红区，翡绿区，浦蓝区，琼黄区，蓉粉区",
+  "location": "１３号野生特区，榴红１号街区，榴红８号街区，浦蓝４号街区，琼黄５号街区，琼黄１１号街区，琼黄１２号街区，蓉粉６号街区",
   "method": "可见",
   "note": "花园花纹",
   "form": ""
@@ -57729,7 +57846,7 @@
   "species_id": 703,
   "game": "legends-za",
   "version_label": "传说 Z-A",
-  "location": "蓉粉８號街區",
+  "location": "蓉粉８号街区",
   "method": "定点",
   "note": "QEX1进行中",
   "form": ""
@@ -59349,7 +59466,7 @@
   "species_id": 719,
   "game": "legends-za",
   "version_label": "传说 Z-A",
-  "location": "蓉粉８號街區",
+  "location": "蓉粉８号街区",
   "method": "定点",
   "note": "背包里有蒂安希进化石，QEX1进行中",
   "form": ""
@@ -61500,7 +61617,7 @@
   "species_id": 753,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "揖礼原野（烈日），清涼濕原（烈日），挑戰海灘（烈日），专注森林（烈日），鍛鍊平原（烈日）",
+  "location": "揖礼原野（烈日），清凉湿原（烈日），挑战海滩（烈日），专注森林（烈日），锻炼平原（烈日）",
   "method": "随机，可见",
   "note": "",
   "form": ""
@@ -64794,7 +64911,7 @@
   "species_id": 810,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "化朗鎮",
+  "location": "化朗镇",
   "method": "丹帝赠送",
   "note": "最初的伙伴，3选1",
   "form": ""
@@ -64920,7 +65037,7 @@
   "species_id": 813,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "化朗鎮",
+  "location": "化朗镇",
   "method": "丹帝赠送",
   "note": "最初的伙伴，3选1",
   "form": ""
@@ -65046,7 +65163,7 @@
   "species_id": 816,
   "game": "sword-shield",
   "version_label": "剑/盾",
-  "location": "化朗鎮",
+  "location": "化朗镇",
   "method": "丹帝赠送",
   "note": "最初的伙伴，3选1",
   "form": ""
@@ -65534,7 +65651,7 @@
   "version_label": "剑/盾",
   "location": "3所有天气",
   "method": "定点",
-  "note": "工廠禁區附近的岩石",
+  "note": "工厂禁区附近的岩石",
   "form": ""
  },
  {
@@ -69160,7 +69277,7 @@
   "game": "scarlet-violet",
   "version_label": "朱/紫·零之秘宝",
   "location": "联盟社",
-  "method": "薩瓦羅交换",
+  "method": "萨瓦罗交换",
   "note": "任意宝可梦",
   "form": ""
  },
@@ -71877,9 +71994,9 @@
   "species_id": 894,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "抉擇遺跡",
+  "location": "抉择遗迹",
   "method": "定点",
-  "note": "隊伍中同時有雷吉洛克、雷吉艾斯和雷吉斯奇鲁，點出雷吉艾勒奇的圖形",
+  "note": "队伍中同时有雷吉洛克、雷吉艾斯和雷吉斯奇鲁，点出雷吉艾勒奇的图形",
   "form": ""
  },
  {
@@ -71913,9 +72030,9 @@
   "species_id": 895,
   "game": "sword-shield",
   "version_label": "剑/盾·扩展票",
-  "location": "抉擇遺跡",
+  "location": "抉择遗迹",
   "method": "定点",
-  "note": "隊伍中同時有雷吉洛克、雷吉艾斯和雷吉斯奇鲁，點出雷吉铎拉戈的圖形",
+  "note": "队伍中同时有雷吉洛克、雷吉艾斯和雷吉斯奇鲁，点出雷吉铎拉戈的图形",
   "form": ""
  },
  {
@@ -71951,7 +72068,7 @@
   "version_label": "剑/盾·扩展票",
   "location": "王冠神殿",
   "method": "定点",
-  "note": "從蕾冠王（骑白马的样子）分離*",
+  "note": "从蕾冠王（骑白马的样子）分离*",
   "form": ""
  },
  {
@@ -71996,7 +72113,7 @@
   "version_label": "剑/盾·扩展票",
   "location": "王冠神殿",
   "method": "定点",
-  "note": "從蕾冠王（骑黑马的样子）分離*",
+  "note": "从蕾冠王（骑黑马的样子）分离*",
   "form": ""
  },
  {
@@ -72625,7 +72742,7 @@
   "game": "scarlet-violet",
   "version_label": "朱/紫·零之秘宝",
   "location": "联盟社",
-  "method": "克拉韋爾交换",
+  "method": "克拉韦尔交换",
   "note": "任意宝可梦",
   "form": ""
  },
@@ -74155,7 +74272,7 @@
   "game": "scarlet-violet",
   "version_label": "朱/紫·零之秘宝",
   "location": "零之大空洞",
-  "method": "定點",
+  "method": "定点",
   "note": "",
   "form": ""
  },
@@ -74235,7 +74352,7 @@
   "species_id": 971,
   "game": "scarlet-violet",
   "version_label": "朱/紫",
-  "location": "西第３区，南第６區，锦穴山道，霜抹山",
+  "location": "西第３区，南第６区，锦穴山道，霜抹山",
   "method": "可见",
   "note": "",
   "form": ""
@@ -74263,7 +74380,7 @@
   "game": "scarlet-violet",
   "version_label": "朱/紫·零之秘宝",
   "location": "联盟社",
-  "method": "萊姆交换",
+  "method": "莱姆交换",
   "note": "任意宝可梦",
   "form": ""
  },
@@ -74407,7 +74524,7 @@
   "game": "scarlet-violet",
   "version_label": "朱/紫·零之秘宝",
   "location": "联盟社",
-  "method": "古魯夏交换",
+  "method": "古鲁夏交换",
   "note": "任意宝可梦",
   "form": ""
  },
@@ -74712,7 +74829,7 @@
   "species_id": 984,
   "game": "scarlet-violet",
   "version_label": "朱",
-  "location": "第零區",
+  "location": "第零区",
   "method": "可见",
   "note": "",
   "form": ""
@@ -74739,7 +74856,7 @@
   "species_id": 985,
   "game": "scarlet-violet",
   "version_label": "朱",
-  "location": "第零區",
+  "location": "第零区",
   "method": "可见",
   "note": "",
   "form": ""
@@ -74757,7 +74874,7 @@
   "species_id": 986,
   "game": "scarlet-violet",
   "version_label": "朱",
-  "location": "第零區",
+  "location": "第零区",
   "method": "可见",
   "note": "",
   "form": ""
@@ -74775,7 +74892,7 @@
   "species_id": 987,
   "game": "scarlet-violet",
   "version_label": "朱",
-  "location": "第零區",
+  "location": "第零区",
   "method": "可见",
   "note": "",
   "form": ""
@@ -74793,7 +74910,7 @@
   "species_id": 988,
   "game": "scarlet-violet",
   "version_label": "朱",
-  "location": "第零區",
+  "location": "第零区",
   "method": "可见",
   "note": "",
   "form": ""
@@ -74811,7 +74928,7 @@
   "species_id": 989,
   "game": "scarlet-violet",
   "version_label": "朱",
-  "location": "第零區",
+  "location": "第零区",
   "method": "可见",
   "note": "",
   "form": ""
@@ -74838,7 +74955,7 @@
   "species_id": 990,
   "game": "scarlet-violet",
   "version_label": "紫",
-  "location": "第零區",
+  "location": "第零区",
   "method": "可见",
   "note": "",
   "form": ""
@@ -74865,7 +74982,7 @@
   "species_id": 991,
   "game": "scarlet-violet",
   "version_label": "紫",
-  "location": "第零區",
+  "location": "第零区",
   "method": "可见",
   "note": "",
   "form": ""
@@ -74883,7 +75000,7 @@
   "species_id": 992,
   "game": "scarlet-violet",
   "version_label": "紫",
-  "location": "第零區",
+  "location": "第零区",
   "method": "可见",
   "note": "",
   "form": ""
@@ -74901,7 +75018,7 @@
   "species_id": 993,
   "game": "scarlet-violet",
   "version_label": "紫",
-  "location": "第零區",
+  "location": "第零区",
   "method": "可见",
   "note": "",
   "form": ""
@@ -74919,7 +75036,7 @@
   "species_id": 994,
   "game": "scarlet-violet",
   "version_label": "紫",
-  "location": "第零區",
+  "location": "第零区",
   "method": "可见",
   "note": "",
   "form": ""
@@ -74937,7 +75054,7 @@
   "species_id": 995,
   "game": "scarlet-violet",
   "version_label": "紫",
-  "location": "第零區",
+  "location": "第零区",
   "method": "可见",
   "note": "",
   "form": ""
@@ -75171,7 +75288,7 @@
   "species_id": 1005,
   "game": "scarlet-violet",
   "version_label": "朱",
-  "location": "第零區",
+  "location": "第零区",
   "method": "可见",
   "note": "第二轮游戏开始后",
   "form": ""
@@ -75198,7 +75315,7 @@
   "species_id": 1006,
   "game": "scarlet-violet",
   "version_label": "紫",
-  "location": "第零區",
+  "location": "第零区",
   "method": "可见",
   "note": "第二轮游戏开始后",
   "form": ""
@@ -75630,9 +75747,9 @@
   "species_id": 1025,
   "game": "scarlet-violet",
   "version_label": "朱/紫·零之秘宝",
-  "location": "寶伴廣場",
+  "location": "宝伴广场",
   "method": "定点",
-  "note": "劇情外传：咭呗咭呗团团乱，必定收服成功",
+  "note": "剧情外传：咭呗咭呗团团乱，必定收服成功",
   "form": ""
  }
 ]

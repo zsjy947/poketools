@@ -7,25 +7,29 @@
 
 ## 一、无源待补（源站未写/官方未建模）
 
-### 1. Z-A 招式学习器获取方式（43 / 160）
+### 1. ✅ Z-A 招式学习器获取方式（原 43 / 160，2026-10-31 已全部收口）
 
 - TM001-107 编号与招式映射来自 PokeAPI machines vg30；vg31（异次元 DLC）= TM108-160 已导入。
-- 获取地点：42 条自 pokemondb 人工翻译（`tm_locations_za_pokemondb.json`）+ 52poke 1 条 = 43 条。
-- 其余 117 个 TM 两站均未整理 → 显示「获取方式待补充」。
+- 获取地点：原仅 43 条（42 条 pokemondb 人工翻译 + 52poke 1 条）。
+- **2026-10-31 重抓收口**：52poke 已补齐 Z-A 地点表，重跑后 tm_how vg30 = **160/160 全量真实地点**（零占位、
+  零「待补充」），curated 的 pokemondb 43 条转为兜底不再新增。
 
-### 2. Z-A 图鉴介绍（缺 20 种）与精通等级
+### 2. Z-A 图鉴介绍（原缺 20 种，2026-10-31 大幅收口）与精通等级
 
-- zadex 缺 20 种（凯路迪欧/美洛耶塔/彩粉蝶/花蓓蓓系/超能妙喵/坚盾剑怪/基格尔德/胡帕/谜拟丘/玛机雅娜/
-  颤弦蝾螈/爱管侍/莫鲁贝可/怒鹦哥/米立龙/索财灵等）→ 显示「待补充」。
+- **2026-10-31 重抓**：52poke 已为原缺物种补写 Z-A 文本（按形态标记段），重跑后
+  dex_flavor(legends-za) 344→345（玛机雅娜基础段收口），其余 17 种的文本以**形态段**挂靠 form_flavor
+  （如 凯路迪欧=平常/觉悟、基格尔德=50%/10%/完全体、怒鹦哥=四羽毛）；图鉴/详情按所选形态展示。
+- 基础段（默认形态行）仍缺 19 种——源站该段只写了形态行，非解析缺口；前端按形态选择展示，
+  选到有文本的形态即有介绍。
+- FORM_MARKERS 新增/修正：玛机雅娜四标记（现在的颜色/５００年前的颜色 × 超级进化）改挂
+  ""/original/mega/original-mega——旧值 "eternal" 对 801 的 forms 后缀永不命中（死键，静默丢弃）。
 - 精通等级（mastery）仅 52poke 主源提供（656/2209 行），PokemonDB 不提供；两源表现一致。
 
-### 3. 特性文案（310 / 374）
+### 3. ✅ 特性文案（2026-10-31 全量收口）
 
-- `abilities.json` 已抓 310 个特性页（特性效果 + 特性说明第九世代优先）。
-- 失败 64 项落 `TODO.json` `ability_parse_failed`：多数为 PokeAPI 新增而 52poke 尚无页面的条目
-  （eelevate/fire-mane 等 Champions 数据），少量译名代差页 → 详情页显示「待补充」。
-- 特例：波导防护（aura-guard，路卡利欧Ｚ专属）52poke 有页而 PokeAPI 无简中名，
-  已在 build_db 直填译名入库（ability intro 仍待补）。
+- 原 310 页 / 64 项解析失败；2026-10-31 重抓后 abilities 表 312 行、**effect 312/312 全覆盖、
+  TODO ability_parse_failed = 0**（52poke 已补页 + 解析器对缺「特性效果」标题的页回退用官方说明文本，
+  同源不编造）。
 
 ### 4. ✅ 形态独立图鉴介绍未挂靠段（原 276 段，2026-10-03 已全部解决）
 
@@ -38,7 +42,7 @@
   霜奶仙=香草奶油草莓等），52poke 无中文名者少量保留英文标识。
 - 配套：fetch_sprites 对 900000 段还原精灵图源 id；`web` 端 FORM_MARKER_TO_SUFFIX 三级解析不变。
 
-### 5. 道具图标（缺 ~700，均为 GO/LGPE 杂项）
+### 5. 道具图标（原缺 ~700，2026-10-31 收口至 19）
 
 - PokeAPI sprites 仓库不含 TM/HM 系列、GO/Let's Go/传说系杂项道具图。
 - 2026-10-03 兜底扩展：TM/TR 走 52poke 属性圆盘（`Bag_TM_{属性}_{世代}_Sprite.png`，同号跨作取最新盘），
@@ -46,7 +50,9 @@
 - 2026-10-17 再扩展（`fetch_calc_assets.py` 增 `Bag_{中文名} SV Sprite` 候选 +
   `fetch_sprites_52poke.py` 二次兜底）：再恢复 121 张（机变骰子/拳击手套/密探斗篷等朱紫对战道具全补齐），
   覆盖 1506/2207；**mega 石与对战实用道具零缺失**。
-- 剩 ~700 项为 GO/LGPE 杂项（树果粉/糖果/食材等，两站均无独立图标），清单落
+- **2026-10-31 重跑收口**：PokeAPI sprites 仓库已上架 GO/LGPE 杂项图标，重跑 `fetch_calc_assets.py`
+  净恢复 682 张，缺口 701 → **19**；剩余均为活动限定/衍生小物件（academy 球/杯、双打 Sisters 极巨结晶、
+  苹哇果汁/牙牙鳞片/椰蛋糖/运动球等），PokeAPI/52poke 均无独立图标，清单落
   `data/curated/item_icons_missing.txt`；前端 `onerror` 隐藏图标兜底，不阻塞选择。
 
 ### 6. ✅ 精灵图缺口（原缺 229，2026-10-17 收口至个位数）
@@ -60,13 +66,17 @@
   `TODO.json` `sprite_52poke_failed`，不静默丢弃。
 - 残余：绅士蛾-垃圾蓑衣（mothim-trash）52poke 无独立图（PokeAPI/Bulbagarden 亦无）→ 前端隐藏兜底。
 
-### 7. 抓取文案繁简混排（2026-10-29 实机走查登记）
+### 7. ✅ 抓取文案繁简混排（2026-10-29 登记，2026-10-31 已解决）
 
 - 部分特性文案/获取方式地点为繁体中文（如「通過在腳下張開青草场地…寶可夢」「挑戰海灘」
-  「歐鼬鎮愛奧尼亚酒店」）：源头 52poke 部分页面/表格单元格本身是繁体。
-- 正确修法：抓取管线统一加 MediaWiki `variant=zh-cn`（`wiki_client.py` wikitext/imageinfo
-  请求参数），需联网重跑全管线；前端不做字符级繁简映射（半转换比不转换更糟）。
-- 影响面：特性详细介绍（abilities.extra）、get_methods 地点、form_flavor 个别段。
+  「歐鼬鎮愛奧尼亚酒店」）：源头 52poke 部分页面/表格单元格本身是繁体；API `variant` 参数
+  对 `rvprop=content` 无效（探针实测）。
+- **2026-10-31 解决**：`wiki_client.py` 写缓存前做 OpenCC t2s（`opencc-python-reimplemented`，
+  requirements.txt 登记）；缓存键 `.zhcn` 与旧繁体缓存隔离，全量重抓（1880 页）后
+  abilities/get_methods/tm_how 等全部表繁体清零。连带的解析器键位修复已编入脚本：
+  build_z_moves `POKEMON_COL_MAP` 补「守护神」简体键（22 行护栏恢复）、
+  scrape `FORM_MARKERS` 补简体「颜色」系列标记。
+- 影响面：全部 wikitext 来源文本（特性/图鉴/获取方式/TM/三明治等），以后重跑自动保持简体。
 
 ## 二、人工 curated 已知账
 

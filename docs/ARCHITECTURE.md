@@ -89,6 +89,8 @@ main 保留纯前端能力：本地模式降级（api.js，无后端自动切本
   三明治/甜甜圈/咖喱/食材调味料表、Ｚ招式泛用/专属表、风味力量（人工整理）。
 - 抓取统一走 `scripts/wiki_client.py`：批量 wikitext（≤50 标题/批）+ `data/raw/52poke-cache/` 缓存 +
   imageinfo 直链下载（Special:FilePath 对脚本 403）；**API 把标题下划线规范化成空格**，查表键要统一。
+  wikitext 写缓存前做 **OpenCC t2s 繁→简**（部分页面源码为繁体、API variant 不作用于 revisions 内容；
+  缓存键 `.zhcn` 与旧繁体缓存隔离，2026-10-31 全量重抓清零，见 DATA-GAPS §一.7）。
 - 解析失败条目一律落 `data/curated/TODO.json`，禁止静默丢弃；界面缺失数据标「待补充」。
 - 招式/特性译名代差（磷火↔鬼火、飘浮↔漂浮 等）由 `MOVE_NAME_ALIASES` / 特性列表页两侧标题兜底映射。
 
@@ -381,6 +383,14 @@ web/
 数据类缺口仍以 `DATA-GAPS.md` 为准（无源待补与变体建模两项仍开放，ROADMAP §5 仅索引）。
 
 ## §10 变更历史
+- **2026-10-31 联网重跑数据管线（繁体债清零 + DATA-GAPS 三项收口）**：wiki_client 写缓存前 OpenCC t2s
+  （缓存键 `.zhcn` 隔离旧繁体缓存，1880 页重抓，API variant 对 revisions 内容无效为探针实测结论）；
+  连带解析修复编入脚本——build_z_moves `POKEMON_COL_MAP` 补「守护神」简体键（z_exclusive 22 行护栏恢复）、
+  scrape `FORM_MARKERS` 补玛机雅娜「颜色」四标记并改挂真实形态后缀（旧 "eternal" 为死键静默丢弃；
+  parse_flavor 支持空串后缀=默认形态标记）、parse_ability_page 缺「特性效果」标题时回退官方说明文本。
+  数据收口：Z-A TM 获取地点 43→**160/160**、特性 effect **312/312**（ability_parse_failed 0）、
+  玛机雅娜 Z-A 图鉴 4 行归位、zadex 基础段余 19 种（源站只写形态段，文本已按形态挂靠）、
+  道具图标缺口 701→**19**（PokeAPI 上架 GO/LGPE 图标）。TODO.json 解析失败三类全零。详见 DATA-GAPS §一。
 - **2026-10-17 模拟对战 Showdown 对照增强批（M3/M4/M5）**：悬浮状态框（三源合流+引擎窥视）、场地倒计时
   （引擎权威剩余回合）、回合分组日志（turnGroups/闪回/回到底部）、演出串播队列（位移风格/伤害飘字/方向化入场）、
   回放系统（seed+choices 确定性复现/播放器/官方日志导入）、舞台打磨（回合指示/日志内容补齐/终局横幅）；

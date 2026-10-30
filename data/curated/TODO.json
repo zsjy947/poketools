@@ -1,12 +1,6 @@
 {
  "missing_species_pages": [],
- "ability_parse_failed": [
-  {
-   "ability_id": 283,
-   "name": "黄金之躯",
-   "reason": "no 特性效果/特性说明 section"
-  }
- ],
+ "ability_parse_failed": [],
  "form_flavor_unparsed_markers": [],
  "za_learnset_issues": [],
  "za_tm_corrections": [
