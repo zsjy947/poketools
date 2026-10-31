@@ -46,6 +46,14 @@ export function SettingsPage(): JSX.Element {
           />
           <span>使用图鉴大图（默认现代静态图）</span>
         </label>
+        <label className="set-row">
+          <input
+            type="checkbox"
+            checked={settings.timers}
+            onChange={(e) => update({ timers: e.target.checked })}
+          />
+          <span>计时训练（每指令 45s / 每局 7min / 总 20min，指令超时自动待机）</span>
+        </label>
       </div>
       <div className="settings-block muted">
         <p>数据版本：{dataVersion || "未知"}（图鉴/招式/特性等静态分片的行数指纹）。</p>

@@ -11,6 +11,7 @@ import type {
 import type { RequestChoice } from "../engine-adapter/session";
 import { dexFor, moveView, speciesView, TYPE_ZH, STATUS_ZH, zhLine } from "../data";
 import { confirmBox } from "../components/shared";
+import { TimerBar } from "./TimerBar";
 import { spriteUrl } from "./sprites";
 import { useBattleAnimQueue, normAnimIdent } from "./anim";
 import type { AnimRuntime, AnimPopup } from "./anim";
@@ -116,6 +117,9 @@ export function BattleView(): JSX.Element {
           结束本局
         </button>
       </div>
+      {settings.timers && snapshot.phase !== "finished" && (
+        <TimerBar session={session} snapshot={snapshot} />
+      )}
 
       {/* 一屏三栏：左右 = 阵营指令面板占全列高（无需下拉），中列 = 场地（上）+ 日志（下，居中收窄）。
           双侧指令面板同屏常驻，可同时为双方出招（引擎按侧收指令，两个独立输入通道） */}

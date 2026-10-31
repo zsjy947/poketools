@@ -25,6 +25,7 @@ export interface StoredSettings {
   animation: boolean;
   animationSpeed: number; // ms/事件
   spriteDexSize: boolean; // true=图鉴大图
+  timers: boolean; // RM-05：VGC 计时训练（每指令 45s / 每局 7min / 总 20min）
 }
 
 const KEY = {
@@ -38,6 +39,7 @@ const DEFAULT_SETTINGS: StoredSettings = {
   animation: true,
   animationSpeed: 420,
   spriteDexSize: false,
+  timers: false,
 };
 
 function readJson<T>(key: string): T | null {

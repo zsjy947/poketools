@@ -1877,3 +1877,24 @@ button.mini.on {
   color: #c0392b;
   font-weight: 700;
 }
+
+/* RM-05：计时训练条 */
+.timer-bar {
+  display: flex;
+  gap: 8px;
+  margin: 6px 0 10px;
+  flex-wrap: wrap;
+}
+.timer-chip {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+  background: #fff;
+}
+.timer-chip.timer-danger {
+  border-color: #e5484d;
+  color: #e5484d;
+  font-weight: 700;
+}

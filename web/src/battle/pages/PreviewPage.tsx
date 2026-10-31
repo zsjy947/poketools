@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useApp } from "../store";
 import { dexFor, itemView, moveView, speciesView, TYPE_ZH } from "../../data";
 import { BattleSession } from "../../engine-adapter";
@@ -14,6 +14,7 @@ import { DamageQuickCheck } from "../DamageQuickCheck";
  * 对上阵子集的引擎条款校验（忽略 champions Flat Rules 的 Min Team Size —— 那是注册要求）。 */
 export function PreviewPage(): JSX.Element {
   const format = useApp((s) => s.format);
+  const [aiB, setAiB] = useState(false); // RM-04：阵营 B 由随机 AI 托管
   const teams = useApp((s) => s.teams);
   const picks = useApp((s) => s.picks);
   const togglePick = useApp((s) => s.togglePick);
@@ -71,6 +72,7 @@ export function PreviewPage(): JSX.Element {
         p2: p2.map((_, i) => i + 1),
       },
     });
+    if (aiB) session.enableAI("p2"); // RM-04
     attachSession(session);
     await session.start();
     void recordSeed(session);
@@ -87,7 +89,11 @@ export function PreviewPage(): JSX.Element {
         </h1>
         <div className="grow" />
         <button onClick={() => go("team")}>返回队伍编辑</button>
-        <button
+        <label className="anim-toggle">
+          <input type="checkbox" checked={aiB} onChange={(e) => setAiB(e.target.checked)} />
+          阵营 B 由 AI 操控
+        </label>
+                <button
           className="primary"
           disabled={picks.p1.length !== maxPick || picks.p2.length !== maxPick}
           onClick={() => void start()}

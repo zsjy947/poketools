@@ -10,6 +10,7 @@
 import { BattleStream, Teams } from "./vendor/ps-engine.js";
 import type { PokemonSet, PokemonLike, BattleLike } from "./vendor/ps-engine.js";
 import { isNondeterministicLine, parseLogLine } from "./parse";
+import { aiChoice } from "./ai";
 import type { BattleEvent } from "./parse";
 
 export type { BattleEvent };
@@ -187,6 +188,17 @@ export class BattleSession {
 
   /** 预览顺位直通（一次性）：收到 teamPreview 请求时自动下发 team 指令 */
   private autoTeamOrder: { p1?: number[] | undefined; p2?: number[] | undefined } = {};
+  /** AI 托管侧（RM-04）：该侧请求到达时由 aiChoice 自动下达 */
+  private aiSides = new Set<SideSlot>();
+  /** AI 在途门闩：防止错误回退与请求钩子叠加成微任务自激循环（事件循环饥饿） */
+  private aiBusy = new Set<SideSlot>();
+  /** AI 连续被拒计数（按请求清零；超限走 forceLose 终局化兜底） */
+  private aiErrCount: Record<string, number> = {};
+
+  /** 开启某侧 AI 托管（首版随机策略，见 engine-adapter/ai.ts） */
+  enableAI(side: SideSlot): void {
+    this.aiSides.add(side);
+  }
 
   subscribe(fn: (snap: SessionSnapshot) => void): () => void {
     this.subscribers.add(fn);
@@ -284,6 +296,27 @@ export class BattleSession {
         this.requests[side] = { ...this.requests[side]! };
         if (!this.pending.includes(side)) this.pending.push(side);
         if (this.phase !== "finished") this.phase = "awaiting";
+        // AI 侧被拒：普通回合直接 pass（睡眠/冰冻等全招式 invalid 的场景会无限重试）；
+        // 强制换人场景重抽替补（pass 不会被接受）
+        if (this.aiSides.has(side) && !this.aiBusy.has(side)) {
+          const n = (this.aiErrCount[side] ?? 0) + 1;
+          this.aiErrCount[side] = n;
+          const req2 = this.requests[side]!;
+          if (n > 5) {
+            // 极端边界（如替补不足的补位序列分歧）：走驱动器兜底终局化，保证对局不卡死
+            void this.forceLose(side);
+            return;
+          }
+          this.aiBusy.add(side);
+          setTimeout(() => {
+            this.aiBusy.delete(side);
+            if (this.done) return;
+            void this.choose(
+              side,
+              req2.forceSwitch?.some(Boolean) ? aiChoice(req2, Math.random) : "pass",
+            );
+          }, 0);
+        }
       }
     }
     if (line.startsWith("|request|")) {
@@ -319,6 +352,22 @@ export class BattleSession {
       this.pending = this.pending.filter((s) => s !== side);
     }
     if (this.pending.length > 0) this.phase = "awaiting";
+    // RM-04：AI 托管侧——请求就绪后由 aiChoice 自动下达（预览直通已提前 return，不在此路）
+    this.aiErrCount[side] = 0;
+    if (this.aiSides.has(side) && !req.wait && !this.aiBusy.has(side)) {
+      const captured = req;
+      const oppSide: SideSlot = side === "p1" ? "p2" : "p1";
+      const oppState = this.sides[oppSide];
+      const oppAlive = oppState.bench.filter(
+        (m) => oppState.active.includes(m.ident) && m.hp > 0,
+      ).length;
+      this.aiBusy.add(side);
+      setTimeout(() => {
+        this.aiBusy.delete(side);
+        if (this.done || this.requests[side] !== captured) return;
+        void this.choose(side, aiChoice(captured, Math.random, { oppAlive }));
+      }, 0);
+    }
   }
 
   private syncSideFromRequest(side: SideSlot, req: RequestChoice): void {
