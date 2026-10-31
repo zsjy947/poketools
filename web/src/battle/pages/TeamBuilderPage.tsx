@@ -18,6 +18,7 @@ import { isHiddenFromRoster, rosterSpecies, speciesLabel } from "../data/roster"
 import type { PokemonSet } from "../../engine-adapter";
 import { blankSet, exportShowdown, normalizeLevelInput, validateTeam } from "../../team/showdown";
 import type { ValidationResult } from "../../team/showdown";
+import { storage, type StoredTeamEntry } from "../storage";
 
 /**
  * 队伍构建器（FR-02~05）：A/B 双槽位；编辑器（等级/IV/EV/性格/特性/道具/招式/太晶）；
@@ -35,6 +36,8 @@ export function TeamBuilderPage(): JSX.Element {
   const [editing, setEditing] = useState<number>(0);
   const [importText, setImportText] = useState("");
   const [showImport, setShowImport] = useState(false);
+  const [showLibrary, setShowLibrary] = useState(false);
+  const [library, setLibrary] = useState<StoredTeamEntry[]>(() => storage.loadLibrary());
   const [validation, setValidation] = useState<Record<"A" | "B", ValidationResult | null>>({
     A: null,
     B: null,
@@ -216,7 +219,51 @@ export function TeamBuilderPage(): JSX.Element {
             >
               导出文件
             </button>
+            <button onClick={() => setShowLibrary(!showLibrary)}>
+              队伍库{library.length ? ` (${library.length})` : ""}
+            </button>
           </div>
+          {showLibrary && (
+            <div className="import-box">
+              <div className="lib-row">
+                <button
+                  className="primary"
+                  disabled={team.sets.length === 0}
+                  onClick={() => {
+                    const name = window.prompt("存入队伍库的名称：", `${format?.zhName ?? ""}队伍`);
+                    if (name === null) return;
+                    setLibrary(storage.addToLibrary(name, team.sets));
+                  }}
+                >
+                  存入队伍库（当前 {slot} 阵营 {team.sets.length} 只）
+                </button>
+                {library.length === 0 && <span className="muted">还没有存档队伍</span>}
+              </div>
+              {library.map((e) => (
+                <div key={e.id} className="team-mon">
+                  <span className="name">{e.name}</span>
+                  <span className="muted">
+                    {e.sets.length} 只 · {new Date(e.savedAt).toLocaleDateString()}
+                  </span>
+                  <button
+                    className="mini"
+                    onClick={() => {
+                      setTeam(slot, e.sets as PokemonSet[]);
+                      setEditing(0);
+                    }}
+                  >
+                    载入到 {slot}
+                  </button>
+                  <button
+                    className="mini danger"
+                    onClick={() => setLibrary(storage.removeFromLibrary(e.id))}
+                  >
+                    删除
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
           {showImport && (
             <div className="import-box">
               <textarea

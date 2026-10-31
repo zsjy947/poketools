@@ -31,6 +31,7 @@ const KEY = {
   teams: "psb.teams.v1",
   settings: "psb.settings.v1",
   records: "psb.records.v1",
+  teamLibrary: "psb.teamLibrary.v1",
 } as const;
 
 const DEFAULT_SETTINGS: StoredSettings = {
@@ -54,6 +55,14 @@ function writeJson(key: string, value: unknown): void {
   } catch {
     // 存储满等场景静默失败（个人工具，数据可重建；不吞业务错误）
   }
+}
+
+/** 队伍库条目（RM-08）：sets 为 PokemonSet[]（本层不引引擎类型，由调用方约束） */
+export interface StoredTeamEntry {
+  id: string;
+  name: string;
+  savedAt: number;
+  sets: unknown[];
 }
 
 /** 记录写入：配额不足时逐条丢弃最旧记录重试（日志体积大，100 条可能超 5MB 配额） */
@@ -103,5 +112,25 @@ export const storage = {
       (r) => r.id !== id,
     );
     return writeRecords(next);
+  },
+  // ---- 队伍库（RM-08）：多队伍命名存档 ----
+  loadLibrary: (): StoredTeamEntry[] => readJson<StoredTeamEntry[]>(KEY.teamLibrary) ?? [],
+  saveLibrary: (v: StoredTeamEntry[]) => writeJson(KEY.teamLibrary, v),
+  addToLibrary: (name: string, sets: unknown[]): StoredTeamEntry[] => {
+    const list = readJson<StoredTeamEntry[]>(KEY.teamLibrary) ?? [];
+    const entry: StoredTeamEntry = {
+      id: `lib-${Date.now()}`,
+      name: name.trim() || `队伍 ${list.length + 1}`,
+      savedAt: Date.now(),
+      sets,
+    };
+    const next = [entry, ...list].slice(0, 30); // 上限 30 套防配额膨胀
+    writeJson(KEY.teamLibrary, next);
+    return next;
+  },
+  removeFromLibrary: (id: string): StoredTeamEntry[] => {
+    const next = (readJson<StoredTeamEntry[]>(KEY.teamLibrary) ?? []).filter((e) => e.id !== id);
+    writeJson(KEY.teamLibrary, next);
+    return next;
   },
 };
