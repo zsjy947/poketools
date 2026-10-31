@@ -246,6 +246,24 @@ button.mini.danger {
 .home-actions {
   margin-top: 16px;
 }
+/* RM-22：赛制长列表把「进入队伍编辑」推到视口外——选中赛制后按钮吸底悬浮，全程可见 */
+.page-home .home-actions {
+  position: sticky;
+  bottom: 10px;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  margin-top: 24px;
+}
+.page-home .home-actions:empty {
+  display: none;
+}
+.page-home .home-actions .primary {
+  pointer-events: auto;
+  padding: 10px 26px;
+  font-size: 14px;
+  box-shadow: 0 6px 18px rgba(20, 40, 80, 0.25);
+}
 
 /* 队伍编辑 */
 .slot-tabs button {
@@ -1821,4 +1839,41 @@ button.mini.on {
 .dmg-popup.tone-immune em {
   background: #eef1f6;
   color: #475569;
+}
+
+/* RM-06：伤害速查（PreviewPage 内嵌） */
+.dqc-block {
+  margin: 8px 0;
+}
+.dqc-body {
+  margin-top: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  display: grid;
+  gap: 6px;
+}
+.dqc-side {
+  display: grid;
+  gap: 2px;
+}
+.dqc-head {
+  font-weight: 700;
+  font-size: 12.5px;
+}
+.dqc-line {
+  display: flex;
+  gap: 10px;
+  font-size: 12.5px;
+  align-items: baseline;
+}
+.dqc-move {
+  flex: none;
+  min-width: 88px;
+  color: var(--muted);
+}
+.dqc-val.dqc-ko {
+  color: #c0392b;
+  font-weight: 700;
 }

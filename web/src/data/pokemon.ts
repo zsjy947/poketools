@@ -705,6 +705,24 @@ export async function pokemonDetail(speciesId: number, params?: any) {
         .filter(([, rows]) => rows.length),
     );
     gm = gm.filter((x) => x.game === game);
+    // RM-24：基础段缺失（源站只写形态段，如 Z-A 的 19 种）——回退取形态段作基础行，
+    // version_label 标注形态名以示来源；连形态段也没有时维持「待补充」。
+    if (flavor.length === 0 && formFlavor.size > 0) {
+      const defId = defaultForm?.id;
+      const pickId =
+        defId != null && formFlavor.has(defId)
+          ? defId!
+          : [...formFlavor.entries()].sort((a, b) => b[1].length - a[1].length)[0]![0];
+      const fname =
+        forms.find((f) => f.id === pickId)?.form_label ||
+        forms.find((f) => f.id === pickId)?.identifier ||
+        "";
+      flavor = (formFlavor.get(pickId) || []).map((r) => ({
+        game: r.game,
+        version_label: r.version_label ? `${r.version_label}（${fname}）` : fname,
+        text: r.text,
+      }));
+    }
   }
 
   /* form="base" 为显式基础形态哨兵（apiGet 会丢弃空串参数）：仅在不传时才回退图鉴默认形态 */

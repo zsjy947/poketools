@@ -5,6 +5,7 @@ import { BattleSession } from "../../engine-adapter";
 import type { PokemonSet } from "../../engine-adapter";
 import { validateTeam } from "../../team/showdown";
 import { speciesLabel } from "../data/roster";
+import { DamageQuickCheck } from "../DamageQuickCheck";
 
 /** 上阵预览（FR-06）：按赛制 6 选 4 / 6 选 3 的**有序**上阵选择（点击顺序 = 上阵顺位，
  * 上移/下移调整）+ OTS 信息展示 + 开局。顺位语义：单打第 1 只 = 首发、双打前 2 只 = 首发、
@@ -94,6 +95,10 @@ export function PreviewPage(): JSX.Element {
           开始对战（OTS：双方阵容互见）
         </button>
       </div>
+      <DamageQuickCheck
+        p1={pickSets(teams.A.sets, picks.p1)}
+        p2={pickSets(teams.B.sets, picks.p2)}
+      />
       <p className="muted pick-hint">
         点击顺序即上阵顺位：单打第 1 只 / 双打前 2
         只为首发；顺位末位存活者将作为索罗亚克「幻觉」的伪装目标。

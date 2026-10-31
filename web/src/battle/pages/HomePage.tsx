@@ -61,11 +61,14 @@ export function HomePage(): JSX.Element {
           </section>
         );
       })}
-      <div className="home-actions">
-        <button className="primary" disabled={!format} onClick={() => go("team")}>
-          {format ? `进入队伍编辑（${format.zhName}）` : "请先选择赛制"}
-        </button>
-      </div>
+      {/* RM-22：选中赛制后按钮吸底悬浮（见 battle.css），未选赛制时不渲染、不占位 */}
+      {format && (
+        <div className="home-actions">
+          <button className="primary" onClick={() => go("team")}>
+            下一步：编辑队伍（{format.zhName}）
+          </button>
+        </div>
+      )}
     </div>
   );
 }
