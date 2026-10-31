@@ -1,11 +1,10 @@
 /* 宝可梦详情页（自 Vue detail.js 迁移；含 U4 修复语义、U6 攻击面徽章定宽、U7 能力卡移左栏） */
 import { useCallback, useEffect, useMemo, useRef, useState, Fragment } from "react";
+import { defenseGroups, attackGroups, effClass } from "./detail/typechart";
 import { apiGet, STAT_KEYS, STAT_ZH } from "../data/api";
-import { TYPES, CHART } from "../data/damage";
 import {
   loadGames,
   loadTypeChart,
-  defenseMultipliers,
   formDisplayName,
   TypeBadge,
   MoveClassBadge,
@@ -267,38 +266,9 @@ export function DetailPage({
   }
   const STAT_BAR_COLOR = "#5a9be0";
 
-  /* ---- 属性相性 ---- */
+  /* ---- 属性相性（纯函数已拆至 pages/detail/typechart.ts，RM-19 第一步） ---- */
   const myTypes = useMemo(() => (curForm.types || "").split(",").filter(Boolean), [curForm]);
-  const effGroups = useMemo(() => {
-    if (!myTypes.length) return null;
-    const mult = defenseMultipliers(myTypes);
-    if (!mult) return null;
-    const groups: Record<string, string[]> = {};
-    for (const [atk, m] of Object.entries(mult)) {
-      const key = String(m);
-      (groups[key] = groups[key] || []).push(atk);
-    }
-    const order = ["4", "2", "1", "0.5", "0.25", "0"];
-    return order.filter((k) => groups[k]).map((k) => ({ m: k, types: groups[k]! }));
-  }, [myTypes]);
-  function atkGroupsOf(t: string) {
-    /* 攻击面：直接读 damage.ts 硬编码相性表（此前读未赋值的 window.__pktChart 导致恒空；
-       lookup.typechart 是 async 不能在渲染里同步解构） */
-    const groups: Record<string, string[]> = {};
-    for (const def of TYPES) {
-      const m = (CHART[t] || {})[def] ?? 1;
-      const key = String(m);
-      (groups[key] = groups[key] || []).push(def);
-    }
-    const order = ["2", "0.5", "0"];
-    return order.filter((k) => groups[k]).map((k) => ({ m: k, types: groups[k]! }));
-  }
-  function effClass(mm: string): string {
-    if (mm === "4" || mm === "2") return "bad";
-    if (mm === "1") return "neutral";
-    if (mm === "0") return "immune";
-    return "good";
-  }
+  const effGroups = useMemo(() => defenseGroups(myTypes), [myTypes]);
 
   function goBack(): void {
     if (national) {
@@ -534,7 +504,7 @@ export function DetailPage({
                     {/* U6：攻击面属性徽章固定宽 70px 内容居中 */}
                     <span className="eff-m atk-src">⚔ {t}</span>
                     <div className="eff-atk-list">
-                      {atkGroupsOf(t).map((g) => (
+                      {attackGroups(t).map((g) => (
                         <span key={g.m} className="eff-inline">
                           <span className={"eff-m " + effClass(g.m)}>×{g.m}</span>
                           <div className="eff-types">
