@@ -283,41 +283,41 @@ describe("M2 引擎集成", () => {
     s.destroy();
   }, 30000);
 
-it("RM-04 AI 托管：双 AI 对打自动应答直至终局（双打，无人工指令）", async () => {
-  const sets = importShowdown(TEAM_TEXT)!;
-  const s = new BattleSession({
-    formatid: "gen9vgc2025regi",
-    teams: { p1: sets.slice(0, 4), p2: structuredClone(sets).reverse().slice(0, 4) },
-    seed: [2026, 10, 31, 4],
-  });
-  s.enableAI("p1");
-  s.enableAI("p2");
-  await s.start();
-  const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
-  for (let i = 0; i < 600 && s.phase !== "finished"; i++) await wait(200);
-  expect(s.phase).toBe("finished");
-  expect(s.winner).toBeTruthy();
-  s.destroy();
-}, 140000);
+  it("RM-04 AI 托管：双 AI 对打自动应答直至终局（双打，无人工指令）", async () => {
+    const sets = importShowdown(TEAM_TEXT)!;
+    const s = new BattleSession({
+      formatid: "gen9vgc2025regi",
+      teams: { p1: sets.slice(0, 4), p2: structuredClone(sets).reverse().slice(0, 4) },
+      seed: [2026, 10, 31, 4],
+    });
+    s.enableAI("p1");
+    s.enableAI("p2");
+    await s.start();
+    const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    for (let i = 0; i < 600 && s.phase !== "finished"; i++) await wait(200);
+    expect(s.phase).toBe("finished");
+    expect(s.winner).toBeTruthy();
+    s.destroy();
+  }, 140000);
 
-it("RM-04 aiChoice forceSwitch：替补不足时补显式 pass", () => {
-  const req = {
-    forceSwitch: [true, true],
-    side: {
-      name: "B",
-      id: "p2",
-      pokemon: [
-        { ident: "p2a: X", condition: "0 fnt", active: true },
-        { ident: "p2b: Y", condition: "0 fnt", active: true },
-        { ident: "p2c: Z", condition: "100/100", active: false },
-        { ident: "p2d: W", condition: "0 fnt", active: false },
-      ],
-    },
-  } as never;
-  // 空 2 槽、可交互替补仅 1 只 → switch 3, pass（第二槽显式补 pass）
-  const c = aiChoice(req);
-  expect(c).toBe("switch 3, pass");
-});
+  it("RM-04 aiChoice forceSwitch：替补不足时补显式 pass", () => {
+    const req = {
+      forceSwitch: [true, true],
+      side: {
+        name: "B",
+        id: "p2",
+        pokemon: [
+          { ident: "p2a: X", condition: "0 fnt", active: true },
+          { ident: "p2b: Y", condition: "0 fnt", active: true },
+          { ident: "p2c: Z", condition: "100/100", active: false },
+          { ident: "p2d: W", condition: "0 fnt", active: false },
+        ],
+      },
+    } as never;
+    // 空 2 槽、可交互替补仅 1 只 → switch 3, pass（第二槽显式补 pass）
+    const c = aiChoice(req);
+    expect(c).toBe("switch 3, pass");
+  });
 
   it("champions 赛制：VGC 校验合法 + BSS 完整一局（VGC 为 Bo3 默认赛制，单局会话按 BSS 验证）", async () => {
     const sets = importShowdown(CHAMPIONS_TEAM_TEXT)!;
