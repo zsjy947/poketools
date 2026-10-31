@@ -34,31 +34,31 @@ export function emptyTeam(key: "A" | "B"): TeamSlot {
 
 /** 性格中文 → identifier（构建期自 data/natures 表生成，25 条） */
 export const ZH_NATURE_ID: Record<string, string> = {
-  "勤奋": "hardy",
-  "大胆": "bold",
-  "内敛": "modest",
-  "温和": "calm",
-  "胆小": "timid",
-  "怕寂寞": "lonely",
-  "坦率": "docile",
-  "慢吞吞": "mild",
-  "温顺": "gentle",
-  "急躁": "hasty",
-  "固执": "adamant",
-  "淘气": "impish",
-  "害羞": "bashful",
-  "慎重": "careful",
-  "马虎": "rash",
-  "爽朗": "jolly",
-  "顽皮": "naughty",
-  "乐天": "lax",
-  "浮躁": "quirky",
-  "天真": "naive",
-  "勇敢": "brave",
-  "悠闲": "relaxed",
-  "冷静": "quiet",
-  "自大": "sassy",
-  "认真": "serious"
+  勤奋: "hardy",
+  大胆: "bold",
+  内敛: "modest",
+  温和: "calm",
+  胆小: "timid",
+  怕寂寞: "lonely",
+  坦率: "docile",
+  慢吞吞: "mild",
+  温顺: "gentle",
+  急躁: "hasty",
+  固执: "adamant",
+  淘气: "impish",
+  害羞: "bashful",
+  慎重: "careful",
+  马虎: "rash",
+  爽朗: "jolly",
+  顽皮: "naughty",
+  乐天: "lax",
+  浮躁: "quirky",
+  天真: "naive",
+  勇敢: "brave",
+  悠闲: "relaxed",
+  冷静: "quiet",
+  自大: "sassy",
+  认真: "serious",
 };
 
 interface ZhMaps {
@@ -83,14 +83,16 @@ function zhMaps(): ZhMaps {
     if (/[一-鿿]/.test(txt) && id && !map.has(txt)) map.set(txt, id);
   };
   // loadTextData 未进 vendor d.ts 表面——此处经 any 收窄（引擎运行时可用，zh-cn 全量名）
-  const td = (Dex as unknown as {
-    loadTextData?: (lang: string) => {
-      Pokedex: Record<string, { name?: string }>;
-      Moves: Record<string, { name?: string }>;
-      Items: Record<string, { name?: string }>;
-      Abilities: Record<string, { name?: string }>;
-    };
-  }).loadTextData?.("zh-cn");
+  const td = (
+    Dex as unknown as {
+      loadTextData?: (lang: string) => {
+        Pokedex: Record<string, { name?: string }>;
+        Moves: Record<string, { name?: string }>;
+        Items: Record<string, { name?: string }>;
+        Abilities: Record<string, { name?: string }>;
+      };
+    }
+  ).loadTextData?.("zh-cn");
   if (td) {
     for (const [id, row] of Object.entries(td.Pokedex)) put(species, row.name ?? "", id);
     for (const [id, row] of Object.entries(td.Moves)) put(moves, row.name ?? "", id);

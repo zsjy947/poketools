@@ -34,10 +34,7 @@ export function aiChoice(
     const benchOf = req.side.pokemon
       .map((p, i) => ({ p, i }))
       .filter((x) => !x.p.active && !x.p.condition.includes("fnt"));
-    const choosable = Math.min(
-      req.forceSwitch.filter(Boolean).length,
-      benchOf.length,
-    );
+    const choosable = Math.min(req.forceSwitch.filter(Boolean).length, benchOf.length);
     let bi = 0;
     const parts = req.forceSwitch.map((need) => {
       if (!need) return null;

@@ -30,10 +30,16 @@ describe("RM-21 中文 PokePaste 导入", () => {
     expect(sets).not.toBeNull();
     expect(sets!.length).toBe(2);
     expect(sets![0]!.species.toLowerCase()).toContain("typhlosion");
-    expect((sets![0]!.item ?? "").replace(/[^a-z0-9]/gi, "").toLowerCase()).toContain("choicescarf");
-    expect(sets![0]!.moves.map((m) => m.replace(/[^a-z0-9]/gi, "").toLowerCase())).toContain("eruption");
+    expect((sets![0]!.item ?? "").replace(/[^a-z0-9]/gi, "").toLowerCase()).toContain(
+      "choicescarf",
+    );
+    expect(sets![0]!.moves.map((m) => m.replace(/[^a-z0-9]/gi, "").toLowerCase())).toContain(
+      "eruption",
+    );
     expect(sets![1]!.species.toLowerCase()).toContain("salamence");
-    expect((sets![1]!.item ?? "").replace(/[^a-z0-9]/gi, "").toLowerCase()).toContain("salamencite");
+    expect((sets![1]!.item ?? "").replace(/[^a-z0-9]/gi, "").toLowerCase()).toContain(
+      "salamencite",
+    );
   });
 
   it("中文导入 → 英文导出 → 再导入 往返无损", () => {

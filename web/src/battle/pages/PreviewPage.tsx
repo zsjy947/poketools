@@ -93,7 +93,7 @@ export function PreviewPage(): JSX.Element {
           <input type="checkbox" checked={aiB} onChange={(e) => setAiB(e.target.checked)} />
           阵营 B 由 AI 操控
         </label>
-                <button
+        <button
           className="primary"
           disabled={picks.p1.length !== maxPick || picks.p2.length !== maxPick}
           onClick={() => void start()}

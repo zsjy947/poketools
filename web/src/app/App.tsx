@@ -2,9 +2,7 @@ import { lazy, Suspense, useMemo, useRef } from "react";
 import { version } from "../../package.json";
 import { parseHash, routeQuery, useHash, navigate } from "../lib/router";
 // battle 分区懒加载（RM-13）：供应商化引擎 ~12MB 只在对战首入时拉取，图鉴/计算器首屏不背
-const BattleApp = lazy(() =>
-  import("../battle/BattleApp").then((m) => ({ default: m.BattleApp })),
-);
+const BattleApp = lazy(() => import("../battle/BattleApp").then((m) => ({ default: m.BattleApp })));
 import { UnifiedHomePage } from "../pages/UnifiedHomePage";
 import { GamesPage } from "../pages/GamesPage";
 import { GameSection } from "../pages/GameSection";
