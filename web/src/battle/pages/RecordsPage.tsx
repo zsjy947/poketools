@@ -2,6 +2,27 @@ import { useEffect, useState } from "react";
 import { useApp } from "../store";
 import type { StoredBattleRecord } from "../storage";
 import { TurnLogView } from "../turnLog";
+import { importShowdown } from "../../team/showdown";
+import { Teams } from "../../engine-adapter";
+import { toast } from "../../components/shared";
+
+/** RM-07：记录 → Showdown Replay 文本（>start + >player packed team + 协议日志）。 */
+function exportReplayText(r: StoredBattleRecord): string {
+  const packed = (t: string) => {
+    const sets = importShowdown(t);
+    return sets ? Teams.pack(sets) : "";
+  };
+  const head = [
+    `=== ${r.formatid} · ${new Date(r.playedAt).toLocaleString("zh-CN")} · ${r.winner} ===`,
+    `>start ${JSON.stringify({
+      formatid: r.formatid,
+      seed: r.seed ? (JSON.parse(r.seed) as number[]) : undefined,
+    })}`,
+    `>player p1 ${JSON.stringify({ name: r.p1Name, team: packed(r.p1Team) })}`,
+    `>player p2 ${JSON.stringify({ name: r.p2Name, team: packed(r.p2Team) })}`,
+  ];
+  return [...head, ...r.log].join("\n");
+}
 
 /** 对局记录（FR-10）：列表查看、日志回看（Showdown 式回合分组）、回放（M4 P3）、删除。 */
 export function RecordsPage(): JSX.Element {
@@ -129,6 +150,16 @@ export function RecordsPage(): JSX.Element {
                 </button>{" "}
                 <button className="mini" onClick={() => setViewing(r)}>
                   日志
+                </button>{" "}
+                <button
+                  className="mini"
+                  title="导出 Showdown Replay 文本（剪贴板）"
+                  onClick={async () => {
+                    await navigator.clipboard?.writeText(exportReplayText(r));
+                    toast("Replay 文本已复制到剪贴板", "success");
+                  }}
+                >
+                  导出
                 </button>{" "}
                 <button className="mini danger" onClick={() => removeRecord(r.id)}>
                   删除
