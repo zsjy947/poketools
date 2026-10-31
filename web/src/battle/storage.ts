@@ -70,6 +70,17 @@ function writeRecords(records: StoredBattleRecord[]): StoredBattleRecord[] {
   }
 }
 
+/**
+ * 回放格式换代分界（RM-23）：2026-10-30（v1.0.2）起对局记录改存实局上阵子集
+ * （session.battleTeams）；此前录制的记录 p1Team 为注册整队文本，重演必错位且无法回修——
+ * 读取时直接剪枝丢弃（按用户决策，不做兼容提示）。
+ */
+export const BATTLE_SUBSET_EPOCH = new Date("2026-10-30T00:00:00").getTime();
+
+export function pruneLegacyRecords(records: StoredBattleRecord[]): StoredBattleRecord[] {
+  return records.filter((r) => !(r.playedAt < BATTLE_SUBSET_EPOCH));
+}
+
 export const storage = {
   loadTeams: <T>(): T | null => readJson<T>(KEY.teams),
   saveTeams: (v: unknown) => writeJson(KEY.teams, v),
@@ -78,10 +89,19 @@ export const storage = {
     ...readJson<Partial<StoredSettings>>(KEY.settings),
   }),
   saveSettings: (v: StoredSettings) => writeJson(KEY.settings, v),
-  loadRecords: (): StoredBattleRecord[] => readJson<StoredBattleRecord[]>(KEY.records) ?? [],
-  saveRecords: (v: StoredBattleRecord[]) => writeRecords(v),
+  loadRecords: (): StoredBattleRecord[] => {
+    const raw = readJson<StoredBattleRecord[]>(KEY.records) ?? [];
+    const pruned = pruneLegacyRecords(raw);
+    if (pruned.length !== raw.length) {
+      writeRecords(pruned); // 剪掉旧格式后回写，避免下次重复过滤
+    }
+    return pruned;
+  },
+  saveRecords: (v: StoredBattleRecord[]) => writeRecords(pruneLegacyRecords(v)),
   deleteRecord: (id: string): StoredBattleRecord[] => {
-    const next = (readJson<StoredBattleRecord[]>(KEY.records) ?? []).filter((r) => r.id !== id);
+    const next = pruneLegacyRecords(readJson<StoredBattleRecord[]>(KEY.records) ?? []).filter(
+      (r) => r.id !== id,
+    );
     return writeRecords(next);
   },
 };

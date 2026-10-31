@@ -1,7 +1,10 @@
-import { useMemo, useRef } from "react";
+import { lazy, Suspense, useMemo, useRef } from "react";
 import { version } from "../../package.json";
 import { parseHash, routeQuery, useHash, navigate } from "../lib/router";
-import { BattleApp } from "../battle/BattleApp";
+// battle 分区懒加载（RM-13）：供应商化引擎 ~12MB 只在对战首入时拉取，图鉴/计算器首屏不背
+const BattleApp = lazy(() =>
+  import("../battle/BattleApp").then((m) => ({ default: m.BattleApp })),
+);
 import { UnifiedHomePage } from "../pages/UnifiedHomePage";
 import { GamesPage } from "../pages/GamesPage";
 import { GameSection } from "../pages/GameSection";
@@ -82,7 +85,13 @@ export function App(): JSX.Element {
           </div>
         )}
         <div hidden={route.name !== "calc"}>{visited.current.calc ? <CalcPage /> : null}</div>
-        <div hidden={route.name !== "battle"}>{visited.current.battle ? <BattleApp /> : null}</div>
+        <div hidden={route.name !== "battle"}>
+          {visited.current.battle ? (
+            <Suspense fallback={<div className="page">对战引擎加载中…</div>}>
+              <BattleApp />
+            </Suspense>
+          ) : null}
+        </div>
       </main>
     </div>
   );
