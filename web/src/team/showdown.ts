@@ -3,7 +3,7 @@
  * 解析/序列化复用引擎 Teams；校验复用 TeamValidator（错误文案翻译为简中）。
  */
 import { Dex, TeamValidator, Teams, toID } from "../engine-adapter";
-import { zhLine, zhText } from "../data";
+import { TYPE_ZH, zhLine, zhText } from "../data";
 import { ZH_ITEMS_GEN, ZH_SPECIES_GEN } from "../data/zh-gen";
 import type { Format, PokemonSet } from "../engine-adapter";
 
@@ -29,8 +29,130 @@ export function emptyTeam(key: "A" | "B"): TeamSlot {
 /** Showdown 队伍文本 → sets。返回 null 表示无法解析任何「物种真实存在」的条目
     （PS 解析器宽松：任意首行都会被当作物种名，需用 Dex 存在性过滤垃圾文本）。
     昵称对模拟对战无意义：导入时静默丢弃（引擎显示名恒为种名）。 */
+
+/* ---- RM-21：中文 PokePaste 导入（中文名 → 引擎可解析名 的行级预处理） ---- */
+
+/** 性格中文 → identifier（构建期自 data/natures 表生成，25 条） */
+export const ZH_NATURE_ID: Record<string, string> = {
+  "勤奋": "hardy",
+  "大胆": "bold",
+  "内敛": "modest",
+  "温和": "calm",
+  "胆小": "timid",
+  "怕寂寞": "lonely",
+  "坦率": "docile",
+  "慢吞吞": "mild",
+  "温顺": "gentle",
+  "急躁": "hasty",
+  "固执": "adamant",
+  "淘气": "impish",
+  "害羞": "bashful",
+  "慎重": "careful",
+  "马虎": "rash",
+  "爽朗": "jolly",
+  "顽皮": "naughty",
+  "乐天": "lax",
+  "浮躁": "quirky",
+  "天真": "naive",
+  "勇敢": "brave",
+  "悠闲": "relaxed",
+  "冷静": "quiet",
+  "自大": "sassy",
+  "认真": "serious"
+};
+
+interface ZhMaps {
+  species: Map<string, string>;
+  moves: Map<string, string>;
+  items: Map<string, string>;
+  abilities: Map<string, string>;
+  types: Map<string, string>;
+}
+
+let ZH_MAPS: ZhMaps | null = null;
+
+function zhMaps(): ZhMaps {
+  if (ZH_MAPS) return ZH_MAPS;
+  const species = new Map<string, string>();
+  const moves = new Map<string, string>();
+  const items = new Map<string, string>();
+  const abilities = new Map<string, string>();
+  const types = new Map<string, string>();
+  const put = (map: Map<string, string>, name: string, id: string) => {
+    const txt = String(name || "");
+    if (/[一-鿿]/.test(txt) && id && !map.has(txt)) map.set(txt, id);
+  };
+  // loadTextData 未进 vendor d.ts 表面——此处经 any 收窄（引擎运行时可用，zh-cn 全量名）
+  const td = (Dex as unknown as {
+    loadTextData?: (lang: string) => {
+      Pokedex: Record<string, { name?: string }>;
+      Moves: Record<string, { name?: string }>;
+      Items: Record<string, { name?: string }>;
+      Abilities: Record<string, { name?: string }>;
+    };
+  }).loadTextData?.("zh-cn");
+  if (td) {
+    for (const [id, row] of Object.entries(td.Pokedex)) put(species, row.name ?? "", id);
+    for (const [id, row] of Object.entries(td.Moves)) put(moves, row.name ?? "", id);
+    for (const [id, row] of Object.entries(td.Items)) put(items, row.name ?? "", id);
+    for (const [id, row] of Object.entries(td.Abilities)) put(abilities, row.name ?? "", id);
+  }
+  for (const [id, zhName] of Object.entries(ZH_SPECIES_GEN)) {
+    if (!species.has(zhName)) species.set(zhName, id);
+  }
+  // 进化石等引擎 zh-cn 占位道具（zh-gen curated 反向补）
+  for (const [id, zhName] of Object.entries(ZH_ITEMS_GEN)) {
+    if (!items.has(zhName)) items.set(zhName, id);
+  }
+  for (const [en, zhName] of Object.entries(TYPE_ZH)) {
+    if (/[一-鿿]/.test(zhName)) types.set(zhName, en);
+  }
+  ZH_MAPS = { species, moves, items, abilities, types };
+  return ZH_MAPS;
+}
+
+/** 行级预处理：物种/道具/招式/特性/太晶属性/性格/性别 中文名 → 引擎可解析形式。 */
+export function preprocessChineseTeam(text: string): string {
+  if (!/[一-鿿]/.test(text)) return text;
+  const m = zhMaps();
+  const lines = text.split("\n").map((line) => {
+    const t = line.trim();
+    if (t.startsWith("Ability:")) {
+      const v = t.slice("Ability:".length).trim();
+      return "Ability: " + (m.abilities.get(v) ?? v);
+    }
+    if (t.startsWith("Tera Type:")) {
+      const v = t.slice("Tera Type:".length).trim();
+      return "Tera Type: " + (m.types.get(v) ?? v);
+    }
+    if (t.startsWith("Nature:")) {
+      const v = t.slice("Nature:".length).trim();
+      return "Nature: " + (ZH_NATURE_ID[v] ?? v);
+    }
+    if (t.startsWith("Gender:")) {
+      const v = t.slice("Gender:".length).trim();
+      return "Gender: " + (v === "雄性" || v === "公" ? "M" : v === "雌性" || v === "母" ? "F" : v);
+    }
+    if (t.startsWith("- ")) {
+      const mv = t.slice(2).trim();
+      return "- " + (m.moves.get(mv) ?? mv);
+    }
+    if (t.includes(" @ ")) {
+      const at = t.indexOf(" @ ");
+      const sp = t.slice(0, at).trim();
+      const item = t.slice(at + 3).trim();
+      return m.species.get(sp) + " @ " + (m.items.get(item) ?? item);
+    }
+    if (t && !/^[A-Za-z0-9(]/.test(t)) {
+      return m.species.get(t) ?? t;
+    }
+    return line;
+  });
+  return lines.join("\n");
+}
+
 export function importShowdown(text: string): PokemonSet[] | null {
-  const trimmed = text.trim();
+  const trimmed = preprocessChineseTeam(text.trim());
   if (!trimmed) return null;
   try {
     const parsed = Teams.import(trimmed);
