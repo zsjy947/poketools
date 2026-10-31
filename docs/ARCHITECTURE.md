@@ -383,6 +383,18 @@ web/
 数据类缺口仍以 `DATA-GAPS.md` 为准（无源待补与变体建模两项仍开放，ROADMAP §5 仅索引）。
 
 ## §10 变更历史
+- **2026-11-01 ROADMAP 清算批（RM-04/05/06/07/08/09/12/13/16/19/21/22/23/24 全量执行）**：
+  battle 分区懒加载（主 chunk 8.6MB→321KB，RM-13）；赛制选择吸底「下一步」（RM-22）；预览页
+  伤害速查（RM-06，calcBatch 复用）；队伍库（RM-08）；VGC 计时训练（RM-05，指令超时自动待机）；
+  随机 AI 对手（RM-04，engine-adapter/ai.ts + enableAI(side)，错误升级 pass→forceLose 兜底永不
+  卡死，双 AI 全自动对局测试）；记录导出 Showdown Replay 文本（RM-07）；设置页数据版本
+  （RM-09）；BattleView 拆分 stage/command-panel（RM-12，1107→138+405+582）；DetailPage 相性
+  纯函数拆出（RM-19 第一步）；中文 PokePaste 导入（RM-21，loadTextData(zh-cn)+zh-gen 补名
+  映射，行级预处理，英文名直通）；旧格式对局记录读取即丢弃（RM-23，用户决策）；Z-A 基础段
+  图鉴回退展示（RM-24，标注形态名）；性能实测归档（RM-16，BATTLE.md 附录 A）。
+  RM-10（多语言）维持延后；RM-11 结论=引擎内 Reg M-D 未发布（2026-10-31 枚举），2026-12-02
+  后复查；RM-18/14/15 APK 线仍受真机阻塞。
+- **2026-10-29/31 v1.0.2 实测修复批（release 便携版实机走查，4 commit）**：
 - **2026-10-29/31 v1.0.2 实测修复批（release 便携版实机走查，4 commit）**：
   回放记录改存实局上阵子集（session.battleTeams——旧版存注册整队致重演错位，为回放确定性主修复）；
   对战整合日志噪音清零（`|cant|` 中文渲染、-status/curestatus 状态码、规则行 Item/Species Clause

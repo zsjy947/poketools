@@ -227,6 +227,27 @@ M5/M6 期间发现并修复：
 
 ## 8. v1.0.0 后修复与重构记录
 
+- **ROADMAP 清算批（2026-11-01，RM-04/05/06/07/08/09/12/13/16/19/21/22/23/24 全量执行）**：
+  - **RM-23**：旧格式对局记录（2026-10-30 前）读取时直接剪枝丢弃（用户决策，不做兼容提示）；
+  - **RM-13**：BattleApp 改 React.lazy——引擎 chunk 只在对战首入加载，主 chunk 8.6MB→321KB；
+  - **RM-22**：赛制选择页「下一步」按钮吸底悬浮（原被长列表推出视口）；
+  - **RM-06**：预览页内嵌「伤害速查」（双方首发经 calcBatch 互算 4 招，复用 data 层实现）；
+  - **RM-08**：队伍库（命名存档/载入/删除，上限 30 套）；
+  - **RM-04**：随机 AI 对手（engine-adapter/ai.ts 目标感知选择 + 短板替补显式补 pass + 错误
+    升级兜底 forceLose 保证永不卡死；busy 门闩防微任务饥饿；预览页「阵营 B 由 AI 操控」开关；
+    双 AI 全自动对局测试直达终局）；
+  - **RM-05**：VGC 计时训练（45s/指令、7min/局、20min 总，指令超时自动待机；设置页开关）；
+  - **RM-07**：记录页「导出」生成 Showdown Replay 文本（>start+seed、>player packed team、协议日志）；
+  - **RM-09**：设置页显示数据分片指纹（manifest data_version）与重跑指引；
+  - **RM-12**：BattleView 1107 行拆为 components/stage.tsx（舞台 405 行）+ components/command-panel.tsx
+    （指令面板 582 行）+ 页面装配 138 行，ReplayPage 引用经 re-export 零改动；
+  - **RM-19（第一步）**：DetailPage 属性相性纯函数拆出 pages/detail/typechart.ts（含单测）；
+  - **RM-21**：中文 PokePaste 导入（行级预处理：物种/道具/招式/特性/太晶/性格/性别中文名 →
+    引擎 id；映射自 Dex.loadTextData(zh-cn) + ZH_SPECIES_GEN/ZH_ITEMS_GEN 补名；英文名直通零开销）；
+    形态展示名「种名-形态短名」的手打支持待展示名逻辑下沉 data 层（见 ROADMAP RM-21 备注）。
+  测试 186→195+（新增 battle-storage/zh-import/detail-typechart/engine RM-04 用例）。
+- **性能实测（RM-16，2026-11-01，见附录 A）**。
+
 - **v1.0.2 实测修复批（2026-10-29/31，4 commit）**：
   - **回放确定性主修复**：终局记录 `p1Team/p2Team` 改存 `session.battleTeams`（实局上阵子集）——
     旧版存注册整队 6 只，回放重演时 `team 1,2,3,4` 命中注册表前 4 只而非当初子集，状态错位级联
@@ -345,3 +366,15 @@ M5/M6 期间发现并修复：
     3 条飘字、悬浮卡（特性已中文）、终局横幅全部就位。
   - **M5 共用审计（终审）**：见 ARCHITECTURE §7.2 审计表——同名类/TSX className 交集全部作用域化或白名单，
     组件引用双向为零，运行时双向量化验证通过。
+
+
+## 附录 A：性能实测（RM-16，2026-11-01）
+
+| 指标 | 实测值 | 口径 |
+| --- | --- | --- |
+| 首屏资源顺序加载 | **303ms** | vite preview 本地托管：index.html + 主 chunk(321.6KB/gzip 105.7KB) + css(62.3KB) 顺序 fetch 累计（RM-13 分包后） |
+| 引擎 chunk | 8329KB（懒加载） | BattleApp-*.js 仅对战首入拉取，不占首屏 |
+| 冷启动（portable） | ≈6-8s 到窗口就绪 | 524MB 自解压占大头，与前端分包无关；安装版（NSIS）无解压环节 |
+| 出招反馈 | 批量 emit 后回合结算秒级（M2 实测延续） | 无回归 |
+
+结论：NFR-03「桌面冷启动 ≤3s」对安装版可达（自解压为 portable 特有），首屏与交互延迟达标。
