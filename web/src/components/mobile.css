@@ -1,28 +1,106 @@
-/* ===== 移动端竖屏统一断点层（Track C A2，UPDATE-PLAN §4.2）=====
+/* ===== 移动端竖屏统一断点层（安卓迁移线，重写对齐统一壳） =====
    档位：≤768 竖屏主档 / ≤480 小屏收紧档；桌面（>768）零影响。
-   旧桌面中窄断点（dex 1080 / calc 1280·1080）保留不动——分别服务桌面窄窗与平板横屏。
+   适配对象 = 当前统一壳（app-shell/app-header/app-main）+ 各 feature 页类名；
+   旧 Vue 栈残留（.el-*）已随架构迁移移除。
    触控规范：交互热区 ≥40px；底部导航含 safe-area；hash 路由天然兼容系统返回键。 */
 
-/* ---------- 底部 Tab 栏（首页/游戏中心/计算器；游戏内由窄栏 RailNav 变体承担） ---------- */
+/* 底部 Tab 栏（桌面隐藏；JSX 常驻渲染于 App.tsx） */
 .tab-bar {
   display: none;
 }
 
 @media (max-width: 768px) {
-  /* ---------- 框架：纵向布局 + 底部导航 ---------- */
-  .layout {
-    flex-direction: column;
+  /* ---------- 框架：顶栏收紧 + 内容区让位底部 Tab ---------- */
+  .app-shell {
+    height: 100vh;
     height: 100dvh;
   }
-  .main {
+  .app-header {
+    padding: 8px 12px;
+    gap: 10px;
+  }
+  .app-nav,
+  .app-version {
+    display: none;
+  }
+  .app-title {
+    font-size: 15px;
+  }
+  .app-main {
     flex: 1;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    padding: 10px 12px calc(86px + env(safe-area-inset-bottom));
-    min-width: 0;
+    padding: 10px 12px calc(76px + env(safe-area-inset-bottom));
   }
 
-  /* 游戏内 64px 窄栏 → 底部图标导航条 */
+  /* ---------- 底部 Tab 栏 ---------- */
+  .tab-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 120;
+    height: calc(58px + env(safe-area-inset-bottom));
+    padding: 6px 8px env(safe-area-inset-bottom);
+    background: #1f2533;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 -4px 16px rgba(20, 26, 44, 0.16);
+    border: none;
+    border-radius: 0;
+  }
+  .tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-width: 56px;
+    min-height: 44px;
+    border-radius: 12px;
+    background: transparent;
+    color: #8d97ab;
+    cursor: pointer;
+    border: none;
+    border-bottom: 2.5px solid transparent;
+    margin-bottom: -2px;
+    padding: 2px 8px;
+  }
+  .tab-item:hover {
+    border-color: transparent;
+    border-bottom-color: transparent;
+  }
+  .tab-item.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .tab-ic {
+    font-size: 19px;
+    line-height: 1.15;
+  }
+  .tab-label {
+    font-size: 11px;
+  }
+
+  /* ---------- 游戏内 84px 窄栏 → 底部图标导航条（同时隐藏全局底部 Tab） ---------- */
+  .app-shell:has(.game-shell) .tab-bar {
+    display: none;
+  }
+  .app-main:has(.game-shell) {
+    padding: 0;
+    overflow: hidden;
+  }
+  .game-shell {
+    display: block;
+    height: 100%;
+  }
+  .game-main {
+    height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 12px 12px calc(76px + env(safe-area-inset-bottom));
+  }
   .rail {
     order: 99;
     position: fixed;
@@ -59,19 +137,6 @@
     border-left-color: transparent;
     border-bottom-color: var(--accent);
   }
-
-  /* 游戏分区壳：竖屏下窄栏变底部横条，内容区占满并预留底部导航高度 */
-  .app-main:has(.game-shell) {
-    padding: 0;
-    overflow: visible;
-  }
-  .game-shell {
-    display: block;
-    height: auto;
-  }
-  .game-main {
-    padding: 10px 12px calc(86px + env(safe-area-inset-bottom));
-  }
   .rail .game-icons {
     flex-direction: row;
   }
@@ -79,43 +144,7 @@
     max-width: 60px;
   }
 
-  /* 首页/游戏中心/计算器页底部 Tab（桌面隐藏，仅竖屏显示） */
-  .tab-bar {
-    display: flex;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 120;
-    height: calc(58px + env(safe-area-inset-bottom));
-    padding: 6px 8px env(safe-area-inset-bottom);
-    background: #1f2533;
-    justify-content: space-around;
-    align-items: center;
-    box-shadow: 0 -4px 16px rgba(20, 26, 44, 0.16);
-  }
-  .tab-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 2px;
-    min-width: 64px;
-    min-height: 44px;
-    border-radius: 12px;
-    color: #8d97ab;
-    cursor: pointer;
-    border-bottom: 2.5px solid transparent;
-    margin-bottom: -2px;
-  }
-  .tab-item.active {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-  }
-  .tab-item .tab-label {
-    font-size: 11px;
-  }
-
+  /* ---------- 三层吸顶：返回钮 → 分段锚点 → 形态条 ---------- */
   .back-btn {
     position: sticky;
     top: 0;
@@ -123,7 +152,6 @@
     background: #fff;
     box-shadow: 0 1px 6px rgba(31, 42, 68, 0.08);
   }
-  /* 三层吸顶依次下移（返回钮 → 分段锚点 → 形态条），避免同叠 top:0 */
   .mobile-sec-chips {
     top: 40px;
   }
@@ -142,26 +170,27 @@
     font-size: 18px;
     white-space: nowrap;
   }
-
-  /* ---------- 触控间距规范 ---------- */
-  .el-button {
-    min-height: 38px;
+  /* 筛选单选组在窄屏不挤压折行，整组横向滚动 */
+  .pkt-radio {
+    white-space: nowrap;
   }
-  .el-input__inner,
-  .el-select .el-input__inner {
-    min-height: 38px;
-  }
-  .el-radio-button__inner {
-    padding: 8px 13px;
-  }
-  .toggle-chip {
-    padding: 6px 13px;
+  .pkt-radio-group,
+  .pkt-select {
+    flex-shrink: 0;
   }
 
   /* ---------- 首页/游戏中心宫格 ---------- */
-  .feature-grid {
-    grid-template-columns: 1fr;
+  .pkt-home {
+    padding-top: 3vh;
+  }
+  .pkt-home-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
+    max-width: none;
+    margin-top: 16px;
+  }
+  .pkt-home-card {
+    padding: 20px 12px 16px;
   }
   .game-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -302,8 +331,8 @@
     background: rgba(20, 26, 44, 0.35);
   }
 
-  /* ---------- 努力值：表格 → 卡片流（el-table 隐藏，卡片列表由视图渲染） ---------- */
-  .ev-page .el-table {
+  /* ---------- 努力值：表格隐藏，卡片流承担（卡片由视图常驻渲染） ---------- */
+  .ev-table {
     display: none;
   }
   .ev-cards {
@@ -404,32 +433,45 @@
     flex-wrap: wrap;
   }
 
-  /* ---------- 弹窗：近全屏抽屉 ---------- */
-  .el-dialog {
-    width: 94vw !important;
-    margin-top: 5vh !important;
+  /* ---------- 弹窗：窄屏宽度约束（pkt-modal 体系） ---------- */
+  .pkt-modal {
+    width: 94vw;
   }
-  .el-dialog .el-dialog__body {
-    max-height: 72vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  .el-message-box {
-    width: 90vw !important;
+  .pkt-modal-body {
+    max-height: 70vh;
   }
 }
 
 @media (max-width: 480px) {
+  /* 小屏收紧档 */
+  .app-main,
+  .game-main {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .pkt-home-grid {
+    gap: 8px;
+  }
+  .pkt-home-card {
+    padding: 16px 10px 14px;
+  }
+  .pkt-home-title {
+    font-size: 14.5px;
+  }
+  .pkt-home-desc {
+    font-size: 11.5px;
+  }
+  .tab-item {
+    min-width: 48px;
+  }
+  .tab-label {
+    font-size: 10.5px;
+  }
   .dex-grid {
-    grid-template-columns: repeat(2, 1fr);
     gap: 6px;
   }
   .dex-card .pname {
     font-size: 13px;
-  }
-  .game-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
   }
   .detail-art img {
     width: 120px;
@@ -456,13 +498,11 @@
   .stat-range {
     display: none;
   }
-  .tab-item {
-    min-width: 56px;
-  }
 }
 
 /* 桌面：隐藏仅移动端元素（手风琴/分段锚点/筛选钮在 >768 不出现） */
 @media (min-width: 769px) {
+  .tab-bar,
   .mobile-sec-chips,
   .ev-cards,
   .filter-toggle,

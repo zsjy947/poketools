@@ -23,6 +23,15 @@ export function App(): JSX.Element {
   const rawQuery = useMemo(() => routeQuery(hash), [hash]);
   const lastGame = usePkt((s) => s.gameId);
 
+  // 底部 Tab 图标（移动端；与首页功能卡图标同源风格）
+  const TAB_ICONS: Record<string, string> = {
+    home: "🏠",
+    games: "🎮",
+    national: "🌐",
+    calc: "🧮",
+    battle: "⚔️",
+  };
+
   // battle / calc 分区 keep-alive
   const visited = useRef({ battle: false, calc: false });
   if (route.name === "battle") visited.current.battle = true;
@@ -88,6 +97,19 @@ export function App(): JSX.Element {
           {visited.current.battle ? <BattleSectionBoundary /> : null}
         </div>
       </main>
+      {/* 移动端底部 Tab（桌面由 mobile.css 隐藏；≤768px 时替代顶栏导航） */}
+      <nav className="tab-bar">
+        {NAV.map((n) => (
+          <button
+            key={n.id}
+            className={"tab-item" + (n.on ? " active" : "")}
+            onClick={() => navigate(`#/${n.id}`)}
+          >
+            <span className="tab-ic">{TAB_ICONS[n.id] ?? "•"}</span>
+            <span className="tab-label">{n.label}</span>
+          </button>
+        ))}
+      </nav>
     </div>
   );
 }

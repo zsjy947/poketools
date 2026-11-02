@@ -1,4 +1,157 @@
-/* 统一壳层样式：顶栏/分区导航/首页宫格（对战分区样式见 ../battle/battle.css） */
+/* 统一壳层样式：全局基线 + 壳布局 + 顶栏/分区导航/首页宫格（对战分区样式见 ../battle/battle.css） */
+
+/* ===== 全局基线（原寄居 battle.css，随对战 chunk 才加载导致首屏裸样式，2026-11-03 归位；
+ *        battle.css 保留同内容副本，两侧保持一致） ===== */
+:root {
+  --p1: #2f6fd8;
+  --p1-bg: #eaf1fd;
+  --p2: #d0392e;
+  --p2-bg: #fdecec;
+  --ink: #23292f;
+  --muted: #7c879c;
+  --line: #dfe4ee;
+  --bg: #eef1f6;
+}
+html,
+body,
+#root {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 14px;
+}
+
+/* ===== 统一壳布局 ===== */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 10px 18px;
+  background: #1f2533;
+  color: #fff;
+}
+.app-title {
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.app-title .app-sub {
+  font-size: 11px;
+  opacity: 0.6;
+  font-weight: 400;
+  margin-left: 6px;
+}
+.app-nav {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+}
+.app-nav button {
+  background: transparent;
+  border: none;
+  color: #aeb8cc;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13.5px;
+}
+.app-nav button:hover {
+  background: #2a3245;
+  color: #fff;
+}
+.app-nav button.on {
+  background: #2a3245;
+  color: #8db4f7;
+  font-weight: 700;
+}
+.app-version {
+  font-size: 11px;
+  opacity: 0.5;
+}
+.app-main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 22px 40px;
+}
+
+.page {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+.page h1 {
+  font-size: 20px;
+  margin: 4px 0 10px;
+}
+.muted {
+  color: var(--muted);
+}
+.grow {
+  flex: 1;
+}
+button {
+  font-family: inherit;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 14px;
+  cursor: pointer;
+}
+button:hover {
+  border-color: #b8c6e4;
+}
+button.primary {
+  background: var(--p1);
+  border: none;
+  color: #fff;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 14px;
+  cursor: pointer;
+}
+button.primary:disabled {
+  background: #a8b6d4;
+  cursor: not-allowed;
+}
+button.mini {
+  padding: 2px 8px;
+  font-size: 12px;
+}
+button.danger,
+button.mini.danger {
+  color: #c0392b;
+  border-color: #eac6c1;
+}
+
+.page-head-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.alert {
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin: 8px 0 12px;
+}
+.alert.warn {
+  background: #fff7e6;
+  border: 1px solid #f0dcae;
+  color: #7a5a00;
+}
+.alert ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
 
 /* ===== 统一壳：首页宫格 + 分区导航 ===== */
 .section-nav {
