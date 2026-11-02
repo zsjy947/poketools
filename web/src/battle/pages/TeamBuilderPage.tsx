@@ -19,7 +19,8 @@ import type { PokemonSet } from "../../engine-adapter";
 import { blankSet, exportShowdown, normalizeLevelInput, validateTeam } from "../../team/showdown";
 import type { ValidationResult } from "../../team/showdown";
 import { storage, type StoredTeamEntry } from "../storage";
-import { confirmBox, toast } from "../../components/shared";
+import { toast } from "../../components/toast";
+import { confirmBox } from "../../components/dialog";
 
 /**
  * 队伍构建器（FR-02~05）：A/B 双槽位；编辑器（等级/IV/EV/性格/特性/道具/招式/太晶）；

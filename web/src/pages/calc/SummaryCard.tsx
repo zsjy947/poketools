@@ -1,6 +1,7 @@
 /* SummaryCard（自 CalcPage.tsx 机械抽出，纯位移） */
 import { STAT_KEYS, STAT_ZH } from "../../data/api";
-import { TypeBadge, formDisplayName } from "../../components/shared";
+import { TypeBadge } from "../../components/badges";
+import { formDisplayName } from "../../components/format";
 import { SideState } from "./model";
 import { MoveChip } from "./MoveChip";
 

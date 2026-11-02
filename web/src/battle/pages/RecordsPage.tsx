@@ -4,7 +4,7 @@ import type { StoredBattleRecord } from "../storage";
 import { TurnLogView } from "../turnLog";
 import { importShowdown } from "../../team/showdown";
 import { Teams } from "../../engine-adapter";
-import { toast } from "../../components/shared";
+import { toast } from "../../components/toast";
 
 /** RM-07：记录 → Showdown Replay 文本（>start + >player packed team + 协议日志）。
  *  种子字段损坏（JSON.parse 失败）时省略该字段并置 skippedSeed（F-16：导出不中断，

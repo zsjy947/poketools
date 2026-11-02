@@ -2,14 +2,8 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { navigate } from "../lib/router";
 import { usePkt, type GameFeature } from "../state/game";
-import {
-  loadGames,
-  FEATURES,
-  GameIcons,
-  isDualGame,
-  MonoIcon,
-  type GameRow,
-} from "../components/shared";
+import { loadGames, FEATURES, type GameRow } from "../components/games";
+import { GameIcons, isDualGame, MonoIcon } from "../components/badges";
 import { DexPage } from "./DexPage";
 import { EvPage } from "./EvPage";
 import { SandwichesPage } from "./SandwichesPage";

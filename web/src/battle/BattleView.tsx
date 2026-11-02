@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useApp } from "./store";
-import { confirmBox } from "../components/shared";
+import { confirmBox } from "../components/dialog";
 import { dexFor } from "../data";
 import { TimerBar } from "./TimerBar";
 import type { StoredBattleRecord } from "./storage";
@@ -127,12 +127,3 @@ export function BattleView(): JSX.Element {
     </div>
   );
 }
-
-/**
- * 对战舞台中列（场地 + 回合日志）：实时对局与回放共用。
- * 内聚动画队列/引擎窥视/悬浮框/倒计时 chip；回放侧传完整记录日志（logLines）与
- * 当前回合高亮（highlightTurn），实时对局用快照 logTail。
- */
-
-export { BattleStagePane } from "./components/stage";
-export { liveMoveSlots } from "./components/command-panel";

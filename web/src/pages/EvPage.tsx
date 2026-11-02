@@ -1,7 +1,9 @@
 /* 努力值查询页（自 Vue ev.js 迁移）：筛选 + 野外地点列（+N 折叠）+ 移动卡片流 */
 import { useEffect, useState } from "react";
 import { apiGet, EV_NAMES } from "../data/api";
-import { TypeBadge, PokeImg, EvBadges, versionChip, chipClass } from "../components/shared";
+import { TypeBadge } from "../components/badges";
+import { PokeImg, EvBadges } from "../components/pokedex";
+import { versionChip, chipClass } from "../components/format";
 
 export function EvPage({ gameId }: { gameId: string }): JSX.Element {
   const [stat, setStat] = useState("hp");

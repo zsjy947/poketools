@@ -6,17 +6,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { apiGet, STAT_KEYS, STAT_ZH } from "../data/api";
 import { TYPES, CHART } from "../data/damage";
-import {
-  formDisplayName,
-  TypeBadge,
-  PokeImg,
-  EvBadges,
-  FlavorList,
-  AbilityList,
-  EvoChain,
-  defenseMultipliers,
-  loadTypeChart,
-} from "../components/shared";
+import { loadTypeChart, defenseMultipliers } from "../components/games";
+import { TypeBadge } from "../components/badges";
+import { PokeImg, EvBadges, FlavorList, AbilityList, EvoChain } from "../components/pokedex";
+import { formDisplayName } from "../components/format";
 
 /** 移动端分段锚点（基本/种族值/进化·特性/相性/图鉴介绍） */
 const SEC_CHIPS = [

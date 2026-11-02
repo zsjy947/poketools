@@ -5,7 +5,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { apiGet, apiSend, TYPE_LIST } from "../data/api";
 import { stateCounts, NATIONAL_DEX } from "../state/user";
 import type { FormBadge } from "../data/pokemon";
-import { TypeBadge, PokeToggle, PokeImg, toast, confirmBox } from "../components/shared";
+import { TypeBadge } from "../components/badges";
+import { PokeToggle, PokeImg } from "../components/pokedex";
+import { toast } from "../components/toast";
+import { confirmBox } from "../components/dialog";
 
 interface NatEntry {
   ndex: number;

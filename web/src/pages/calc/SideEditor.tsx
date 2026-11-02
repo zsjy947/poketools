@@ -2,7 +2,8 @@
 import { useMemo } from "react";
 import { STAT_KEYS, STAT_ZH, TYPE_LIST } from "../../data/api";
 import { BATTLE_ITEM_IDS } from "../../data/battle-items";
-import { formDisplayName, toast } from "../../components/shared";
+import { toast } from "../../components/toast";
+import { formDisplayName } from "../../components/format";
 import {
   SideState,
   isAutoEquipStone,

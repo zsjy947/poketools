@@ -15,7 +15,7 @@ import type { StoredBattleRecord } from "../storage";
 import { ReplayFeedController } from "../replay-feed";
 import { importShowdown } from "../../team/showdown";
 import { dexFor } from "../../data";
-import { BattleStagePane } from "../BattleView";
+import { BattleStagePane } from "../components/stage";
 import { turnGroups, TurnLogView } from "../turnLog";
 
 /** 记录的最大回合（进度条上界：choices 模式按指令回合，日志模式按分组数） */

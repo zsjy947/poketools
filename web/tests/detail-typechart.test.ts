@@ -4,7 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { beforeAll, describe, expect, it } from "vitest";
 import { setLoader } from "../src/data/core";
-import { loadTypeChart } from "../src/components/shared";
+import { loadTypeChart } from "../src/components/games";
 import { attackGroups, defenseGroups, effClass } from "../src/pages/detail/typechart";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");

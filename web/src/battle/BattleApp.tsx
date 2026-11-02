@@ -1,3 +1,4 @@
+import "./battle.css";
 import { Component, useEffect } from "react";
 import type { ErrorInfo, ReactNode } from "react";
 import { useApp, hydrateTeams } from "./store";

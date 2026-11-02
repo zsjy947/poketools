@@ -1,7 +1,9 @@
 /* 朱紫三明治食谱页（自 Vue sandwiches.js 迁移；U9 行为等价：食材/调味料逐条添加并设数量） */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { apiGet, apiSend, TYPE_LIST, POWER_LIST, POWER_COLORS } from "../data/api";
-import { MonoIcon, toast, Modal } from "../components/shared";
+import { toast } from "../components/toast";
+import { Modal } from "../components/dialog";
+import { MonoIcon } from "../components/badges";
 
 interface RecipeItem {
   name: string;

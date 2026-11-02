@@ -1,7 +1,7 @@
 /* 属性相性纯函数（RM-19 第一步自 DetailPage.tsx 拆出，无行为变更）：
  * 防守面分组 / 攻击面分组 / 倍率 CSS 类。数据源 damage.ts 的 CHART 与 defenseMultipliers。 */
 import { CHART, TYPES } from "../../data/damage";
-import { defenseMultipliers } from "../../components/shared";
+import { defenseMultipliers } from "../../components/games";
 
 export interface EffGroup {
   m: string;

@@ -3,7 +3,8 @@
  * 六个自包含组件与共享模型已拆至 ./calc/（纯位移重构，行为零变更）。 */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { apiSend } from "../data/api";
-import { formDisplayName, koTextFromKo, toast } from "../components/shared";
+import { toast } from "../components/toast";
+import { formDisplayName, koTextFromKo } from "../components/format";
 import {
   SideState,
   _metaCache,

@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { PokemonSet } from "../engine-adapter/vendor/ps-engine.js";
 import { table } from "../data/core";
 import { calcBatch } from "../data/calc";
-import { koTextFromKo } from "../components/shared";
+import { koTextFromKo } from "../components/format";
 
 type Phase = "idle" | "loading" | "done" | "error";
 

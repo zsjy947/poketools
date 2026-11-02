@@ -2,21 +2,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState, Fragment } from "react";
 import { defenseGroups, attackGroups, effClass } from "./detail/typechart";
 import { apiGet, STAT_KEYS, STAT_ZH } from "../data/api";
+import { loadGames, loadTypeChart, type GameRow } from "../components/games";
+import { TypeBadge, MoveClassBadge } from "../components/badges";
 import {
-  loadGames,
-  loadTypeChart,
-  formDisplayName,
-  TypeBadge,
-  MoveClassBadge,
   PokeImg,
   EvBadges,
   FlavorList,
   GetMethodList,
   AbilityList,
   EvoChain,
-  Modal,
-  type GameRow,
-} from "../components/shared";
+} from "../components/pokedex";
+import { formDisplayName } from "../components/format";
+import { Modal } from "../components/dialog";
 
 const SEC_CHIPS = [
   { key: "basic", label: "基本", sel: "#sec-basic" },

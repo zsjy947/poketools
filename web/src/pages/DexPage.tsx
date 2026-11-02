@@ -2,15 +2,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { apiGet, apiSend, TYPE_LIST } from "../data/api";
 import { stateCounts } from "../state/user";
-import {
-  loadGames,
-  TypeBadge,
-  PokeToggle,
-  PokeImg,
-  toast,
-  confirmBox,
-  type GameRow,
-} from "../components/shared";
+import { loadGames, type GameRow } from "../components/games";
+import { TypeBadge } from "../components/badges";
+import { PokeToggle, PokeImg } from "../components/pokedex";
+import { toast } from "../components/toast";
+import { confirmBox } from "../components/dialog";
 
 interface DexEntry {
   ndex: number;

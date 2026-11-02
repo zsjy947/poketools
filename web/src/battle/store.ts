@@ -7,7 +7,7 @@ import type { BattleSession, SessionSnapshot, SideSlot } from "../engine-adapter
 import type { PokemonSet } from "../engine-adapter";
 import type { FormatMeta } from "../data/formats";
 import { emptyTeam, exportShowdown, importShowdownDetailed } from "../team/showdown";
-import { toast } from "../components/shared";
+import { toast } from "../components/toast";
 import { storage } from "./storage";
 import type { StoredBattleRecord, StoredSettings } from "./storage";
 

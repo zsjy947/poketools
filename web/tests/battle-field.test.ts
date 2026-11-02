@@ -51,7 +51,7 @@ describe("场地状态推导", () => {
 });
 
 /* 招式槽位映射（濒死槽裁剪）回归：双打左槽阵亡时名字/招式不得错位 */
-import { liveMoveSlots } from "../src/battle/BattleView";
+import { liveMoveSlots } from "../src/battle/components/command-panel";
 import type { RequestChoice } from "../src/engine-adapter/session";
 
 const mon = (ident: string, active: boolean, cond: string) => ({
