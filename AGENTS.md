@@ -79,15 +79,17 @@ node tools/smoke.mjs               # 冒烟：web 构建产物静态托管逐资
   `data/constants.ts`（api.ts/index.ts re-export 维持旧路径）。
 - **设计总纲：`docs/ARCHITECTURE.md`**（技术栈/数据管线/Schema/API/伤害计算器/前端架构/设计决策记录/规范/Roadmap/变更历史）；
   数据缺口清单 `docs/DATA-GAPS.md`（三档：无源待补/curated 已知账/明确取舍）；操作手册 `docs/USER-MANUAL.md`；
-  未完成/延后/否决项 `plans/ROADMAP.md`（本地维护，不入 git）。
+  未完成/延后/否决项已随 2026-11-01 ROADMAP 清算收敛进 docs/（未完成项仅剩：APK 线受真机阻塞、
+  Reg M-D 上游跟踪 2026-12-02 复查、无源数据缺口见 DATA-GAPS.md；否决项见 ARCHITECTURE §7 与 BATTLE §6.1）。
   **文档命名规范：内容描述 + 全大写**。
 - **文档分层（2026-10-02 归档修订）**：`docs/` = 说明文档（入库），只沉淀**已实现**的功能结论
-  （架构/操作/设计决策；模拟对战功能说明 = `docs/BATTLE.md` 单文档；未实现/延后/否决项统一追踪于 `plans/ROADMAP.md`，本地不入 git）；
-  `plans/` = 计划文档（**gitignore 不入 git**），仅维护 `plans/ROADMAP.md`（未完成/延后/否决项）与
-  `plans/KEYSTORE.md`（签名 keystore 口令备忘，敏感信息不入 git）。
+  （架构/操作/设计决策；模拟对战功能说明 = `docs/BATTLE.md` 单文档；未实现/延后/否决项已于 2026-11-01 随 ROADMAP 清算收敛进 docs/）；
+  `plans/` = 计划文档（**gitignore 不入 git**），2026-11-01 ROADMAP 清算后仅存 `plans/KEYSTORE.md`
+  （签名 keystore 口令备忘，敏感信息不入 git）；活跃计划随清算收敛进 docs/。
   历史计划已随项目收官删除（2026-10-02：00/UPDATE-PLAN/CALC-FIX-PLAN/REFACTOR-PLAN/OPTIMIZE-PLAN；
   2026-10-08：MASTER-PLAN/PROGRESS/FOLLOWUP-PLAN-2026-10-04/CODE-REVIEW/REF-* 三件——终态统一改造已随
-  v1.0.0 完结，实现结论沉淀 docs/，未完成项在 plans/ROADMAP.md）。计划实现后按序把有效结论并入 docs/ 对应文档并随代码提交。
+  v1.0.0 完结，实现结论沉淀 docs/）。计划实现后按序把有效结论并入 docs/ 对应文档并随代码提交，
+  计划文档用完即删（2026-11-01 UI-FIXLIST/ROADMAP 均照此办理）。
 - 伤害计算器：`web/src/data/damage.ts`（唯一实现，对齐 @smogon/calc gen9 修正链）+
   `web/src/data/calc.ts`（机制 mega/Z/极巨/太晶互斥校验；batch 一次算双方×4 招）+
   `web/src/pages/CalcPage.tsx`（页面装配与状态；六组件与共享模型在 `web/src/pages/calc/`，

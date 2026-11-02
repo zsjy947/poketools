@@ -1,7 +1,7 @@
 # BATTLE —— 模拟对战功能说明
 
 > 模拟对战功能的**单文档**（架构 / 环境 / 数据 / 使用 / 过程记录）。原 battle/ 独立子应用已在 v1.0.0 终态统一时整体 `git mv` 并入 `web/`，本文路径已按终态更新；历史过程记录（§里程碑等）保留当时路径。
-> 历史规划（原 plans/00-项目规划文档.md，2026-10-02 归档删除）未完成项见 `plans/ROADMAP.md`（本地维护，不入 git）；
+> 历史规划（原 plans/00-项目规划文档.md，2026-10-02 归档删除）未完成项已于 2026-11-01 随 ROADMAP 清算收敛进 docs/（本文 §8）；
 > 本文只沉淀**已实现**结论，随里程碑更新。
 
 ## 文档信息
@@ -136,7 +136,7 @@ custom-protocol feature、NDK 交叉编译、gradle 手动链与签名流程）�
 
 - **Windows**：双击 `release/宝可梦模拟对战_0.1.0_x64-setup.exe`（NSIS 安装器）安装；卸载走系统「应用」或 Uninstall 入口；升级直接覆盖安装（同版本覆盖装即升级路径验证）。
 - **Android（arm64）**：`adb install -r release/宝可梦模拟对战_0.1.0_arm64.apk`；卸载 `adb uninstall <包名>` 或桌面长按卸载；升级沿用 `adb install -r`（同 keystore 签名才可覆盖）。
-- **演练记录（2026-10-02）**：本机无真机（adb devices 空）；已尝试模拟器路径——sdkmanager 下载 Android 30 x86_64 system image + emulator 并创建 AVD 成功，但**无硬件加速**（AEHD/WHPX hypervisor 均未安装，x86_64 镜像硬性要求加速）无法启动，启用需管理员权限改系统配置+重启，不属本会话可执行范围。安装/卸载/升级三步演练**环境受限未执行**——签名验证（apksigner verify v2+v3）与包结构完整性已核；真机演练待有设备环境时补做（Android 10 + 最新版各一台，原 plans/00 §6.3 M7 质量门禁；已列 plans/ROADMAP.md RM-15）。
+- **演练记录（2026-10-02）**：本机无真机（adb devices 空）；已尝试模拟器路径——sdkmanager 下载 Android 30 x86_64 system image + emulator 并创建 AVD 成功，但**无硬件加速**（AEHD/WHPX hypervisor 均未安装，x86_64 镜像硬性要求加速）无法启动，启用需管理员权限改系统配置+重启，不属本会话可执行范围。安装/卸载/升级三步演练**环境受限未执行**——签名验证（apksigner verify v2+v3）与包结构完整性已核；真机演练待有设备环境时补做（Android 10 + 最新版各一台，原 plans/00 §6.3 M7 质量门禁；真机到位后随 APK 线一并演练）。
 
 ## 4. 数据
 
