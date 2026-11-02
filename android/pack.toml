@@ -1,0 +1,26 @@
+# poketools 安卓构建配置 — 由共享工具链 android-pack (apx) 消费
+# 用法：python android/build_apk.py（首次构建先 --init-keystore）
+
+[app]
+app_dir = "android/app/src/main"
+min_sdk = 24
+target_sdk = 34
+
+[project]
+# 单一来源 = web/package.json（桌面 Tauri 同源），scripts/appversion.py 构建期读取
+version_ref = "scripts.appversion:__version__"
+
+[build]
+assets_hook = "android/prepare_assets.py"
+output = "android/output/poketools_v{version}.apk"
+build_dir = "android/output/build"
+# 资产版本守卫：meta.js 由资产钩子写入，防资产与代码版本混包
+version_marker_file = "android/app/src/main/assets/www/meta.js"
+version_marker = "window.__APP_VERSION__ = \"{version}\";"
+icon_source = "web/src-tauri/icon-source-1024.png"
+
+[sign]
+style = "fields"                      # 四字段口令风格：--init-keystore 显式生成
+props = "android/keystore/keystore.properties"
+alias = "poketools"
+dname = "CN=PokemonTools"

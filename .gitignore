@@ -36,6 +36,12 @@ Thumbs.db
 # --- release build output (exe + data, copy-to-run) ---
 /release/
 
+# --- android/ 安卓壳（apx 无 Gradle 流水线）构建期生成物 ---
+android/output/
+android/app/src/main/assets/www/
+android/keystore/
+android/*.keystore
+
 # --- web/ 唯一前端（Tauri 2 + React + TS）构建期生成物 ---
 web/public/
 web/src-tauri/target/
