@@ -6,22 +6,30 @@ import { importShowdown } from "../../team/showdown";
 import { Teams } from "../../engine-adapter";
 import { toast } from "../../components/shared";
 
-/** RM-07：记录 → Showdown Replay 文本（>start + >player packed team + 协议日志）。 */
-function exportReplayText(r: StoredBattleRecord): string {
+/** RM-07：记录 → Showdown Replay 文本（>start + >player packed team + 协议日志）。
+ *  种子字段损坏（JSON.parse 失败）时省略该字段并置 skippedSeed（F-16：导出不中断，
+ *  调用方 toast 提示跳过条数；无种子的回放退化为日志揭示模式）。 */
+function exportReplayText(r: StoredBattleRecord): { text: string; skippedSeed: boolean } {
   const packed = (t: string) => {
     const sets = importShowdown(t);
     return sets ? Teams.pack(sets) : "";
   };
+  let seed: number[] | undefined;
+  let skippedSeed = false;
+  if (r.seed) {
+    try {
+      seed = JSON.parse(r.seed) as number[];
+    } catch {
+      skippedSeed = true;
+    }
+  }
   const head = [
     `=== ${r.formatid} · ${new Date(r.playedAt).toLocaleString("zh-CN")} · ${r.winner} ===`,
-    `>start ${JSON.stringify({
-      formatid: r.formatid,
-      seed: r.seed ? (JSON.parse(r.seed) as number[]) : undefined,
-    })}`,
+    `>start ${JSON.stringify({ formatid: r.formatid, seed })}`,
     `>player p1 ${JSON.stringify({ name: r.p1Name, team: packed(r.p1Team) })}`,
     `>player p2 ${JSON.stringify({ name: r.p2Name, team: packed(r.p2Team) })}`,
   ];
-  return [...head, ...r.log].join("\n");
+  return { text: [...head, ...r.log].join("\n"), skippedSeed };
 }
 
 /** 对局记录（FR-10）：列表查看、日志回看（Showdown 式回合分组）、回放（M4 P3）、删除。 */
@@ -155,8 +163,14 @@ export function RecordsPage(): JSX.Element {
                   className="mini"
                   title="导出 Showdown Replay 文本（剪贴板）"
                   onClick={async () => {
-                    await navigator.clipboard?.writeText(exportReplayText(r));
-                    toast("Replay 文本已复制到剪贴板", "success");
+                    const { text, skippedSeed } = exportReplayText(r);
+                    await navigator.clipboard?.writeText(text);
+                    toast(
+                      skippedSeed
+                        ? "Replay 文本已复制（该记录种子损坏已省略：1 条，回放可能不确定）"
+                        : "Replay 文本已复制到剪贴板",
+                      skippedSeed ? "warning" : "success",
+                    );
                   }}
                 >
                   导出

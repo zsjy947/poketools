@@ -33,6 +33,8 @@ const KEY = {
   settings: "psb.settings.v1",
   records: "psb.records.v1",
   teamLibrary: "psb.teamLibrary.v1",
+  /** RM-23 一次性迁移标志：首次剪枝完成后置 true，此后读写两侧均不再剪（时钟回拨保护，F-03） */
+  recordsPruned: "psb.recordsPruned.v1",
 } as const;
 
 const DEFAULT_SETTINGS: StoredSettings = {
@@ -51,11 +53,14 @@ function readJson<T>(key: string): T | null {
   }
 }
 
-function writeJson(key: string, value: unknown): void {
+/** JSON 写入：true=成功；false=失败（配额不足等）——不再静默，由调用方显性提示（F-04）。 */
+function writeJson(key: string, value: unknown): boolean {
   try {
     localStorage.setItem(key, JSON.stringify(value));
+    return true;
   } catch {
-    // 存储满等场景静默失败（个人工具，数据可重建；不吞业务错误）
+    // 存储满等场景（个人工具，数据可重建；不吞业务错误）：返回 false 供调用方 toast
+    return false;
   }
 }
 
@@ -65,6 +70,13 @@ export interface StoredTeamEntry {
   name: string;
   savedAt: number;
   sets: unknown[];
+}
+
+/** addToLibrary 返回形状（F-04）：见 storage.addToLibrary 注释 */
+export interface AddToLibraryResult {
+  list: StoredTeamEntry[];
+  evicted: StoredTeamEntry[];
+  saved: boolean;
 }
 
 /** 记录写入：配额不足时逐条丢弃最旧记录重试（日志体积大，100 条可能超 5MB 配额） */
@@ -92,33 +104,45 @@ export function pruneLegacyRecords(records: StoredBattleRecord[]): StoredBattleR
   return records.filter((r) => !(r.playedAt < BATTLE_SUBSET_EPOCH));
 }
 
+/** 一次性迁移（F-03）：首次读写触发全量剪枝并置标志，此后读写两侧均不再剪——
+ *  系统时钟回拨到分界前时新记录不再被误删。旧格式记录仍零确认剪除（RM-23），
+ *  但只发生一次；标志写失败（配额等）则下次读写再补一次迁移，语义不变。 */
+function pruneLegacyOnce(records: StoredBattleRecord[]): StoredBattleRecord[] {
+  if (readJson<boolean>(KEY.recordsPruned) === true) return records; // 已迁移：不再剪
+  const pruned = pruneLegacyRecords(records);
+  writeJson(KEY.recordsPruned, true);
+  return pruned;
+}
+
 export const storage = {
   loadTeams: <T>(): T | null => readJson<T>(KEY.teams),
-  saveTeams: (v: unknown) => writeJson(KEY.teams, v),
+  saveTeams: (v: unknown): boolean => writeJson(KEY.teams, v),
   loadSettings: (): StoredSettings => ({
     ...DEFAULT_SETTINGS,
     ...readJson<Partial<StoredSettings>>(KEY.settings),
   }),
-  saveSettings: (v: StoredSettings) => writeJson(KEY.settings, v),
+  saveSettings: (v: StoredSettings): boolean => writeJson(KEY.settings, v),
   loadRecords: (): StoredBattleRecord[] => {
     const raw = readJson<StoredBattleRecord[]>(KEY.records) ?? [];
-    const pruned = pruneLegacyRecords(raw);
+    const pruned = pruneLegacyOnce(raw);
     if (pruned.length !== raw.length) {
       writeRecords(pruned); // 剪掉旧格式后回写，避免下次重复过滤
     }
     return pruned;
   },
-  saveRecords: (v: StoredBattleRecord[]) => writeRecords(pruneLegacyRecords(v)),
+  saveRecords: (v: StoredBattleRecord[]) => writeRecords(pruneLegacyOnce(v)),
   deleteRecord: (id: string): StoredBattleRecord[] => {
-    const next = pruneLegacyRecords(readJson<StoredBattleRecord[]>(KEY.records) ?? []).filter(
+    const next = pruneLegacyOnce(readJson<StoredBattleRecord[]>(KEY.records) ?? []).filter(
       (r) => r.id !== id,
     );
     return writeRecords(next);
   },
   // ---- 队伍库（RM-08）：多队伍命名存档 ----
   loadLibrary: (): StoredTeamEntry[] => readJson<StoredTeamEntry[]>(KEY.teamLibrary) ?? [],
-  saveLibrary: (v: StoredTeamEntry[]) => writeJson(KEY.teamLibrary, v),
-  addToLibrary: (name: string, sets: unknown[]): StoredTeamEntry[] => {
+  saveLibrary: (v: StoredTeamEntry[]): boolean => writeJson(KEY.teamLibrary, v),
+  /** 存入结果（F-04）：list=写后列表；evicted=触达 30 套上限被淘汰的最旧存档（调用方
+   *  toast 告知）；saved=false 表示持久化失败（内存态仍返回，调用方负责提示）。 */
+  addToLibrary: (name: string, sets: unknown[]): AddToLibraryResult => {
     const list = readJson<StoredTeamEntry[]>(KEY.teamLibrary) ?? [];
     const entry: StoredTeamEntry = {
       id: `lib-${Date.now()}`,
@@ -126,9 +150,11 @@ export const storage = {
       savedAt: Date.now(),
       sets,
     };
-    const next = [entry, ...list].slice(0, 30); // 上限 30 套防配额膨胀
-    writeJson(KEY.teamLibrary, next);
-    return next;
+    const merged = [entry, ...list];
+    const next = merged.slice(0, 30); // 上限 30 套防配额膨胀
+    const evicted = merged.slice(30);
+    const saved = writeJson(KEY.teamLibrary, next);
+    return { list: next, evicted, saved };
   },
   removeFromLibrary: (id: string): StoredTeamEntry[] => {
     const next = (readJson<StoredTeamEntry[]>(KEY.teamLibrary) ?? []).filter((e) => e.id !== id);

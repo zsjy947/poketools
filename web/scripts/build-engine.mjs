@@ -17,6 +17,7 @@
  * 用法：node scripts/build-engine.mjs（需先克隆上游仓库，路径见 scripts/config.json）
  */
 import { build } from "esbuild";
+import { execSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -323,4 +324,25 @@ await build({
 });
 
 fs.rmSync(tmpDir, { recursive: true, force: true });
-console.log("[build-engine] OK ->", path.join(outDir, "ps-engine.js"));
+
+// 引擎锁标记（F-11）：记录产物构建自的 showdown commit（优先取 checkout 实际 HEAD，
+// 无 git 时退回 config 锁定值）；scripts/verify-data.mjs 将标记与 config.json 的
+// showdownCommit 比对，不一致 = vendor 过期，需重新 checkout + 重跑本脚本。
+let engineCommit = cfg.showdownCommit;
+try {
+  engineCommit =
+    execSync("git rev-parse HEAD", {
+      cwd: PS,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim() || cfg.showdownCommit;
+} catch {
+  // checkout 无 .git（zip 解压等）：退回 config 锁定值
+}
+fs.writeFileSync(
+  path.join(outDir, "ps-engine.version.json"),
+  JSON.stringify({ showdownCommit: engineCommit, builtAt: new Date().toISOString() }, null, 2) +
+    "\n",
+  "utf8",
+);
+console.log("[build-engine] OK ->", path.join(outDir, "ps-engine.js"), `@ ${engineCommit}`);

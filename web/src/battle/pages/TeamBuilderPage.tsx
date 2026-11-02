@@ -19,6 +19,7 @@ import type { PokemonSet } from "../../engine-adapter";
 import { blankSet, exportShowdown, normalizeLevelInput, validateTeam } from "../../team/showdown";
 import type { ValidationResult } from "../../team/showdown";
 import { storage, type StoredTeamEntry } from "../storage";
+import { confirmBox, toast } from "../../components/shared";
 
 /**
  * 队伍构建器（FR-02~05）：A/B 双槽位；编辑器（等级/IV/EV/性格/特性/道具/招式/太晶）；
@@ -232,7 +233,15 @@ export function TeamBuilderPage(): JSX.Element {
                   onClick={() => {
                     const name = window.prompt("存入队伍库的名称：", `${format?.zhName ?? ""}队伍`);
                     if (name === null) return;
-                    setLibrary(storage.addToLibrary(name, team.sets));
+                    const r = storage.addToLibrary(name, team.sets);
+                    setLibrary(r.list);
+                    // 存储失败/满库淘汰不再静默（F-04）
+                    if (!r.saved) toast("存储失败（配额不足？）", "warning");
+                    else if (r.evicted.length > 0)
+                      toast(
+                        `队伍库已满 30 套，已淘汰最旧存档：「${r.evicted.map((e) => e.name).join("」「")}"`,
+                        "warning",
+                      );
                   }}
                 >
                   存入队伍库（当前 {slot} 阵营 {team.sets.length} 只）
@@ -256,7 +265,14 @@ export function TeamBuilderPage(): JSX.Element {
                   </button>
                   <button
                     className="mini danger"
-                    onClick={() => setLibrary(storage.removeFromLibrary(e.id))}
+                    onClick={() => {
+                      // 删除前确认（F-04，复用项目 confirmBox 原语）
+                      if (
+                        !confirmBox(`确定删除队伍库存档「${e.name}」？删除后不可恢复。`, "删除存档")
+                      )
+                        return;
+                      setLibrary(storage.removeFromLibrary(e.id));
+                    }}
                   >
                     删除
                   </button>

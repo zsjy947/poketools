@@ -54,6 +54,10 @@ from wiki_client import (  # 共享 52poke 客户端（缓存/批量 wikitext/�
 DB_PATH = ROOT / "data" / "poketools.db"
 CURATED = ROOT / "data" / "curated"
 
+# 行级解析丢弃计数（每表：字段类型不符等被 except 跳过的行数）——只观测不改变解析
+# 行为；main 的 TODO 报告输出环节汇总，>0 即列出告警，不再静默丢弃（F-12）。
+DROPPED_ROWS: Counter = Counter()
+
 BDSP = "brilliant-diamond-shining-pearl"
 
 # 52poke 使用官方新译名，PokeAPI CSV 部分招式仍是旧译名 → 别名映射
@@ -122,6 +126,7 @@ def parse_get_methods(wt: str) -> list[dict]:
         try:
             gen = int(pos.get(2, "0"))
         except ValueError:
+            DROPPED_ROWS["get_methods"] += 1
             continue
         code = (named.get("game") or pos.get(3, "")).strip().upper()
         mapped = GAME_CODES.get((gen, code))
@@ -392,6 +397,7 @@ def parse_za_learnlist(wt: str) -> dict:
         try:
             level = int(re.sub(r"[^0-9]", "", pos.get(1, "")) or 0)
         except ValueError:
+            DROPPED_ROWS["za_learnlist_level"] += 1
             continue
         mastery = re.sub(r"[^0-9]", "", named.get("plus", "") or "")
         move = clean_wt(pos.get(2, ""))
@@ -904,6 +910,9 @@ def main() -> None:
             "sup_weather_unmapped": sorted(unknown_sup_weather)}
     (CURATED / "TODO.json").write_text(json.dumps(todo, ensure_ascii=False, indent=1),
                                        encoding="utf-8")
+    if sum(DROPPED_ROWS.values()):
+        print("  !! 行级解析丢弃（表: 行数）：" +
+              ", ".join(f"{k}: {v}" for k, v in DROPPED_ROWS.items() if v))
 
     # ---- 6. merge into DB ----
     print("[6/6] merge into DB")

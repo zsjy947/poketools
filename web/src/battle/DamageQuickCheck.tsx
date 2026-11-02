@@ -9,6 +9,8 @@ import { koTextFromKo } from "../components/shared";
 type Phase = "idle" | "loading" | "done" | "error";
 
 interface SideRow {
+  /** 行归属方：镜像局（双方同一只）时两行 name 相同，React key 需 side 前缀去重（F-17） */
+  side: "p1" | "p2";
   name: string;
   results: Array<{ move: string; text: string; cls: string }>;
 }
@@ -105,10 +107,12 @@ export function DamageQuickCheck({
       );
       setRows([
         {
+          side: "p1",
           name: `${p1[0]!.name || p1[0]!.species} → ${p2[0]!.name || p2[0]!.species}`,
           results: atkRows,
         },
         {
+          side: "p2",
           name: `${p2[0]!.name || p2[0]!.species} → ${p1[0]!.name || p1[0]!.species}`,
           results: dfdRows,
         },
@@ -136,7 +140,7 @@ export function DamageQuickCheck({
           {phase === "error" && <span className="danger-text">速查失败：{err}</span>}
           {phase === "done" &&
             rows.map((side) => (
-              <div key={side.name} className="dqc-side">
+              <div key={`${side.side}-${side.name}`} className="dqc-side">
                 <div className="dqc-head">{side.name}</div>
                 {side.results.map((r, i) => (
                   <div key={i} className="dqc-line">

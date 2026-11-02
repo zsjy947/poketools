@@ -6,7 +6,8 @@ import { create } from "zustand";
 import type { BattleSession, SessionSnapshot, SideSlot } from "../engine-adapter";
 import type { PokemonSet } from "../engine-adapter";
 import type { FormatMeta } from "../data/formats";
-import { emptyTeam, exportShowdown, importShowdown } from "../team/showdown";
+import { emptyTeam, exportShowdown, importShowdownDetailed } from "../team/showdown";
+import { toast } from "../components/shared";
 import { storage } from "./storage";
 import type { StoredBattleRecord, StoredSettings } from "./storage";
 
@@ -76,11 +77,12 @@ export const useApp = create<AppState>((set, get) => ({
     }));
     const teams = { ...get().teams, [key]: { name: name ?? get().teams[key].name, sets: norm } };
     set({ teams });
-    storage.saveTeams(teams);
+    if (!storage.saveTeams(teams)) toast("存储失败（配额不足？）", "warning");
   },
   importTeam: (key, text) => {
-    const sets = importShowdown(text);
-    if (!sets) return false;
+    const r = importShowdownDetailed(text);
+    if (!r || r.sets.length === 0) return false;
+    const sets = r.sets;
     // 导入文本未标注等级时 PS 解析默认 100——低于 100 级的赛制（L50 系）归一为赛制默认等级；
     // 显式 L100 会被一并归一（PS 解析无法区分，50 级系赛制实际由引擎按 Flat Rules 强制 L50）
     const fmt = get().format;
@@ -89,6 +91,9 @@ export const useApp = create<AppState>((set, get) => ({
         ? sets.map((s) => (s.level === 100 ? { ...s, level: fmt.level } : s))
         : sets;
     get().setTeam(key, leveled);
+    // 部分行未识别：保留合法成员入队，失败行显性提示（F-01）
+    if (r.failedLines.length > 0)
+      toast(`导入完成：${sets.length} 只成功，${r.failedLines.length} 行未识别已跳过`, "warning");
     return true;
   },
   teamText: (key) => exportShowdown(get().teams[key].sets),
@@ -110,7 +115,7 @@ export const useApp = create<AppState>((set, get) => ({
   closeReplay: () => set({ replayRecord: null, page: "records" }),
   updateSettings: (patch) => {
     const settings = { ...get().settings, ...patch };
-    storage.saveSettings(settings);
+    if (!storage.saveSettings(settings)) toast("存储失败（配额不足？）", "warning");
     set({ settings });
   },
   togglePick: (side, index, max) => {

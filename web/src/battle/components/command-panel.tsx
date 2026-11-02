@@ -129,16 +129,9 @@ function MoveOrders(props: {
   // 引擎对濒死槽自动 pass（side.getChoiceIndex）：只渲染存活宝可梦对应的槽，
   // 多发指令会被拒（You sent more choices than unfainted Pokémon）
   const slots = liveMoveSlots(req);
-  if (slots.length === 0) {
-    return (
-      <div>
-        <p className="muted">没有可行动的宝可梦。</p>
-        <button className="primary" onClick={() => onChoose("pass")}>
-          跳过（换人）
-        </button>
-      </div>
-    );
-  }
+  // hooks 一律无条件调用：无可行动槽的早退转为渲染分支（原 return 位于 useState 之前
+  // 违反 hooks 规则；当前不可达纯防御，整理后行为不变）
+  const noSlots = slots.length === 0;
   // 目标选择取决于场地槽位数（双打残局单在场仍需指定目标），而非存活数
   const doubles = mons.filter((m) => m.active).length > 1;
   const [sel, setSel] = useState<Record<number, SlotChoice>>({});
@@ -197,6 +190,17 @@ function MoveOrders(props: {
     setSubmitted(true);
     onChoose(parts.join(", "));
   };
+
+  if (noSlots) {
+    return (
+      <div>
+        <p className="muted">没有可行动的宝可梦。</p>
+        <button className="primary" onClick={() => onChoose("pass")}>
+          跳过（换人）
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="orders">

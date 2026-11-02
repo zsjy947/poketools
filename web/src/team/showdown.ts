@@ -113,6 +113,22 @@ function zhMaps(): ZhMaps {
   return ZH_MAPS;
 }
 
+/** 物种段解析（F-01）：整段查表 →（含 " (" 时）外段、内段依次回退——覆盖中文习惯
+ *  「种名 (昵称)」（外段=物种）与 PS 标准「昵称 (种名)」（内段=物种）两种写法；
+ *  全部未命中返回 undefined，由调用方保留原文（不得产出 undefined 污染下游）。 */
+function resolveZhSpecies(sp: string, m: ZhMaps): string | undefined {
+  const whole = m.species.get(sp);
+  if (whole) return whole;
+  const at = sp.indexOf(" (");
+  if (at < 0) return undefined;
+  const outer = sp.slice(0, at).trim();
+  const inner = sp
+    .slice(at + 2)
+    .replace(/\)$/, "")
+    .trim();
+  return m.species.get(outer) ?? m.species.get(inner);
+}
+
 /** 行级预处理：物种/道具/招式/特性/太晶属性/性格/性别 中文名 → 引擎可解析形式。 */
 export function preprocessChineseTeam(text: string): string {
   if (!/[一-鿿]/.test(text)) return text;
@@ -143,28 +159,53 @@ export function preprocessChineseTeam(text: string): string {
       const at = t.indexOf(" @ ");
       const sp = t.slice(0, at).trim();
       const item = t.slice(at + 3).trim();
-      return m.species.get(sp) + " @ " + (m.items.get(item) ?? item);
+      return (resolveZhSpecies(sp, m) ?? sp) + " @ " + (m.items.get(item) ?? item);
     }
     if (t && !/^[A-Za-z0-9(]/.test(t)) {
-      return m.species.get(t) ?? t;
+      return resolveZhSpecies(t, m) ?? t;
     }
     return line;
   });
   return lines.join("\n");
 }
 
-export function importShowdown(text: string): PokemonSet[] | null {
+/** importShowdownDetailed 返回形状（F-01）：sets = 物种真实存在的合法成员；
+ *  failedLines = 未识别成员的物种行原文（预处理后文本），不入队、供调用方提示跳过。 */
+export interface ImportShowdownResult {
+  sets: PokemonSet[];
+  failedLines: string[];
+}
+
+/** 详细版导入：逐成员区分成功/失败。返回 null 表示整体无法解析；
+ *  部分失败时保留合法成员并把失败行收集进 failedLines（不再整队混入垃圾条目）。 */
+export function importShowdownDetailed(text: string): ImportShowdownResult | null {
   const trimmed = preprocessChineseTeam(text.trim());
   if (!trimmed) return null;
   try {
     const parsed = Teams.import(trimmed);
     if (!parsed || parsed.length === 0) return null;
-    const sets = parsed.map((s) => ({ ...s, name: "" }));
-    const real = sets.filter((s) => Dex.forFormat("gen9").species.get(s.species).exists);
-    return real.length > 0 ? sets : null;
+    // PokePaste 按空行分块、块首行即物种行——失败成员回溯对应块的首行原文
+    const blocks = trimmed
+      .split(/\n\s*\n/)
+      .map((b) => b.trim())
+      .filter(Boolean);
+    const dex = Dex.forFormat("gen9");
+    const sets: PokemonSet[] = [];
+    const failedLines: string[] = [];
+    for (let i = 0; i < parsed.length; i++) {
+      const s = parsed[i]!;
+      if (dex.species.get(s.species).exists) sets.push({ ...s, name: "" });
+      else failedLines.push(((blocks[i] ?? s.species) as string).split("\n")[0]!.trim());
+    }
+    return { sets, failedLines };
   } catch {
     return null;
   }
+}
+
+export function importShowdown(text: string): PokemonSet[] | null {
+  const r = importShowdownDetailed(text);
+  return r && r.sets.length > 0 ? r.sets : null;
 }
 
 /** sets → Showdown 队伍文本（导出）。昵称不再产出（统一以中文种名示人）。 */
