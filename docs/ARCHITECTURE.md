@@ -58,12 +58,35 @@ build_db 重建采用**连接内就地 DROP 重建**：Windows 下直接删除 `
   （等价性验证做序无关规范化）；字典整数键迭代序差异用 Map（插入序）规避；
   字符串排序是码点序（localeCompare 不等价）；表缓存行不可变异（detail 挂 ability_list 曾污染缓存）。
 
-### 安卓端（暂缓，已迁移 archived/android 分支）
+### 安卓端（WebView 壳 + apx 流水线，2026-11-03 恢复）
 
-poketools 安卓壳（`apk/` Tauri 2 壳 + `build_apk_assets.py` 资产组装）与 battle 双端壳
-（`battle/src-tauri/`，Windows NSIS exe + Android APK 共用，含 Rust 工具链锁定）
-已于 2026-10-02 自 main 移除，完整工作区迁移至 `archived/android` 分支；待桌面 exe（含统一化嵌入）完善后在该分支恢复。
-main 保留纯前端能力：本地模式降级（api.js，无后端自动切本地引擎）与 ≤768 竖屏适配层；变更历史见 §10。
+`android/` 目录 = 零 Gradle 的 WebView 壳工程，构建流水线由共享工具链
+`<工作区>/archived/android-pack`（apx：aapt2 → javac → d8 → 合 dex → zipalign →
+apksigner）提供；旧 Tauri 2 壳线（`apk/`）已于 2026-10-02 迁 `archived/android` 分支存档，
+其 js/local 本地引擎架构已被现 TS 单实现取代，不再恢复。
+
+- **构建**：`python android/build_apk.py`（首次先 `--selfcheck` 工具链自检、
+  `--init-keystore` 生成签名密钥）。产物 `android/output/poketools_v{version}.apk`
+  （v1.0.2 实测 114.2MB ≤120MB 门禁；资产 ~197MB，JSON 分片 deflate 收益大）。
+- **壳实现**（`MainActivity.java`）：虚拟 https 域 `appassets.poketools` 经
+  `shouldInterceptRequest` 从 `assets/www/` 服务——不用 file://（前端 fetch 分片
+  在 file:// 被 WebView 拒绝）；fetch/localStorage/ES module（严格 MIME）全兼容。
+  竖屏锁定、零权限（运行时完全离线）、返回键 = 前端弹层 → hash 历史 → 退出。
+- **资产钩子**（`prepare_assets.py`）：`pnpm build` → 拷贝 `web/dist` 到
+  `assets/www/`，**排除** `sprites/{ani,ani-back,ani-shiny}`（对战动画 GIF ~445MB
+  不进包；battle/sprites.ts 候选链自动回退 `sprites/dex` 静态像）；写 `meta.js`
+  版本标记（pack.toml version_marker 守卫消费）。
+- **版本单一来源** = `web/package.json`（`scripts/appversion.py` 构建期读取，
+  与桌面 Tauri 同源）；versionCode = 主×10000+次×100+修订（apx 公式）。
+- **共享工具链改造**（android-pack 24b9bf6）：资产合入由 aapt2 `-A` 改为
+  zipfile 逐条目——Windows 版 aapt2 打不开非 ASCII 文件名（curry_咖喱 SWSH.png
+  等 56 项中文名资产首撞）；条目名恒 UTF-8，压缩策略镜像原 `-A`。
+- **移动端 UI**：mobile.css 竖屏断点层重写对齐统一壳（详见下）；旧 Vue 栈
+  残留（.el-*）清除；底部 Tab 由 App.tsx 常驻渲染、游戏分区 JSX 级互斥
+  （不依赖 `:has()`，兼容旧 WebView）。
+- **模拟器冒烟**：AEHD 驱动安装（管理员跑一次
+  `D:\Toolsndroid-sdk\extras\google\Android_Emulator_Hypervisor_Driver\silent_install.bat`）
+  后 `emulator -avd test30`（1080×2340 竖屏 Pixel 5）即可 adb install 截图巡检。
 
 ### PokeAPI（离线整包 CSV）
 
@@ -381,11 +404,21 @@ web/
 battle 增强 T1-T8 与主应用工程债全部实现（见 §10 2026-11-01 条目），否决备查清单见 §7 与 BATTLE.md §6.1。
 
 剩余未完成项（均阻塞于外部条件，无活跃计划）：
-- **APK 线**（安卓端）：阻塞于真机（无设备、模拟器无硬件加速）；完整工作区在 `archived/android` 分支，恢复方案已存档。
+- **APK 线**（安卓端）：2026-11-03 恢复并出包（`android/` apx 壳，见「安卓端」节）；余项 = 真机/模拟器实装冒烟（模拟器待 AEHD 驱动一次管理员安装）与对战动画精灵的移动端取舍复查。
 - **Reg M-D 跟踪**：2026-12-02 Reg M-C 赛季结束后复查上游引擎（2026-10-31 枚举确认 M-D 尚未发布）。
 - **数据类缺口**：以 `DATA-GAPS.md` 为准（无源待补与变体建模两项仍开放）。
 
 ## §10 变更历史
+- **2026-11-03 安卓线恢复（android 分支）**：`android/` WebView 壳（虚拟 https 域
+  shouldInterceptRequest / 竖屏锁定 / 零权限 / 返回键 hash 兼容）+ apx 流水线出包
+  114.2MB ≤120MB 门禁（apksigner v2 验证）；android-pack 资产合入改 zipfile
+  （修 Windows aapt2 非 ASCII 文件名失败）；移动端竖屏层重写对齐统一壳：App.tsx
+  底部 Tab（游戏分区 JSX 互斥）、mobile.css 重写（底部 rail/三层吸顶/双列图鉴/
+  EV 卡片流/筛选抽屉/计算器手风琴/pkt-modal 约束，.el-* Vue 残留清除）、
+  **修复壳样式回归**（全局基线与 .app-* 壳规则原寄居 battle.css 随对战 chunk
+  才加载 → 首屏与 post-battle 样式漂移，归位 app/styles.css 并瘦身 battle.css
+  153 行）；浏览器 393×851 竖屏巡检六分区（首页/游戏中心/图鉴/详情/计算器/对战
+  + 特化页探针全绿，中文名资产 URL 加载验证）；vitest 204 绿。
 - **2026-11-01 ROADMAP 清算批（RM-04/05/06/07/08/09/12/13/16/19/21/22/23/24 全量执行）**：
   battle 分区懒加载（主 chunk 8.6MB→321KB，RM-13）；赛制选择吸底「下一步」（RM-22）；预览页
   伤害速查（RM-06，calcBatch 复用）；队伍库（RM-08）；VGC 计时训练（RM-05，指令超时自动待机）；

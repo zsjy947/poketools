@@ -97,19 +97,22 @@ export function App(): JSX.Element {
           {visited.current.battle ? <BattleSectionBoundary /> : null}
         </div>
       </main>
-      {/* 移动端底部 Tab（桌面由 mobile.css 隐藏；≤768px 时替代顶栏导航） */}
-      <nav className="tab-bar">
-        {NAV.map((n) => (
-          <button
-            key={n.id}
-            className={"tab-item" + (n.on ? " active" : "")}
-            onClick={() => navigate(`#/${n.id}`)}
-          >
-            <span className="tab-ic">{TAB_ICONS[n.id] ?? "•"}</span>
-            <span className="tab-label">{n.label}</span>
-          </button>
-        ))}
-      </nav>
+      {/* 移动端底部 Tab（桌面由 mobile.css 隐藏；≤768px 时替代顶栏导航。
+       *  游戏分区由窄栏 rail 承担导航，JSX 级互斥——不依赖 :has()（旧 WebView 无此选择器）） */}
+      {route.name !== "game" && (
+        <nav className="tab-bar">
+          {NAV.map((n) => (
+            <button
+              key={n.id}
+              className={"tab-item" + (n.on ? " active" : "")}
+              onClick={() => navigate(`#/${n.id}`)}
+            >
+              <span className="tab-ic">{TAB_ICONS[n.id] ?? "•"}</span>
+              <span className="tab-label">{n.label}</span>
+            </button>
+          ))}
+        </nav>
+      )}
     </div>
   );
 }
