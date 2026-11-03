@@ -81,9 +81,12 @@ apksigner）提供；旧 Tauri 2 壳线（`apk/`）已于 2026-10-02 迁 `archiv
 - **共享工具链改造**（android-pack 24b9bf6）：资产合入由 aapt2 `-A` 改为
   zipfile 逐条目——Windows 版 aapt2 打不开非 ASCII 文件名（curry_咖喱 SWSH.png
   等 56 项中文名资产首撞）；条目名恒 UTF-8，压缩策略镜像原 `-A`。
-- **移动端 UI**：mobile.css 竖屏断点层重写对齐统一壳（详见下）；旧 Vue 栈
-  残留（.el-*）清除；底部 Tab 由 App.tsx 常驻渲染、游戏分区 JSX 级互斥
-  （不依赖 `:has()`，兼容旧 WebView）。
+- **移动端 UI（2026-11-03 重设计为原生分支）**：`useIsMobile()`（≤768）驱动页面级
+  JSX 分支（`components/mobiledex.tsx` + `mobile-native.css`，`mx-` 前缀）——图鉴列表
+  改列表行模式（吸顶搜索/pills/筛选抽屉/吸底批量条）、游戏中心全宽横幅卡；桌面渲染
+  路径零改动。老内核兼容三件套：vite target es2020（Chromium 83 无 `??=`）、
+  color-mix `@supports` 回退、导航互斥不依赖 `:has()`；实机（模拟器 WebView 83）
+  全功能验证。mobile.css 保留为通用竖屏断点层（详情/特化页/计算器）。
 - **模拟器冒烟**：AEHD 驱动安装（管理员跑一次
   `D:\Toolsndroid-sdk\extras\google\Android_Emulator_Hypervisor_Driver\silent_install.bat`）
   后 `emulator -avd test30`（1080×2340 竖屏 Pixel 5）即可 adb install 截图巡检。
@@ -409,6 +412,11 @@ battle 增强 T1-T8 与主应用工程债全部实现（见 §10 2026-11-01 条�
 - **数据类缺口**：以 `DATA-GAPS.md` 为准（无源待补与变体建模两项仍开放）。
 
 ## §10 变更历史
+- **2026-11-03 手机端原生 UI 重设计（android 分支）**：图鉴列表/游戏中心换原生布局分支
+  （列表行 + 吸顶工具 + 底部抽屉 + 批量操作条 / 全宽横幅卡，桌面零改动）；实机冒烟三修：
+  vite es2020（老 WebView `??=` SyntaxError 致对战分区加载失败）、type-badge color-mix
+  @supports 回退（老内核徽章失色）、Tab 聚焦框无条件 outline 重置（:focus-visible 老内核
+  不识别致整条规则丢弃）；vitest 204 绿。
 - **2026-11-03 安卓线恢复（android 分支）**：`android/` WebView 壳（虚拟 https 域
   shouldInterceptRequest / 竖屏锁定 / 零权限 / 返回键 hash 兼容）+ apx 流水线出包
   114.2MB ≤120MB 门禁（apksigner v2 验证）；android-pack 资产合入改 zipfile

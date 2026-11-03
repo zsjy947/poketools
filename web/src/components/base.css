@@ -246,9 +246,15 @@ body {
   flex-shrink: 0;
 }
 .type-badge.plain {
-  background: color-mix(in srgb, var(--t) 82%, #fff);
+  /* 老内核（Chromium<111 无 color-mix）回退纯色底；@supports 内新内核用淡色底 */
+  background: var(--t);
   width: 70px;
   font-size: 11.5px;
+}
+@supports (background: color-mix(in srgb, red, blue)) {
+  .type-badge.plain {
+    background: color-mix(in srgb, var(--t) 82%, #fff);
+  }
 }
 .type-badge .ti,
 .mcls-badge .ti {

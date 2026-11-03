@@ -256,9 +256,12 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 4px 6px;
   font-size: 11px;
   color: #98a1b3;
+}
+.mx-sub .type-badge {
+  margin-left: 2px;
 }
 .mx-badges {
   display: inline-flex;
