@@ -8,6 +8,8 @@ import "./components/features.css";
 import "./components/calc.css";
 import "./components/widgets.css";
 import "./components/mobile.css";
+/* 手机原生布局层（mx-，useIsMobile 分支渲染的 DOM 专属样式） */
+import "./components/mobile-native.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { App } from "./app/App";

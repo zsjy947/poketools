@@ -1,4 +1,5 @@
-/* 地区图鉴页（自 Vue dex.js 迁移）：卡片 + 精灵球捕捉交互 + 批量操作 + 进度环 */
+/* 地区图鉴页（自 Vue dex.js 迁移）：卡片 + 精灵球捕捉交互 + 批量操作 + 进度环。
+ * 手机端（≤768）走 mx- 原生分支：列表行 + 吸顶搜索 + 筛选抽屉 + 批量操作条。 */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { apiGet, apiSend, TYPE_LIST } from "../data/api";
 import { stateCounts } from "../state/user";
@@ -7,6 +8,8 @@ import { TypeBadge } from "../components/badges";
 import { PokeToggle, PokeImg } from "../components/pokedex";
 import { toast } from "../components/toast";
 import { confirmBox } from "../components/dialog";
+import { useIsMobile } from "../lib/useIsMobile";
+import { MxBulkBar, MxHead, MxRow, MxSheet, MxTypeGrid } from "../components/mobiledex";
 
 interface DexEntry {
   ndex: number;
@@ -31,6 +34,9 @@ export function DexPage({ gameId }: { gameId: string }): JSX.Element {
   const [raw, setRaw] = useState<DexEntry[]>([]);
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [markMode, setMarkMode] = useState(false);
+  const [sel, setSel] = useState<Set<number>>(new Set());
+  const [sheet, setSheet] = useState(false);
+  const isMobile = useIsMobile();
 
   /* 记录滚动 + 挂载时恢复（数据渲染后再恢复一次，防高度不足被钳在顶部） */
   useEffect(() => {
@@ -158,9 +164,9 @@ export function DexPage({ gameId }: { gameId: string }): JSX.Element {
     }
   }
 
-  async function bulkSet(ids: number[], caught: boolean, label: string): Promise<void> {
+  async function bulkSet(ids: number[], caught: boolean, label: string): Promise<boolean> {
     const ok = confirmBox(`${label}：将影响 ${ids.length} 只宝可梦（同游戏各图鉴将自动同步）`);
-    if (!ok) return;
+    if (!ok) return false;
     try {
       await apiSend("POST", "/api/state/bulk", {
         profile_id: 1,
@@ -172,8 +178,10 @@ export function DexPage({ gameId }: { gameId: string }): JSX.Element {
       setRaw(data.entries as DexEntry[]);
       refreshCounts();
       toast(caught ? `已标记 ${ids.length} 只` : `已清除 ${ids.length} 只标记`, "success");
+      return true;
     } catch (err) {
       toast("批量操作失败：" + (err as Error).message, "error");
+      return false;
     }
   }
 
@@ -183,6 +191,169 @@ export function DexPage({ gameId }: { gameId: string }): JSX.Element {
       return;
     }
     location.hash = `#/pokemon/${e.species_id}?game=${gameId}&dex=${dexId}`;
+  }
+
+  /* ===== 手机端（≤768）原生分支：列表行 + 吸顶工具区 + 筛选抽屉 + 批量操作条 ===== */
+  if (isMobile) {
+    const bulkSelected = async (caught: boolean) => {
+      const done = await bulkSet([...sel], caught, caught ? "标记所选" : "清除所选");
+      if (done) {
+        setSel(new Set());
+        setMarkMode(false);
+      }
+    };
+    return (
+      <div className="pkt-page mx-page">
+        <MxHead
+          title={(game ? game.name_zh : "") + " 图鉴追踪"}
+          caught={counts[dexId] || 0}
+          total={curDex ? curDex.total : 0}
+        />
+        <div className="mx-tools">
+          <div className="mx-tools-row">
+            <input
+              className="mx-search"
+              placeholder="搜索名称/编号…"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+            />
+            <button
+              className={"mx-btn" + (markMode ? " dark" : " ghost")}
+              onClick={() => {
+                setMarkMode((v) => !v);
+                setSel(new Set());
+              }}
+            >
+              {markMode ? "退出" : "批量"}
+            </button>
+          </div>
+          {game && game.dexes.length > 1 && (
+            <div className="mx-pills">
+              {game.dexes.map((d) => (
+                <button
+                  key={d.id}
+                  className={"mx-pill" + (d.id === dexId ? " on" : "")}
+                  onClick={() => {
+                    setDexId(d.id);
+                    setSel(new Set());
+                  }}
+                >
+                  {d.name_zh}
+                  <span className="mx-pill-cnt">
+                    {counts[d.id] || 0}/{d.total}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+          <div className="mx-filters">
+            <div className="mx-seg">
+              {(
+                [
+                  ["all", "全部"],
+                  ["caught", "已捕捉"],
+                  ["uncaught", "未捕捉"],
+                ] as const
+              ).map(([v, t]) => (
+                <button
+                  key={v}
+                  className={filter === v ? " on" : ""}
+                  onClick={() => setFilter(v)}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+            <button
+              className={"mx-btn ghost" + (typeFilter ? " on" : "")}
+              onClick={() => setSheet(true)}
+            >
+              {typeFilter ? "属性·" + typeFilter : "属性筛选"}
+            </button>
+          </div>
+          <div className="mx-count">共 {entries.length} 只</div>
+        </div>
+        <div className={"mx-list" + (loading ? " loading" : "")}>
+          {entries.map((e) => (
+            <MxRow
+              key={e.species_id}
+              e={e}
+              markMode={markMode}
+              checked={sel.has(e.species_id)}
+              onToggle={() => void toggle(e)}
+              onClick={() => {
+                if (markMode) {
+                  setSel((s) => {
+                    const n = new Set(s);
+                    if (n.has(e.species_id)) n.delete(e.species_id);
+                    else n.add(e.species_id);
+                    return n;
+                  });
+                  return;
+                }
+                location.hash = `#/pokemon/${e.species_id}?game=${gameId}&dex=${dexId}`;
+              }}
+            />
+          ))}
+          {!loading && !entries.length && <div className="mx-empty">没有符合条件的宝可梦</div>}
+        </div>
+        <MxSheet open={sheet} onClose={() => setSheet(false)} title="属性筛选与整本操作">
+          <MxTypeGrid value={typeFilter} onPick={setTypeFilter} />
+          <div className="mx-sheet-div" />
+          <div className="mx-sheet-btns">
+            <button
+              className="mx-btn"
+              onClick={() => {
+                setSheet(false);
+                void bulkSet(
+                  raw.map((e) => e.species_id),
+                  true,
+                  "标记整本图鉴",
+                );
+              }}
+            >
+              标记整本（{curDex ? curDex.total : 0}）
+            </button>
+            <button
+              className="mx-btn danger"
+              onClick={() => {
+                const n = counts[dexId] || 0;
+                if (!n) {
+                  toast("当前图鉴没有已标记的宝可梦");
+                  return;
+                }
+                setSheet(false);
+                void bulkSet(
+                  raw.filter((e) => e.caught).map((e) => e.species_id),
+                  false,
+                  `清空整本图鉴（已捕捉 ${n}/${curDex ? curDex.total : 0}）`,
+                );
+              }}
+            >
+              清空整本图鉴
+            </button>
+          </div>
+        </MxSheet>
+        {markMode && (
+          <MxBulkBar
+            selected={sel.size}
+            total={entries.length}
+            onSelectAll={() =>
+              setSel((s) =>
+                s.size === entries.length
+                  ? new Set()
+                  : new Set(entries.map((e) => e.species_id)),
+              )
+            }
+            onBulk={(c) => void bulkSelected(c)}
+            onDone={() => {
+              setMarkMode(false);
+              setSel(new Set());
+            }}
+          />
+        )}
+      </div>
+    );
   }
 
   return (

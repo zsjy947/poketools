@@ -9,6 +9,14 @@ import { TypeBadge } from "../components/badges";
 import { PokeToggle, PokeImg } from "../components/pokedex";
 import { toast } from "../components/toast";
 import { confirmBox } from "../components/dialog";
+import { useIsMobile } from "../lib/useIsMobile";
+import {
+  MxBulkBar,
+  MxHead,
+  MxRow,
+  MxSheet,
+  MxTypeGrid,
+} from "../components/mobiledex";
 
 interface NatEntry {
   ndex: number;
@@ -42,6 +50,9 @@ export function NationalDexPage(): JSX.Element {
   const [genFilter, setGenFilter] = useState("");
   const [q, setQ] = useState("");
   const [markMode, setMarkMode] = useState(false);
+  const [sel, setSel] = useState<Set<number>>(new Set());
+  const [sheet, setSheet] = useState(false);
+  const isMobile = useIsMobile();
 
   const refreshCounts = useCallback(() => setCounts(stateCounts()), []);
 
@@ -108,9 +119,9 @@ export function NationalDexPage(): JSX.Element {
     }
   }
 
-  async function bulkSet(ids: number[], caught: boolean, label: string): Promise<void> {
+  async function bulkSet(ids: number[], caught: boolean, label: string): Promise<boolean> {
     const ok = confirmBox(`${label}：将影响 ${ids.length} 只宝可梦（各地区图鉴将自动同步）`);
-    if (!ok) return;
+    if (!ok) return false;
     try {
       await apiSend("POST", "/api/state/bulk", {
         profile_id: 1,
@@ -122,8 +133,10 @@ export function NationalDexPage(): JSX.Element {
       setRaw(data.entries as NatEntry[]);
       refreshCounts();
       toast(caught ? `已标记 ${ids.length} 只` : `已清除 ${ids.length} 只标记`, "success");
+      return true;
     } catch (err) {
       toast("批量操作失败：" + (err as Error).message, "error");
+      return false;
     }
   }
 
@@ -133,6 +146,188 @@ export function NationalDexPage(): JSX.Element {
       return;
     }
     location.hash = `#/pokemon/${e.species_id}?national=1`;
+  }
+
+  /* ===== 手机端（≤768）原生分支：同地区图鉴列表模式 + 世代/形态筛选进抽屉 ===== */
+  if (isMobile) {
+    const bulkSelected = async (caught: boolean) => {
+      const done = await bulkSet([...sel], caught, caught ? "标记所选" : "清除所选");
+      if (done) {
+        setSel(new Set());
+        setMarkMode(false);
+      }
+    };
+    const badgeList = (Object.keys(BADGE_ZH) as FormBadge[]).map((b) => ({
+      k: b,
+      label: BADGE_ZH[b],
+    }));
+    return (
+      <div className="pkt-page mx-page">
+        <button className="back-btn mx-back" onClick={() => (location.hash = "#/home")}>
+          ← 返回首页
+        </button>
+        <MxHead
+          title="全国图鉴 · 收集追踪"
+          caught={caughtCount}
+          total={total}
+          hint="与各地区图鉴自动同步"
+        />
+        <div className="mx-tools">
+          <div className="mx-tools-row">
+            <input
+              className="mx-search"
+              placeholder="搜索名称/编号…"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+            />
+            <button
+              className={"mx-btn" + (markMode ? " dark" : " ghost")}
+              onClick={() => {
+                setMarkMode((v) => !v);
+                setSel(new Set());
+              }}
+            >
+              {markMode ? "退出" : "批量"}
+            </button>
+          </div>
+          <div className="mx-filters">
+            <div className="mx-seg">
+              {(
+                [
+                  ["all", "全部"],
+                  ["caught", "已收集"],
+                  ["uncaught", "未收集"],
+                ] as const
+              ).map(([v, t]) => (
+                <button
+                  key={v}
+                  className={filter === v ? " on" : ""}
+                  onClick={() => setFilter(v)}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+            <button
+              className={"mx-btn ghost" + (typeFilter || badgeFilter || genFilter ? " on" : "")}
+              onClick={() => setSheet(true)}
+            >
+              {typeFilter || badgeFilter || genFilter
+                ? "筛选·" +
+                  (typeFilter || badgeFilter
+                    ? BADGE_ZH[badgeFilter as FormBadge] || typeFilter
+                    : "第" + GEN_ZH[Number(genFilter) - 1] + "世代")
+                : "更多筛选"}
+            </button>
+          </div>
+          <div className="mx-count">共 {entries.length} 只</div>
+        </div>
+        <div className={"mx-list" + (loading ? " loading" : "")}>
+          {entries.map((e) => (
+            <MxRow
+              key={e.species_id}
+              e={e}
+              markMode={markMode}
+              checked={sel.has(e.species_id)}
+              badges={e.badges.map((b) => ({ k: b, label: BADGE_ZH[b] }))}
+              onToggle={() => void toggle(e)}
+              onClick={() => {
+                if (markMode) {
+                  setSel((s) => {
+                    const n = new Set(s);
+                    if (n.has(e.species_id)) n.delete(e.species_id);
+                    else n.add(e.species_id);
+                    return n;
+                  });
+                  return;
+                }
+                location.hash = `#/pokemon/${e.species_id}?national=1`;
+              }}
+            />
+          ))}
+          {!loading && !entries.length && <div className="mx-empty">没有符合条件的宝可梦</div>}
+        </div>
+        <MxSheet open={sheet} onClose={() => setSheet(false)} title="筛选与整本操作">
+          <div className="mx-sheet-lbl">属性</div>
+          <MxTypeGrid value={typeFilter} onPick={setTypeFilter} />
+          <div className="mx-sheet-lbl">形态类别</div>
+          <div className="mx-chip-grid">
+            {badgeList.map((b) => (
+              <button
+                key={b.k}
+                className={"mx-type-chip plain" + (badgeFilter === b.k ? " on" : "")}
+                onClick={() => setBadgeFilter(badgeFilter === b.k ? "" : b.k)}
+              >
+                {b.label}
+              </button>
+            ))}
+          </div>
+          <div className="mx-sheet-lbl">世代</div>
+          <div className="mx-chip-grid">
+            {GEN_ZH.map((g, i) => (
+              <button
+                key={g}
+                className={"mx-type-chip plain" + (genFilter === String(i + 1) ? " on" : "")}
+                onClick={() => setGenFilter(genFilter === String(i + 1) ? "" : String(i + 1))}
+              >
+                第{g}世代
+              </button>
+            ))}
+          </div>
+          <div className="mx-sheet-div" />
+          <div className="mx-sheet-btns">
+            <button
+              className="mx-btn"
+              onClick={() => {
+                setSheet(false);
+                void bulkSet(
+                  raw.map((e) => e.species_id),
+                  true,
+                  "标记全部物种",
+                );
+              }}
+            >
+              标记全部物种（{total}）
+            </button>
+            <button
+              className="mx-btn danger"
+              onClick={() => {
+                if (!caughtCount) {
+                  toast("当前没有已收集的物种");
+                  return;
+                }
+                setSheet(false);
+                void bulkSet(
+                  raw.filter((e) => e.caught).map((e) => e.species_id),
+                  false,
+                  `清空全部收集（已收集 ${caughtCount}/${total}）`,
+                );
+              }}
+            >
+              清空全部收集
+            </button>
+          </div>
+        </MxSheet>
+        {markMode && (
+          <MxBulkBar
+            selected={sel.size}
+            total={entries.length}
+            onSelectAll={() =>
+              setSel((s) =>
+                s.size === entries.length
+                  ? new Set()
+                  : new Set(entries.map((e) => e.species_id)),
+              )
+            }
+            onBulk={(c) => void bulkSelected(c)}
+            onDone={() => {
+              setMarkMode(false);
+              setSel(new Set());
+            }}
+          />
+        )}
+      </div>
+    );
   }
 
   return (
