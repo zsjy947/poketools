@@ -15,18 +15,18 @@
     height: 100vh;
     height: 100dvh;
   }
-  .app-header {
+  .app-shell .app-header {
     padding: 8px 12px;
     gap: 10px;
   }
-  .app-nav,
-  .app-version {
+  .app-shell .app-nav,
+  .app-shell .app-version {
     display: none;
   }
-  .app-title {
+  .app-shell .app-title {
     font-size: 15px;
   }
-  .app-main {
+  .app-shell .app-main {
     flex: 1;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
@@ -70,6 +70,13 @@
   .tab-item:hover {
     border-color: transparent;
     border-bottom-color: transparent;
+  }
+  /* 触屏点击后的 focus 高亮框在移动端是噪音；无条件关掉——:focus-visible 在
+     老 WebView（Chromium<86）是未知伪类会导致整条规则被丢弃（2026-11-03 实机）。
+     底部导航有金色高亮承担激活态视觉，键盘焦点样式损失可接受。 */
+  .tab-item:focus,
+  .rail-item:focus {
+    outline: none;
   }
   .tab-item.active {
     color: var(--accent);

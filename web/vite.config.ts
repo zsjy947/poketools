@@ -10,7 +10,9 @@ export default defineConfig({
     strictPort: true,
   },
   build: {
-    target: "es2022",
+    // es2020：安卓老 WebView 兼容下限（AOSP 镜像 Chromium 83 不支持 ??= 等 ES2021 语法，
+    // 2026-11-03 实机冒烟修正）；桌面 WebView2 常青内核向后兼容，无回退代价
+    target: "es2020",
   },
   test: {
     coverage: {
