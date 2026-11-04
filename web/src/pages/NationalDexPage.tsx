@@ -10,13 +10,7 @@ import { PokeToggle, PokeImg } from "../components/pokedex";
 import { toast } from "../components/toast";
 import { confirmBox } from "../components/dialog";
 import { useIsMobile } from "../lib/useIsMobile";
-import {
-  MxBulkBar,
-  MxHead,
-  MxRow,
-  MxSheet,
-  MxTypeGrid,
-} from "../components/mobiledex";
+import { MxBulkBar, MxHead, MxRow, MxSheet, MxTypeGrid } from "../components/mobiledex";
 
 interface NatEntry {
   ndex: number;
@@ -199,11 +193,7 @@ export function NationalDexPage(): JSX.Element {
                   ["uncaught", "未收集"],
                 ] as const
               ).map(([v, t]) => (
-                <button
-                  key={v}
-                  className={filter === v ? " on" : ""}
-                  onClick={() => setFilter(v)}
-                >
+                <button key={v} className={filter === v ? " on" : ""} onClick={() => setFilter(v)}>
                   {t}
                 </button>
               ))}
@@ -219,8 +209,8 @@ export function NationalDexPage(): JSX.Element {
                     : "第" + GEN_ZH[Number(genFilter) - 1] + "世代")
                 : "更多筛选"}
             </button>
+            <span className="mx-count">共 {entries.length} 只</span>
           </div>
-          <div className="mx-count">共 {entries.length} 只</div>
         </div>
         <div className={"mx-list" + (loading ? " loading" : "")}>
           {entries.map((e) => (
@@ -314,9 +304,7 @@ export function NationalDexPage(): JSX.Element {
             total={entries.length}
             onSelectAll={() =>
               setSel((s) =>
-                s.size === entries.length
-                  ? new Set()
-                  : new Set(entries.map((e) => e.species_id)),
+                s.size === entries.length ? new Set() : new Set(entries.map((e) => e.species_id)),
               )
             }
             onBulk={(c) => void bulkSelected(c)}

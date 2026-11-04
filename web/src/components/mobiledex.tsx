@@ -70,11 +70,10 @@ export function MxRow({
       onClick={onClick}
     >
       <span className="mx-ndex">#{String(e.ndex).padStart(4, "0")}</span>
-      <PokeImg formId={e.form_id} size={52} />
+      <PokeImg formId={e.form_id} size={44} />
       <span className="mx-info">
         <span className="mx-name">{e.name_zh}</span>
         <span className="mx-sub">
-          {e.name_en}
           <TypeBadge types={e.types} plain />
           {badges && badges.length > 0 && (
             <span className="mx-badges">

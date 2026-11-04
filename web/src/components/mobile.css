@@ -83,8 +83,14 @@
     border-bottom-color: var(--accent);
   }
   .tab-ic {
-    font-size: 19px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     line-height: 1.15;
+  }
+  .tab-ic .mono-icon {
+    width: 22px;
+    height: 22px;
   }
   .tab-label {
     font-size: 11px;
@@ -151,19 +157,22 @@
     max-width: 60px;
   }
 
-  /* ---------- 三层吸顶：返回钮 → 分段锚点 → 形态条 ---------- */
+  /* ---------- 三层吸顶：返回钮 → 分段锚点 → 形态条 ----------
+     返回钮做成整条不透明带（定高 44px，与 mx-tools 的 top 严格对齐）：
+     若只给按钮自身上白底，按钮下方与工具区之间的空隙会透出滚过的列表行 */
   .back-btn {
     position: sticky;
     top: 0;
     z-index: 60;
+    height: 44px;
+    width: 100%;
+    margin: 0;
+    padding: 0 12px;
+    justify-content: flex-start;
     background: #fff;
+    border: none;
+    border-radius: 0;
     box-shadow: 0 1px 6px rgba(31, 42, 68, 0.08);
-  }
-  .mobile-sec-chips {
-    top: 40px;
-  }
-  .form-strip {
-    top: 88px;
   }
   .page-head {
     flex-wrap: nowrap;
@@ -231,14 +240,12 @@
     padding: 8px 13px;
   }
 
-  /* ---------- 详情页：纵向 + 形态吸顶 + 分段锚点 ---------- */
+  /* ---------- 详情页：纵向 + 形态条（不吸顶，置于页首；分段锚点吸顶已按手机端反馈移除） ---------- */
   .form-strip {
-    position: sticky;
-    top: 88px;
-    z-index: 55;
-    background: #eef1f6;
-    padding: 8px 2px 10px;
-    margin: -2px 0 10px;
+    position: static;
+    background: transparent;
+    padding: 4px 2px 6px;
+    margin: 0 0 8px;
     flex-wrap: nowrap;
     overflow-x: auto;
     scrollbar-width: none;
@@ -263,39 +270,7 @@
     width: 148px;
     height: 148px;
   }
-  .mobile-sec-chips {
-    display: flex;
-    gap: 8px;
-    position: sticky;
-    top: 40px;
-    z-index: 50;
-    background: #eef1f6;
-    padding: 6px 0 8px;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .mobile-sec-chips::-webkit-scrollbar {
-    display: none;
-  }
-  .mobile-sec-chips .chip-sec {
-    flex-shrink: 0;
-    padding: 7px 15px;
-    border-radius: 16px;
-    background: #fff;
-    border: 1px solid #dfe3ec;
-    font-size: 13.5px;
-    cursor: pointer;
-  }
-  .mobile-sec-chips .chip-sec.on {
-    background: #409eff;
-    border-color: #409eff;
-    color: #fff;
-  }
-  /* 锚点滚动让位三层吸顶（返回钮 40 + 锚点条 48 + 形态条 ~100） */
-  .block[id^="sec-"],
-  .detail-head {
-    scroll-margin-top: 196px;
-  }
+  /* 手机端已移除「基本/能力/获取/招式」分段吸顶与形态吸顶——无锚点让位需求 */
   .evo-wrap {
     margin: 0 -12px;
     padding: 4px 12px;
@@ -439,6 +414,45 @@
   .fp-row {
     flex-wrap: wrap;
   }
+  /* 能力值表六列在 360px 屏会算出负宽（滑条列被压没，努力值滑不动）——
+     全列收窄让 1fr 滑条保有 ~100px 可拖宽度 */
+  .stat-table .st-head,
+  .stat-table .st-row {
+    grid-template-columns: 30px 38px minmax(56px, 1fr) 30px 44px 46px;
+    gap: 4px;
+  }
+  .stat-table .st-head {
+    font-size: 10.5px;
+  }
+  .stat-table .st-k {
+    font-size: 11.5px;
+  }
+  .stat-table .st-base {
+    font-size: 12px;
+  }
+  .stat-table .st-ev {
+    font-size: 11px;
+  }
+  .stat-table .st-actual {
+    font-size: 12.5px;
+  }
+  .stat-table .st-boost {
+    height: 28px;
+    padding: 2px 2px;
+    font-size: 11.5px;
+  }
+  /* 单方状态并入宝可梦配置（仅手机端）：SideEditor 内嵌的 SideStatusCol 容器 */
+  .side-status-block {
+    margin-top: 12px;
+    border-top: 1px dashed #dfe4ee;
+    padding-top: 10px;
+  }
+  .side-status-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #556;
+    margin: 0 0 8px;
+  }
 
   /* ---------- 弹窗：窄屏宽度约束（pkt-modal 体系） ---------- */
   .pkt-modal {
@@ -447,6 +461,7 @@
   .pkt-modal-body {
     max-height: 70vh;
   }
+  /* 模拟对战的窄屏规则放 battle.css 末尾（分区 chunk 晚于全局样式装载，写这里会被压掉） */
 }
 
 @media (max-width: 480px) {
@@ -510,7 +525,6 @@
 /* 桌面：隐藏仅移动端元素（手风琴/分段锚点/筛选钮在 >768 不出现） */
 @media (min-width: 769px) {
   .tab-bar,
-  .mobile-sec-chips,
   .ev-cards,
   .filter-toggle,
   .filter-mask {

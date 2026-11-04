@@ -6,6 +6,7 @@ export function FieldPanel({
   field,
   fieldSet,
   sides,
+  compact,
 }: {
   field: any;
   fieldSet: (patch: any) => void;
@@ -13,6 +14,8 @@ export function FieldPanel({
     atk: { side: SideState; set: (which: "A" | "D", patch: any) => void };
     dfd: { side: SideState; set: (which: "A" | "D", patch: any) => void };
   };
+  /** 手机端：只保留中列全局场地区（单方状态已并入各自宝可梦配置，避免三栏混排分不清归属） */
+  compact?: boolean;
 }): JSX.Element {
   const WEATHER4 = [
     { v: "sun", t: "晴天" },
@@ -46,7 +49,7 @@ export function FieldPanel({
   return (
     <div className="block field-panel">
       <div className="fp-grid5">
-        <SideStatusCol side={sides.atk.side} which="A" set={sides.atk.set} />
+        {!compact && <SideStatusCol side={sides.atk.side} which="A" set={sides.atk.set} />}
         <div className="fp-col fp-center">
           <div className="fp-row">
             <div className="fp-seg fp-grow">
@@ -141,7 +144,7 @@ export function FieldPanel({
             </button>
           </div>
         </div>
-        <SideStatusCol side={sides.dfd.side} which="D" set={sides.dfd.set} />
+        {!compact && <SideStatusCol side={sides.dfd.side} which="D" set={sides.dfd.set} />}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 /* SideEditor（自 CalcPage.tsx 机械抽出，纯位移） */
-import { useMemo } from "react";
+import { useMemo, type ReactNode } from "react";
 import { STAT_KEYS, STAT_ZH, TYPE_LIST } from "../../data/api";
 import { BATTLE_ITEM_IDS } from "../../data/battle-items";
 import { toast } from "../../components/toast";
@@ -25,6 +25,7 @@ export function SideEditor({
   natures,
   setSide,
   zMeta,
+  sideStatus,
 }: {
   side: SideState;
   which: "A" | "D";
@@ -38,6 +39,8 @@ export function SideEditor({
     patch: Partial<SideState> | ((s: SideState) => Partial<SideState>),
   ) => void;
   zMeta: any;
+  /** 手机端内嵌的本侧状态区（灼伤/墙壁/钉子等）；桌面端场地三栏已含，不传 */
+  sideStatus?: ReactNode;
 }): JSX.Element {
   const ownAbilities = side.forms.find((x) => x.id === side.formId)?.ability_list || [];
   /* U21：Z 招式点亮时自动装备的纯晶名（道具框锁标记用） */
@@ -427,6 +430,14 @@ export function SideEditor({
         ))}
         <div className="ev-left">剩余努力值 {evLeft}/510</div>
       </div>
+
+      {/* 手机端：本侧状态区并入宝可梦配置（桌面端走场地区三栏，不渲染） */}
+      {sideStatus && (
+        <div className="side-status-block">
+          <h4 className="side-status-title">状态与场地效果（本侧）</h4>
+          {sideStatus}
+        </div>
+      )}
     </div>
   );
 }

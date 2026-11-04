@@ -789,3 +789,98 @@
     justify-content: center;
   }
 }
+
+/* ---- 手机端招式列表（mvx-：DetailPage MovesMobileList；桌面端不渲染无 DOM） ---- */
+.mvx-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.mvx-item {
+  border: 1px solid #e4e8f0;
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+}
+.mvx-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  min-width: 0;
+}
+/* 左：来源标记（等级/编号/回忆/进化/教授/蛋） */
+.mvx-src {
+  flex: 0 0 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+}
+.mvx-src .tm-chip {
+  margin: 1px 0;
+  font-size: 11px;
+  padding: 1px 7px;
+}
+.mvx-lv {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #4a576e;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.mvx-mastery {
+  font-size: 10px;
+  color: #b06a1a;
+  background: #fdf3e7;
+  border-radius: 4px;
+  padding: 0 4px;
+  white-space: nowrap;
+}
+/* 中：名称 + 小字数值 */
+.mvx-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.mvx-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #23292f;
+}
+.mvx-meta {
+  font-size: 11px;
+  color: #98a1b3;
+  font-variant-numeric: tabular-nums;
+}
+.mvx-chain {
+  align-self: flex-start;
+  margin-top: 2px;
+  border: 1px solid #cfe0fb;
+  background: #f0f6ff;
+  color: #2a7be4;
+  border-radius: 8px;
+  font-size: 11.5px;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+/* 右：属性 + 分类徽章（定宽不挤压，防窄屏相交） */
+.mvx-badges {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.mvx-badges .type-badge.plain {
+  width: 62px;
+  font-size: 11px;
+  margin: 0;
+}
+.mvx-badges .mcls-badge {
+  min-width: 46px;
+  font-size: 11px;
+  padding: 1px 5px;
+}

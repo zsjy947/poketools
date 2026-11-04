@@ -1,6 +1,5 @@
 /* 宝可梦模拟对战分区样式（分区专属；全局基线与统一壳样式见 ../app/styles.css） */
 
-
 /* 赛制大类分组（FR-01）：全宽分段头 + 单双打子组标题 + 折行网格 */
 .format-section {
   margin-bottom: 14px;
@@ -1743,4 +1742,105 @@ button.mini.on {
   border-color: #e5484d;
   color: #e5484d;
   font-weight: 700;
+}
+
+/* ===== 手机端竖屏适配（≤768；本文件随对战 chunk 晚于全局样式装载，
+   规则置于末尾即可压过上方桌面布局；桌面 >768 不受影响） ===== */
+@media (max-width: 768px) {
+  /* 队伍编辑：左列表 + 右编辑器 → 上下堆叠 */
+  .team-layout {
+    grid-template-columns: 1fr;
+  }
+  .mon-editor {
+    padding: 12px;
+  }
+  /* 字段卡两列保留；能力值四列收窄防溢出（56/56/90/90 在手机算出负宽） */
+  .ed-stats .st-head,
+  .ed-stats .st-line {
+    grid-template-columns: 34px 40px 1fr 1fr;
+    gap: 6px;
+  }
+  .ed-stats input {
+    width: 100%;
+    min-width: 0;
+    padding: 5px 4px;
+  }
+  /* 上阵预览：双阵营并排 → 单栏；卡内显式五行布局（名字+顺位钮 / 属性 / 道具 / 招式）
+     防窄屏挤压错排与多行折行 */
+  .preview-grid {
+    grid-template-columns: 1fr;
+  }
+  .preview-mon {
+    grid-template-columns: minmax(0, 1fr) auto;
+    row-gap: 3px;
+  }
+  .preview-mon .name {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .preview-mon .pick-ops {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .preview-mon .pv-types,
+  .preview-mon .pv-item,
+  .preview-mon .pv-moves {
+    grid-column: 1 / -1;
+    white-space: normal;
+  }
+  .preview-mon .pv-types {
+    grid-row: 2;
+  }
+  .preview-mon .pv-item {
+    grid-row: 3;
+  }
+  .preview-mon .pv-moves {
+    grid-row: 4;
+  }
+  /* 赛制宫格：手机双列（桌面 minmax(300px) 在 360px 只能单列） */
+  .format-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .format-card {
+    padding: 12px;
+  }
+  /* 吸底「下一步」避开全局底部 Tab 栏（58px 高 + safe-area） */
+  .page-home .home-actions {
+    bottom: calc(74px + env(safe-area-inset-bottom));
+  }
+  /* 对战页：一屏三栏 → 纵向流：场地+日志在上（先看战局），双指令面板依次排下 */
+  .page-battle {
+    height: auto;
+    min-height: 0;
+  }
+  .battle-stage {
+    display: flex;
+    flex-direction: column;
+  }
+  .stage-mid {
+    order: 0;
+  }
+  .stage-side-p1 {
+    order: 1;
+  }
+  .stage-side-p2 {
+    order: 2;
+  }
+  .stage-side {
+    min-height: 0;
+  }
+  .stage-field {
+    min-height: 300px;
+  }
+  .side-panel {
+    overflow-y: visible;
+    flex: none;
+  }
+  .battle-log {
+    flex: none;
+  }
+  .log-scroll {
+    max-height: 42vh;
+  }
 }

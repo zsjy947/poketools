@@ -63,14 +63,16 @@
   color: #98a1b3;
 }
 
-/* ---------- 吸顶工具区：搜索 / 图鉴 pills / 状态分段 / 筛选 ---------- */
+/* ---------- 吸顶工具区：搜索 / 图鉴 pills / 状态分段 / 筛选 ----------
+   top 与吸顶返回钮带高（mobile.css .back-btn = 44px）严格对齐；下缘用 padding
+   不用 margin——margin 不铺底色，滚过的列表行会从缝里透出来 */
 .mx-tools {
   position: sticky;
   top: 44px; /* 让位于吸顶返回钮 */
   z-index: 45;
   background: #eef1f6;
-  padding-bottom: 6px;
-  margin-bottom: 4px;
+  padding-bottom: 8px;
+  margin-bottom: 0;
 }
 .mx-tools-row {
   display: flex;
@@ -132,7 +134,7 @@
 .mx-pills {
   display: flex;
   gap: 8px;
-  margin-top: 8px;
+  margin-top: 6px;
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -165,8 +167,15 @@
 .mx-filters {
   display: flex;
   gap: 8px;
-  margin-top: 8px;
+  margin-top: 6px;
   align-items: center;
+}
+/* 计数并入筛选行右端（不再独占一行，压缩吸顶总高） */
+.mx-count {
+  margin: 0 0 0 auto;
+  font-size: 11.5px;
+  color: #98a1b3;
+  white-space: nowrap;
 }
 .mx-seg {
   display: inline-flex;
@@ -192,17 +201,12 @@
   color: #fff;
   font-weight: 700;
 }
-.mx-count {
-  margin-top: 6px;
-  font-size: 11.5px;
-  color: #98a1b3;
-}
 
 /* ---------- 列表行 ---------- */
 .mx-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 .mx-list.loading {
   opacity: 0.55;
@@ -214,12 +218,12 @@
 .mx-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  min-height: 64px;
+  gap: 8px;
+  min-height: 54px;
   background: #fff;
   border: 1px solid #e4e8f0;
-  border-radius: 14px;
-  padding: 6px 12px;
+  border-radius: 12px;
+  padding: 5px 10px;
   cursor: pointer;
 }
 .mx-row.markable {
@@ -230,15 +234,15 @@
   background: #f0f5fd;
 }
 .mx-ndex {
-  width: 40px;
+  width: 36px;
   flex-shrink: 0;
-  font-size: 11px;
+  font-size: 10px;
   color: #98a1b3;
   font-variant-numeric: tabular-nums;
 }
 .mx-row .poke-img {
-  width: 52px;
-  height: 52px;
+  width: 44px;
+  height: 44px;
   flex-shrink: 0;
 }
 .mx-info {
@@ -246,12 +250,13 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
 }
 .mx-name {
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 700;
 }
+/* 第二行固定为属性徽章（英文名已按手机端反馈移除，行内不再多行换行） */
 .mx-sub {
   display: flex;
   align-items: center;

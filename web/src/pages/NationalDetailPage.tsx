@@ -11,15 +11,6 @@ import { TypeBadge } from "../components/badges";
 import { PokeImg, EvBadges, FlavorList, AbilityList, EvoChain } from "../components/pokedex";
 import { formDisplayName } from "../components/format";
 
-/** 移动端分段锚点（基本/种族值/进化·特性/相性/图鉴介绍） */
-const SEC_CHIPS = [
-  { key: "basic", label: "基本", sel: "#nd-basic" },
-  { key: "stats", label: "种族值", sel: "#nd-stats" },
-  { key: "evo", label: "进化·特性", sel: "#nd-evo" },
-  { key: "eff", label: "相性", sel: "#nd-eff" },
-  { key: "flavor", label: "图鉴介绍", sel: "#nd-flavor" },
-];
-
 const FLAVOR_PREVIEW = 8;
 
 export function NationalDetailPage({
@@ -35,7 +26,6 @@ export function NationalDetailPage({
   const [natures, setNatures] = useState<any[]>([]);
   const [effMode, setEffMode] = useState<"defend" | "attack">("defend");
   const [flavorOpen, setFlavorOpen] = useState(false);
-  const [activeSec, setActiveSec] = useState("basic");
 
   /* 能力值计算器（national 版：与 DetailPage 同公式，独立实现避免联动地区页） */
   const [sc, setSc] = useState({
@@ -206,12 +196,6 @@ export function NationalDetailPage({
     return "good";
   }
 
-  function scrollSec(sec: (typeof SEC_CHIPS)[number]): void {
-    setActiveSec(sec.key);
-    const el = document.querySelector(sec.sel);
-    if (el) el.scrollIntoView({ behavior: "instant" as ScrollBehavior, block: "start" });
-  }
-
   if (loading && !d)
     return (
       <div className="pkt-page pkt-loading" style={{ padding: 60, textAlign: "center" }}>
@@ -242,20 +226,7 @@ export function NationalDetailPage({
         <span className="pkt-chip">全国图鉴</span>
       </div>
 
-      {/* 移动端分段锚点 */}
-      <div className="mobile-sec-chips">
-        {SEC_CHIPS.map((sec) => (
-          <span
-            key={sec.key}
-            className={"chip-sec" + (activeSec === sec.key ? " on" : "")}
-            onClick={() => scrollSec(sec)}
-          >
-            {sec.label}
-          </span>
-        ))}
-      </div>
-
-      {/* 形态选择 */}
+      {/* 形态选择（手机端不吸顶，按用户反馈直接置顶） */}
       {d.forms.length > 1 && (
         <div className="form-strip">
           {d.forms.map((f: any) => (

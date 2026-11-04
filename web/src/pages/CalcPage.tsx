@@ -18,6 +18,8 @@ import {
 import { SummaryCard } from "./calc/SummaryCard";
 import { SideEditor } from "./calc/SideEditor";
 import { FieldPanel } from "./calc/FieldPanel";
+import { SideStatusCol } from "./calc/SideStatusCol";
+import { useIsMobile } from "../lib/useIsMobile";
 
 export function CalcPage(): JSX.Element {
   const [A, setA] = useState<SideState>(blankSide);
@@ -44,6 +46,8 @@ export function CalcPage(): JSX.Element {
   });
   /* U10：首入 loading 占位（至首个 batch 返回） */
   const [firstLoading, setFirstLoading] = useState(true);
+  /* 手机端：单方场地/状态并入各自宝可梦配置（场地区只留全局列），能力值表收窄 */
+  const isMobile = useIsMobile();
 
   const recalcTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const recalcToken = useRef(0);
@@ -433,6 +437,9 @@ export function CalcPage(): JSX.Element {
                   natures={natures}
                   setSide={sideSet}
                   zMeta={zMeta}
+                  sideStatus={
+                    isMobile ? <SideStatusCol side={A} which="A" set={sideSet} /> : undefined
+                  }
                 />
               </div>
             </div>
@@ -452,12 +459,15 @@ export function CalcPage(): JSX.Element {
                   natures={natures}
                   setSide={sideSet}
                   zMeta={zMeta}
+                  sideStatus={
+                    isMobile ? <SideStatusCol side={D} which="D" set={sideSet} /> : undefined
+                  }
                 />
               </div>
             </div>
             <div className={"acc-item field-wrap" + (acc.F ? " open" : "")}>
               <div className="acc-head" onClick={() => setAcc({ ...acc, F: !acc.F })}>
-                <span>场地与状态</span>
+                <span>{isMobile ? "场地（全局）" : "场地与状态"}</span>
                 <span className="acc-arrow">›</span>
               </div>
               <div className="acc-body">
@@ -465,6 +475,7 @@ export function CalcPage(): JSX.Element {
                   field={field}
                   fieldSet={fieldSet}
                   sides={{ atk: { side: A, set: sideSet }, dfd: { side: D, set: sideSet } }}
+                  compact={isMobile}
                 />
               </div>
             </div>

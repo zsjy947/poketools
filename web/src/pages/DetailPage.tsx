@@ -14,13 +14,22 @@ import {
 } from "../components/pokedex";
 import { formDisplayName } from "../components/format";
 import { Modal } from "../components/dialog";
+import { useIsMobile } from "../lib/useIsMobile";
 
-const SEC_CHIPS = [
-  { key: "basic", label: "基本", sel: "#sec-basic" },
-  { key: "ability", label: "能力", sel: "#sec-ability" },
-  { key: "get", label: "获取", sel: "#sec-get" },
-  { key: "moves", label: "招式", sel: "#sec-moves" },
-];
+/* ---- 招式表等级格语义：进化/回忆/等级；整组无等级递进时 Lv.1 记为「—」 ---- */
+
+/** 整组升级招式无等级递进（全部 Lv.1/0——进化型整组可随时回忆，如剑盾九尾）：
+ *  此时 Lv.1 属「无等级限制」而非起始等级，统一显示横杠避免误导读级路线 */
+function levelGroupNoProgression(rows: any[]): boolean {
+  return rows.length > 0 && rows.every((r) => !r.recall && (r.level == null || r.level <= 1));
+}
+function levelCellText(row: any, noProg: boolean): string {
+  if (row.recall) return "回忆";
+  if (row.evolution) return "进化";
+  if (row.level == null) return "—"; /* Z-A 等无等级语义 */
+  if (row.level <= 1 && noProg) return "—";
+  return `Lv.${row.level}`;
+}
 
 export function DetailPage({
   speciesId,
@@ -39,9 +48,9 @@ export function DetailPage({
   const [tab, setTab] = useState("level");
   const [natures, setNatures] = useState<any[]>([]);
   const [effMode, setEffMode] = useState<"defend" | "attack">("defend");
-  const [activeSec, setActiveSec] = useState("basic");
   const [game, setGameRow] = useState<GameRow | null>(null);
   const [expandedTm, setExpandedTm] = useState<Record<number, boolean>>({});
+  const isMobile = useIsMobile();
 
   /* 生蛋链弹层 */
   const [chainDlg, setChainDlg] = useState(false);
@@ -243,6 +252,11 @@ export function DetailPage({
     return out;
   }, [baseStats, sc, natureMult]);
   const evSum = useMemo(() => Object.values(sc.ev).reduce((a, b) => a + b, 0), [sc.ev]);
+  /* 当前招式 tab 是否整组无等级递进（决定 Lv.1 是否显示为「—」） */
+  const levelNoProg = useMemo(
+    () => (moves ? levelGroupNoProgression(moves.groups[tab] || []) : false),
+    [moves, tab],
+  );
 
   function rangeOf(k: string): string {
     const b = baseStats[k];
@@ -284,11 +298,6 @@ export function DetailPage({
     if (!id) return;
     const dex = backParams.current.get("dex");
     location.hash = `#/pokemon/${id}?game=${gameId}` + (dex ? `&dex=${dex}` : "");
-  }
-  function scrollSec(sec: (typeof SEC_CHIPS)[number]): void {
-    setActiveSec(sec.key);
-    const el = document.querySelector(sec.sel);
-    if (el) el.scrollIntoView({ behavior: "instant" as ScrollBehavior, block: "start" });
   }
   async function showChains(row: any): Promise<void> {
     setChainDlg(true);
@@ -348,22 +357,7 @@ export function DetailPage({
         {game && <span className="pkt-chip">{game.name_zh}</span>}
       </div>
 
-      {/* 移动端分段锚点（national 模式裁掉 获取/招式 两区） */}
-      <div className="mobile-sec-chips">
-        {SEC_CHIPS.filter((sec) => !national || sec.key === "basic" || sec.key === "ability").map(
-          (sec) => (
-            <span
-              key={sec.key}
-              className={"chip-sec" + (activeSec === sec.key ? " on" : "")}
-              onClick={() => scrollSec(sec)}
-            >
-              {sec.label}
-            </span>
-          ),
-        )}
-      </div>
-
-      {/* 形态选择 */}
+      {/* 形态选择（手机端不吸顶，按用户反馈直接置顶） */}
       {d.forms.length > 1 && (
         <div className="form-strip">
           {d.forms.map((f: any) => (
@@ -644,131 +638,135 @@ export function DetailPage({
                       </button>
                     ))}
                   </div>
-                  <div className="pkt-table-wrap" style={{ maxHeight: 480, overflow: "auto" }}>
-                    <table className="pkt-table pkt-table-sm">
-                      <thead>
-                        <tr>
-                          {(tab === "level" || tab === "evolution-recall") && (
-                            <th style={{ width: 96 }}>等级</th>
-                          )}
-                          {tab === "machine" && <th style={{ width: 140 }}>编号</th>}
-                          <th style={{ minWidth: 120 }}>招式</th>
-                          <th style={{ width: 96 }}>属性</th>
-                          <th style={{ width: 76 }}>分类</th>
-                          <th style={{ width: 66 }}>威力</th>
-                          <th style={{ width: 66 }}>命中</th>
-                          <th style={{ width: 60 }}>PP</th>
-                          <th style={{ width: 70 }}>优先度</th>
-                          {tab === "egg" && <th style={{ width: 120 }}>生蛋链</th>}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {(moves.groups[tab] || []).map((row: any) => (
-                          <Fragment key={row.move_id}>
-                            <tr>
-                              {(tab === "level" || tab === "evolution-recall") && (
-                                <td>
-                                  {row.recall ? (
-                                    <span className="mastery">回忆</span>
-                                  ) : row.evolution ? (
-                                    <span className="mastery">进化</span>
-                                  ) : (
-                                    <>
-                                      Lv.{row.level}
-                                      {row.mastery != null && (
-                                        <span className="mastery">精通+{row.mastery}</span>
-                                      )}
-                                    </>
-                                  )}
-                                </td>
-                              )}
-                              {tab === "machine" && (
-                                <td>
-                                  {/* 点击编号 chip 展开/收起获取方式（展开内容在下方独立行，招式行保持不动） */}
-                                  {(row.tm || []).map((t2: any) => (
-                                    <span
-                                      key={t2.number}
-                                      className={
-                                        "pkt-chip tm-chip " +
-                                        (t2.kind === "TR" ? "warning" : "info")
-                                      }
-                                      style={{ marginRight: 4 }}
-                                      onClick={() =>
-                                        setExpandedTm((s) => ({
-                                          ...s,
-                                          [row.move_id]: !s[row.move_id],
-                                        }))
-                                      }
-                                    >
-                                      {t2.kind}
-                                      {String(t2.number).padStart(3, "0")}
-                                    </span>
-                                  ))}
-                                </td>
-                              )}
-                              <td>{row.name_zh}</td>
-                              <td>
-                                <TypeBadge types={row.type_zh} />
-                              </td>
-                              <td>
-                                <MoveClassBadge cls={row.damage_class} />
-                              </td>
-                              <td>{row.power ?? "—"}</td>
-                              <td>{row.accuracy ?? "—"}</td>
-                              <td>{row.pp}</td>
-                              <td>{row.priority > 0 ? "+" + row.priority : row.priority}</td>
-                              {tab === "egg" && (
-                                <td>
-                                  <button
-                                    className="pkt-btn pkt-btn-sm primary-plain"
-                                    onClick={() => void showChains(row)}
-                                  >
-                                    计算繁殖链
-                                  </button>
-                                </td>
-                              )}
-                            </tr>
-                            {tab === "machine" && expandedTm[row.move_id] && (
-                              <tr className="tm-how-row">
-                                <td colSpan={8}>
-                                  <div className="tm-how-list">
-                                    {(row.tm || []).map((t2: any) => (
-                                      <div key={t2.number} className="tm-how">
-                                        <b>
-                                          {t2.kind} {String(t2.number).padStart(3, "0")}
-                                        </b>
-                                        {t2.how && (
-                                          <>
-                                            <br />
-                                            获取：{t2.how}
-                                          </>
-                                        )}
-                                        {t2.materials && (
-                                          <>
-                                            <br />
-                                            制作材料：{t2.materials}
-                                          </>
-                                        )}
-                                        {!t2.how && !t2.materials && (
-                                          <>
-                                            <br />
-                                            获取方式待补充
-                                          </>
-                                        )}
-                                      </div>
-                                    ))}
-                                    {!(row.tm || []).length && (
-                                      <div className="tm-how">获取方式待补充</div>
-                                    )}
-                                  </div>
-                                </td>
-                              </tr>
+                  {isMobile ? (
+                    /* 手机端三段式招式行：左=来源（等级/编号/回忆…）中=名称+小字数值 右=属性+分类 */
+                    <MovesMobileList
+                      rows={moves.groups[tab] || []}
+                      tab={tab}
+                      levelNoProg={levelNoProg}
+                      expandedTm={expandedTm}
+                      onToggleTm={(mid) => setExpandedTm((s) => ({ ...s, [mid]: !s[mid] }))}
+                      onChain={(row) => void showChains(row)}
+                    />
+                  ) : (
+                    <div className="pkt-table-wrap" style={{ maxHeight: 480, overflow: "auto" }}>
+                      <table className="pkt-table pkt-table-sm">
+                        <thead>
+                          <tr>
+                            {(tab === "level" || tab === "evolution-recall") && (
+                              <th style={{ width: 96 }}>等级</th>
                             )}
-                          </Fragment>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                            {tab === "machine" && <th style={{ width: 140 }}>编号</th>}
+                            <th style={{ minWidth: 120 }}>招式</th>
+                            <th style={{ width: 96 }}>属性</th>
+                            <th style={{ width: 76 }}>分类</th>
+                            <th style={{ width: 66 }}>威力</th>
+                            <th style={{ width: 66 }}>命中</th>
+                            <th style={{ width: 60 }}>PP</th>
+                            <th style={{ width: 70 }}>优先度</th>
+                            {tab === "egg" && <th style={{ width: 120 }}>生蛋链</th>}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {(moves.groups[tab] || []).map((row: any) => (
+                            <Fragment key={row.move_id}>
+                              <tr>
+                                {(tab === "level" || tab === "evolution-recall") && (
+                                  <td>
+                                    {levelCellText(row, levelNoProg)}
+                                    {row.mastery != null && row.level != null && !row.evolution && (
+                                      <span className="mastery">精通+{row.mastery}</span>
+                                    )}
+                                  </td>
+                                )}
+                                {tab === "machine" && (
+                                  <td>
+                                    {/* 点击编号 chip 展开/收起获取方式（展开内容在下方独立行，招式行保持不动） */}
+                                    {(row.tm || []).map((t2: any) => (
+                                      <span
+                                        key={t2.number}
+                                        className={
+                                          "pkt-chip tm-chip " +
+                                          (t2.kind === "TR" ? "warning" : "info")
+                                        }
+                                        style={{ marginRight: 4 }}
+                                        onClick={() =>
+                                          setExpandedTm((s) => ({
+                                            ...s,
+                                            [row.move_id]: !s[row.move_id],
+                                          }))
+                                        }
+                                      >
+                                        {t2.kind}
+                                        {String(t2.number).padStart(3, "0")}
+                                      </span>
+                                    ))}
+                                  </td>
+                                )}
+                                <td>{row.name_zh}</td>
+                                <td>
+                                  <TypeBadge types={row.type_zh} />
+                                </td>
+                                <td>
+                                  <MoveClassBadge cls={row.damage_class} />
+                                </td>
+                                <td>{row.power ?? "—"}</td>
+                                <td>{row.accuracy ?? "—"}</td>
+                                <td>{row.pp}</td>
+                                <td>{row.priority > 0 ? "+" + row.priority : row.priority}</td>
+                                {tab === "egg" && (
+                                  <td>
+                                    <button
+                                      className="pkt-btn pkt-btn-sm primary-plain"
+                                      onClick={() => void showChains(row)}
+                                    >
+                                      计算繁殖链
+                                    </button>
+                                  </td>
+                                )}
+                              </tr>
+                              {tab === "machine" && expandedTm[row.move_id] && (
+                                <tr className="tm-how-row">
+                                  <td colSpan={8}>
+                                    <div className="tm-how-list">
+                                      {(row.tm || []).map((t2: any) => (
+                                        <div key={t2.number} className="tm-how">
+                                          <b>
+                                            {t2.kind} {String(t2.number).padStart(3, "0")}
+                                          </b>
+                                          {t2.how && (
+                                            <>
+                                              <br />
+                                              获取：{t2.how}
+                                            </>
+                                          )}
+                                          {t2.materials && (
+                                            <>
+                                              <br />
+                                              制作材料：{t2.materials}
+                                            </>
+                                          )}
+                                          {!t2.how && !t2.materials && (
+                                            <>
+                                              <br />
+                                              获取方式待补充
+                                            </>
+                                          )}
+                                        </div>
+                                      ))}
+                                      {!(row.tm || []).length && (
+                                        <div className="tm-how">获取方式待补充</div>
+                                      )}
+                                    </div>
+                                  </td>
+                                </tr>
+                              )}
+                            </Fragment>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
                   {tab === "egg" && !moves.has_breeding && (
                     <div className="empty-hint">
                       当前游戏没有生蛋孵化机制（{game ? game.name_zh : ""}）
@@ -827,6 +825,110 @@ export function DetailPage({
           <div className="pkt-alert warn">{chains.reason}</div>
         ) : null}
       </Modal>
+    </div>
+  );
+}
+
+/* ---- 手机端招式列表（≤768）：三段式行，替代横向滚动的桌面表格 ----
+ * 左 = 来源标记（Lv./—/回忆/进化/TM 编号/教授/蛋），中 = 招式名 + 小字数值，
+ * 右 = 属性徽章 + 物理/特殊/变化徽章；学习器编号点按展开获取方式。 */
+function MovesMobileList({
+  rows,
+  tab,
+  levelNoProg,
+  expandedTm,
+  onToggleTm,
+  onChain,
+}: {
+  rows: any[];
+  tab: string;
+  levelNoProg: boolean;
+  expandedTm: Record<number, boolean>;
+  onToggleTm: (moveId: number) => void;
+  onChain: (row: any) => void;
+}): JSX.Element {
+  const srcLabel = (row: any): string => {
+    if (tab === "machine") return "";
+    if (tab === "tutor") return "教授";
+    if (tab === "egg") return "蛋";
+    return levelCellText(row, levelNoProg);
+  };
+  return (
+    <div className="mvx-list">
+      {rows.map((row) => (
+        <div key={row.move_id} className="mvx-item">
+          <div className="mvx-row">
+            <span className="mvx-src">
+              {tab === "machine" ? (
+                (row.tm || []).map((t2: any) => (
+                  <button
+                    key={t2.number}
+                    className={"pkt-chip tm-chip " + (t2.kind === "TR" ? "warning" : "info")}
+                    onClick={() => onToggleTm(row.move_id)}
+                  >
+                    {t2.kind}
+                    {String(t2.number).padStart(3, "0")}
+                  </button>
+                ))
+              ) : (
+                <>
+                  <span className="mvx-lv">{srcLabel(row)}</span>
+                  {row.mastery != null && row.level != null && !row.evolution && (
+                    <span className="mvx-mastery">精通+{row.mastery}</span>
+                  )}
+                </>
+              )}
+            </span>
+            <span className="mvx-main">
+              <span className="mvx-name">{row.name_zh}</span>
+              <span className="mvx-meta">
+                威力 {row.power ?? "—"} · 命中 {row.accuracy ?? "—"} · PP {row.pp}
+                {row.priority !== 0 &&
+                  ` · 优先${row.priority > 0 ? "+" + row.priority : row.priority}`}
+              </span>
+              {tab === "egg" && (
+                <button className="mvx-chain" onClick={() => onChain(row)}>
+                  计算繁殖链
+                </button>
+              )}
+            </span>
+            <span className="mvx-badges">
+              <TypeBadge types={row.type_zh} plain />
+              <MoveClassBadge cls={row.damage_class} />
+            </span>
+          </div>
+          {tab === "machine" && expandedTm[row.move_id] && (
+            <div className="tm-how-list">
+              {(row.tm || []).map((t2: any) => (
+                <div key={t2.number} className="tm-how">
+                  <b>
+                    {t2.kind} {String(t2.number).padStart(3, "0")}
+                  </b>
+                  {t2.how && (
+                    <>
+                      <br />
+                      获取：{t2.how}
+                    </>
+                  )}
+                  {t2.materials && (
+                    <>
+                      <br />
+                      制作材料：{t2.materials}
+                    </>
+                  )}
+                  {!t2.how && !t2.materials && (
+                    <>
+                      <br />
+                      获取方式待补充
+                    </>
+                  )}
+                </div>
+              ))}
+              {!(row.tm || []).length && <div className="tm-how">获取方式待补充</div>}
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
 }
