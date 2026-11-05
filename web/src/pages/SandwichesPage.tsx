@@ -4,6 +4,7 @@ import { apiGet, apiSend, TYPE_LIST, POWER_LIST, POWER_COLORS } from "../data/ap
 import { toast } from "../components/toast";
 import { Modal } from "../components/dialog";
 import { MonoIcon } from "../components/badges";
+import { useIsMobile } from "../lib/useIsMobile";
 
 interface RecipeItem {
   name: string;
@@ -26,6 +27,7 @@ export function SandwichesPage(): JSX.Element {
   const [customList, setCustomList] = useState<any[]>([]);
   const [editorDlg, setEditorDlg] = useState(false);
   const [saving, setSaving] = useState(false);
+  const isMobile = useIsMobile();
   const [editor, setEditor] = useState({
     name: "",
     effects: [{ power: "", type: "", level: 1 }],
@@ -318,36 +320,60 @@ export function SandwichesPage(): JSX.Element {
             <div className="spacer" />
             <span className="muted-13">{filteredItems.length} 项</span>
           </div>
-          <div className="pkt-table-wrap" style={{ maxHeight: 520 }}>
-            <table className="pkt-table pkt-table-sm">
-              <thead>
-                <tr>
-                  <th style={{ minWidth: 130 }}>名称</th>
-                  <th style={{ minWidth: 320 }}>说明</th>
-                  <th style={{ minWidth: 200 }}>获得方式</th>
-                  <th style={{ width: 90 }}>价格</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredItems.map((row) => (
-                  <tr key={row.no_rowid}>
-                    <td>
-                      <b>{row.name}</b>
-                      <span
-                        className={"pkt-chip " + (row.kind === "调味料" ? "warning" : "success")}
-                        style={{ marginLeft: 6 }}
-                      >
-                        {row.kind}
-                      </span>
-                    </td>
-                    <td>{row.desc}</td>
-                    <td>{row.how || "待补充"}</td>
-                    <td>{row.price ? `￥${row.price}` : "—"}</td>
+          {isMobile ? (
+            /* 手机端列表卡：分类与名称固定两行（桌面表格窄屏挤压会一会一行一会两行） */
+            <div className="sif-items">
+              {filteredItems.map((row) => (
+                <div key={row.no_rowid} className="sif-item">
+                  <div className="sif-item-top">
+                    <span className={"pkt-chip " + (row.kind === "调味料" ? "warning" : "success")}>
+                      {row.kind}
+                    </span>
+                    <span className="sif-item-price">{row.price ? `￥${row.price}` : ""}</span>
+                  </div>
+                  <div className="sif-item-name">{row.name}</div>
+                  <div className="sif-item-desc">{row.desc}</div>
+                  <div className="sif-item-how">获得：{row.how || "待补充"}</div>
+                </div>
+              ))}
+              {!filteredItems.length && (
+                <div className="empty-hint" style={{ padding: 24 }}>
+                  没有符合条件的条目
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="pkt-table-wrap" style={{ maxHeight: 520 }}>
+              <table className="pkt-table pkt-table-sm">
+                <thead>
+                  <tr>
+                    <th style={{ minWidth: 130 }}>名称</th>
+                    <th style={{ minWidth: 320 }}>说明</th>
+                    <th style={{ minWidth: 200 }}>获得方式</th>
+                    <th style={{ width: 90 }}>价格</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {filteredItems.map((row) => (
+                    <tr key={row.no_rowid}>
+                      <td>
+                        <b>{row.name}</b>
+                        <span
+                          className={"pkt-chip " + (row.kind === "调味料" ? "warning" : "success")}
+                          style={{ marginLeft: 6 }}
+                        >
+                          {row.kind}
+                        </span>
+                      </td>
+                      <td>{row.desc}</td>
+                      <td>{row.how || "待补充"}</td>
+                      <td>{row.price ? `￥${row.price}` : "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </>
       )}
 

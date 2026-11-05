@@ -884,3 +884,8 @@
   font-size: 11px;
   padding: 1px 5px;
 }
+
+/* 能力值计算器（sc-details）手机端表头：桌面隐藏（mobile.css 放开并接管行布局） */
+.sc-head {
+  display: none;
+}

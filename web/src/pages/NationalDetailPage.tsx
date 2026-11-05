@@ -337,8 +337,15 @@ export function NationalDetailPage({
                   努力值合计 {evSum}/510
                 </span>
               </div>
+              {/* 手机端表头（桌面隐藏）：努力值/个体值列标签上移，行内改单行网格 */}
+              <div className="fld-row sc-head" aria-hidden="true">
+                <span className="lbl" />
+                <span className="mini">努力值</span>
+                <span className="mini">个体值</span>
+                <span className="mini result">实际值</span>
+              </div>
               {STAT_KEYS.map((k) => (
-                <div key={k} className="fld-row">
+                <div key={k} className="fld-row sc-stat">
                   <span className="lbl">{STAT_ZH[k]}</span>
                   <span className="mini">努力值</span>
                   <input

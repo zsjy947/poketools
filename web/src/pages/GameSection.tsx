@@ -15,6 +15,15 @@ export function GameSection({ gameId, feature }: { gameId: string; feature: stri
   const [game, setGameRow] = useState<GameRow | null>(null);
   const [gamesLoaded, setGamesLoaded] = useState(false);
 
+  /* 手机端底栏的功能短标签（桌面窄栏纯图标，不显示文字） */
+  const RAIL_SHORT: Record<string, string> = {
+    dex: "图鉴",
+    ev: "努力值",
+    sandwich: "三明治",
+    donut: "甜甜圈",
+    curry: "咖喱",
+  };
+
   useEffect(() => {
     setGame(gameId as never, feature as GameFeature);
     loadGames().then((gs) => {
@@ -77,6 +86,7 @@ export function GameSection({ gameId, feature }: { gameId: string; feature: stri
             onClick={() => goFeature(f.key)}
           >
             <MonoIcon name={f.icon} size={22} />
+            <span className="rail-lbl">{RAIL_SHORT[f.key] ?? f.label}</span>
           </div>
         ))}
       </nav>

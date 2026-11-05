@@ -96,7 +96,7 @@
     font-size: 11px;
   }
 
-  /* ---------- 游戏内 84px 窄栏 → 底部图标导航条（同时隐藏全局底部 Tab） ---------- */
+  /* ---------- 游戏内功能分区 → 底部标签栏（去游戏 logo，图标+短标签均分） ---------- */
   .app-shell:has(.game-shell) .tab-bar {
     display: none;
   }
@@ -125,21 +125,24 @@
     height: auto;
     flex-direction: row;
     justify-content: space-evenly;
-    align-items: center;
+    align-items: stretch;
     gap: 2px;
-    padding: 6px 6px calc(6px + env(safe-area-inset-bottom));
+    padding: 4px 6px calc(4px + env(safe-area-inset-bottom));
     box-shadow: 0 -4px 16px rgba(20, 26, 44, 0.16);
   }
-  .rail-game {
-    padding: 2px 4px;
-  }
-  .rail-sep {
-    width: 1px;
-    height: 26px;
-    margin: 0 2px;
-    align-self: center;
+  /* 游戏 logo 与分隔线移出底栏（返回游戏中心走顶部返回钮） */
+  .rail .rail-game,
+  .rail .rail-sep {
+    display: none;
   }
   .rail-item {
+    flex: 1;
+    width: auto;
+    height: auto;
+    flex-direction: column;
+    gap: 2px;
+    min-height: 48px;
+    padding: 4px 2px;
     border-left: none;
     border-bottom: 2.5px solid transparent;
     margin-left: 0;
@@ -150,11 +153,14 @@
     border-left-color: transparent;
     border-bottom-color: var(--accent);
   }
-  .rail .game-icons {
-    flex-direction: row;
+  .rail-item .rail-lbl {
+    display: block;
+    font-size: 10.5px;
+    line-height: 1.2;
+    white-space: nowrap;
   }
-  .rail .game-logo {
-    max-width: 60px;
+  .rail-item:focus {
+    outline: none;
   }
 
   /* ---------- 三层吸顶：返回钮 → 分段锚点 → 形态条 ----------
@@ -519,6 +525,54 @@
   }
   .stat-range {
     display: none;
+  }
+
+  /* ---------- 详情页·能力值计算器（sc-details）：性格/努力/个体行收窄为四列网格 ----------
+     桌面 flex 行（label+努力值输入+个体值输入+结果）在 360px 屏溢出；
+     列标签上移到 sc-head 表头行（桌面隐藏），行内改 40px + 1fr + 1fr + 64px 单行网格 */
+  .sc-details .sc-stat {
+    display: grid;
+    grid-template-columns: 40px 1fr 1fr 64px;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+  .sc-details .sc-stat > .mini {
+    display: none;
+  }
+  .sc-details .sc-stat > .mini.result {
+    display: inline-block;
+    text-align: right;
+    font-size: 11px;
+  }
+  .sc-details .sc-stat > .w96 {
+    width: 100%;
+    min-width: 0;
+    padding: 5px 6px;
+  }
+  .sc-details .sc-head {
+    display: grid;
+    grid-template-columns: 40px 1fr 1fr 64px;
+    gap: 6px;
+    margin: 10px 0 0;
+  }
+  .sc-details .sc-head .lbl {
+    display: none;
+  }
+  .sc-details .sc-head .mini {
+    display: block;
+    font-size: 11px;
+    color: #98a1b3;
+  }
+  /* 性格行保持 flex，但下拉改弹性宽防溢出 */
+  .sc-details .fld-row:not(.sc-stat):not(.sc-head) .pkt-select {
+    flex: 1 1 150px;
+    min-width: 0;
+    width: auto;
+  }
+  .sc-details .fld-row .lbl {
+    min-width: 0;
+    flex-shrink: 0;
   }
 }
 

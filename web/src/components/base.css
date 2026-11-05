@@ -116,6 +116,10 @@ body {
   background: #2a3245;
   color: #cfd6e4;
 }
+/* 功能短标签：仅手机端底栏显示（mobile.css 放开），桌面窄栏保持纯图标 */
+.rail-lbl {
+  display: none;
+}
 .rail-item.active {
   background: #2a3245;
   color: var(--accent);

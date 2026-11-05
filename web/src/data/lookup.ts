@@ -463,8 +463,10 @@ export async function typechart() {
 export async function picnicItems(params?: { kind?: string }) {
   const kind = (params && params.kind) || "";
   const rows = await table("picnic_items");
-  // rowid = 全表序（1..78 连续）；响应按 (kind, name) 排序（对齐 SQL ORDER BY）
-  const indexed = rows.map((r, i) => Object.assign({ no_rowid: i + 1 }, r));
+  // 「咖喱食材」来自 52poke 食材页同页抓取（剑盾咖喱机制），与朱紫三明治工具无关，整体排除
+  const picnicRows = rows.filter((r) => r.kind !== "咖喱食材");
+  // rowid = 全表序（1..N 连续）；响应按 (kind, name) 排序（对齐 SQL ORDER BY）
+  const indexed = picnicRows.map((r, i) => Object.assign({ no_rowid: i + 1 }, r));
   indexed.sort((a, b) => cmpStr(a.kind, b.kind) || cmpStr(a.name, b.name));
   return kind ? indexed.filter((r) => r.kind === kind) : indexed;
 }

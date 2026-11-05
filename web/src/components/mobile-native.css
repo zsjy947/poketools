@@ -476,6 +476,46 @@
   padding: 0 2px;
 }
 
+/* ---------- 三明治·食材与调味料（手机端列表卡：分类/名称固定两行） ---------- */
+.sif-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.sif-item {
+  background: #fff;
+  border: 1px solid #e4e8f0;
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+.sif-item-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.sif-item-price {
+  font-size: 12px;
+  color: #98a1b3;
+  font-variant-numeric: tabular-nums;
+}
+.sif-item-name {
+  margin-top: 4px;
+  font-size: 14.5px;
+  font-weight: 700;
+}
+.sif-item-desc {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #556;
+  line-height: 1.6;
+}
+.sif-item-how {
+  margin-top: 4px;
+  font-size: 11.5px;
+  color: #98a1b3;
+}
+
 /* ---------- 详情/表单行微调（沿用桌面 DOM，只修手机观感） ---------- */
 @media (max-width: 768px) {
   .detail-head .kv {
